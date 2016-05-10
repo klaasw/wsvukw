@@ -30,14 +30,21 @@ FILENAME = __filename.slice(__dirname.length + 1);
  *
  */
 exports.pruefeRfdWS = function () {
-    request(cfg.urlRFDWebservice, function (error, response, body) {
+    //Prüfung lokaler VTR
+    request(cfg.urlRFDWebservice, {timeout: 2000}, function (error, response, body) {
         if (!error && response.statusCode == 200) {
-            log.info(FILENAME + ' RFD WebService erreichbar')
+            log.info(FILENAME + ' Funktion: prüfeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' +  response.statusCode +' OK')
+            sendeWebNachrichtStatus({RfdStatus:{URL:cfg.urlRFDWebservice,Status:'OK'}})
         }
+        if(error)
+            Log.error(FILENAME+' Funktion: prüfeRfdWS URL: '+ cfg.urlRFDWebservice + ' ' + error)
     })
 };
-// Setze Intervall fuer Pruefung
-//var Intervall=setInterval(function() {pruefeRfdWS()},1000)
+
+
+
+
+
 
 
 /*Block zur Implementierung der WebService Abfragen an RFD
@@ -137,14 +144,20 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
 };
 
 
-exports.sendeWebNachricht = function (SIPNachricht) {
-    io.emit('test', SIPNachricht);
-    log.info(FILENAME + ' Funktion: sendeWebNachricht ' + 'Msg: WebSocket Nachricht: ' + util.inspect(SIPNachricht))
-};
+//Zum Senden von UKW bezogenen Nachrichten
+exports.sendeWebNachricht = function (Nachricht){
+log.info(FILENAME+' Funktion: sendeWebNachricht '+'ukwMsg: WebSocket Nachricht: '+JSON.stringify(Nachricht))
+io.emit('ukwMessage',Nachricht);
+}
 
-exports.sendeWebNachricht2 = function (SIPNachricht) {
-    io.emit('test', SIPNachricht);
-};
+//Zum Senden von Status-Meldungen
+sendeWebNachrichtStatus = function (Nachricht){
+
+log.info(FILENAME+' Funktion: sendeWebNachrichtStatus '+'statusMsg: WebSocket Nachricht: '+JSON.stringify(Nachricht))
+io.emit('statusMessage',Nachricht);
+}
+
+
 
 /*
  zum Testen

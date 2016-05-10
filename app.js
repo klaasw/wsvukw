@@ -126,7 +126,52 @@ io.listen(server).on('connect', function (socket) {
         ukw.sendeWebServiceNachricht(msg.FstID, msg.SPAN, msg.aktion, msg.Kanal);//Zum Testen eine Schleife als SIP Nachricht, die wieder als Web Nachricht zurueckgesendet wird
     });
 
+    //'Standardnachrichten für Weiterleitung an RFD schalten,trennen, MKA'
+    socket.on('clientMessage', function(msg){
+        log.debug(FILENAME+' Funktion: empfangeWebNachricht '+'clientMessage: WebSocket Nachricht: '+JSON.stringify(msg))
+        ukw.sendeWebServiceNachricht(msg.FstID,msg.SPAN,msg.aktion,msg.Kanal);//Sende WebServiceNachricht an RFD
+    });
+
+    //Speichern der Kanal Lotsenzuordnung
+    socket.on('clientMessageSpeichern', function(msg){
+        log.info(FILENAME+' Funktion: empfangeWebNachricht '+'clientMessageSpeichern: WebSocket Nachricht: '+JSON.stringify(msg))
+
+        //Speichern
+        for (var LotsenAp in msg.LotsenApBenutzer){
+            ukw.speichereLotsenZuordnung(LotsenAp, JSON.stringify(msg.LotsenApBenutzer[LotsenAp]))
+        }
+    });
+
+    //Speichern der Schaltzustände der Clients
+    socket.on('clientMessageSchaltzustand', function(msg){
+
+        ApID=msg.Arbeitsplatz.replace(/ /g, "_")
+        Zustand=JSON.stringify(msg.Zustand)
+
+        log.info(FILENAME+' Funktion: empfangeWebNachricht '+'clientMessageSchaltzustand: WebSocket Nachricht: '+JSON.stringify(msg))
+
+        files.writeFile(ApID+'_Zustand.json', Zustand, 'utf8', function (err, data) {
+            if(err){
+                log.error(FILENAME+' Funktion: speichereSchaltzustand: '+ApID+'_Zustand.json konnte nicht geschrieben werden' + err)
+            }
+            else {
+                log.info(FILENAME+' Funktion: speichereSchaltzustand: konfig.json '+ApID+'_Zustand.json geschrieben')
+            }
+
+        })
+
+    });
+    
+    
+    
+    
+    
+
 });
+
+
+// Setze Intervall fuer Pruefung
+var Intervall=setInterval(function() {ukw.pruefeRfdWS()},1000)
 
 
 /**

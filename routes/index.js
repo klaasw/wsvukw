@@ -87,14 +87,14 @@ router.get('/ukw', function (req, res) {
 
 /* GET UKW Konfiguration*/
 router.get('/ukwKonfig', function (req, res) {
-    log.debug(FILENAME + ' IP als Anfrage     : ' + req.ip);
-    log.info(FILENAME + ' IP als RequestParameter: ' + req.query.ip);
+    log.info(FILENAME + ' Funktion: router get /ukwKonfig von IP: ' + req.ip);
+    log.info(FILENAME + ' Funktion: router get /ukwKonfig von IP als Parameter: '+JSON.stringify(req.query));
     //var Ap=findeApNachIp(req.ip)//Arbeitsplatz aus Konfig lesen
     //var Ap_test=findeApNachIp(req.query.ip)
     //log.debug(findeApNachIp(req.ip))
     //log.debug(findeApNachIp(req.query.ip))
 
-    //ukwkonfig?ip=1.1.1.1
+    // /ukwKonfig mit Parameter z.B. ukwKonfig?ip=1.1.1.1
     if (req.query.ip) {
         if (req.query.ip == '1.1.1.1') {
             var Konfig = {
@@ -149,16 +149,19 @@ router.get('/ukwKonfig', function (req, res) {
     else {
         findeApNachIp(req.ip, function (benutzer) {
             if (benutzer) {
-                log.debug(FILENAME + ' Benutzer zu IP  = ' + benutzer + ' ' + req.query.ip);
+                log.debug(FILENAME + ' Funktion: router get /ukwKonfig ermittelter User: '+benutzer);
                 //res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
-                //erstelleKonfigFurAp2(benutzer,function(Konfig){
-
                 // TODO: testen, ob hier das richtige passiert
-                erstelleKonfigFuerLotsenKanal(benutzer, false, function (Konfig) {
-                    res.send(Konfig)
-
+                erstelleKonfigFurAp2(benutzer,function(Konfig){
+                // Test wg Lotse erstelleKonfigFuerLotsenKanal(benutzer, false, function (Konfig) {
+                    res.send({
+                        'Konfigdaten':Konfig,
+                        'Arbeitsplatz':benutzer
+                    })
                 })
-            } else {
+
+                }
+            else {
                 log.error(FILENAME + ' 2 Benutzer nicht konfiguriert fuer IP ' + req.query.ip);
                 res.send('Arbeitsplatz nicht gefunden! IP: ' + req.query.ip)
             }
@@ -166,7 +169,7 @@ router.get('/ukwKonfig', function (req, res) {
         })
 
     }
-});
+});//Router /ukwKonfig Ende
 
 
 /*
@@ -318,7 +321,7 @@ function erstelleKonfigFurAp2(Ap, callback) {
         MhanZuordnung: {}
     };
 
-    log.debug(FILENAME + ' erhaltener Arbeitsplatz: ' + Ap);
+    log.debug(FILENAME + ' uebergebener Arbeitsplatz: ' + Ap);
     var rev_ap = Ap.split(" ");
     log.debug(rev_ap);
 
@@ -381,6 +384,8 @@ function erstelleKonfigFurAp2(Ap, callback) {
 
 } //Funktion Ende
 
+//Beschreibung der Funktion erstellen.....
+//
 function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
     var Konfig = {
         FunkstellenReihe: [],
@@ -388,10 +393,11 @@ function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
         LotsenAp: {},
         MhanZuordnung: {}
     };
+    
 
     log.debug(FILENAME + ' Funktion erstelleKonfigFuerLotsenKanal erhaltener Arbeitsplatz: ' + Ap);
     var rev_ap = Ap.split(" ");
-    standardbenutzer = standard ? '' : '_benutzer';  // wirklich gleicher Variablenname wie Funktionsparameter?
+    standardbenutzer = standard ? '' : '_benutzer';  // wenn standard == true, dann default Einstellungen laden, wenn false dann _benutzer Einstellungen laden
 
     //1. Funkkstellen fuer Revier einlesen
     //Dateinamen noch durch Variable ersetzen, hier zum Lesen der VTA fuer das Revier

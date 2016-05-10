@@ -154,24 +154,15 @@ block append testcode2
         //})
 
         var test = false;
-        var ApID = 'JA_NvD';
-        var SPAN = '1-H-RFD-WHVVKZ-SPAN-01';
+        var ApID = ''; //zb.JA NvD
+        var SPAN = ''; //zb. 1-H-RFD-WHVVKZ-SPAN-01
         var MhanZuordnung = {
             "MHAN01": "1-H-RFD-WHVVTA-FKEK-2",
             "MHAN02": "1-H-RFD-TETTEN-FKEK-2",
             "MHAN03": "1-H-RFD-HELGLT-FKEK-1",
             "MHAN04": "1-H-RFD-WHVVTA-FKMK-1"
         };
-        var ApFunkstellen = {
-            '1-H-RFD-WHVVTA-FKEK-3': {
-                id: '1-H-RFD-WHVVTA-FKEK-3',
-                MKA: false,
-                Kanal: '16',
-                kurzname: 'WHV',
-                aufgeschaltet: null
-            },
-            '1-H-RFD-TETTEN-FKEK-3': {aufgeschaltet: null}
-        };
+        var ApFunkstellen = {};
         var ArbeitsplatzGeraete;
         var Einzel = true;
         var einzelStatus
@@ -242,10 +233,11 @@ block append testcode2
         //Variablen zum Arbeitsplatz laden
         function ladeKonfig() {
             $.get("ukwKonfig", function (data) { //IP-Adress nur als Platzhalter zum Testen
-                ApFunkstellen = data.FunkstellenDetails;
-                SPAN = data.ArbeitsplatzGeraete.SPAN01
-                MhanZuordnung = data.MhanZuordnung
-                ArbeitsplatzGeraete = data.ArbeitsplatzGeraete
+                ApFunkstellen = data.Konfigdaten.FunkstellenDetails
+                SPAN = data.Konfigdaten.ArbeitsplatzGeraete.SPAN01
+                MhanZuordnung = data.Konfigdaten.MhanZuordnung
+                ArbeitsplatzGeraete = data.Konfigdaten.ArbeitsplatzGeraete
+                ApID = data.Arbeitsplatz
 
 
                 lautsprecherAufschalten(MhanZuordnung);
@@ -487,6 +479,11 @@ block append testcode2
                             ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true
                             $.notify('Aufgeschaltet:' + ApFunkstellen[msg.geschaltet.$.id].sname + '')
                             console.log(msg.geschaltet.$.id)
+                            //geschaltetet Zustände an Server übertragen
+                            socket.emit('clientMessageSchaltzustand',{
+                                'Zustand': ApFunkstellen,
+                                'Arbeitsplatz': ApID
+                            })
                         }
                     }
                 }
@@ -511,6 +508,11 @@ block append testcode2
                             ApFunkstellen[msg.getrennt.$.id].aufgeschaltet = false
                             $.notify('Getrennt:' + ApFunkstellen[msg.getrennt.$.id].sname + '')
                             console.log(msg.getrennt.$.id)
+                            //geschaltetet Zustände an Server übertragen
+                            socket.emit('clientMessageSchaltzustand',{
+                                'Zustand': ApFunkstellen,
+                                'Arbeitsplatz': ApID
+                            })
                         }
                     }
                 }
