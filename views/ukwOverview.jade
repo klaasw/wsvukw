@@ -12,11 +12,11 @@ block content
         div.content
             div.col-lg-12
                 each val in funkstellen
-                    div.col-lg-2(id=val.id + '-Panel')(style="width: 9%;padding:2px")
+                    div.col-lg-2(id=val.id + '-Panel',style="width: 9%;padding:2px")
                         div.panel.panel-default(style="padding:2px;margin-bottom:2px")
                             div.panel-heading(style="padding:2px")
                                 span Ereignis
-                            div.panel-body.bg-default(id=val.id)(style="padding:2px")
+                            div.panel-body.bg-default(id=val.id,style="padding:2px")
                                 h4(style="margin-top: 0px; margin-bottom: 0px")=val.channel
                             div.panel-footer(style="padding:2px")=val.sname
 
@@ -246,11 +246,3 @@ block append testcode2
 
             //console.log("Funkstellen ID nicht vorhanden: "+Id)
         }
-
-   
-  
-     
-    
-  
-
-   

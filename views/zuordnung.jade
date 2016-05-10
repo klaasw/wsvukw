@@ -55,7 +55,7 @@ block content
                                 form.form-inline
                                     div.form-group FST02:
                                     //#mySelectlist
-                                    div(id=indexLotse + '_FST02').btn-group.selectlist(style="width:100%" data-initialize='selectlist')
+                                    div(id=indexLotse + '_FST02').btn-group.selectlist(style="width:100%", data-initialize='selectlist')
                                         button.btn.btn-default.dropdown-toggle(data-toggle='dropdown', type='button', style="width:100%")
                                             span.selected-label  
                                             span.caret
@@ -82,7 +82,7 @@ block content
                                 form.form-inline
                                     div.form-group FST03:
                                     //#mySelectlist
-                                    div(id=indexLotse + '_FST03').btn-group.selectlist(style="width:100%" data-initialize='selectlist')
+                                    div(id=indexLotse + '_FST03').btn-group.selectlist(style="width:100%", data-initialize='selectlist')
                                         button.btn.btn-default.dropdown-toggle(data-toggle='dropdown', type='button', style="width:100%")
                                             span.selected-label  
                                             span.caret
@@ -106,7 +106,7 @@ block content
                                 form.form-inline
                                     div.form-group FST04:
                                     //#mySelectlist
-                                    div(id=indexLotse + '_FST04').btn-group.selectlist(style="width:100%" data-initialize='selectlist')
+                                    div(id=indexLotse + '_FST04').btn-group.selectlist(style="width:100%", data-initialize='selectlist')
                                         button.btn.btn-default.dropdown-toggle(data-toggle='dropdown', type='button', style="width:100%")
                                             span.selected-label  
                                             span.caret
@@ -235,4 +235,3 @@ block append testcode2
             console.log('speichern...')
             socket.emit('clientMessageSpeichern', {LotsenApBenutzer})
         }
-
