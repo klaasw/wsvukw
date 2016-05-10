@@ -13,7 +13,7 @@ var log = new winston.Logger({
             handleExceptions: true,
             json: false, //true,
             colorize: false
-        })/*,
+        }),
         new winston.transports.Console({
             level: 'debug',
             timestamp: true,
@@ -21,7 +21,7 @@ var log = new winston.Logger({
 			handleExceptions: true,
             json: false,
             colorize: true
-        })*/
+        })
     ],
     exitOnError: false
 });

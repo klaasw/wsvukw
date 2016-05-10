@@ -17,7 +17,7 @@ var parser = new xml2js.Parser({
     explicitRoot: false
 }); // Parserkonfiguration
 
-var cfg = require('../cfg.js');
+var cfg = require('../config/cfg.js');
 
 FILENAME = __filename.slice(__dirname.length + 1);
 
@@ -172,6 +172,11 @@ router.get('/ukwKonfig', function (req, res) {
 });//Router /ukwKonfig Ende
 
 
+
+router.get('/mockmessage', function (req, res) {
+    log.debug(FILENAME + ' mockmessage von IP: ' + req.ip);
+});
+
 /*
  files.readFile("funkstellen.json", 'utf8', function (err, data) {
  if (err) throw err;
@@ -181,9 +186,6 @@ router.get('/ukwKonfig', function (req, res) {
  })*/
 
 /* Funkstellen vom RFD einlesen
-
-
-
  */
 function leseRfdTopologie() {
 

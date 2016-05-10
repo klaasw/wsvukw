@@ -28,7 +28,7 @@ var accessLogStream = FileStreamRotator.getStream({
 
 app.use(morgan(':date[iso] :remote-addr :remote-user :method :url, :http-version :status :res[content-length] :response-time', {stream: accessLogStream}));
 
-//var cfg = require('./cfg.js');
+var cfg = require('./config/cfg.js');
 
 var log = require('./log.js');
 // can be used to integrate morgen access log and winston log entries in one file:
@@ -48,11 +48,12 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-debugger;   // if in debugging mode, set breakpoint here
+// debugger;   // if in debugging mode, set breakpoint here
 var routes = require('./routes/index.js');
 
 app.use('/', routes);
-var ukw = require('./routes/ukw.js');
+var ukw = require('./ukw.js');
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -90,7 +91,7 @@ app.use(function (err, req, res, next) {
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || cfg.port);
 app.set('port', port);
 
 /**
@@ -107,71 +108,10 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-var io = require('socket.io');
-
-/*var wsserver = http.createServer(app);
- wsserver.listen('3001');*/
-
-io.listen(server).on('connect', function (socket) {
-    log.debug('Benutzer hat sich per Websocket verbunden. IP: ' + socket.request.connection.remoteAddress);
-    // TODO: Pruefung Berechtigung !
-
-    socket.on('mock message', function (msg) {
-        socket.broadcast.emit('mock message', msg);
-        log.debug('mock message: ' + JSON.stringify(msg))
-    });
-    socket.on('chat message', function (msg) {
-        //io.emit('chat message', msg);
-        log.debug('chat message: ' + JSON.stringify(msg));
-        ukw.sendeWebServiceNachricht(msg.FstID, msg.SPAN, msg.aktion, msg.Kanal);//Zum Testen eine Schleife als SIP Nachricht, die wieder als Web Nachricht zurueckgesendet wird
-    });
-
-    //'Standardnachrichten für Weiterleitung an RFD schalten,trennen, MKA'
-    socket.on('clientMessage', function(msg){
-        log.debug(FILENAME+' Funktion: empfangeWebNachricht '+'clientMessage: WebSocket Nachricht: '+JSON.stringify(msg))
-        ukw.sendeWebServiceNachricht(msg.FstID,msg.SPAN,msg.aktion,msg.Kanal);//Sende WebServiceNachricht an RFD
-    });
-
-    //Speichern der Kanal Lotsenzuordnung
-    socket.on('clientMessageSpeichern', function(msg){
-        log.info(FILENAME+' Funktion: empfangeWebNachricht '+'clientMessageSpeichern: WebSocket Nachricht: '+JSON.stringify(msg))
-
-        //Speichern
-        for (var LotsenAp in msg.LotsenApBenutzer){
-            ukw.speichereLotsenZuordnung(LotsenAp, JSON.stringify(msg.LotsenApBenutzer[LotsenAp]))
-        }
-    });
-
-    //Speichern der Schaltzustände der Clients
-    socket.on('clientMessageSchaltzustand', function(msg){
-
-        ApID=msg.Arbeitsplatz.replace(/ /g, "_")
-        Zustand=JSON.stringify(msg.Zustand)
-
-        log.info(FILENAME+' Funktion: empfangeWebNachricht '+'clientMessageSchaltzustand: WebSocket Nachricht: '+JSON.stringify(msg))
-
-        files.writeFile(ApID+'_Zustand.json', Zustand, 'utf8', function (err, data) {
-            if(err){
-                log.error(FILENAME+' Funktion: speichereSchaltzustand: '+ApID+'_Zustand.json konnte nicht geschrieben werden' + err)
-            }
-            else {
-                log.info(FILENAME+' Funktion: speichereSchaltzustand: konfig.json '+ApID+'_Zustand.json geschrieben')
-            }
-
-        })
-
-    });
-    
-    
-    
-    
-    
-
-});
-
+var socket = require('./socket.js')(server);
 
 // Setze Intervall fuer Pruefung
-var Intervall=setInterval(function() {ukw.pruefeRfdWS()},1000)
+var Intervall=setInterval(function() {ukw.pruefeRfdWS()}, cfg.pruefIntervall)
 
 
 /**

@@ -1,13 +1,14 @@
-var express = require('express');
 var JsSIP = require('jssip'); //Javascript SIP Uaser Agent
-var http = require('http');
+
 var request = require('request'); //Modul zu Abfrage von WebServices
-var inspect = require('eyes').inspector({styles: {}, maxLength: 16000}); //Inspektor fuer Variablen
 var xml2js = require('xml2js'); // zum Konvertieren von XML zu JS
 var parser = new xml2js.Parser({explicitRoot: true});// Parserkonfiguration
-var log = require('../log.js');
+var log = require('./log.js');
 
-var cfg = require('../cfg.js');
+var cfg = require('./config/cfg.js');
+
+var io = require('./socket.js');
+
 
 FILENAME = __filename.slice(__dirname.length + 1);
 
@@ -30,21 +31,16 @@ FILENAME = __filename.slice(__dirname.length + 1);
  *
  */
 exports.pruefeRfdWS = function () {
-    //Prüfung lokaler VTR
+    //Pr�fung lokaler VTR
     request(cfg.urlRFDWebservice, {timeout: 2000}, function (error, response, body) {
         if (!error && response.statusCode == 200) {
-            log.info(FILENAME + ' Funktion: prüfeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' +  response.statusCode +' OK')
-            sendeWebNachrichtStatus({RfdStatus:{URL:cfg.urlRFDWebservice,Status:'OK'}})
+            log.info(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK')
+            sendeWebNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'OK'}})
         }
-        if(error)
-            Log.error(FILENAME+' Funktion: prüfeRfdWS URL: '+ cfg.urlRFDWebservice + ' ' + error)
+        if (error)
+            log.error(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + error)
     })
 };
-
-
-
-
-
 
 
 /*Block zur Implementierung der WebService Abfragen an RFD
@@ -55,7 +51,7 @@ exports.pruefeRfdWS = function () {
  */
 exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
     var parameterRfdWebService = {
-        url: urlRFDWebservice,
+        url: cfg.urlRFDWebservice,
         method: 'POST',
         headers: {
             'Content-Type': 'text/xml;charset=UTF-8;',
@@ -107,6 +103,7 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
         parameterRfdWebService.body = msg_setzeAudioPegel
     }
 
+    log.debug("parameterRfdWebService.headers.SOAPAction: " + parameterRfdWebService.headers.SOAPAction);
 
     request(parameterRfdWebService, function (error, response, body) {
         log.info(FILENAME + ' Funktion: sendeWebServiceNachricht request mit Parameter: ' + JSON.stringify(parameterRfdWebService));
@@ -145,18 +142,17 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
 
 
 //Zum Senden von UKW bezogenen Nachrichten
-exports.sendeWebNachricht = function (Nachricht){
-log.info(FILENAME+' Funktion: sendeWebNachricht '+'ukwMsg: WebSocket Nachricht: '+JSON.stringify(Nachricht))
-io.emit('ukwMessage',Nachricht);
+exports.sendeWebNachricht = function (Nachricht) {
+    log.info(FILENAME + ' Funktion: sendeWebNachricht ' + 'ukwMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht))
+    io.emit('ukwMessage', Nachricht);
 }
 
 //Zum Senden von Status-Meldungen
-sendeWebNachrichtStatus = function (Nachricht){
+sendeWebNachrichtStatus = function (Nachricht) {
 
-log.info(FILENAME+' Funktion: sendeWebNachrichtStatus '+'statusMsg: WebSocket Nachricht: '+JSON.stringify(Nachricht))
-io.emit('statusMessage',Nachricht);
+    log.info(FILENAME + ' Funktion: sendeWebNachrichtStatus ' + 'statusMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht))
+    io.emit('statusMessage', Nachricht);
 }
-
 
 
 /*
