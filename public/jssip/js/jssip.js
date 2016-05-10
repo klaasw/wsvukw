@@ -16747,7 +16747,7 @@ OutgoingRequest.prototype = {
       }
     }
 
-    
+    return;
   },
 
   /**
@@ -16905,7 +16905,7 @@ IncomingMessage.prototype = {
         return header[0].raw;
       }
     } else {
-      
+      return;
     }
   },
 
@@ -16970,7 +16970,7 @@ IncomingMessage.prototype = {
     if(parsed === -1) {
       this.headers[name].splice(idx, 1); //delete from headers
       debug('error parsing "' + name + '" header field with value "' + value + '"');
-      
+      return;
     } else {
       header.parsed = parsed;
       return parsed;
@@ -18937,7 +18937,7 @@ UA.prototype.getNextWsServer = function() {
     ws_server = this.configuration.ws_servers[idx];
 
     if (ws_server.status === Transport.C.STATUS_ERROR) {
-      
+      continue;
     } else if (candidates.length === 0) {
       candidates.push(ws_server);
     } else if (ws_server.weight > candidates[0].weight) {
@@ -19176,7 +19176,7 @@ UA.prototype.loadConfig = function(configuration) {
     }
   }
 
-  
+  return;
 };
 
 /**
@@ -19251,9 +19251,9 @@ UA.configuration_check = {
       parsed = URI.parse(uri);
 
       if(!parsed) {
-        
+        return;
       } else if(!parsed.user) {
-        
+        return;
       } else {
         return parsed;
       }
@@ -19323,7 +19323,7 @@ UA.configuration_check = {
 
     authorization_user: function(authorization_user) {
       if(Grammar.parse('"'+ authorization_user +'"', 'quoted_string') === -1) {
-        
+        return;
       } else {
         return authorization_user;
       }
@@ -19351,7 +19351,7 @@ UA.configuration_check = {
 
     display_name: function(display_name) {
       if(Grammar.parse('"' + display_name + '"', 'display_name') === -1) {
-        
+        return;
       } else {
         return display_name;
       }
@@ -19381,7 +19381,7 @@ UA.configuration_check = {
       }
 
       if(Grammar.parse(instance_id, 'uuid') === -1) {
-        
+        return;
       } else {
         return instance_id;
       }
@@ -19436,9 +19436,9 @@ UA.configuration_check = {
       parsed = URI.parse(registrar_server);
 
       if(!parsed) {
-        
+        return;
       } else if(parsed.user) {
-        
+        return;
       } else {
         return parsed;
       }
@@ -19729,7 +19729,7 @@ Utils.newUUID = function() {
 
 Utils.hostType = function(host) {
   if (!host) {
-    
+    return;
   } else {
     host = Grammar.parse(host,'host');
     if (host !== -1) {
@@ -19750,7 +19750,7 @@ Utils.normalizeTarget = function(target, domain) {
 
   // If no target is given then raise an error.
   if (!target) {
-    
+    return;
   // If a URI instance is given then return it.
   } else if (target instanceof URI) {
     return target;
@@ -19793,10 +19793,10 @@ Utils.normalizeTarget = function(target, domain) {
     if ((uri = URI.parse(target))) {
       return uri;
     } else {
-      
+      return;
     }
   } else {
-    
+    return;
   }
 };
 
@@ -20595,7 +20595,7 @@ function isUndefined(arg) {
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor;
+    ctor.super_ = superCtor
     ctor.prototype = Object.create(superCtor.prototype, {
       constructor: {
         value: ctor,
@@ -20608,10 +20608,10 @@ if (typeof Object.create === 'function') {
 } else {
   // old school shim for old browsers
   module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor;
-    var TempCtor = function () {};
-    TempCtor.prototype = superCtor.prototype;
-    ctor.prototype = new TempCtor();
+    ctor.super_ = superCtor
+    var TempCtor = function () {}
+    TempCtor.prototype = superCtor.prototype
+    ctor.prototype = new TempCtor()
     ctor.prototype.constructor = ctor
   }
 }
@@ -22825,15 +22825,15 @@ module.exports = require('../package.json').version;
   */
 
 !function (name, definition) {
-  if (typeof module != 'undefined' && module.exports) module.exports['browser'] = definition();
-  else if (typeof define == 'function' && define.amd) define(definition);
+  if (typeof module != 'undefined' && module.exports) module.exports['browser'] = definition()
+  else if (typeof define == 'function' && define.amd) define(definition)
   else this[name] = definition()
 }('bowser', function () {
   /**
     * See useragents.js for examples of navigator.userAgent
     */
 
-  var t = true;
+  var t = true
 
   function detect(ua) {
 
@@ -22848,7 +22848,7 @@ module.exports = require('../package.json').version;
       , versionIdentifier = getFirstMatch(/version\/(\d+(\.\d+)?)/i)
       , tablet = /tablet/i.test(ua)
       , mobile = !tablet && /[^-]mobi/i.test(ua)
-      , result;
+      , result
 
     if (/opera|opr/i.test(ua)) {
       result = {
@@ -22882,7 +22882,7 @@ module.exports = require('../package.json').version;
     else if (iosdevice) {
       result = {
         name : iosdevice == 'iphone' ? 'iPhone' : iosdevice == 'ipad' ? 'iPad' : 'iPod'
-      };
+      }
       // WTF: version is not part of user agent in web apps
       if (versionIdentifier) {
         result.version = versionIdentifier
@@ -22907,7 +22907,7 @@ module.exports = require('../package.json').version;
         name: 'Firefox'
       , firefox: t
       , version: getFirstMatch(/(?:firefox|iceweasel)[ \/](\d+(\.\d+)?)/i)
-      };
+      }
       if (/\((mobile|tablet);[^\)]*rv:[\d\.]+\)/i.test(ua)) {
         result.firefoxos = t
       }
@@ -22968,18 +22968,18 @@ module.exports = require('../package.json').version;
       , version: versionIdentifier
       }
     }
-    else result = {};
+    else result = {}
 
     // set webkit or gecko flag for browsers based on these engines
     if (/(apple)?webkit/i.test(ua)) {
-      result.name = result.name || "Webkit";
-      result.webkit = t;
+      result.name = result.name || "Webkit"
+      result.webkit = t
       if (!result.version && versionIdentifier) {
         result.version = versionIdentifier
       }
     } else if (!result.opera && /gecko\//i.test(ua)) {
-      result.name = result.name || "Gecko";
-      result.gecko = t;
+      result.name = result.name || "Gecko"
+      result.gecko = t
       result.version = result.version || getFirstMatch(/gecko\/(\d+(\.\d+)?)/i)
     }
 
@@ -22987,7 +22987,7 @@ module.exports = require('../package.json').version;
     if (android || result.silk) {
       result.android = t
     } else if (iosdevice) {
-      result[iosdevice] = t;
+      result[iosdevice] = t
       result.ios = t
     }
 
@@ -23041,12 +23041,12 @@ module.exports = require('../package.json').version;
         (result.ios && result.osversion && result.osversion.split(".")[0] < 6)
         ) {
       result.c = t
-    } else result.x = t;
+    } else result.x = t
 
     return result
   }
 
-  var bowser = detect(typeof navigator !== 'undefined' ? navigator.userAgent : '');
+  var bowser = detect(typeof navigator !== 'undefined' ? navigator.userAgent : '')
 
 
   /*
@@ -23068,9 +23068,10 @@ module.exports = require('../package.json').version;
  * Copyright 2014 yeikos - MIT license
  * https://raw.github.com/yeikos/js.merge/master/LICENSE
  */
-  
-(function (isNode) {
-    /**
+
+;(function(isNode) {
+
+	/**
 	 * Merge one or more objects 
 	 * @param bool? clone
 	 * @param mixed,... arguments

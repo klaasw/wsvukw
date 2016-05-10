@@ -59,7 +59,7 @@ $(document).ready(function(){
   // Tryit JsSIP data.
   var tryit_sip_domain = "tryit.jssip.net";
   var tryit_ws_uri = "ws://ws1.versatica.com:10080";
-  var invitation_link_pre = "http://tryit.jssip.net?invited-by=";
+  var invitation_link_pre = "http://tryit.jssip.net?invited-by="
 
 
   // Initialization.
@@ -266,7 +266,7 @@ $(document).ready(function(){
         // To JSON (in case of a simple string we must enclose between ").
         if (ws_servers) {
           if (ws_servers.charAt(0) != "[")
-            ws_servers = '"' + ws_servers + '"';
+            ws_servers = '"' + ws_servers + '"'
           ws_servers = window.JSON.parse(ws_servers);
         }
       }
@@ -453,7 +453,7 @@ $(document).ready(function(){
 
         $(invited_session).find(".chat > input[type='text']").val("Hi there, wanna talk?");
         var e = jQuery.Event("keydown");
-        e.which = 13;  // Enter
+        e.which = 13  // Enter
         $(invited_session).find(".chat > input[type='text']").trigger(e);
         $(invited_session).find(".chat > input[type='text']").focus();
       }

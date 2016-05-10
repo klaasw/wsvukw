@@ -16,7 +16,8 @@ function parseUri (str) {
 	});
 
 	return uri;
-}
+};
+
 parseUri.options = {
 	strictMode: false,
 	key: ["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],
