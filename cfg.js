@@ -1,9 +1,9 @@
 var log = require('./log.js');
 var fs = require('fs'); // Zugriff auf das Dateisystem
 
-AKTUELLER_HOST=require('os').networkInterfaces().eth0[0].address
+AKTUELLER_HOST = require('os').networkInterfaces().eth0[0].address;
 
-var cfgIPs = require('./config/servers/'+AKTUELLER_HOST+'/serverIPs.json');
+var cfgIPs = require('./config/servers/' + AKTUELLER_HOST + '/serverIPs.json');
 
 var cfg = {
     "urlRFDWebservice": 'http://' + cfgIPs.rfdIP + ':8789/I_RFD_DUE_Steuerung',
@@ -14,7 +14,7 @@ var cfg = {
         'password': 'due'
     },
     "port": '3000',
-    "configPath" : '../config/',
+    "configPath": '../config/',
     "intervall": 15000
 };
 
