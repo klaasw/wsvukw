@@ -79,6 +79,17 @@ router.get('/ukw', function (req, res) {
                 }); //res send ende
             }); //erstelleKonfigFurAp Ende
         } //if Ende
+        
+        //kein Benutzer zu IP gefunden
+        else {
+            res.render('error',{
+            	message: 'keine Benutzer konfiguriert zu IP: ' + req.ip,
+            	error:{
+            		status:'kein'
+            	} 
+            })
+
+        }
     }); //findeApNachIp Ende
 
 
