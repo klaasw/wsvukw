@@ -17,7 +17,7 @@ var parser = new xml2js.Parser({
     explicitRoot: false
 }); // Parserkonfiguration
 
-var cfg = require('../config/cfg.js');
+var cfg = require('../cfg.js');
 
 FILENAME = __filename.slice(__dirname.length + 1);
 
@@ -296,26 +296,27 @@ function findeApNachIp(ip, callback) {
                 log.debug(FILENAME + ' Benutzer gefunden: ' + alle_Ap[i][ip].user);
                 Ap = alle_Ap[i][ip].user;
                 break;
-            } else { //Benutzer NICHT gefunden
-                log.error(FILENAME + ' Benutzer NICHT gefunden zu IP: ' + ip);
-                //callback(null)
             }
 
         } //for Ende
+	if(Ap == ''){
+		log.error(FILENAME + ' Benutzer NICHT gefunden zu IP: ' + ip);
+	}
         callback(Ap)
     })
 
 }
 
 function findeFstNachId(Id) {
-    for (i = 0; i < Funkstellen2.length; i++) {
-        if (Funkstellen2[i].id == Id) {
-            //log.debug(Funkstellen2[i],i)
-            return Funkstellen2[i]
+    if (typeof id !== 'undefined') {
+        for (i = 0; i < Funkstellen2.length; i++) {
+            if (Funkstellen2[i].id == Id) {
+                //log.debug(Funkstellen2[i],i)
+                return Funkstellen2[i]
+            }
         }
-
+        log.error("Funkstellen ID nicht vorhanden: " + Id);
     }
-    log.error("Funkstellen ID nicht vorhanden: " + Id);
     return 'frei'
 }
 

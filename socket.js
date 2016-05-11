@@ -76,9 +76,9 @@ exports.socket = function (server) {
 };
 
 exports.emit = function emit(messagetype, message) {
-    log.info("*** socket.emit MessageType: " + messagetype + "  message: " + JSON.stringify(message));
+    log.debug("*** socket.emit MessageType: " + messagetype + "  message: " + JSON.stringify(message));
     if (socketGlobal == undefined) {
-        log.error("client  disconnected");
+        log.debug("no client connected, not able to send message "+ messagetype);
     } else {
         return socketGlobal.emit(messagetype, message);
     }

@@ -28,7 +28,7 @@ var accessLogStream = FileStreamRotator.getStream({
 
 app.use(morgan(':date[iso] :remote-addr :remote-user :method :url, :http-version :status :res[content-length] :response-time', {stream: accessLogStream}));
 
-var cfg = require('./config/cfg.js');
+var cfg = require('./cfg.js');
 
 var log = require('./log.js');
 // can be used to integrate morgen access log and winston log entries in one file:
