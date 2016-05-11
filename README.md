@@ -5,11 +5,13 @@ Dies ist die Benutzer-Oberfläche im DUE für die Nutzung des Revierfunkdienstes
 ## Notwendige Module und Vorrausetzungen
 - nodeJS als Basis
 - Express als Web-Framework. Daraus resultiert auch die Ordnerstruktur
-- jssip
-- socket.io
-- request
-- winston
-- xml2js
+- jssip (SIP Meldungen auswerten)
+- socket.io (Socket-Verbindungen zum Browser)
+- request (WebService Aufrufe)
+- winston (Logging)
+- xml2js (XML in JSON Wandler)
+- file-stream-rotator (für Datei-Logging)
+- moment (vielleicht)
 
 ## Weitere Software
 - resipprocate als SIP-Server zur entgegennahem der Zustandsmeldungen via SIP IM Nachricht
@@ -19,5 +21,5 @@ Dies ist die Benutzer-Oberfläche im DUE für die Nutzung des Revierfunkdienstes
 # Weitere Erläuterungen
 
 # Installation
-    code anleitung
+    code Anleitung
     shell skript
