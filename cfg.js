@@ -1,7 +1,9 @@
 var log = require('./log.js');
 var fs = require('fs'); // Zugriff auf das Dateisystem
 
-var cfgIPs = require('./config/serverIPs.json');
+AKTUELLER_HOST=require('os').networkInterfaces().eth0[0].address
+
+var cfgIPs = require('./config/servers/'+AKTUELLER_HOST+'/serverIPs.json');
 
 var cfg = {
     "urlRFDWebservice": 'http://' + cfgIPs.rfdIP + ':8789/I_RFD_DUE_Steuerung',
