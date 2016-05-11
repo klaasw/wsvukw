@@ -149,8 +149,7 @@ sendeWebNachricht = function (Nachricht) {
 
 //Zum Senden von Status-Meldungen
 sendeWebNachrichtStatus = function (Nachricht) {
-
-    log.info(FILENAME + ' Funktion: sendeWebNachrichtStatus ' + 'statusMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht))
+    log.debug(FILENAME + ' Funktion: sendeWebNachrichtStatus ' + 'statusMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht))
     io.emit('statusMessage', Nachricht);
 }
 

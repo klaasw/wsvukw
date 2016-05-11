@@ -10,7 +10,7 @@ var cfg = {
 
     "jsSipConfiguration": {
         'ws_servers': 'ws://' + cfgIPs.sipIP + ':10080',
-        'uri': 'sip:due@' + cfgIPs.httpIP + ':5060',
+        'uri': 'sip:due@' + cfgIPs.sipIP + ':5060',
         'password': 'due'
     },
     "port": '3000',
