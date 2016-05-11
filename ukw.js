@@ -142,7 +142,7 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
 
 
 //Zum Senden von UKW bezogenen Nachrichten
-exports.sendeWebNachricht = function (Nachricht) {
+sendeWebNachricht = function (Nachricht) {
     log.info(FILENAME + ' Funktion: sendeWebNachricht ' + 'ukwMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht))
     io.emit('ukwMessage', Nachricht);
 }

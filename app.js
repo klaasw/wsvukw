@@ -108,10 +108,11 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-var socket = require('./socket.js')(server);
+var socket = require('./socket.js');
+socket.socket(server);
 
 // Setze Intervall fuer Pruefung
-var Intervall=setInterval(function() {ukw.pruefeRfdWS()}, cfg.pruefIntervall)
+var Intervall=setInterval(function() {ukw.pruefeRfdWS()}, cfg.intervall)
 
 
 /**
