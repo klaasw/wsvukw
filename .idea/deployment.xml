@@ -5,12 +5,8 @@
       <paths name="Deploy to local VM">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/ukwserver" local="$PROJECT_DIR$" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
-          <excludedPaths>
-            <excludedPath path="/node_modules" />
-            <excludedPath path="/log" />
-          </excludedPaths>
         </serverdata>
       </paths>
     </serverData>
