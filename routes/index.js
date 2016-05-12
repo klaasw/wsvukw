@@ -1,15 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
-var log = require('../log.js'); // Modul fuer verbessertes Logging
 var util = require('util');
-
-// TODO: wird nicht benutzt:
-var inspect = require('eyes').inspector({
-    styles: {},
-    maxLength: 16000
-}); //Inspektor fuer Variablen
-
 var files = require('fs'); // Zugriff auf das Dateisystem
 var request = require('request'); //Modul zu Abfrage von WebServices
 var xml2js = require('xml2js'); // zum Konvertieren von XML zu JS
@@ -19,6 +10,7 @@ var parser = new xml2js.Parser({
 
 var cfg = require('../cfg.js');
 
+var log = require('../log.js'); // Modul fuer verbessertes Logging
 FILENAME = __filename.slice(__dirname.length + 1);
 
 
@@ -38,21 +30,20 @@ router.get('/overview', function (req, res) {
 
 /* GET Zuordnung */
 router.get('/zuordnung', function (req, res) {
-    findeApNachIp(req.ip, function (benutzer) { //Arbeitsplatz aus Konfig lesen
-        if (benutzer) {
-            log.info(FILENAME + ' Funktion router.get /zuordnung Arbeitsplatz gefunden! IP: ' + req.ip);
-            // TODO: ueberpruefen, ob hier das richte uebergebn wird:
-            erstelleKonfigFuerLotsenKanal(benutzer, false, function (konfig) {
-                //Uebergebe Funkstellen ID an Jade Template
-                log.info(FILENAME + ' Funktion router.get /zuordnung Konfig: ' + konfig);
-                res.render('zuordnung', {
+    var benutzer = findeApNachIp(req.ip); //Arbeitsplatz aus Konfig lesen
+    if (benutzer) {
+        log.info(FILENAME + ' Funktion router.get /zuordnung Arbeitsplatz gefunden! IP: ' + req.ip);
+        // TODO: ueberpruefen, ob hier das richte uebergebn wird:
+        erstelleKonfigFuerLotsenKanal(benutzer, false, function (konfig) {
+            //Uebergebe Funkstellen ID an Jade Template
+            log.info(FILENAME + ' Funktion router.get /zuordnung Konfig: ' + konfig);
+            res.render('zuordnung', {
 
-                    gesamteKonfig: konfig
+                gesamteKonfig: konfig
 
-                }); //res send ende
-            }); //erstelleKonfigFurAp Ende
-        } //if Ende
-    }); //findeApNachIp Ende
+            }); //res send ende
+        }); //erstelleKonfigFurAp Ende
+    } //if Ende
 });
 
 /* GET UKW uebersicht */
@@ -65,36 +56,31 @@ router.get('/testen', function (req, res) {
 /* GET UKW Display */
 router.get('/ukw', function (req, res) {
     log.debug(req.ip);
-    findeApNachIp(req.ip, function (benutzer) { //Arbeitsplatz aus Konfig lesen
-        if (benutzer) {
-            log.debug(FILENAME + ' Arbeitsplatz gefunden! IP: ' + req.ip);
-            erstelleKonfigFurAp2(benutzer, function (konfig) {
-                //Uebergebe Funkstellen ID an Jade Template
-                log.info(konfig.FunkstellenDetails[konfig.FunkstellenReihe['Button11'][0]]);
-                //ukwDisplay --> zum Testen eines neuen Layouts
-                res.render('ukwDisplay', {
+    var benutzer = findeApNachIp(req.ip); //Arbeitsplatz aus Konfig lesen
+    if (benutzer) {
+        log.debug(FILENAME + ' Arbeitsplatz gefunden! IP: ' + req.ip);
+        erstelleKonfigFurAp2(benutzer, function (konfig) {
+            //Uebergebe Funkstellen ID an Jade Template
+            log.info(konfig.FunkstellenDetails[konfig.FunkstellenReihe['Button11'][0]]);
+            //ukwDisplay --> zum Testen eines neuen Layouts
+            res.render('ukwDisplay', {
 
-                    gesamteKonfig: konfig
+                gesamteKonfig: konfig
 
-                }); //res send ende
-            }); //erstelleKonfigFurAp Ende
-        } //if Ende
+            }); //res send ende
+        }); //erstelleKonfigFurAp Ende
+    } //if Ende
 
-        //kein Benutzer zu IP gefunden
-        else {
-            res.render('error', {
-                message: 'keine Benutzer konfiguriert zu IP: ' + req.ip,
-                error: {
-                    status: 'kein'
-                }
-            })
-
-        }
-    }); //findeApNachIp Ende
-
-
+    //kein Benutzer zu IP gefunden
+    else {
+        res.render('error', {
+            message: 'keine Benutzer konfiguriert zu IP: ' + req.ip,
+            error: {
+                status: 'kein'
+            }
+        })
+    }
 }); //router Ende
-
 
 /* GET UKW Konfiguration*/
 router.get('/ukwKonfig', function (req, res) {
@@ -121,67 +107,68 @@ router.get('/ukwKonfig', function (req, res) {
             }
             res.send(Konfig)
         } else {
-            findeApNachIp(req.query.ip, function (benutzer) {
-                if (benutzer) {
-                    log.debug(FILENAME + ' Benutzer zu IP  = ' + benutzer + ' ' + req.query.ip);
-                    //res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
-                    erstelleKonfigFurAp2(benutzer, function (Konfig) {
-                        res.send(Konfig)
-                    })
-                } else {
-                    log.error(FILENAME + ' 1 Benutzer nicht konfiguriert fuer IP ' + req.query.ip);
-                    res.send('Arbeitsplatz nicht gefunden! IP: ' + req.query.ip)
-                }
-            })
+            var benutzer = findeApNachIp(req.query.ip);
+            if (benutzer) {
+                log.debug(FILENAME + ' Benutzer zu IP  = ' + benutzer + ' ' + req.query.ip);
+                //res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
+                erstelleKonfigFurAp2(benutzer, function (Konfig) {
+                    res.send(Konfig)
+                })
+            } else {
+                log.error(FILENAME + ' 1 Benutzer nicht konfiguriert fuer IP ' + req.query.ip);
+                res.send('Arbeitsplatz nicht gefunden! IP: ' + req.query.ip)
+            }
         }
     }
 
     // /ukwKonfig mit Parameter ?zuordnung=lotse
     if (req.query.zuordnung) {
         if (req.query.zuordnung == 'lotse') {
-            findeApNachIp(req.ip, function (benutzer) {
-                if (benutzer) {
-                    if (req.query.standard == 'true') {
-                        erstelleKonfigFuerLotsenKanal(benutzer, 'true', function (Konfig) {
-                            res.send(Konfig)
-                        })
-                    }
-                    if (req.query.standard == 'false') {
-                        erstelleKonfigFuerLotsenKanal(benutzer, 'false', function (Konfig) {
-                            res.send(Konfig)
-                        })
-                    }
+            var benutzer = findeApNachIp(req.ip);
+            if (benutzer) {
+                if (req.query.standard == 'true') {
+                    erstelleKonfigFuerLotsenKanal(benutzer, 'true', function (Konfig) {
+                        res.send(Konfig)
+                    })
                 }
-            })
+                if (req.query.standard == 'false') {
+                    erstelleKonfigFuerLotsenKanal(benutzer, 'false', function (Konfig) {
+                        res.send(Konfig)
+                    })
+                }
+            }
         }
     }
 
     // ukwkonfig ohne parameter
     else {
-        findeApNachIp(req.ip, function (benutzer) {
-            if (benutzer) {
-                log.debug(FILENAME + ' Funktion: router get /ukwKonfig ermittelter User: ' + benutzer);
-                //res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
-                // TODO: testen, ob hier das richtige passiert
-                erstelleKonfigFurAp2(benutzer, function (Konfig) {
-                    // Test wg Lotse erstelleKonfigFuerLotsenKanal(benutzer, false, function (Konfig) {
-                    res.send({
-                        'Konfigdaten': Konfig,
-                        'Arbeitsplatz': benutzer
-                    })
+        var benutzer = findeApNachIp(req.ip);
+        if (benutzer) {
+            log.debug(FILENAME + ' Funktion: router get /ukwKonfig ermittelter User: ' + benutzer);
+            //res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
+            // TODO: testen, ob hier das richtige passiert
+            erstelleKonfigFurAp2(benutzer, function (Konfig) {
+                // Test wg Lotse erstelleKonfigFuerLotsenKanal(benutzer, false, function (Konfig) {
+                res.send({
+                    'Konfigdaten': Konfig,
+                    'Arbeitsplatz': benutzer
                 })
+            })
 
-            }
-            else {
-                log.error(FILENAME + ' 2 Benutzer nicht konfiguriert fuer IP ' + req.query.ip);
-                res.send('Arbeitsplatz nicht gefunden! IP: ' + req.query.ip)
-            }
-
-        })
-
+        }
+        else {
+            log.error(FILENAME + ' 2 Benutzer nicht konfiguriert fuer IP ' + req.query.ip);
+            res.send('Arbeitsplatz nicht gefunden! IP: ' + req.query.ip)
+        }
     }
 });//Router /ukwKonfig Ende
 
+router.get('/liesTopologie', function (req, res) {
+    log.info(FILENAME + ' Topologie neu einlesen.');
+    leseRfdTopologie(function () {
+        res.send(Funkstellen2);
+    })
+});
 
 router.get('/mockmessage', function (req, res) {
     log.debug(FILENAME + ' mockmessage von IP: ' + req.ip);
@@ -197,14 +184,14 @@ router.get('/mockmessage', function (req, res) {
 
 /* Funkstellen vom RFD einlesen
  */
-function leseRfdTopologie() {
+function leseRfdTopologie(callback) {
 
     var parameterRfdWebService = {
         url: cfg.urlRFDWebservice,
         method: 'POST',
         headers: {
             'Content-Type': 'text/xml;charset=UTF-8;',
-            'SOAPAction': 'GetTopologyForRFD' //NOch beachten in WS Aufrufen
+            'SOAPAction': 'GetTopologyForRFD' //Noch beachten in WS Aufrufen
         },
         body: '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:strg="http://strg.rfd.dma.schnoor.de/"><soapenv:Header/><soapenv:Body><strg:GetTopologyForRFD/></soapenv:Body></soapenv:Envelope>'
     };
@@ -212,6 +199,9 @@ function leseRfdTopologie() {
     request(parameterRfdWebService, function (error, response, body) {
         if (error) {
             log.error(FILENAME + ' RFD WebService Topologie nicht erreichbar ' + error)
+            // TODO: Leseversuch wiederholen, muss spaetestens dann existieren, wenn ein Client sich connecten will
+            setTimeout(leseRfdTopologie(function () {
+            }), 1000);
         }
         //log.debug(response)
         //log.debug(body)
@@ -219,7 +209,7 @@ function leseRfdTopologie() {
         else { //Ausfuehren wenn RFD erreichbar
             parser.parseString(body, function (err, result) {
                 if (result !== undefined) {
-                    //log.debug(FILENAME + ' parser.parseString result=' + JSON.stringify(result));
+                    log.info(FILENAME + ' LeseTopologie webservice response: ' + JSON.stringify(result).substring(1, 100) + '...');
                     //log.debug(result['S:Body'][0]['ns2:GetTopologyForRFDResponse'][0]['return'][0])
                     ergebnis1cdata = result['S:Body'][0]['ns2:GetTopologyForRFDResponse'][0]['return'][0];
                     //CDATA Objekt der Response erneut parsen
@@ -256,7 +246,7 @@ function leseRfdTopologie() {
                             Funkstellen2.push(tmp)
 
                         }
-
+                        
                         //Gleichwellen-Anlagen auslesen und in Funkstellen variable schreiben
                         FstGW = result['FKGW'];
                         for (i = 0; i < FstGW.length; i++) {
@@ -268,7 +258,7 @@ function leseRfdTopologie() {
                             Funkstellen2.push(tmp)
 
                         }
-
+                        callback();
                         //log.debug(Funkstellen2)
                         //log.debug(result['FKMK'])
                         //log.debug(result['SPAN'])
@@ -285,37 +275,31 @@ function leseRfdTopologie() {
 }
 var Funkstellen2 = [];
 
-leseRfdTopologie();
-
+leseRfdTopologie(function () {
+});
 /* Todo Variabeln fuer Callback setzten, sonst funktionieren bedingungen und schleifen nicht
  *
  *
  *
  */
-function findeApNachIp(ip, callback) {
-    var alle_Ap = '';
+function findeApNachIp(ip) {
     var Ap = '';
-    files.readFile("config/users/arbeitsplaetze.json", 'utf8', function (err, data) {
-        if (err)
-            throw err;
-        log.debug(JSON.stringify(data));
-        alle_Ap = JSON.parse(data);
 
-        for (i = 0; i < alle_Ap.length; i++) {
-            //Benutzer gefunden
-            if (ip in alle_Ap[i]) {
-                log.debug(FILENAME + ' Benutzer gefunden: ' + alle_Ap[i][ip].user);
-                Ap = alle_Ap[i][ip].user;
-                break;
-            }
+    var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
+    log.debug(alle_Ap);
 
-        } //for Ende
-        if (Ap == '') {
-            log.error(FILENAME + ' Benutzer NICHT gefunden zu IP: ' + ip);
+    for (i = 0; i < alle_Ap.length; i++) {
+        //Benutzer gefunden
+        if (ip in alle_Ap[i]) {
+            log.debug(FILENAME + ' Benutzer gefunden: ' + alle_Ap[i][ip].user);
+            Ap = alle_Ap[i][ip].user;
+            break;
         }
-        callback(Ap)
-    })
-
+    } //for Ende
+    if (Ap == '') {
+        log.error(FILENAME + ' Benutzer NICHT gefunden zu IP: ' + ip);
+    }
+    return Ap
 }
 
 function findeFstNachId(Id) {
@@ -334,10 +318,6 @@ function findeFstNachId(Id) {
     return 'frei'
 }
 
-//findeApNachIp('192.168.56.1')
-//findeFstNachId('1-H-RFD-TETTEN-FKEK-3')
-//erstelleKonfigFurAp('tttt')
-
 function erstelleKonfigFurAp2(Ap, callback) {
 
     //Bilde temporaeres Objekt um Funkstelle als Value hinzuzufuegen
@@ -355,63 +335,34 @@ function erstelleKonfigFurAp2(Ap, callback) {
 
     //1. Funkkstellen fuer Revier einlesen
     //Dateinamen noch durch Variable ersetzen
-    files.readFile("config/" + rev_ap[0] + ".json", 'utf8', function (err, data) {
-        if (err) {
-            log.error(FILENAME + ' erstelleKonfigFurAp2: Datei nicht vorhanden: ' + err)
-            //TODO: Error Verarbeitung falls Rev.json nicht vorhanden
+    fstReihe = require(cfg.configPath + rev_ap[0] + '.json');
+    //Durch JA ueber Buttons iterieren
+    for (var button in fstReihe) {
+        log.debug(button + '  ' + fstReihe[button]);
+        //Durch Funkstelln in Buttons iterien
+        for (t = 0; t < fstReihe[button].length; t++) {
+            //Funkstellendetails schreiben
+            Konfig.FunkstellenDetails[fstReihe[button][t]] = findeFstNachId(fstReihe[button][t])
         }
+    }
 
-        log.debug(FILENAME + ' gelesene Daten: ' + util.inspect(data));
-        fstReihe = JSON.parse(data);
-        //Durch JA ueber Buttons iterieren
-        for (var button in fstReihe) {
-            log.debug(button + '  ' + fstReihe[button]);
-            //Durch Funkstelln in Buttons iterien
-            for (t = 0; t < fstReihe[button].length; t++) {
-                //Funkstellendetails schreiben
-                Konfig.FunkstellenDetails[fstReihe[button][t]] = findeFstNachId(fstReihe[button][t])
-            }
-        }
+    Konfig.FunkstellenReihe = fstReihe;
+    //log.debug("FertigeKonfig:"+Konfig.FunkstellenDetails)
+    //log.debug(FILENAME + ' ----------------------------------------------------------------------')
+    //inspect(Konfig)
+    //log.debug(FILENAME + ' ----------------------------------------------------------------------')
 
-        Konfig.FunkstellenReihe = fstReihe;
-        //log.debug("FertigeKonfig:"+Konfig.FunkstellenDetails)
-        //log.debug(FILENAME + ' ----------------------------------------------------------------------')
-        //inspect(Konfig)
-        //log.debug(FILENAME + ' ----------------------------------------------------------------------')
+    //2. Geraete fuer Arbeitsplatz einlesen
+    //Dateinamen noch durch Variable ersetzen
+    Konfig.ArbeitsplatzGeraete = require((cfg.configPath + rev_ap[0] + "_" + rev_ap[1] + ".json"));
+    //3. MHAN Zuordnung fuer Arbeitsplatz einlesen
+    //Dateinamen noch durch Variable ersetzen
+    Konfig.MhanZuordnung = require(cfg.configPath + rev_ap[0] + "_" + rev_ap[1] + "_mhan_zuordnung.json");
 
-        //2. Geraete fuer Arbeitsplatz einlesen
-        //Dateinamen noch durch Variable ersetzen
-        files.readFile("config/" + rev_ap[0] + "_" + rev_ap[1] + ".json", 'utf8', function (err, data) {
-            if (err)
-                throw err;
-            //TODO: Error Verarbeitung falls Rev_AP.json nicht vorhanden
+    //----------------------------------------------------------------------------------------
+    //Hier die Callback fuer die Res.send einbauen, die die Rueckmeldung aus Konfig benoetigt
 
-            //log.debug(FILENAME + ' gelesene Daten: '+JSON.parse(data));
-            //inspect(data)
-            Konfig.ArbeitsplatzGeraete = JSON.parse(data);
-            //inspect(Konfig)
-
-
-            //3. MHAN Zuordnung fuer Arbeitsplatz einlesen
-            //Dateinamen noch durch Variable ersetzen
-            files.readFile("config/" + rev_ap[0] + "_" + rev_ap[1] + "_mhan_zuordnung.json", 'utf8', function (err, data) {
-                if (err) {
-                    log.info(FILENAME + ' Funktion: erstelleKonfigFurAp2 MHAN Zuordnung: keine MhanZuordnung: ' + rev_ap)
-                    //TODO: Fehler für fehlende rev AP MHAN Zuordnung abfangen
-                } else {
-                    log.info(FILENAME + ' Funktion: erstelleKonfigFurAp2 MHAN Zuordnung: ' + util.inspect(data));
-                    Konfig.MhanZuordnung = JSON.parse(data)
-                }
-
-                //----------------------------------------------------------------------------------------
-                //Hier die Callback fuer die Res.send einbauen, die die Rueckmeldung aus Konfig benoetigt
-
-                callback(Konfig)
-            }); //3. filesRead  MHAN Zuordnung
-        }); //2. filesRead AP Geraete
-    }); // 1. filesRead Revier
-
-
+    callback(Konfig);
 } //Funktion Ende
 
 //Beschreibung der Funktion erstellen.....
@@ -431,46 +382,38 @@ function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
 
     //1. Funkkstellen fuer Revier einlesen
     //Dateinamen noch durch Variable ersetzen, hier zum Lesen der VTA fuer das Revier
-    files.readFile("config/" + rev_ap[0] + ".json", 'utf8', function (err, data) {  //rev_ap[0] = Revieranteil
-        if (err) {
-            log.error(FILENAME + ' Funktion erstelleKonfigFuerLotsenKanal readFile(' + rev_ap[0] + ') Datei nicht vorhanden: ' + err)
+    fstReihe = require(cfg.configPath + rev_ap[0] + ".json");  //rev_ap[0] = Revieranteil
+    log.debug(FILENAME + ' Funktion erstelleKonfigFuerLotsenKanal readFile(' + rev_ap[0] + ') gelesene Daten: ' + fstReihe);
+    //Durch JA ueber Buttons iterieren
+    for (var button in fstReihe) {
+        log.debug(button + '  ' + fstReihe[button]);
+        //Durch Funkstelln in Buttons iterien
+        for (t = 0; t < fstReihe[button].length; t++) {
+            // TODO Funkstellendetails schreiben HIER MEHR ERKLAEREN
+            Konfig.FunkstellenDetails[fstReihe[button][t]] = findeFstNachId(fstReihe[button][t])
         }
+    }
 
-        log.debug(FILENAME + ' Funktion erstelleKonfigFuerLotsenKanal readFile(' + rev_ap[0] + ') gelesene Daten: ' + util.inspect(data));
-        fstReihe = JSON.parse(data);
-        //Durch JA ueber Buttons iterieren
-        for (var button in fstReihe) {
-            log.debug(button + '  ' + fstReihe[button]);
-            //Durch Funkstelln in Buttons iterien
-            for (t = 0; t < fstReihe[button].length; t++) {
-                // TODO Funkstellendetails schreiben HIER MEHR ERKLAEREN
-                Konfig.FunkstellenDetails[fstReihe[button][t]] = findeFstNachId(fstReihe[button][t])
-            }
+    //Alle LotsenAP einlesen
+    //ueber alle Lotsendateien //JA_Lotse1.json usw. gehen und Inhalt in die Konfig schreiben
+
+    i = 1;
+    weitereDatei = true;  //solange true bis keine weitere Datei vorliegt
+    while (weitereDatei == true) {
+        try {
+            weitereDatei = files.statSync(cfg.configPath + rev_ap[0] + "_Lotse" + i + ".json").isFile();
+            tmp = files.readFileSync(cfg.configPath + rev_ap[0] + "_Lotse" + i + standardbenutzer + ".json", 'utf8');
+            log.debug(FILENAME + ' Funktion erstelleKonfigFuerLotsenKanal gelesene Daten: ' + util.inspect(tmp));
+            Konfig.LotsenAp[rev_ap[0] + "_Lotse" + i] = JSON.parse(tmp)
+
+        } catch (error) {
+            //log.debug(error)
+            log.debug(FILENAME + ' keine weitere Datei ' + cfg.configPath + rev_ap[0] + '_Lotse' + i + '.json');
+            callback(Konfig);
+            return
         }
-
-        //Alle LotsenAP einlesen
-        //ueber alle Lotsendateien //JA_Lotse1.json usw. gehen und Inhalt in die Konfig schreiben
-
-        i = 1;
-        weitereDatei = true;  //solange true bis keine weitere Datei vorliegt
-        while (weitereDatei == true) {
-            try {
-                weitereDatei = files.statSync("config/" + rev_ap[0] + "_Lotse" + i + ".json").isFile();
-                tmp = files.readFileSync("config/" + rev_ap[0] + "_Lotse" + i + standardbenutzer + ".json", 'utf8');
-                log.debug(FILENAME + ' Funktion erstelleKonfigFuerLotsenKanal gelesene Daten: ' + util.inspect(tmp));
-                Konfig.LotsenAp[rev_ap[0] + "_Lotse" + i] = JSON.parse(tmp)
-
-            } catch (error) {
-                //log.debug(error)
-                log.debug(FILENAME + ' keine weitere Datei');
-                callback(Konfig);
-                return
-            }
-            i++; //pruefen ob noch benoetigt!
-        } //While Ende
-
-
-    }); //1. Read Ende
+        i++; //pruefen ob noch benoetigt!
+    } //While Ende
 } //Funktion Ende
 
 
