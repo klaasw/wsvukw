@@ -246,6 +246,18 @@ function leseRfdTopologie(callback) {
                             Funkstellen2.push(tmp)
 
                         }
+                        
+                        //Gleichwellen-Anlagen auslesen und in Funkstellen variable schreiben
+                        FstGW = result['FKGW'];
+                        for (i = 0; i < FstGW.length; i++) {
+                            //log.debug(FstMK[i]['$'])
+                            tmp = FstGW[i]['$'];
+                            tmp.MKA = false;
+                            tmp.GW = true;
+                            //log.debug(tmp)
+                            Funkstellen2.push(tmp)
+
+                        }
                         callback();
                         //log.debug(Funkstellen2)
                         //log.debug(result['FKMK'])
