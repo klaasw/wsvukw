@@ -257,6 +257,18 @@ function leseRfdTopologie() {
 
                         }
 
+                        //Gleichwellen-Anlagen auslesen und in Funkstellen variable schreiben
+                        FstGW = result['FKGW'];
+                        for (i = 0; i < FstGW.length; i++) {
+                            //log.debug(FstMK[i]['$'])
+                            tmp = FstGW[i]['$'];
+                            tmp.MKA = false;
+                            tmp.GW = true;
+                            //log.debug(tmp)
+                            Funkstellen2.push(tmp)
+
+                        }
+
                         //log.debug(Funkstellen2)
                         //log.debug(result['FKMK'])
                         //log.debug(result['SPAN'])
@@ -345,8 +357,8 @@ function erstelleKonfigFurAp2(Ap, callback) {
     //Dateinamen noch durch Variable ersetzen
     files.readFile("config/" + rev_ap[0] + ".json", 'utf8', function (err, data) {
         if (err) {
-            log.error(FILENAME + ' Datei nicht vorhanden: ' + err)
-
+            log.error(FILENAME + ' erstelleKonfigFurAp2: Datei nicht vorhanden: ' + err)
+            //TODO: Error Verarbeitung falls Rev.json nicht vorhanden
         }
 
         log.debug(FILENAME + ' gelesene Daten: ' + util.inspect(data));
@@ -372,6 +384,8 @@ function erstelleKonfigFurAp2(Ap, callback) {
         files.readFile("config/" + rev_ap[0] + "_" + rev_ap[1] + ".json", 'utf8', function (err, data) {
             if (err)
                 throw err;
+            //TODO: Error Verarbeitung falls Rev_AP.json nicht vorhanden
+
             //log.debug(FILENAME + ' gelesene Daten: '+JSON.parse(data));
             //inspect(data)
             Konfig.ArbeitsplatzGeraete = JSON.parse(data);
@@ -383,7 +397,7 @@ function erstelleKonfigFurAp2(Ap, callback) {
             files.readFile("config/" + rev_ap[0] + "_" + rev_ap[1] + "_mhan_zuordnung.json", 'utf8', function (err, data) {
                 if (err) {
                     log.info(FILENAME + ' Funktion: erstelleKonfigFurAp2 MHAN Zuordnung: keine MhanZuordnung: ' + rev_ap)
-
+                    //TODO: Fehler für fehlende rev AP MHAN Zuordnung abfangen
                 } else {
                     log.info(FILENAME + ' Funktion: erstelleKonfigFurAp2 MHAN Zuordnung: ' + util.inspect(data));
                     Konfig.MhanZuordnung = JSON.parse(data)
