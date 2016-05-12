@@ -326,7 +326,8 @@ function erstelleKonfigFurAp2(Ap, callback) {
         FunkstellenReihe: [],
         FunkstellenDetails: {},
         ArbeitsplatzGeraete: {},
-        MhanZuordnung: {}
+        MhanZuordnung: {},
+        IpConfig: cfg
     };
 
     log.debug(FILENAME + ' uebergebener Arbeitsplatz: ' + Ap);
