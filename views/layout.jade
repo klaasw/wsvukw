@@ -8,14 +8,10 @@ html
 
 
         block scripts
-            //test='http://10.160.1.64:3001/socket.io/socket.io.js'
             script(src='/javascripts/jquery.min.js')
             script(src='/javascripts/bootstrap/bootstrap.min.js')
             script(src='/javascripts/fuelux/js/fuelux.min.js')
-            script(src=lokalerVtrDUE)
 
-            // TODO wirklich nicht mehr benoetigtt???
-            //script(src='/javascripts/datatables/dataTables.bootstrap.js')
 
             script(src='/socket.io/socket.io.js')
             script(src='/javascripts/bootstrap-notify.min.js')
@@ -30,8 +26,8 @@ html
 
         body
             block menu
-                .navbar.navbar-default(role='navigation')
-                    .container-fluid
+                .navbar.navbar-default(role='navigation', style="margin-bottom: 10px;")
+                    .container-fluid.fuelux
                         .navbar-header
                             button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
                                 span.sr-only Toggle navigation

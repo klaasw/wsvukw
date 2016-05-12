@@ -82,6 +82,35 @@ router.get('/ukw', function (req, res) {
     }
 }); //router Ende
 
+/* GET UKW Display Kleine Schaltflächen*/
+router.get('/ukw_kl', function (req, res) {
+    log.debug(req.ip);
+    var benutzer = findeApNachIp(req.ip); //Arbeitsplatz aus Konfig lesen
+    if (benutzer) {
+        log.debug(FILENAME + ' Arbeitsplatz gefunden! IP: ' + req.ip);
+        erstelleKonfigFurAp2(benutzer, function (konfig) {
+            //Uebergebe Funkstellen ID an Jade Template
+            log.info(konfig.FunkstellenDetails[konfig.FunkstellenReihe['Button11'][0]]);
+            //ukwDisplay --> zum Testen eines neuen Layouts
+            res.render('ukwDisplayKlein', {
+
+                gesamteKonfig: konfig
+
+            }); //res send ende
+        }); //erstelleKonfigFurAp Ende
+    } //if Ende
+
+    //kein Benutzer zu IP gefunden
+    else {
+        res.render('error', {
+            message: 'keine Benutzer konfiguriert zu IP: ' + req.ip,
+            error: {
+                status: 'kein'
+            }
+        })
+    }
+}); //router Ende
+
 /* GET UKW Konfiguration*/
 router.get('/ukwKonfig', function (req, res) {
     log.info(FILENAME + ' Funktion: router get /ukwKonfig von IP: ' + req.ip);
