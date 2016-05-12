@@ -149,9 +149,12 @@ block content
                                         span(aria-hidden='true')
                                     h4#errorModalLabel.modal-title Fehler
                                 .modal-body
-                                    p Verbindung zum Server abgebrochen.
-                                    audio(autoplay)
-                                        source(src='burst4.wav' type='audio/wav')
+                                    p
+                                        | Verbindung zum Server abgebrochen. Bitte verwenden Sie folgende alternativen Server:
+                                    p
+                                        each val, index in gesamteKonfig.IpConfig.alternativeIPs
+                                            a(href='http://' + val[1]) #{val[0]}
+                                            | &nbsp;
 
 
 
