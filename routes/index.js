@@ -17,7 +17,7 @@ var parser = new xml2js.Parser({
     explicitRoot: false
 }); // Parserkonfiguration
 
-var cfg = require('../config/cfg.js');
+var cfg = require('../cfg.js');
 
 FILENAME = __filename.slice(__dirname.length + 1);
 
@@ -79,6 +79,17 @@ router.get('/ukw', function (req, res) {
                 }); //res send ende
             }); //erstelleKonfigFurAp Ende
         } //if Ende
+
+        //kein Benutzer zu IP gefunden
+        else {
+            res.render('error', {
+                message: 'keine Benutzer konfiguriert zu IP: ' + req.ip,
+                error: {
+                    status: 'kein'
+                }
+            })
+
+        }
     }); //findeApNachIp Ende
 
 
@@ -88,7 +99,7 @@ router.get('/ukw', function (req, res) {
 /* GET UKW Konfiguration*/
 router.get('/ukwKonfig', function (req, res) {
     log.info(FILENAME + ' Funktion: router get /ukwKonfig von IP: ' + req.ip);
-    log.info(FILENAME + ' Funktion: router get /ukwKonfig von IP als Parameter: '+JSON.stringify(req.query));
+    log.info(FILENAME + ' Funktion: router get /ukwKonfig von IP als Parameter: ' + JSON.stringify(req.query));
     //var Ap=findeApNachIp(req.ip)//Arbeitsplatz aus Konfig lesen
     //var Ap_test=findeApNachIp(req.query.ip)
     //log.debug(findeApNachIp(req.ip))
@@ -149,18 +160,18 @@ router.get('/ukwKonfig', function (req, res) {
     else {
         findeApNachIp(req.ip, function (benutzer) {
             if (benutzer) {
-                log.debug(FILENAME + ' Funktion: router get /ukwKonfig ermittelter User: '+benutzer);
+                log.debug(FILENAME + ' Funktion: router get /ukwKonfig ermittelter User: ' + benutzer);
                 //res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
                 // TODO: testen, ob hier das richtige passiert
-                erstelleKonfigFurAp2(benutzer,function(Konfig){
-                // Test wg Lotse erstelleKonfigFuerLotsenKanal(benutzer, false, function (Konfig) {
+                erstelleKonfigFurAp2(benutzer, function (Konfig) {
+                    // Test wg Lotse erstelleKonfigFuerLotsenKanal(benutzer, false, function (Konfig) {
                     res.send({
-                        'Konfigdaten':Konfig,
-                        'Arbeitsplatz':benutzer
+                        'Konfigdaten': Konfig,
+                        'Arbeitsplatz': benutzer
                     })
                 })
 
-                }
+            }
             else {
                 log.error(FILENAME + ' 2 Benutzer nicht konfiguriert fuer IP ' + req.query.ip);
                 res.send('Arbeitsplatz nicht gefunden! IP: ' + req.query.ip)
@@ -170,7 +181,6 @@ router.get('/ukwKonfig', function (req, res) {
 
     }
 });//Router /ukwKonfig Ende
-
 
 
 router.get('/mockmessage', function (req, res) {
@@ -209,7 +219,7 @@ function leseRfdTopologie() {
         else { //Ausfuehren wenn RFD erreichbar
             parser.parseString(body, function (err, result) {
                 if (result !== undefined) {
-                    log.info(FILENAME + ' parser.parseString result=' + result);
+                    //log.debug(FILENAME + ' parser.parseString result=' + JSON.stringify(result));
                     //log.debug(result['S:Body'][0]['ns2:GetTopologyForRFDResponse'][0]['return'][0])
                     ergebnis1cdata = result['S:Body'][0]['ns2:GetTopologyForRFDResponse'][0]['return'][0];
                     //CDATA Objekt der Response erneut parsen
@@ -285,26 +295,30 @@ function findeApNachIp(ip, callback) {
                 log.debug(FILENAME + ' Benutzer gefunden: ' + alle_Ap[i][ip].user);
                 Ap = alle_Ap[i][ip].user;
                 break;
-            } else { //Benutzer NICHT gefunden
-                log.error(FILENAME + ' Benutzer NICHT gefunden zu IP: ' + ip);
-                //callback(null)
             }
 
         } //for Ende
+        if (Ap == '') {
+            log.error(FILENAME + ' Benutzer NICHT gefunden zu IP: ' + ip);
+        }
         callback(Ap)
     })
 
 }
 
 function findeFstNachId(Id) {
-    for (i = 0; i < Funkstellen2.length; i++) {
-        if (Funkstellen2[i].id == Id) {
-            //log.debug(Funkstellen2[i],i)
-            return Funkstellen2[i]
+    if (Id === undefined || Id == 'frei' || Id == '') {
+        return 'frei'
+    } else {
+        for (i = 0; i < Funkstellen2.length; i++) {
+            if (Funkstellen2[i].id == Id) {
+                //log.debug(Funkstellen2[i],i)
+                return Funkstellen2[i]
+            }
         }
-
     }
-    log.error("Funkstellen ID nicht vorhanden: " + Id);
+
+    log.error("Funkstellen ID nicht vorhanden: '" + Id + "'");
     return 'frei'
 }
 
@@ -395,7 +409,7 @@ function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
         LotsenAp: {},
         MhanZuordnung: {}
     };
-    
+
 
     log.debug(FILENAME + ' Funktion erstelleKonfigFuerLotsenKanal erhaltener Arbeitsplatz: ' + Ap);
     var rev_ap = Ap.split(" ");

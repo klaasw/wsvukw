@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="6c28900c-6993-4b45-be44-1acf3351d7a6" name="Deploy to local VM" url="http://10.22.30.100">
+        <fileTransfer host="10.22.30.100" port="22" rootFolder="/home/ukwserver" accessType="SFTP" password="dfdddfd9dfcbdfdddfd9dfdc" username="root">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
