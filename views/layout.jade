@@ -1,63 +1,65 @@
 doctype html
 html
-  head
-   link(rel='stylesheet', href='/stylesheets/bootstrap/bootstrap.css')
-   link(rel='stylesheet', href='/javascripts/fuelux/css/fuelux.min.css')
-   link(rel='stylesheet', href='/stylesheets/bootstrap-slider.css')
-   
-
-   block scripts
-    //test='http://10.160.1.64:3001/socket.io/socket.io.js'
-    script(src='/javascripts/jquery.min.js')
-    script(src='/javascripts/bootstrap/bootstrap.min.js')
-    script(src='/javascripts/fuelux/js/fuelux.min.js')
-    script(src=lokalerVtrDUE)
-    //script(src='http://10.160.2.64:3001/socket.io/socket.io.js')
-    //script(src='http://10.160.3.64:3001/socket.io/socket.io.js')
-    
-    
-    script(src='/javascripts/bootstrap-notify.min.js')
-    script(src='/javascripts/bootstrap-slider.js')
-    
-   
-   block testcode
-    script.
-     console.log("Lade Navigationslayout")
-     
+    head
+        title UKW Display
+        link(rel='stylesheet', href='/stylesheets/bootstrap/bootstrap.css')
+        link(rel='stylesheet', href='/javascripts/fuelux/css/fuelux.min.css')
+        link(rel='stylesheet', href='/stylesheets/bootstrap-slider.css')
 
 
-   body
-    block menu
-     .navbar.navbar-default(role='navigation')
-        .container-fluid
-          .navbar-header
-            button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
-              span.sr-only Toggle navigation
-              span.icon-bar
-              span.icon-bar
-              span.icon-bar
-            a.navbar-brand(href='/ukw') ukwDisplay
-          .navbar-collapse.collapse
-            ul.nav.navbar-nav
-              li#gruppe(onclick='gruppen(this.id)')
-                a(href='#') Einzelschaltung
-              li#uebersicht
-                a(href='/overview') Übersicht
-              li#konf
-                a(href='/zuordnung') RL Kanalzuordnung
-            button.btn.btn-primary.navbar-btn.navbar-right#buttonWHV WHV&nbsp
-             span.label.label-success#buttonWHV_DUE DUE
-             span.label.label-success#buttonWHV_RFD RFD
-            button.btn.btn-default.navbar-btn.navbar-right#buttonBRB BRB&nbsp
-             span.label.label-danger#buttonBRB_DUE DUE
-             span.label.label-danger#buttonBRB_RFD RFD
-            button.btn.btn-default.navbar-btn.navbar-right#buttonLUB LUB&nbsp
-             span.label.label-danger#buttonLUB_DUE DUE
-             span.label.label-danger#buttonLUB_RFD RFD
-    block content
-    block testcode2
-     script.
-      console.log("Navigationslayout geladen...")
+        block scripts
+            //test='http://10.160.1.64:3001/socket.io/socket.io.js'
+            script(src='/javascripts/jquery.min.js')
+            script(src='/javascripts/bootstrap/bootstrap.min.js')
+            script(src='/javascripts/fuelux/js/fuelux.min.js')
+            script(src=lokalerVtrDUE)
+
+            // TODO wirklich nicht mehr benoetigtt???
+            //script(src='/javascripts/datatables/dataTables.bootstrap.js')
+
+            script(src='/socket.io/socket.io.js')
+            script(src='/javascripts/bootstrap-notify.min.js')
+            script(src='/javascripts/bootstrap-slider.js')
+
+
+        block testcode
+            script.
+                console.log("Lade Navigationslayout")
+
+
+
+        body
+            block menu
+                .navbar.navbar-default(role='navigation')
+                    .container-fluid
+                        .navbar-header
+                            button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+                                span.sr-only Toggle navigation
+                                span.icon-bar
+                                span.icon-bar
+                                span.icon-bar
+                            a.navbar-brand(href='/ukw') ukwDisplay
+                        .navbar-collapse.collapse
+                            ul.nav.navbar-nav
+                                li#gruppe(onclick='gruppen(this.id)')
+                                    a(href='#') Einzelschaltung
+                                li#uebersicht
+                                    a(href='/overview') &Uuml;bersicht
+                                li#konf
+                                    a(href='/zuordnung') RL Kanalzuordnung
+                            button.btn.btn-primary.navbar-btn.navbar-right#buttonWHV WHV&nbsp
+                                span.label.label-success#buttonWHV_DUE DUE
+                                span.label.label-success#buttonWHV_RFD RFD
+                            button.btn.btn-default.navbar-btn.navbar-right#buttonBRB BRB&nbsp
+                                span.label.label-danger#buttonBRB_DUE DUE
+                                span.label.label-danger#buttonBRB_RFD RFD
+                            button.btn.btn-default.navbar-btn.navbar-right#buttonLUB LUB&nbsp
+                                span.label.label-danger#buttonLUB_DUE DUE
+                                span.label.label-danger#buttonLUB_RFD RFD
+            block content
+            block testcode2
+                script.
+                    console.log("Navigationslayout geladen...")
       
       
   

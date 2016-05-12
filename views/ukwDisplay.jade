@@ -1,757 +1,747 @@
 extends layout
 block append testcode
- script.
+    script.
 
 
 
 
 
 
-block content  
-  div.container-fluid
-   div.content
-    div.col-md-9
-     //Scahaltflächen anzeigen
-     div.row 
-      div.col-md-3(id=button11panel)
-       div.panel.panel-default(class=(locals.button11panel?'':'hidden'))
-        div.panel-heading(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px")
-         span Ereignis
-        // div.pull-right
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.')
-        //  span 45 &nbsp;   
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title 11", data-html='true',data-content='')
-        div.panel-body.bg-default(id=button11id)(onclick='schalteKanal(event,this)',style="cursor: pointer;z-index:-1;padding-top: 3px;padding-bottom: 3px")
-         if button11MKA
-          h2.text-right(id=button11id)(style="margin-top: 5px;margin-bottom: 5px;") #{button11kanal}
-           span
-            button.btn.btn-default.btn-lg.dropdown-toggle(type='button', data-toggle='modal',data-target='#mkaModal',style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 36px;margin-top: -5px;",onclick='setzeKanalMka(event,this)')
-             span.caret
-         else
-          h2.text-center(id=button11id)(style="margin-top: 5px;margin-bottom: 5px;") #{button11kanal}
-         div.bg-default(id=button11id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button11Haupt) Hauptanlage
-         div.bg-default(id=button11id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button11Reser) Reserve
-        div.panel-footer(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px;") #{button11name}
-      div.col-md-3(id=button12panel)
-       div.panel.panel-default(class=(locals.button12panel?'':'hidden'))
-        div.panel-heading(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px")
-         span Ereignis
-        // div.pull-right
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.')
-        //  span 45 &nbsp;   
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title 12", data-html='true',data-content='')
-        div.panel-body.bg-default(id=button12id)(onclick='schalteKanal(event,this)',style="cursor: pointer;z-index:-1;padding-top: 3px;padding-bottom: 3px")
-         if button12MKA
-          h2.text-right(id=button12id)(style="margin-top: 5px;margin-bottom: 5px;") #{button12kanal}
-           span
-            button.btn.btn-default.btn-lg.dropdown-toggle(type='button', data-toggle='modal',data-target='#mkaModal',style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 36px;margin-top: -5px;",onclick='setzeKanalMka(event,this)')
-             span.caret
-         else
-          h2.text-center(id=button12id)(style="margin-top: 5px;margin-bottom: 5px;") #{button12kanal}
-         div.bg-default(id=button12id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button12Haupt) Hauptanlage
-         div.bg-default(id=button12id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button12Reser) Reserve
-        div.panel-footer(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px;") #{button12name}
-      div.col-md-3(id=button13panel)
-       div.panel.panel-default(class=(locals.button13panel?'':'hidden'))
-        div.panel-heading(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px")
-         span Ereignis
-        // div.pull-right
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.')
-        //  span 45 &nbsp;   
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title 13", data-html='true',data-content='')
-        div.panel-body.bg-default(id=button13id)(onclick='schalteKanal(event,this)',style="cursor: pointer;z-index:-1;padding-top: 3px;padding-bottom: 3px")
-         if button13MKA
-          h2.text-right(id=button13id)(style="margin-top: 5px;margin-bottom: 5px;") #{button13kanal}
-           span
-            button.btn.btn-default.btn-lg.dropdown-toggle(type='button', data-toggle='modal',data-target='#mkaModal',style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 36px;margin-top: -5px;",onclick='setzeKanalMka(event,this)')
-             span.caret
-         else
-          h2.text-center(id=button13id)(style="margin-top: 5px;margin-bottom: 5px;") #{button13kanal}
-         div.bg-default(id=button13id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button13Haupt) Hauptanlage
-         div.bg-default(id=button13id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button13Reser) Reserve
-        div.panel-footer(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px;") #{button13name}
-      div.col-md-3(id=button14panel)
-       div.panel.panel-default(class=(locals.button14panel?'':'hidden'))
-        div.panel-heading(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px")
-         span Ereignis
-        // div.pull-right
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.')
-        //  span 45 &nbsp;   
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title 14", data-html='true',data-content='')
-        div.panel-body.bg-default(id=button14id)(onclick='schalteKanal(event,this)',style="cursor: pointer;z-index:-1;padding-top: 3px;padding-bottom: 3px")
-         if button14MKA
-          h2.text-right(id=button14id)(style="margin-top: 5px;margin-bottom: 5px;")
-           span #{button14kanal}
-           span
-            button.btn.btn-default.btn-lg.dropdown-toggle(type='button', data-toggle='modal',data-target='#mkaModal',style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 36px;margin-top: -5px;",onclick='setzeKanalMka(event,this)')
-             span.caret
-         else
-          h2.text-center(id=button14id)(style="margin-top: 5px;margin-bottom: 5px;") #{button14kanal}
-         div.bg-default(id=button14id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button14Haupt) Hauptanlage
-         div.bg-default(id=button14id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button14Reser) Reserve
-        div.panel-footer(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px;") #{button14name}
-      //Zweite Reihe
-      div.col-md-3(id=button21panel)
-       div.panel.panel-default(class=(locals.button21panel?'':'hidden'))
-        div.panel-heading(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px")
-         span Ereignis
-        // div.pull-right
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.')
-        //  span 45 &nbsp; 
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title 21", data-html='true',data-content='')
-        div.panel-body.bg-default(id=button21id)(onclick='schalteKanal(event,this)',style="cursor: pointer;z-index:-1;padding-top: 3px;padding-bottom: 3px")
-         if button21MKA
-          h2.text-right(id=button21id)(style="margin-top: 5px;margin-bottom: 5px;") #{button21kanal}
-           span
-            button.btn.btn-default.btn-lg.dropdown-toggle(type='button', data-toggle='modal',data-target='#mkaModal',style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 36px;margin-top: -5px;",onclick='setzeLautstärke(event,this)')
-             span.caret
-         else
-          h2.text-center(id=button21id)(style="margin-top: 5px;margin-bottom: 5px;") #{button21kanal}
-         div.bg-default(id=button21id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button21Haupt) Hauptanlage
-         div.bg-default(id=button21id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button21Reser) Reserve
-        div.panel-footer(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px;") #{button21name}
-      div.col-md-3(id=button22panel)
-       div.panel.panel-default(class=(locals.button22panel?'':'hidden'))
-        div.panel-heading(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px")
-         span Ereignis
-        // div.pull-right
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.')
-        //  span 45 &nbsp;   
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title 22", data-html='true',data-content='')
-        div.panel-body.bg-default(id=button22id)(onclick='schalteKanal(event,this)',style="cursor: pointer;z-index:-1;padding-top: 3px;padding-bottom: 3px")
-         if button22MKA
-          h2.text-right(id=button22id)(style="margin-top: 5px;margin-bottom: 5px;") #{button22kanal}
-           span
-            button.btn.btn-default.btn-lg.dropdown-toggle(type='button', data-toggle='modal',data-target='#mkaModal',style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 36px;margin-top: -5px;",onclick='setzeKanalMka(event,this)')
-             span.caret
-         else
-          h2.text-center(id=button22id)(style="margin-top: 5px;margin-bottom: 5px;") #{button22kanal}
-         div.bg-default(id=button22id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button22Haupt) Hauptanlage
-         div.bg-default(id=button22id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button22Reser) Reserve
-        div.panel-footer(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px;") #{button22name}
-      div.col-md-3(id=button23panel)
-       div.panel.panel-default(class=(locals.button23panel?'':'hidden'))
-        div.panel-heading(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px")
-         span Ereignis
-        // div.pull-right
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.')
-        //  span 45 &nbsp;   
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title 23", data-html='true',data-content='')
-        div.panel-body.bg-default(id=button23id)(onclick='schalteKanal(event,this)',style="cursor: pointer;z-index:-1;padding-top: 3px;padding-bottom: 3px")
-         if button23MKA
-          h2.text-right(id=button23id)(style="margin-top: 5px;margin-bottom: 5px;") #{button23kanal}
-           span
-            button.btn.btn-default.btn-lg.dropdown-toggle(type='button', data-toggle='modal',data-target='#mkaModal',style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 36px;margin-top: -5px;",onclick='setzeKanalMka(event,this)')
-             span.caret
-         else
-          h2.text-center(id=button23id)(style="margin-top: 5px;margin-bottom: 5px;") #{button23kanal}
-         div.bg-default(id=button23id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button23Haupt) Hauptanlage
-         div.bg-default(id=button23id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button23Reser) Reserve
-        div.panel-footer(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px;") #{button23name}
-      div.col-md-3(id=button24panel)
-       div.panel.panel-default(class=(locals.button24panel?'':'hidden'))
-        div.panel-heading(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px")
-         span Ereignis
-        // div.pull-right
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.')
-        //  span 45 &nbsp;
-        //  span.glyphicon.glyphicon-volume-up(onclick='setzeLautstärke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;top: -11;top: -12px",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title 24", data-html='true',data-content='')
-        div.panel-body.bg-default(id=button24id)(onclick='schalteKanal(event,this)',style="cursor: pointer;z-index:-1;padding-top: 3px;padding-bottom: 3px")
-         if button24MKA
-          h2.text-right(id=button24id)(style="margin-top: 5px;margin-bottom: 5px;") #{button24kanal}
-           span
-            button.btn.btn-default.btn-lg.dropdown-toggle(type='button', data-toggle='modal',data-target='#mkaModal',style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 36px;margin-top: -5px;",onclick='setzeKanalMka(event,this)')
-             span.caret
-         else
-          h2.text-center(id=button24id)(style="margin-top: 5px;margin-bottom: 5px;") #{button24kanal}
-         div.bg-default(id=button24id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button24Haupt) Hauptanlage
-         div.bg-default(id=button24id)(style="border: 1px solid;border-color:#ddd")
-          span(id=button24Reser) Reserve
-        div.panel-footer(style="padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px;") #{button24name}
+block content
+    div.container-fluid
+        div.content
+            div.col-md-12
+                //Scahaltflaechen anzeigen
 
-     //Lautsprecher anzeigen
-     div.row        
-      div.col-md-6
-       div.panel.panel-default
-        div.panel-heading Mithörlautsprecher
-        div.panel-body.bg-default
-         div.col-md-3(id=mhan11id)(style="padding-left: 5px;padding-right: 5px;")
-          div.panel.panel-default
-           div.panel-heading(style="padding-left: 5px;padding-right: 5px;padding-top: 2px;padding-bottom: 2px") LSP11-1
-           div.panel-body.bg-default(style="padding-top: 1px;padding-bottom: 1px;padding-left: 1px;padding-right: 1px;")
-            h3.text-center(id=mhan11kanal1id)(style="margin-top: 5px; margin-bottom: 5px;") #{mhan11kanal1}
-          div.panel.panel-default
-           div.panel-heading(style="padding-left: 5px;padding-right: 5px;padding-top: 2px;padding-bottom: 2px") LSP11-2
-           div.panel-body.bg-default(style="padding-top: 1px;padding-bottom: 1px;padding-left: 1px;padding-right: 1px;")
-            h3.text-center(style="margin-top: 5px; margin-bottom: 5px;") NN
-          div.panel.panel-default
-           div.panel-heading(style="padding-left: 5px;padding-right: 5px;padding-top: 2px;padding-bottom: 2px") LSP11-3
-           div.panel-body.bg-default(style="padding-top: 1px;padding-bottom: 1px;padding-left: 1px;padding-right: 1px;")
-            h3.text-center(style="margin-top: 5px; margin-bottom: 5px;") NN
-          div.panel.panel-default
-           div.panel-heading(style="padding-left: 5px;padding-right: 5px;padding-top: 2px;padding-bottom: 2px") LSP11-4
-           div.panel-body.bg-default(style="padding-top: 1px;padding-bottom: 1px;padding-left: 1px;padding-right: 1px;")
-            h3.text-center(style="margin-top: 5px; margin-bottom: 5px;") NN
-         div.col-md-3(id=mhan12id)(style="padding-left: 5px;padding-right: 5px;")
-          div.panel.panel-default
-           div.panel-heading(style="padding-left: 5px;padding-right: 5px;") LSP12-1
-           div.panel-body.bg-default(style="padding-top: 1px;padding-bottom: 1px;padding-left: 1px;padding-right: 1px;")
-            h3.text-center(id=mhan12kanal1id)(style="margin-top: 5px; margin-bottom: 5px;") #{mhan12kanal1}
-          div.panel.panel-default
-           div.panel-heading(style="padding-left: 5px;padding-right: 5px;") LSP12-2
-           div.panel-body.bg-default(style="padding-top: 1px;padding-bottom: 1px;padding-left: 1px;padding-right: 1px;")
-            h3.text-center(style="margin-top: 5px; margin-bottom: 5px;") NN
-         div.col-md-3(id=mhan13id)(style="padding-left: 5px;padding-right: 5px;")
-          div.panel.panel-default
-           div.panel-heading(style="padding-left: 5px;padding-right: 5px;") LSP13-1
-           div.panel-body.bg-default(style="padding-top: 1px;padding-bottom: 1px;padding-left: 1px;padding-right: 1px;")
-            h3.text-center(id=mhan13kanal1id)(style="margin-top: 5px; margin-bottom: 5px;") #{mhan13kanal1}
-          div.panel.panel-default
-           div.panel-heading(style="padding-left: 5px;padding-right: 5px;") LSP13-2
-           div.panel-body.bg-default(style="padding-top: 1px;padding-bottom: 1px;padding-left: 1px;padding-right: 1px;")
-            h3.text-center(style="margin-top: 5px; margin-bottom: 5px;") NN
-         div.col-md-3(id=mhan14id)(style="padding-left: 5px;padding-right: 5px;")
-          div.panel.panel-default
-           div.panel-heading(style="padding-left: 5px;padding-right: 5px;") LSP14-1
-           div.panel-body.bg-default(style="padding-top: 1px;padding-bottom: 1px;padding-left: 1px;padding-right: 1px;")
-            h3.text-center(id=mhan14kanal1id)(style="margin-top: 5px; margin-bottom: 5px;") #{mhan14kanal1}
-          div.panel.panel-default
-           div.panel-heading(style="padding-left: 5px;padding-right: 5px;") LSP14-2
-           div.panel-body.bg-default(style="padding-top: 1px;padding-bottom: 1px;padding-left: 1px;padding-right: 1px;")
-            h3.text-center(style="margin-top: 5px; margin-bottom: 5px;") NN
-  
+
+                div.row
+                    // div.col-md-6
+                    //  ul
+                    //   each val, index in gesamteKonfig.FunkstellenReihe
+                    //    li=index+'-'+val+'...'+gesamteKonfig.FunkstellenDetails[val[0]].MKA
+                    //ul
+                    //  each val, index in gesamteKonfig.FunkstellenDetails
+                    //   li=index+'-'+val.MKA
+
+
+                    each val, index in gesamteKonfig.FunkstellenReihe
+                        // - console.log(!{index})
+                        // - console.log(!{val})
+
+                        if index == 'Button11' || index == 'Button21' || index == 'Button31'
+                            div.row
+
+                        div.col-md-2(id=index + 'panel',style="padding-left: 5px;padding-right: 5px;")
+                            div.panel.panel-default(class=(val[0] == 'frei' ? 'hidden' : ''),style="float:left")
+                                //Block Mithoeren
+                                div(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]],style="width:100%")
+                                    //Schaltflaeche MHAN
+                                    div.text-center(style="width:100%;border-top-left-radius: 3px;border-top-right-radius: 3px;background-color:#f5f5f5;padding-left: 3px;padding-right: 3px") #{(gesamteKonfig.MhanZuordnung[val[0]] ? gesamteKonfig.MhanZuordnung[val[0]] : '--ohne--')}
+                                        div.pull-right
+                                            span.glyphicon.glyphicon-chevron-down(data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.')
+                                    div.text-center.bg-success(style="float:left; width:50%")
+                                        //Schaltflaeche Ship
+                                        div(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship',onclick='schalteKanal(event,this)',style="cursor: pointer;z-index:-1;float:left;width:20%;height: 44px;padding-top: 12px;font-size: 16px;font-weight: bold;")
+                                            span S
+                                        div.pull-right
+                                            span#test 50
+                                            //span.glyphicon.glyphicon-volume-up(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]]+'ship_pegel',onclick='setzeLautstaerke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;",data-toggle='modal',data-target='#pegelModal')
+                                            span.glyphicon.glyphicon-volume-up(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship_pegel',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;", data-toggle='popover', container='panel-body' ,data-placement='right', data-html='true',data-content="<input id='ex1', type='text', data-slider-min='0', data-slider-max='100', data-slider-step='10' ,data-slider-orientation='vertical'>")
+                                    div.text-center(style="float:left; width:50%;background-color:#f5f5f5")
+                                        //Schaltflaeche Pilot
+                                        div(style="float:left;width:20%;height: 44px;padding-top: 12px;font-size: 16px;font-weight: bold;")
+                                            span L
+                                        div.pull-right
+                                            span#test2 100
+                                            span.glyphicon.glyphicon-volume-up(onclick='setzeLautstaerke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<p>Lautstaerke per Softwareeinstellen<input id="ex1" type="text" data-slider-min="0" data-slider-max="100" data-slider-step="10" data-slider-orientation="vertical"/></p>')
+                                //Schaltflaeche Kanal
+                                div(id=index,buttonElement='Flaeche',onclick='schalteKanal(event,this,"SPAN")',style="float:left; width:100%; cursor: pointer;z-index:-1;padding-top: 3px;padding-bottom: 3px")
+                                    if gesamteKonfig.FunkstellenDetails[val[0]].MKA
+                                        h2.text-right(id=index,style="margin-top: 15px;margin-bottom: 5px;")
+                                            span #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
+                                            button.btn.btn-default.btn-lg.dropdown-toggle(type='button', data-toggle='modal',data-target='#mkaModal',style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 36px;margin-top: -5px;",onclick='setzeKanalMka(event,this)')
+                                                span.caret
+                                    else
+                                        h2.text-center(id=index,style="margin-top: 15px;margin-bottom: 5px;") #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
+                                    //Atis Kennung
+                                    div.panel.panel-default.text-center(buttonElement='atis',style="float:left;width:100%;margin-top:15px;margin-bottom:0px") ATIS
+                                    //Funkstellen
+                                    div(style="float:left;padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px;height:25px;width:100%")
+                                        div.bg-success(id=(val[0] ? gesamteKonfig.FunkstellenDetails[val[0]].id : '--ohne--'),style="float:left; width:50%;border: 1px solid;border-color:#ddd;padding-left: 3px;padding-right: 3px")
+                                            //Geraete von der Komponeten-ID abschneiden
+                                            - test = val[0] ? val[0] : '---------------------';
+                                            - test2 = test.substr(15,6);
+                                            span #{val[0] ? test2 : '-ohne-'}
+                                            //div.pull-right
+                                            // span H
+                                        div.bg-success(id=(val[1] ? gesamteKonfig.FunkstellenDetails[val[1]].id : '--ohne--'),style="float:left; width:50%;border: 1px solid;border-color:#ddd;padding-left: 3px;padding-right: 3px")
+                                            //Geraete von der Komponeten-ID abschneiden
+                                            - test = val[1] ? val[1] : '---------------------';
+                                            - test2 = test.substr(15,6);
+                                            span #{val[1] ? test2 : '-ohne-'}
+                                            //div.pull-right
+                                            // span R
+                                //SPAN
+                                div.text-center(id=gesamteKonfig.ArbeitsplatzGeraete.SPAN01,style="float:left; width:100%;border-bottom-left-radius: 3px;border-bottom-right-radius: 3px;padding-left: 3px;padding-right: 3px") SPAN
+                                    //ZUM Test fuer PTT Darstellung span.label.label-danger PTT
+                                    div.pull-right
+                                        span.glyphicon.glyphicon-chevron-down(data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.')
+
+
+
+                    //Test fuer Slider
+                    div#popover-content.hidden
+                        p Lautstaerke per Softwareeinstellen
+                        //input#ex1(data-slider-id='ex1Slider', type='text', data-slider-min='0', data-slider-max='100', data-slider-step='1', data-slider-value='15',data-slider-orientation='vertical')
+                        input#ex1(type='text', data-slider-min='0', data-slider-max='100', data-slider-step='10' ,data-slider-orientation='vertical')
 
 
 
 
-      //Test für Slider
-      div#popover-content.hide
-       input#ex1(data-slider-id='ex1Slider', type='text', data-slider-min='0', data-slider-max='20', data-slider-step='1', data-slider-value='14',data-slider-orientation='vertical')
-
-      
-      div
-       button.btn.btn-primary#testbutton(type='button') Test Popover
-      
 
 
 
-      // Modalfenster für MKA Kanalwahl
-      #mkaModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='mkaModalLabel')
-       .modal-dialog(role='document')
-        .modal-content
-          .modal-header
-            button.close(type='button', data-dismiss='modal', aria-label='Close')
-              span(aria-hidden='true') ×
-            h4#mkaModalLabel.modal-title Modal title
-          .modal-body
-           p
-            button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 1
-            button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 2
-            button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 3
-            button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 4
-            button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 5
-            button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 6
-            button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 7
-            button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 8
-            button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 9
-            button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 10
-            button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 11
-            button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 12
-            button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 69
-            button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 68
+                    // Modalfenster fuer MKA Kanalwahl
+                    #mkaModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='mkaModalLabel')
+                        .modal-dialog(role='document')
+                            .modal-content
+                                .modal-header
+                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                        span(aria-hidden='true')
+                                    h4#mkaModalLabel.modal-title Modal title
+                                .modal-body
+                                    p
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 1
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 2
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 3
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 4
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 5
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 6
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 7
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 8
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 9
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 10
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 11
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 12
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 69
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 68
 
-          .modal-footer
-            button.btn.btn-default(type='button', data-dismiss='modal') Close
-            button.btn.btn-primary(type='button') Save changes
-        
-       
+                                .modal-footer
+                                    button.btn.btn-default(type='button', data-dismiss='modal') Close
+                                    button.btn.btn-primary(type='button') Save changes
 
-     
+                    #errorModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='errorModalLabel')
+                        .modal-dialog(role='document')
+                            .modal-content
+                                .modal-header
+                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                        span(aria-hidden='true')
+                                    h4#errorModalLabel.modal-title Fehler
+                                .modal-body
+                                    p Verbindung zum Server abgebrochen.
+                                    audio(autoplay)
+                                        source(src='burst4.wav' type='audio/wav')
+
+
+
 block append testcode2
- script.
-  //Aktuelles NavElement Hervorheben
-  //$(document).ready(function(){
-  // $(".nav").find(".active").removeClass("active")
-  // $('#ukw').addClass('active')
-  //})
+    script.
+        //Aktuelles NavElement Hervorheben
+        //$(document).ready(function(){
+        // $(".nav").find(".active").removeClass("active")
+        // $('#ukw').addClass('active')
+        //})
 
-  var test=false;
-  var ApID = 'JA_NvD';
-  var SPAN = '1-H-RFD-WHVVKZ-SPAN-01';
-  var MhanZuordnung={"MHAN01":"1-H-RFD-WHVVTA-FKEK-2","MHAN02":"1-H-RFD-TETTEN-FKEK-2","MHAN03":"1-H-RFD-HELGLT-FKEK-1","MHAN04":"1-H-RFD-WHVVTA-FKMK-1"};
-  var ApFunkstellen = {
-    '1-H-RFD-WHVVTA-FKEK-3':{id:'1-H-RFD-WHVVTA-FKEK-3', MKA:false, Kanal:'16',kurzname:'WHV',aufgeschaltet:null},
-    '1-H-RFD-TETTEN-FKEK-3':{aufgeschaltet:null}
-    };
-  var ArbeitsplatzGeräte;
-  var Einzel = true;
-  var einzelStatus
-  var gruppenStatus
-  var aktuellerUKWserver = location.protocol + '//' + location.hostname
-  
-
-
-
-  //WebSocket Verbindung herstellen
-  var socket = io(aktuellerUKWserver+':3001');
+        var test = false;
+        var ApID = ''; //zb.JA NvD
+        var SPAN = ''; //zb. 1-H-RFD-WHVVKZ-SPAN-01
+        var MhanZuordnung = {
+            "MHAN01": "1-H-RFD-WHVVTA-FKEK-2",
+            "MHAN02": "1-H-RFD-TETTEN-FKEK-2",
+            "MHAN03": "1-H-RFD-HELGLT-FKEK-1",
+            "MHAN04": "1-H-RFD-WHVVTA-FKMK-1"
+        };
+        var ApFunkstellen = {};
+        var ArbeitsplatzGeraete;
+        var Einzel = true;
+        var einzelStatus
+        var gruppenStatus
 
 
- 
+        //WebSocket Verbindung herstellen
+        var aktuellerUKWserver = location.protocol + '//' + location.hostname + ':3000'
+        var socket = io(aktuellerUKWserver);
 
-  //Optionen für Notify festlegen
-  $.notifyDefaults({
-     // settings
-   element: 'body',
-   position: null,
-   type: "info",
-   allow_dismiss: true,
-   newest_on_top: false,
-   showProgressbar: false,
-   placement: {
-    from: "top",
-    align: "right"
-   },
-   offset: 20,
-   spacing: 10,
-   z_index: 1031,
-   delay: 5000,
-   timer: 1000,
-   url_target: '_blank',
-   mouse_over: null,
-   animate: {
-    enter: 'animated fadeInDown',
-    exit: 'animated fadeOutUp'
-    },
-    onShow: null,
-    onShown: null,
-    onClose: null,
-    onClosed: null,
-    icon_type: 'class',
-    template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-    '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
-    '<span data-notify="icon"></span> ' +
-    '<span data-notify="title">{1}</span> ' +
-    '<span data-notify="message">{2}</span>' +
-    '<div class="progress" data-notify="progressbar">' +
-    '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-    '</div>' +
-    '<a href="{3}" target="{4}" data-notify="url"></a>' +
-    '</div>' 
-    });
-  
-  //Variablen zum Arbeitsplatz laden
-  $.get( "ukwKonfig", function( data ) { //IP-Adress nur als Platzhalter zum Testen
-     ApFunkstellen=data.FunkstellenDetails;
-     SPAN=data.ArbeitsplatzGeräte.SPAN01
-     MhanZuordnung=data.MhanZuordnung
-     ArbeitsplatzGeräte=data.ArbeitsplatzGeräte
+        ladeKonfig()
+        verbindungsPruefung()
 
 
-     lautsprecherAufschalten(MhanZuordnung);
-   }); 
 
 
-    //SLider und Popover für Lautstärke initialisieren
-    //LAutstärke noch in AP Einstellungen speichern bzw laden
-    var sliderVal;
-    $(function () {
-    $('[data-toggle="popover"]').popover({
-        html: true,
-        placement: 'right',
-        title: 'Options',
-        content: function () {
-            return $("#popover-content").html();
-        }
-     }).click(function () {
-
-        $('#ex1').slider().on('slide', function (ev) {
-            sliderVal = ev.value;
+        //Optionen fuer Notify festlegen
+        $.notifyDefaults({
+            // settings
+            element: 'body',
+            position: null,
+            type: "info",
+            allow_dismiss: true,
+            newest_on_top: false,
+            showProgressbar: false,
+            placement: {
+                from: "top",
+                align: "right"
+            },
+            offset: 20,
+            spacing: 10,
+            z_index: 1031,
+            delay: 5000,
+            timer: 1000,
+            url_target: '_blank',
+            mouse_over: null,
+            animate: {
+                enter: 'animated fadeInDown',
+                exit: 'animated fadeOutUp'
+            },
+            onShow: null,
+            onShown: null,
+            onClose: null,
+            onClosed: null,
+            icon_type: 'class',
+            template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+            '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
+            '<span data-notify="icon"></span> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
         });
-        if (sliderVal) {
-            $('#ex1').slider('setValue', sliderVal)
+
+        //Variablen zum Arbeitsplatz laden
+        function ladeKonfig() {
+            $.get("ukwKonfig", function (data) { //IP-Adress nur als Platzhalter zum Testen
+                ApFunkstellen = data.Konfigdaten.FunkstellenDetails
+                SPAN = data.Konfigdaten.ArbeitsplatzGeraete.SPAN01
+                MhanZuordnung = data.Konfigdaten.MhanZuordnung
+                ArbeitsplatzGeraete = data.Konfigdaten.ArbeitsplatzGeraete
+                ApID = data.Arbeitsplatz
+
+
+                lautsprecherAufschalten(MhanZuordnung);
+            });
         }
-      });
-
-    }); 
-
-
-  //Popover aktivieren
-  //$(function () {
-  //$('[data-toggle="popover"]').popover()
-  //})
-  //$("[data-toggle=popover]").popover();
-  //$('.popover-title').css("backgrouond-color", "#9FC53B"); 
-  //$('.popover').css("background-color", "red");
-  
-  
-  //LÖSCHEN
-  //Test Eingabefeld zum senden von NAchrichten
-   $('form').submit(function(){
-    socket.emit('chat message', $('#nachricht').val());
-    $('#nachricht').val('');
-    return false;
-   });
-
-  
-  //Mithörlautsprecher aufschalten
-  function lautsprecherAufschalten(mhan){
-  	console.log(mhan)
-  	for (var funkstelle in mhan){
-      socket.emit('chat message',{'FstID':mhan[funkstelle], 'ApID':ApID, 'SPAN':ArbeitsplatzGeräte[funkstelle], 'aktion':'schaltenEinfach'})
-  		
-  	}
-  }
-
-  //Prüfe ob Wert in Objekt vorkommt
-  function hatWert(obj, value) {
-   for(var id in obj) {
-     if(obj[id] == value) {
-      return true;
-     }
-    }
-    return false;
-   } 
 
 
 
-  //Ereignisse für Verbindungsüberwachung
-  //Dafür in der Navleiste eine Statusfläche einbauen
-  socket.on('connect', function() {
-  console.log('check 2------------------------VERBUNDEN', socket.connected);
-  });
-
-
-  socket.on('disconnect', function() {
-  console.log('check 2-----------------------GETRENNT', socket.connected);
-  });
 
 
 
- 
+        //Popover und Slider aktivieren
+        //Slider und Popover fuer Lautstaerke initialisieren
+        //Lautstaerke noch in AP Einstellungen speichern bzw laden
+        function pop_slider() {
+            //1. Alle Popover beim Laden anzeigen um css Anpassungen aus Javascript zu setzen
+            $('[data-toggle="popover"]').popover('show')
+            //$('[data-toggle="popover"]').popover()
+            //CSS Eigenschaften setzen, da sonst die Parent Eigenschaften genommen werden
+            $('.popover-title').css("background-color", "#9FC53B");
+            $('.popover').css("background-color", "red");
+
+            //Eventhandler beim Anzeige des Popover
+            //Dann aus Inputfeld einen Slider machen
+            $('[data-toggle="popover"]').on('shown.bs.popover', function () {
+                $('#ex1').slider({
+                    reversed: true,
+                    tooltip: 'always'
+                });
+                console.log(this)
+                //Id ermitteln und gesetzten werden auf Slider setzen
+                geklickteID = this.id
+                aktuellerPegel = parseInt($('#' + geklickteID).prev().text())
+                $('#ex1').slider('setValue', aktuellerPegel)
+
+                //Event beim Sliden des Sliders
+                $('#ex1').on('change', function (ev) {
+
+                    //$('#ex1').offsetParent().attr('class'))
+                    //sliderVal = ev.value;
+
+                    //Wert auf Textfeld schreiben
+                    $('#' + geklickteID).prev().text(ev.value.newValue)
+                    setzeLautstaerke(geklickteID, ev.value.newValue)
+
+
+                });//Slide Event zu
+            })//Popover Event zu
+
+            //2. Alle Popover wieder schließen
+            $('[data-toggle="popover"]').popover('hide')
+
+        };
+
+        //Initialisierung
+        pop_slider();
+
+        /**
+         $("[data-toggle=popover]").popover();
+         $('.popover-title').css("backgrouond-color", "#9FC53B");
+         $('.popover').css("background-color", "red");
+         **/
 
 
 
-  //Löschen
-  //Alle eingehenden WebSocket Nachrichten einhängen TYP 'chat messeage'
-  socket.on('chat message',function(msg){
-    $('#messages').append($('<li>').text(msg));
-    //$('#messages').prepend($.text(msg));
-  });
 
-  
-  //eingehende Socket Nachrichten, Statusmeldungen verarbeitebn
-  socket.on('test',function(msg){
-    if(typeof msg === 'object'){
-     //Empfangen aktiv
-     if('RX' in msg && msg.RX.$.state === '1'){
-     	//suche SChaltfläche zu FunkstellenID
-        button=$('#'+msg.RX.$.id).offsetParent().attr('id')
-        //Schaltfläche färben
-        $('#'+button+' > div').addClass( "panel-danger" )
-        $('#'+button+' > div > div').addClass( "bg-danger" )
-        $('#'+button+' > div > div > h2').addClass( "text-danger" )
-        $('#'+button+' > div > div.panel-heading > span').text( "Empfang" )
-        //Lautsprecher färben
-        $('#'+msg.RX.$.id+'Lsp').addClass( "text-danger" )
-        $('#'+msg.RX.$.id+'Lsp').parent().addClass( "bg-danger" )
-        $('#'+msg.RX.$.id+'Lsp').parent().parent().addClass( "panel-danger" )
-
-
-        $.notify('Empfang:'+ApFunkstellen[msg.RX.$.id].sname)
-        console.log(msg.RX.$.id)
-        }
-     //Empfangen deaktiv
-     if('RX' in msg && msg.RX.$.state === '0'){
-     	//suche SChaltfläche zu FunkstellenID
-        button=$('#'+msg.RX.$.id).offsetParent().attr('id')
-        $('#'+button+' > div').removeClass( "panel-danger" )
-        $('#'+button+' > div > div').removeClass( "bg-danger" )
-        $('#'+button+' > div > div > h2').removeClass( "text-danger" )
-        //Lautsprecher färben
-        $('#'+msg.RX.$.id+'Lsp').removeClass( "text-danger" )
-        $('#'+msg.RX.$.id+'Lsp').parent().removeClass( "bg-danger" )
-        $('#'+msg.RX.$.id+'Lsp').parent().parent().removeClass( "panel-danger" )
-        console.log(msg.RX.$.id)
-        }
-     //Senden aktiv
-     if('TX' in msg && msg.TX.$.state === '1'){
-        //suche SChaltfläche zu FunkstellenID
-        button=$('#'+msg.TX.$.id).offsetParent().attr('id')
-        $('#'+button+' > div').addClass( "panel-success" )
-        $('#'+button+' > div > div').addClass( "bg-success" )
-        $('#'+button+' > div > div > h2').addClass( "text-success" )
-        //Lautsprecher färben
-        $('#'+msg.TX.$.id+'Lsp').addClass( "text-success" )
-        $('#'+msg.TX.$.id+'Lsp').parent().addClass( "bg-success" )
-        $('#'+msg.TX.$.id+'Lsp').parent().parent().addClass( "panel-success" )
-        console.log(msg.TX.$.id)
-        }
-     //Senden deaktiv
-     if('TX' in msg && msg.TX.$.state === '0'){
-     	//suche SChaltfläche zu FunkstellenID
-        button=$('#'+msg.TX.$.id).offsetParent().attr('id')
-        $('#'+button+' > div').removeClass( "panel-success" )
-        $('#'+button+' > div > div').removeClass( "bg-success" )
-        $('#'+button+' > div > div > h2').removeClass( "text-success" )
-        //Lautsprecher färben
-        $('#'+msg.TX.$.id+'Lsp').removeClass( "text-success" )
-        $('#'+msg.TX.$.id+'Lsp').parent().removeClass( "bg-success" )
-        $('#'+msg.TX.$.id+'Lsp').parent().parent().removeClass( "panel-success" )
-        console.log(msg.TX.$.id)
-        }
-      
-     if('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '0'){
-        $('#'+msg.FSTSTATUS.$.id).closest('div').removeClass( "bg-danger" )
-        $('#'+msg.FSTSTATUS.$.id).closest('div').addClass( "bg-success" )
-        console.log(msg.FSTSTATUS.$.id)
-        
-        //Bei Kanaländerung die Kanalnummer setzen
-        if(msg.FSTSTATUS.$.channel > -1){
-           button=$('#'+msg.FSTSTATUS.$.id).offsetParent().attr('id')
-           $('#'+button+' > div > div  > h2 > span:first-child').text( msg.FSTSTATUS.$.channel )
-          }
-
-        }
-     if('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1'){
-        $('#'+msg.FSTSTATUS.$.id).closest('div').removeClass( "bg-success" )
-        $('#'+msg.FSTSTATUS.$.id).closest('div').addClass( "bg-danger" )
-        console.log(msg.FSTSTATUS.$.id)
-        }
-     //Schalten für SPrechANlagen und MitHörANlagen
-     if('geschaltet' in msg && msg.geschaltet.$.state === '1'){
-        
-        if(hatWert(ArbeitsplatzGeräte,msg.geschaltet.$.Ap)){
-      
-            //Ändern Darstellung für MHAN
-            if(msg.geschaltet.$.Ap.indexOf("MHAN") != -1){
-            	$('#'+msg.geschaltet.$.id+'Lsp').parent().parent().addClass( "panel-primary" )
-            	
-            }
-            
-            //Ändern Darstellung für SPAN
-             if(msg.geschaltet.$.Ap.indexOf("SPAN") != -1){
-             //suche SChaltfläche zu FunkstellenID
-             button=$('#'+msg.geschaltet.$.id).offsetParent().attr('id')
-             $('#'+button+' > div > div.panel-heading > span').text( "aufgeschaltet" )
-             $('#'+button+' > div').addClass( "panel-primary" )
-             ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet=true
-             $.notify('Aufgeschaltet:'+ApFunkstellen[msg.geschaltet.$.id].sname +'')
-             console.log(msg.geschaltet.$.id)
-             }
-          }
-       }
-
-      //Trennen für SPrechANlagen und MitHörANlagen
-     if('getrennt' in msg && msg.getrennt.$.state === '1'){
-
-        if(hatWert(ArbeitsplatzGeräte,msg.getrennt.$.Ap)){
-      
-            //Ändern Darstellung für MHAN
-            if(msg.getrennt.$.Ap.indexOf("MHAN") != -1){
+        //Mithoerlautsprecher aufschalten
+        function lautsprecherAufschalten(mhan) {
+            console.log(mhan)
+            for (var funkstelle in mhan) {
+                socket.emit('clientMessage', {
+                    'FstID': funkstelle,
+                    'ApID': ApID,
+                    'SPAN': ArbeitsplatzGeraete[mhan[funkstelle]],
+                    'aktion': 'schaltenEinfach'
+                })
 
             }
-            //Ändern Darstellung für SPAN
-            if(msg.getrennt.$.Ap.indexOf("SPAN") != -1){
+        }
 
-             //suche SChaltfläche zu FunkstellenID
-             button=$('#'+msg.getrennt.$.id).offsetParent().attr('id')
-             $('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
-             $('#'+button+' > div').removeClass( "panel-primary" )
-             ApFunkstellen[msg.getrennt.$.id].aufgeschaltet=false
-             $.notify('Getrennt:'+ApFunkstellen[msg.getrennt.$.id].sname +'')
-             console.log(msg.getrennt.$.id)
+        //Pruefe ob Wert in Objekt vorkommt
+        function hatWert(obj, value) {
+            for (var id in obj) {
+                if (obj[id] == value) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+
+        //Ereignisse fuer Verbindungsueberwachung
+        //Dafuer in der Navleiste eine Statusflaeche einbauen
+        //Wenn lokaler DUE getrennt dann lokaler RFD auf undefined --ygrau
+        function verbindungsPruefung() {
+            socket.on('connect', function () {
+                console.log('check 2------------------------VERBUNDEN', socket.connected);
+                $('#buttonWHV_DUE').removeClass("label-danger")
+                $('#buttonWHV_DUE').addClass("label-success")
+
+            });
+
+
+            socket.on('disconnect', function () {
+                console.log('check 2-----------------------GETRENNT', socket.connected);
+                $('#buttonWHV_DUE').removeClass("label-success")
+                $('#buttonWHV_DUE').addClass("label-danger")
+                //Zeige Error Modal Fenster
+                $('#errorModal').modal('show')
+            });
+        }
+
+
+
+
+
+
+
+        //Loeschen
+        //Alle eingehenden WebSocket Nachrichten einhaengen TYP 'statusMessage'
+        socket.on('statusMessage', function (msg) {
+            if (msg.RfdStatus.URL.indexOf(RFDWHV) > -1 && msg.RfdStatus.Status == 'OK') {
+                $('#buttonWHV_RFD').removeClass("label-danger")
+                $('#buttonWHV_RFD').addClass("label-success")
+
+            }
+
+            if (msg.RfdStatus.URL.indexOf(RFDWHV) > -1 && msg.RfdStatus.Status == 'Error') {
+                $('#buttonWHV_RFD').removeClass("label-success")
+                $('#buttonWHV_RFD').addClass("label-danger")
+
+            }
+
+
+            //if()
+        });
+
+
+        //eingehende Socket Nachrichten vom TYP rfdMessage, Statusmeldungen verarbeitebn
+        socket.on('ukwMessage', function (msg) {
+            if (typeof msg === 'object') {
+                //Empfangen aktiv
+                if ('RX' in msg && msg.RX.$.state === '1') {
+                    //suche SChaltflaeche zu FunkstellenID
+                    button = $('#' + msg.RX.$.id).offsetParent().attr('id')
+
+                    //Kanalflaeche faerben
+                    $('#' + button + ' [buttonElement="Flaeche"]').addClass("bg-danger")
+                    $('#' + button + ' [buttonElement="Flaeche"] h2').addClass("text-danger")
+
+                    $.notify('Empfang:' + ApFunkstellen[msg.RX.$.id].sname)
+                    console.log(msg.RX.$.id)
+                }
+                //Empfangen deaktiv
+                if ('RX' in msg && msg.RX.$.state === '0') {
+                    //suche SChaltflaeche zu FunkstellenID
+                    button = $('#' + msg.RX.$.id).offsetParent().attr('id')
+
+                    //Kanalflaeche entfaerben
+                    $('#' + button + ' [buttonElement="Flaeche"]').removeClass("bg-danger")
+                    $('#' + button + ' [buttonElement="Flaeche"] h2').removeClass("text-danger")
+
+                    console.log(msg.RX.$.id)
+                }
+                //Senden aktiv
+                if ('TX' in msg && msg.TX.$.state === '1') {
+                    //Pruefen ob SPAN ID in TX Objekt
+                    if (msg.TX.$.id.indexOf("SPAN") != -1) {
+                        //erstmal nichts machen. ggf in SPAN Element etwas anzeigen
+                    }
+                    else {
+                        //suche SChaltflaeche zu FunkstellenID
+                        button = $('#' + msg.TX.$.id).offsetParent().attr('id')
+
+                        //Kanalflaeche faerben
+                        $('#' + button + ' [buttonElement="Flaeche"]').addClass("bg-success")
+                        $('#' + button + ' [buttonElement="Flaeche"] h2').addClass("text-success")
+
+
+                        console.log(msg.TX.$.id)
+                    }
+                }
+                //Senden deaktiv
+                if ('TX' in msg && msg.TX.$.state === '0') {
+                    if (msg.TX.$.id.indexOf("SPAN") != -1) {
+                        //erstmal nichts machen. ggf in SPAN Element etwas anzeigen
+                    }
+                    else {
+                        //suche SChaltflaeche zu FunkstellenID
+                        button = $('#' + msg.TX.$.id).offsetParent().attr('id')
+
+                        //Kanalflaeche entfaerben
+                        $('#' + button + ' [buttonElement="Flaeche"]').removeClass("bg-success")
+                        $('#' + button + ' [buttonElement="Flaeche"] h2').removeClass("text-success")
+
+                        console.log(msg.TX.$.id)
+                    }
+                }
+
+                if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '0') {
+                    $('#' + msg.FSTSTATUS.$.id).closest('div').removeClass("bg-danger")
+                    $('#' + msg.FSTSTATUS.$.id).closest('div').addClass("bg-success")
+                    console.log(msg.FSTSTATUS.$.id)
+
+                    //Bei Kanalaenderung die Kanalnummer setzen
+                    if (msg.FSTSTATUS.$.channel > -1) {
+                        button = $('#' + msg.FSTSTATUS.$.id).offsetParent().attr('id')
+                        $('#' + button + ' > div > div  > h2 > span').text(msg.FSTSTATUS.$.channel)
+                    }
+
+                }
+                if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1') {
+                    $('#' + msg.FSTSTATUS.$.id).closest('div').removeClass("bg-success")
+                    $('#' + msg.FSTSTATUS.$.id).closest('div').addClass("bg-danger")
+                    console.log(msg.FSTSTATUS.$.id)
+                }
+                //Schalten fuer SPrechANlagen und MitHoerANlagen
+                if ('geschaltet' in msg && msg.geschaltet.$.state === '1') {
+
+                    if (hatWert(ArbeitsplatzGeraete, msg.geschaltet.$.Ap)) {
+
+                        //aendern Darstellung fuer MHAN
+                        if (msg.geschaltet.$.Ap.indexOf("MHAN") != -1) {
+                            $('#' + msg.geschaltet.$.Ap + 'ship').parent().removeClass("bg-success")
+                            $('#' + msg.geschaltet.$.Ap + 'ship').parent().addClass("bg-primary")
+
+                        }
+
+                        //aendern Darstellung fuer SPAN
+                        if (msg.geschaltet.$.Ap.indexOf("SPAN") != -1) {
+                            //suche SChaltflaeche zu FunkstellenID
+                            button = $('#' + msg.geschaltet.$.id).offsetParent().attr('id')
+
+                            //$('#'+button+' > div > div.panel-heading > span').text( "aufgeschaltet" )
+                            $('#' + button + ' > div').addClass("panel-primary")
+                            $('#' + button + ' > div > div:nth-child(3)').addClass("bg-primary")
+
+                            ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true
+                            $.notify('Aufgeschaltet:' + ApFunkstellen[msg.geschaltet.$.id].sname + '')
+                            console.log(msg.geschaltet.$.id)
+                            //geschaltetet Zustände an Server übertragen
+                            socket.emit('clientMessageSchaltzustand',{
+                                'Zustand': ApFunkstellen,
+                                'Arbeitsplatz': ApID
+                            })
+                        }
+                    }
+                }
+
+                //Trennen fuer SPrechANlagen und MitHoerANlagen
+                if ('getrennt' in msg && msg.getrennt.$.state === '1') {
+
+                    if (hatWert(ArbeitsplatzGeraete, msg.getrennt.$.Ap)) {
+
+                        //Aendern Darstellung fuer MHAN
+                        if (msg.getrennt.$.Ap.indexOf("MHAN") != -1) {
+
+                        }
+                        //Aendern Darstellung fuer SPAN
+                        if (msg.getrennt.$.Ap.indexOf("SPAN") != -1) {
+
+                            //suche SChaltflaeche zu FunkstellenID
+                            button = $('#' + msg.getrennt.$.id).offsetParent().attr('id')
+                            //$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
+                            $('#' + button + ' > div').removeClass("panel-primary")
+                            $('#' + button + ' > div > div:nth-child(3)').removeClass("bg-primary")
+                            ApFunkstellen[msg.getrennt.$.id].aufgeschaltet = false
+                            $.notify('Getrennt:' + ApFunkstellen[msg.getrennt.$.id].sname + '')
+                            console.log(msg.getrennt.$.id)
+                            //geschaltetet Zustände an Server übertragen
+                            socket.emit('clientMessageSchaltzustand',{
+                                'Zustand': ApFunkstellen,
+                                'Arbeitsplatz': ApID
+                            })
+                        }
+                    }
+                }
+            }
+            else {
+                msgText = msg.replace("<", "")
+                msgText = msgText.replace("\>", "")
+                console.log(msgText)
+                //$.notify('Meldung: '+msgText)
+
+                //$('#messages').append($('<li>').text(msg));
+                //$('#messages').append($.text(msg));
+
+            }
+
+
+        });
+
+        //Pruefe welches Element geklickt wurde
+        //Vermeide aufschalten/trennen bei MKA Dropdown
+        function angeklickt(e, element) {
+            if (element) {
+                e = e || event
+                var ziel = e.target || e.srcElement
+                if (ziel.id == element.id)
+                    return true
+                else
+                    return false
+            }
+            else return true
+        }
+
+        //setze Variable geklickteMKA fuer geklickte MKA Funkstellen ID
+        function setzeKanalMka(event, element) {
+            if (angeklickt(event, element)) {
+                //Eltern Element finden
+                button = $(element).offsetParent().attr('id')
+                //Funkstellen ID finden
+                //geklickteMKA=$('#'+button +'> div > div:nth-child(2) > div:nth-child(2) > span').attr('class')
+                //geklickteMKA=$('#'+button +'> div > div:nth-child(2) > div > span').attr('id')
+                geklickteMKA = $('#' + button + ' > div div:nth-child(2) > div > div:nth-child(1)').attr('id')
+                console.log("Dropdown von:" + geklickteMKA)
+
+
             }
         }
-      }
-     }
-     else{
-      msgText=msg.replace("<","")
-      msgText=msgText.replace("\>","")
-      console.log(msgText)
-      $.notify('Meldung: '+msgText)
-      
-      //$('#messages').append($('<li>').text(msg));
-      //$('#messages').append($.text(msg));
-      
-      }
+
+        //Kanalschalten
+        //Pruefe zunaechst ob Element geklickt wurde
+        function schalteKanal(event, element, SPAN) {
+            if (angeklickt(event, element)) {
+                if (SPAN) {
+                    //uebergeordnetes Element
+                    button = $('#' + element.id).offsetParent().attr('id')
+                    //console.log(element)
+                    //console.log("Klick: "+element.id)
+                    //console.log(button)
+
+                    console.log($('#' + button + ' > div div:nth-child(2) > div > div:nth-child(1)').attr('id'))
+                    console.log($('#' + button + ' > div > div:nth-child(3)').attr('id'))
+                    geklickteFstHaupt = $('#' + button + ' > div div:nth-child(2) > div > div:nth-child(1)').attr('id')
+                    geklickteFstReser = $('#' + button + ' > div div:nth-child(2) > div > div:nth-child(2)').attr('id')
+                    geklickteSPAN = ($('#' + button + ' > div > div:nth-child(3)').attr('id'))
+
+                    schalteKanalID(geklickteFstHaupt, geklickteSPAN)
+                }
+                else {
+                    //uebergeordnetes Element
+                    button = $('#' + element.id).offsetParent().attr('id')
+                    console.log(element)
+                    console.log("Klick: " + element.id)
+                    console.log(button)
+                    console.log($('#' + button + ' div > div').attr('id'))
+
+                    geklickteFstHaupt = $('#' + button + ' div > div:nth-child(1) > div:nth-child(1)').attr('id')
+                    geklickteFstReser = $('#' + button + ' div > div:nth-child(1) > div:nth-child(2)').attr('id')
+                    geklickteMHAN = ($('#' + button + ' div > div').attr('id'))
+
+                    schalteKanalID(geklickteFstHaupt, geklickteMHAN)
+
+                }
 
 
-  });
-
-  //Prüfe welches Element geklickt wurde
-  //Vermeide aufschalten/trennen bei MKA Dropdown
-  function angeklickt(e, element){
-  	e=e||event
-  	var ziel=e.target||e.srcElement
-  	if(ziel.id==element.id)
-  		return true
-  	else
-  		return false
-  }
-
-  function setzeKanalMka(event,element){
-  	if(angeklickt(event,element)){
-  		//Eltern Element finden
-  		button=$(element).offsetParent().attr('id')
-        //Funkstellen ID finden
-        //geklickteMKA=$('#'+button +'> div > div:nth-child(2) > div:nth-child(2) > span').attr('class')
-        geklickteMKA=$('#'+button +'> div > div:nth-child(2) > div > span').attr('id')
-  		console.log("Dropdown von:" + geklickteMKA)
-  		
-  		
-  	}
-  }
-
-  //Kanalschalten
-  //Prüfe zunächst ob Element geklickt wurde
-  function schalteKanal(event,element){
-  	if(angeklickt(event,element)){
- 
-     console.log(element)
-     console.log("Klick: "+element.id)
-     console.log($('#'+element.id+' div:nth-child(2) > span').attr('id'))
-     console.log($('#'+element.id+' div:nth-child(3) > span').attr('id'))
-     console.log($('#'+element.id+' div:nth-child(4) > span').attr('id'))
-     geklickteFstHaupt=$('#'+element.id+' div:nth-child(2) > span').attr('id')
-     
-     schalteKanalID(geklickteFstHaupt)
-
-    
-
-
-    }
-  }
-    
-
-
-  function schalteKanalID(geklickteID){
-    console.log("Klick: "+geklickteID)
-    //$.notify('test:'+ApFunkstellen[geklickteID].kurzname);
-
-    if (Einzel===true){
-     $.each(ApFunkstellen,function(key,value){
-       if(value.aufgeschaltet===true && key != geklickteID){
-         console.log(key,value.aufgeschaltet)
-         trennen(key)
-         }  
-        //trenne aufgeschaltet
-        })
-    }
-
-    if (ApFunkstellen[geklickteID].aufgeschaltet===true){
-     trennen(geklickteID)
-        
-    }
-    else{
-    schalten(geklickteID)
-
-    }
-   }
-
-   function trennen(geklickteID){
-        socket.emit('chat message',{'FstID':geklickteID, 'ApID':ApID, 'SPAN':SPAN, 'aktion':'trennenEinfach'})
-        $.notify('Trenne: '+ApFunkstellen[geklickteID].sname +' ...');
-        //ApFunkstellen[geklickteID].aufgeschaltet=false
-
-        //$('#'+geklickteID+'-Panel > div').removeClass( "panel-primary" )
-        //$('#'+geklickteID+'-Panel > div > div.panel-heading > span').text( "getrennt" )
-   }
-
-   function schalten(geklickteID){
-      socket.emit('chat message',{'FstID':geklickteID, 'ApID':ApID, 'SPAN':SPAN, 'aktion':'schaltenEinfach'})
-      $.notify('Schalte: '+ApFunkstellen[geklickteID].sname +' ...')
-      
-      //ApFunkstellen[geklickteID].aufgeschaltet=true
-      //$('#'+geklickteID+'-Panel > div > div.panel-heading > span').text( "aufgeschaltet" )
-      //$('#'+geklickteID+'-Panel > div').addClass( "panel-primary" )
-      //$('.popover-title').css("color", "black"); $('.popover').css("color", "black");
-
-   }
-
-   
-   
-   
-  
-
-   
+            }
+        }
 
 
 
-   function setzeLautstärke(geklickteID){
-    console.log("Klick: Lautstärke "+geklickteID)
-    //$('#'+geklickteID).popover('toggle')
-     //Slider Einstellungen
-  
-    
-    }
+        function schalteKanalID(geklickteFstID, geklickteSPANMHAN) {
+            //console.log("Klick: "+geklickteID)
+            //$.notify('test:'+ApFunkstellen[geklickteID].kurzname);
 
-   function gruppen(buttonID){
-    
-    //Wechsel zu Gruppenschaltung
-    if (Einzel===true){
-      Einzel=false
-      einzelStatus=JSON.stringify(ApFunkstellen)//speichere geschalteten Zustand
-      $('#'+buttonID).toggleClass("active")
-      $('#'+buttonID+' > a').text("Gruppenschaltung")
-      zustandWiederherstellen(JSON.parse(gruppenStatus))// lade Gruppenzustand
-     }
+            if (Einzel === true) {
+                $.each(ApFunkstellen, function (key, value) {
+                    if (value.aufgeschaltet === true && key != geklickteFstID) {
+                        console.log(key, value.aufgeschaltet)
+                        trennen(key, geklickteSPANMHAN)
+                    }
+                    //trenne aufgeschaltet
+                })
+            }
 
-    else{
-      Einzel=true
-      gruppenStatus=JSON.stringify(ApFunkstellen)//speichere geschalteten Zustand
-      $('#'+buttonID).toggleClass("active")
-      $('#'+buttonID+' > a').text("Einzelschaltung")
-      zustandWiederherstellen(JSON.parse(einzelStatus))//lade Einzelzustand
+            if (ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
+                trennen(geklickteFstID, geklickteSPANMHAN)
 
-     }
+            }
+            else {
+                schalten(geklickteFstID, geklickteSPANMHAN)
 
-   }
+            }
+        }
 
-   function zustandWiederherstellen(AufschalteZustand){
-    //Backup, da die Funktionen schalten und trennen mit Rückmeldung schon in ApFunkstellen schreiben
-    backupApFunkstellen=ApFunkstellen
-    $.each(backupApFunkstellen,function(key,value){
-       if (value.aufgeschaltet== true && AufschalteZustand[key].aufgeschaltet== true)  {
-       	//nix
-       }
-       if (value.aufgeschaltet== true && AufschalteZustand[key].aufgeschaltet== false)  {
-        //trennen
-        trennen(AufschalteZustand[key].id)
-       }
-       if (value.aufgeschaltet== false && AufschalteZustand[key].aufgeschaltet== true)  {
-        //schalten
-        schalten(AufschalteZustand[key].id)
-       }
-       if (value.aufgeschaltet== false && AufschalteZustand[key].aufgeschaltet== false)  {
-        //nix
-       }
-    })
+        function trennen(geklickteID, geklickteSPANMHAN) {
+            socket.emit('clientMessage', {
+                'FstID': geklickteID,
+                'ApID': ApID,
+                'SPAN': geklickteSPANMHAN,
+                'aktion': 'trennenEinfach'
+            })
+            $.notify('Trenne: ' + ApFunkstellen[geklickteID].sname + ' ...');
+            //ApFunkstellen[geklickteID].aufgeschaltet=false
+
+            //$('#'+geklickteID+'-Panel > div').removeClass( "panel-primary" )
+            //$('#'+geklickteID+'-Panel > div > div.panel-heading > span').text( "getrennt" )
+        }
+
+        function schalten(geklickteID, geklickteSPANMHAN) {
+            socket.emit('clientMessage', {
+                'FstID': geklickteID,
+                'ApID': ApID,
+                'SPAN': geklickteSPANMHAN,
+                'aktion': 'schaltenEinfach'
+            })
+            $.notify('Schalte: ' + ApFunkstellen[geklickteID].sname + ' ...')
+
+            //ApFunkstellen[geklickteID].aufgeschaltet=true
+            //$('#'+geklickteID+'-Panel > div > div.panel-heading > span').text( "aufgeschaltet" )
+            //$('#'+geklickteID+'-Panel > div').addClass( "panel-primary" )
+            //$('.popover-title').css("color", "black"); $('.popover').css("color", "black");
+
+        }
 
 
-    //console.log("Funkstellen ID nicht vorhanden: "+Id)	
-    }
 
-  function setzeKanal(element){
-   	
-   	console.log('chat message',{'FstID':geklickteMKA, 'Kanal':element.innerText, 'aktion':'setzeKanal'})
-   	socket.emit('chat message',{'FstID':geklickteMKA, 'Kanal':element.innerText, 'aktion':'setzeKanal'})
-    //  $.notify('Setze Kanal: '+ApFunkstellen[geklickteMKA].sname +' auf '+ element.innerText +' ...')
-   }
+
+
+
+
+
+
+
+        function setzeLautstaerke(geklickteID, level) {
+
+
+            console.log("Klick: Lautstaerke " + geklickteID)
+            console.log($('#' + geklickteID).prev().text())
+            var aktuellerPegel = parseInt($('#' + geklickteID).prev().text())
+            MhanID = geklickteID.replace('ship_pegel', '')
+            test1 = $('#' + geklickteID).offsetParent().attr('id')
+
+            test2 = $('#' + test1 + ' > div > div > div:nth-child(3) > div:nth-child(1)')
+            geklickteFstHaupt = test2[1].id
+
+            socket.emit('clientMessage', {
+                'FstID': geklickteFstHaupt,
+                'SPAN': MhanID,
+                'aktion': 'SetzeAudioPegel',
+                'Kanal': level
+            })
+            $.notify('Lautstaerke: ' + ApFunkstellen[geklickteFstHaupt].sname + ' ...')
+
+
+            /**
+             $('#ex1').slider('setValue', aktuellerPegel)
+             $('#ex1').on('slide', function (ev) {
+            //sliderVal = ev.value;
+        $('#'+geklickteID).prev().text(ev.value)
+
+        });
+             **/
+
+
+        }
+
+
+
+
+
+        function gruppen(buttonID) {
+
+            //Wechsel zu Gruppenschaltung
+            if (Einzel === true) {
+                Einzel = false
+                einzelStatus = JSON.stringify(ApFunkstellen)//speichere geschalteten Zustand
+                $('#' + buttonID).toggleClass("active")
+                $('#' + buttonID + ' > a').text("Gruppenschaltung")
+                zustandWiederherstellen(JSON.parse(gruppenStatus))// lade Gruppenzustand
+            }
+
+            else {
+                Einzel = true
+                gruppenStatus = JSON.stringify(ApFunkstellen)//speichere geschalteten Zustand
+                $('#' + buttonID).toggleClass("active")
+                $('#' + buttonID + ' > a').text("Einzelschaltung")
+                zustandWiederherstellen(JSON.parse(einzelStatus))//lade Einzelzustand
+
+            }
+
+        }
+
+        function zustandWiederherstellen(AufschalteZustand) {
+            //Backup, da die Funktionen schalten und trennen mit Rueckmeldung schon in ApFunkstellen schreiben
+            backupApFunkstellen = ApFunkstellen
+            $.each(backupApFunkstellen, function (key, value) {
+                if (value.aufgeschaltet == true && AufschalteZustand[key].aufgeschaltet == true) {
+                    //nix
+                }
+                if (value.aufgeschaltet == true && AufschalteZustand[key].aufgeschaltet == false) {
+                    //trennen
+                    trennen(AufschalteZustand[key].id, SPAN)
+                }
+                if (value.aufgeschaltet == false && AufschalteZustand[key].aufgeschaltet == true) {
+                    //schalten
+                    schalten(AufschalteZustand[key].id, SPAN)
+                }
+                if (value.aufgeschaltet == false && AufschalteZustand[key].aufgeschaltet == false) {
+                    //nix
+                }
+            })
+
+
+            //console.log("Funkstellen ID nicht vorhanden: "+Id)
+        }
+
+        function setzeKanal(element) {
+
+            console.log('clientMessage', {'FstID': geklickteMKA, 'Kanal': element.innerText, 'aktion': 'setzeKanal'})
+            socket.emit('clientMessage', {'FstID': geklickteMKA, 'Kanal': element.innerText, 'aktion': 'setzeKanal'})
+            //  $.notify('Setze Kanal: '+ApFunkstellen[geklickteMKA].sname +' auf '+ element.innerText +' ...')
+        }
 
 
 

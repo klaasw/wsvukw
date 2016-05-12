@@ -1,0 +1,44 @@
+[
+  {
+    "id": "1-H-RFD-BHVVTA-FKEK-3",
+    "MKA": false,
+    "Kanal": "28",
+    "kurzname": "BHV28",
+    "aufgeschaltet": null
+  },
+  {
+    "id": "1-H-RFD-WHVVTA-FKEK-3",
+    "MKA": false,
+    "Kanal": "16",
+    "kurzname": "WHV",
+    "aufgeschaltet": null
+  },
+  {
+    "id": "1-H-RFD-WHVVTA-FKEK-1",
+    "MKA": false,
+    "Kanal": "70",
+    "kurzname": "WHV70",
+    "aufgeschaltet": null
+  },
+  {
+    "id": "1-H-RFD-WHVVTA-FKEK-2",
+    "MKA": false,
+    "Kanal": "80",
+    "kurzname": "WHV80",
+    "aufgeschaltet": null
+  },
+  {
+    "id": "1-H-RFD-WHVVTA-FKEK-4",
+    "MKA": false,
+    "Kanal": "79",
+    "kurzname": "WHV79",
+    "aufgeschaltet": null
+  },
+  {
+    "id": "1-H-RFD-WHVVTA-FKEK-5",
+    "MKA": false,
+    "Kanal": "16",
+    "kurzname": "WHV16",
+    "aufgeschaltet": null
+  }
+]
