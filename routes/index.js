@@ -219,7 +219,7 @@ function leseRfdTopologie() {
         else { //Ausfuehren wenn RFD erreichbar
             parser.parseString(body, function (err, result) {
                 if (result !== undefined) {
-                    log.info(FILENAME + ' parser.parseString result=' + result);
+                    //log.debug(FILENAME + ' parser.parseString result=' + JSON.stringify(result));
                     //log.debug(result['S:Body'][0]['ns2:GetTopologyForRFDResponse'][0]['return'][0])
                     ergebnis1cdata = result['S:Body'][0]['ns2:GetTopologyForRFDResponse'][0]['return'][0];
                     //CDATA Objekt der Response erneut parsen

@@ -34,7 +34,7 @@ exports.pruefeRfdWS = function () {
     //Pruefung lokaler VTR
     request(cfg.urlRFDWebservice, {timeout: 2000}, function (error, response, body) {
         if (!error && response.statusCode == 200) {
-            log.info(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK')
+            //log.debug(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK')
             sendeWebNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'OK'}})
         }
         if (error)
@@ -106,9 +106,9 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
     log.debug("parameterRfdWebService.headers.SOAPAction: " + parameterRfdWebService.headers.SOAPAction);
 
     request(parameterRfdWebService, function (error, response, body) {
-        log.info(FILENAME + ' Funktion: sendeWebServiceNachricht request mit Parameter: ' + JSON.stringify(parameterRfdWebService));
+        log.debug(FILENAME + ' Funktion: sendeWebServiceNachricht request mit Parameter: ' + JSON.stringify(parameterRfdWebService));
         if (error) {
-            log.info(FILENAME + ' Funktion: sendeWebServiceNachricht request ' + 'Msg: RFD WebService nicht erreichbar. Aktion: ' + aktion, {
+            log.error(FILENAME + ' Funktion: sendeWebServiceNachricht request ' + 'Msg: RFD WebService nicht erreichbar. Aktion: ' + aktion, {
                 uebergabe: parameterRfdWebService,
                 nodeMsg: error
             });
@@ -165,8 +165,6 @@ var ua = new JsSIP.UA(cfg.jsSipConfiguration);
 ua.start();
 
 
-var text = 'Hello Bob!';
-
 // Register callbacks to desired message event
 var eventHandlers = {
     'succeeded': function (e) {
@@ -182,26 +180,22 @@ var options = {
 };
 
 
-//SIP Aufrufe
+//SIP Test Aufrufe
 function sendeSipNachricht(text) {
-    ua.sendMessage('sip:rfd@192.168.56.102:5060', text, options);
+    ua.sendMessage(cfg.jsSipConfiguration.testReceiverMessage, text, options);
 }
-
-
 function anruf() {
-    ua.call('sip:test@192.168.56.103')
+    ua.call(cfg.jsSipConfiguration.testReceiverCall)
 }
 
 
 //SIP User Agent Ereignisse
 ua.on('connected', function (e) {
     log.debug('Verbunden mit SIP-Server')
-
 });
 
 ua.on('connecting', function (e) {
     log.debug('Verbinde zu SIP-Server...')
-
 });
 
 ua.on('registered', function (e) {
@@ -212,7 +206,6 @@ ua.on('registered', function (e) {
 
 ua.on('registrationFailed', function (e) {
     log.error('Registrierungsfehler auf SIP-Server')
-
 });
 
 
