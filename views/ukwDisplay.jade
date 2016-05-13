@@ -32,49 +32,102 @@ block content
                             div.row
 
                         div.col-md-2(id=index + 'panel',style="padding-left: 5px;padding-right: 5px;")
-                            div.panel.panel-default(class=(val[0] == 'frei' ? 'hidden' : ''),style="float:left")
+                            div.panel.panel-default(
+			    	class=(val[0] == 'frei' ? 'hidden' : '')
+				style="float:left"
+			    )
                                 //Block Mithoeren
-                                div(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]],style="width:100%")
+                                div(
+					id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]]
+					style="width:100%"
+				)
                                     //Schaltflaeche MHAN
-                                    div.text-center(style="width:100%;border-top-left-radius: 3px;border-top-right-radius: 3px;background-color:#f5f5f5;padding-left: 3px;padding-right: 3px") #{(gesamteKonfig.MhanZuordnung[val[0]] ? gesamteKonfig.MhanZuordnung[val[0]] : '--ohne--')}
+                                    div.text-center(
+				    	style="width:100%;border-top-left-radius: 3px;border-top-right-radius: 3px;background-color:#f5f5f5;padding-left: 3px;padding-right: 3px"
+				    ) #{(gesamteKonfig.MhanZuordnung[val[0]] ? gesamteKonfig.MhanZuordnung[val[0]] : '--ohne--')}
                                         div.pull-right
-                                            span.glyphicon.glyphicon-chevron-down(data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.')
+                                            span.glyphicon.glyphicon-chevron-down(
+					    	data-toggle='popover'
+						container='panel-body'
+						data-placement='right'
+						title="Popover title"
+						data-html='true'
+						data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.'
+					    )
                                     div.text-center.bg-success(style="float:left; width:50%")
                                         //Schaltflaeche Ship
-                                        div(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship',onclick='schalteKanal(event,this)',style="cursor: pointer;z-index:-1;float:left;width:20%;height: 44px;padding-top: 12px;font-size: 16px;font-weight: bold;")
+                                        div(
+						id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship'
+						onclick='schalteKanal(event,this)'
+						style="cursor: pointer;z-index:-1;float:left;width:20%;height: 44px;padding-top: 12px;font-size: 16px;font-weight: bold;"
+					)
                                             span S
                                         div.pull-right
                                             span#test 50
                                             //span.glyphicon.glyphicon-volume-up(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]]+'ship_pegel',onclick='setzeLautstaerke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;",data-toggle='modal',data-target='#pegelModal')
-                                            span.glyphicon.glyphicon-volume-up(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship_pegel',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;", data-toggle='popover', container='panel-body' ,data-placement='right', data-html='true',data-content="<input id='ex1', type='text', data-slider-min='0', data-slider-max='100', data-slider-step='10' ,data-slider-orientation='vertical'>")
+                                            span.glyphicon.glyphicon-volume-up(
+					    	id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship_pegel'
+						style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;"
+						data-toggle='popover'
+						container='panel-body'
+						data-placement='right'
+						data-html='true'
+						data-content="<input id='ex1', type='text', data-slider-min='0', data-slider-max='100', data-slider-step='10' ,data-slider-orientation='vertical'>"
+					    )
                                     div.text-center(style="float:left; width:50%;background-color:#f5f5f5")
                                         //Schaltflaeche Pilot
                                         div(style="float:left;width:20%;height: 44px;padding-top: 12px;font-size: 16px;font-weight: bold;")
                                             span L
                                         div.pull-right
                                             span#test2 100
-                                            span.glyphicon.glyphicon-volume-up(onclick='setzeLautstaerke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<p>Lautstaerke per Softwareeinstellen<input id="ex1" type="text" data-slider-min="0" data-slider-max="100" data-slider-step="10" data-slider-orientation="vertical"/></p>')
+                                            span.glyphicon.glyphicon-volume-up(
+					    	onclick='setzeLautstaerke(this.id)'
+						style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;"
+						data-toggle='popover'
+						container='panel-body'
+						data-placement='right'
+						title="Popover title"
+						data-html='true'
+						data-content='<p>Lautstaerke per Softwareeinstellen<input id="ex1" type="text" data-slider-min="0" data-slider-max="100" data-slider-step="10" data-slider-orientation="vertical"/></p>'
+					    )
                                 //Schaltflaeche Kanal
-                                div(id=index,buttonElement='Flaeche',onclick='schalteKanal(event,this,"SPAN")',style="float:left; width:100%; cursor: pointer;z-index:-1;padding-top: 3px;padding-bottom: 3px")
+                                div(
+					id=index
+					buttonElement='Flaeche'
+					onclick='schalteKanal(event,this,"SPAN")'
+					style="float:left; width:100%; cursor: pointer;z-index:-1;padding-top: 3px;padding-bottom: 3px"
+				)
                                     if gesamteKonfig.FunkstellenDetails[val[0]].MKA
                                         h2.text-right(id=index,style="margin-top: 15px;margin-bottom: 5px;")
                                             span #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
                                             button.btn.btn-default.btn-lg.dropdown-toggle(type='button', data-toggle='modal',data-target='#mkaModal',style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 36px;margin-top: -5px;",onclick='setzeKanalMka(event,this)')
                                                 span.caret
                                     else
-                                        h2.text-center(id=index,style="margin-top: 15px;margin-bottom: 5px;") #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
+                                        h2.text-center(
+						id=index
+						style="margin-top: 15px;margin-bottom: 5px;"
+					) #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
                                     //Atis Kennung
-                                    div.panel.panel-default.text-center(buttonElement='atis',style="float:left;width:100%;margin-top:15px;margin-bottom:0px") ATIS
+                                    div.panel.panel-default.text-center(
+				    	buttonElement='atis'
+					style="float:left;width:100%;margin-top:15px;margin-bottom:0px"
+				    ) ATIS
                                     //Funkstellen
                                     div(style="float:left;padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px;height:25px;width:100%")
-                                        div.bg-success(id=(val[0] ? gesamteKonfig.FunkstellenDetails[val[0]].id : '--ohne--'),style="float:left; width:50%;border: 1px solid;border-color:#ddd;padding-left: 3px;padding-right: 3px")
+                                        div.bg-success(
+						id=(val[0] ? gesamteKonfig.FunkstellenDetails[val[0]].id : '--ohne--')
+						style="float:left; width:50%;border: 1px solid;border-color:#ddd;padding-left: 3px;padding-right: 3px"
+					)
                                             //Geraete von der Komponeten-ID abschneiden
                                             - test = val[0] ? val[0] : '---------------------';
                                             - test2 = test.substr(15,6);
                                             span #{val[0] ? test2 : '-ohne-'}
                                             //div.pull-right
                                             // span H
-                                        div.bg-success(id=(val[1] ? gesamteKonfig.FunkstellenDetails[val[1]].id : '--ohne--'),style="float:left; width:50%;border: 1px solid;border-color:#ddd;padding-left: 3px;padding-right: 3px")
+                                        div.bg-success(
+						id=(val[1] ? gesamteKonfig.FunkstellenDetails[val[1]].id : '--ohne--')
+						style="float:left; width:50%;border: 1px solid;border-color:#ddd;padding-left: 3px;padding-right: 3px"
+					)
                                             //Geraete von der Komponeten-ID abschneiden
                                             - test = val[1] ? val[1] : '---------------------';
                                             - test2 = test.substr(15,6);
@@ -82,10 +135,20 @@ block content
                                             //div.pull-right
                                             // span R
                                 //SPAN
-                                div.text-center(id=gesamteKonfig.ArbeitsplatzGeraete.SPAN01,style="float:left; width:100%;border-bottom-left-radius: 3px;border-bottom-right-radius: 3px;padding-left: 3px;padding-right: 3px") SPAN
+                                div.text-center(
+					id=gesamteKonfig.ArbeitsplatzGeraete.SPAN01
+					style="float:left; width:100%;border-bottom-left-radius: 3px;border-bottom-right-radius: 3px;padding-left: 3px;padding-right: 3px"
+				) SPAN
                                     //ZUM Test fuer PTT Darstellung span.label.label-danger PTT
                                     div.pull-right
-                                        span.glyphicon.glyphicon-chevron-down(data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.')
+                                        span.glyphicon.glyphicon-chevron-down(
+						data-toggle='popover'
+						container='panel-body'
+						data-placement='right'
+						title="Popover title"
+						data-html='true'
+						data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.'
+					)
 
 
 
@@ -93,7 +156,13 @@ block content
                     div#popover-content.hidden
                         p Lautstaerke per Softwareeinstellen
                         //input#ex1(data-slider-id='ex1Slider', type='text', data-slider-min='0', data-slider-max='100', data-slider-step='1', data-slider-value='15',data-slider-orientation='vertical')
-                        input#ex1(type='text', data-slider-min='0', data-slider-max='100', data-slider-step='10' ,data-slider-orientation='vertical')
+                        input#ex1(
+				type='text'
+				data-slider-min='0'
+				data-slider-max='100'
+				data-slider-step='10'
+				data-slider-orientation='vertical'
+			)
 
 
 
@@ -144,8 +213,8 @@ block content
                                         each val, index in gesamteKonfig.IpConfig.alternativeIPs
                                             a(href='http://'+val[1]) #{val[0]}
                                             | &nbsp;
-                                    //-audio(autoplay)
-                                    //-    source(src='burst4.wav' type='audio/wav')
+                                    audio(autoplay)
+                                        source(src='burst4.wav' type='audio/wav')
 
 
 
