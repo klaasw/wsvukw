@@ -405,7 +405,11 @@ block append testcode2
                     $('#' + button + ' [buttonElement="Flaeche"]').addClass("bg-danger")
                     $('#' + button + ' [buttonElement="Flaeche"] h2').addClass("text-danger")
 
-                    $.notify('Empfang:' + ApFunkstellen[msg.RX.$.id].sname)
+                    $.notify({
+                    	message:'Empfang:<br>' + ApFunkstellen[msg.RX.$.id].sname
+                    },{
+                    	type: 'danger'
+                    })
                     console.log(msg.RX.$.id)
                 }
                 //Empfangen deaktiv
@@ -490,7 +494,7 @@ block append testcode2
 
                             //$('#'+button+' > div > div.panel-heading > span').text( "aufgeschaltet" )
                             $('#' + button + ' > div').addClass("panel-primary")
-                            $('#' + button + ' > div').css("background-color", "cadetblue")
+                            $('#' + button + ' > div').css("background-color", "#d9edf7")
                             $('#' + button + ' > div > div:nth-child(3)').addClass("bg-primary")
 
                             ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true
