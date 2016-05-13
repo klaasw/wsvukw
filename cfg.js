@@ -33,7 +33,7 @@ var cfg = {
     },
     "port": cfgIPs.port,
     "configPath": '../config/',
-    "intervall": 30000,
+    "intervall": 10000,
 
     "alternativeIPs": cfgIPs.alternativeServer
 };

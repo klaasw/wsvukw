@@ -33,12 +33,15 @@ FILENAME = __filename.slice(__dirname.length + 1);
 exports.pruefeRfdWS = function () {
     //Pruefung lokaler VTR
     request(cfg.urlRFDWebservice, {timeout: 2000}, function (error, response, body) {
+       
         if (!error && response.statusCode == 200) {
-            //log.debug(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK')
+            log.debug(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK')
             sendeWebNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'OK'}})
         }
-        if (error)
+        else{
             log.error(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + error)
+            sendeWebNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'Error'}})
+        }
     })
 };
 
