@@ -16,9 +16,7 @@ FILENAME = __filename.slice(__dirname.length + 1);
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.render('index', {
-        title: 'Express'
-    });
+    res.redirect('/ukw');
 });
 
 /* GET UKW uebersicht */
@@ -59,12 +57,12 @@ router.get('/ukw', function (req, res) {
     var benutzer = findeApNachIp(req.ip); //Arbeitsplatz aus Konfig lesen
     if (benutzer) {
         log.debug(FILENAME + ' Arbeitsplatz gefunden! IP: ' + req.ip);
-        erstelleKonfigFurAp2(benutzer, function (konfig) {
+        erstelleKonfigFurAp(benutzer, function (konfig) {
             //Uebergebe Funkstellen ID an Jade Template
             log.info(konfig.FunkstellenDetails[konfig.FunkstellenReihe['Button11'][0]]);
             //ukwDisplay --> zum Testen eines neuen Layouts
             res.render('ukwDisplay', {
-
+                log: log,  // logging auch im Jade-Template moeglich!
                 gesamteKonfig: konfig
 
             }); //res send ende
@@ -88,7 +86,7 @@ router.get('/ukw_kl', function (req, res) {
     var benutzer = findeApNachIp(req.ip); //Arbeitsplatz aus Konfig lesen
     if (benutzer) {
         log.debug(FILENAME + ' Arbeitsplatz gefunden! IP: ' + req.ip);
-        erstelleKonfigFurAp2(benutzer, function (konfig) {
+        erstelleKonfigFurAp(benutzer, function (konfig) {
             //Uebergebe Funkstellen ID an Jade Template
             log.info(konfig.FunkstellenDetails[konfig.FunkstellenReihe['Button11'][0]]);
             //ukwDisplay --> zum Testen eines neuen Layouts
@@ -127,7 +125,8 @@ router.get('/ukwKonfig', function (req, res) {
                 FunkstellenReihe: [],
                 FunkstellenDetails: {},
                 ArbeitsplatzGeraete: {},
-                MhanZuordnung: {}
+                MhanZuordnung: {},
+                IpConfig: cfg
             };
             for (t = 0; t < Funkstellen2.length; t++) {
                 log.debug(Funkstellen2[t].id);
@@ -140,7 +139,7 @@ router.get('/ukwKonfig', function (req, res) {
             if (benutzer) {
                 log.debug(FILENAME + ' Benutzer zu IP  = ' + benutzer + ' ' + req.query.ip);
                 //res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
-                erstelleKonfigFurAp2(benutzer, function (Konfig) {
+                erstelleKonfigFurAp(benutzer, function (Konfig) {
                     res.send(Konfig)
                 })
             } else {
@@ -176,7 +175,7 @@ router.get('/ukwKonfig', function (req, res) {
             log.debug(FILENAME + ' Funktion: router get /ukwKonfig ermittelter User: ' + benutzer);
             //res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
             // TODO: testen, ob hier das richtige passiert
-            erstelleKonfigFurAp2(benutzer, function (Konfig) {
+            erstelleKonfigFurAp(benutzer, function (Konfig) {
                 // Test wg Lotse erstelleKonfigFuerLotsenKanal(benutzer, false, function (Konfig) {
                 res.send({
                     'Konfigdaten': Konfig,
@@ -347,7 +346,7 @@ function findeFstNachId(Id) {
     return 'frei'
 }
 
-function erstelleKonfigFurAp2(Ap, callback) {
+function erstelleKonfigFurAp(Ap, callback) {
 
     //Bilde temporaeres Objekt um Funkstelle als Value hinzuzufuegen
     var tmpArr = [];
@@ -402,7 +401,8 @@ function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
         FunkstellenReihe: [],
         FunkstellenDetails: {},
         LotsenAp: {},
-        MhanZuordnung: {}
+        MhanZuordnung: {},
+        IpConfig: cfg
     };
 
 
