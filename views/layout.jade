@@ -1,3 +1,22 @@
+mixin errorModal
+    #errorModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='errorModalLabel')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true')
+                    h4#errorModalLabel.modal-title Fehler
+                .modal-body
+                    p.
+                        Verbindung zum Server abgebrochen. Bitte verwenden Sie folgende alternativen Server:
+                    p
+                        each val, index in gesamteKonfig.IpConfig.alternativeIPs
+                            a(href='http://' + val[1]) #{val[0]}
+                            | &nbsp;
+                    audio(autoplay)
+                        source(src='burst4.wav' type='audio/wav')
+
+
 doctype html
 html
     head
@@ -43,15 +62,21 @@ html
                                     a(href='/overview') &Uuml;bersicht
                                 li#konf
                                     a(href='/zuordnung') RL Kanalzuordnung
-                            button.btn.btn-primary.navbar-btn.navbar-right#buttonWHV WHV&nbsp
-                                span.label.label-success#buttonWHV_DUE DUE
-                                span.label.label-success#buttonWHV_RFD RFD
-                            button.btn.btn-default.navbar-btn.navbar-right#buttonBRB BRB&nbsp
-                                span.label.label-danger#buttonBRB_DUE DUE
-                                span.label.label-danger#buttonBRB_RFD RFD
-                            button.btn.btn-default.navbar-btn.navbar-right#buttonLUB LUB&nbsp
-                                span.label.label-danger#buttonLUB_DUE DUE
-                                span.label.label-danger#buttonLUB_RFD RFD
+                            // Schleife ueber alle alternativen Server, ID dynamisch zusammensetzen
+                            // wichtig dabei: Variable #{val[0]} in einfachen Anführungzeichen, sonst Interpolation-Fehler
+                            if (!error)
+                                each val, index in gesamteKonfig.IpConfig.alternativeIPs
+                                    //- log.debg("cfg.httpIP: "+gesamteKonfig.IpConfig.cfgIPs.httpIP+":"+gesamteKonfig.IpConfig.port)
+                                    //- log.debug("vergleich mit: "+val[1])
+                                    //- var buttonActiveVTR = (val[1] == gesamteKonfig.IpConfig.cfgIPs.httpIP+":"+gesamteKonfig.IpConfig.port ? ' buttonActiveVTR': '')
+                                    //- var buttonActiveVTR_DUE = (val[1] == gesamteKonfig.IpConfig.cfgIPs.httpIP+":"+gesamteKonfig.IpConfig.port ? ' buttonActiveVTR_DUE': '')
+                                    //- var buttonActiveVTR_RFD = (val[1] == gesamteKonfig.IpConfig.cfgIPs.httpIP+":"+gesamteKonfig.IpConfig.port ? ' buttonActiveVTR_RFD': '')
+                                    //- log.debug('buttonActiveVTR: '+buttonActiveVTR)
+                                    a(href='http://' + val[1])
+                                        button.btn.btn-primary.navbar-btn.navbar-right(id='button'+'#{val[0]}') &nbsp#{val[0]}&nbsp
+                                            span.label.label-success(id='button'+'#{val[0]}'+'_DUE') DUE
+                                            span.label.label-success(id='button'+'#{val[0]}'+'_RFD') RFD
+
             block content
             block testcode2
                 script.

@@ -3,12 +3,12 @@ var fs = require('fs'); // Zugriff auf das Dateisystem
 
 function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
     // eine existierende Datei in ./config/servers/ geht vor, damit man auf einer Maschine mehrfach mit unterschiedlichen Ports starten kann:
-	try {
-		return require('./config/servers/serverIPs.json');
-	} catch (e) {
-		// try next
-	}			
-	var nInterfaces = require('os').networkInterfaces();
+    try {
+        return require('./config/servers/serverIPs.json');
+    } catch (e) {
+        // try next
+    }
+    var nInterfaces = require('os').networkInterfaces();
     for (interface in nInterfaces) {
         for (adapter in nInterfaces[interface]) {
             try {
@@ -35,7 +35,8 @@ var cfg = {
     "configPath": '../config/',
     "intervall": 10000,
 
-    "alternativeIPs": cfgIPs.alternativeServer
+    "alternativeIPs": cfgIPs.alternativeServer,
+    "cfgIPs": cfgIPs
 };
 
 module.exports = cfg;
