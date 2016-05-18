@@ -5,6 +5,7 @@ var files = require('fs'); // Zugriff auf das Dateisystem
 FILENAME = __filename.slice(__dirname.length + 1);
 
 var io = require('socket.io');
+var socketClient = require('socket.io/node_modules/socket.io-client')
 
 var socketGlobal;
 
@@ -83,3 +84,15 @@ exports.emit = function emit(messagetype, message) {
         return socketGlobal.emit(messagetype, message);
     }
 };
+
+//TODO: Gegenseitige Serverüberwachung
+var client = socketClient.connect('http://10.162.1.84:3000')
+client.on('connect',function() {
+    log.debug("Verbunden mit..........................");
+}); 
+
+client.on('disconnect', function() {
+    log.debug("Getrennt von...........................")
+});
+
+
