@@ -28,53 +28,107 @@ block content
                         // - console.log(!{index})
                         // - console.log(!{val})
 
-                        if index == 'Button11' || index == 'Button21' || index == 'Button31'
+                        if index == 'Button11' || index == 'Button21' || index == 'Button31' || index == 'Button41'
                             div.row
 
                         div.col-md-2(id=index + 'panel',style="padding-left: 5px;padding-right: 5px;")
-                            div.panel.panel-default(class=(val[0] == 'frei' ? 'hidden' : ''),style="float:left")
+                            div.panel.panel-default(
+                                class=(val[0] == 'frei' ? 'hidden' : '')
+                                style="float:left"
+                            )
                                 //Block Mithoeren
-                                div(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]],style="width:100%")
+                                div(
+                                    id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]]
+                                    style="width:100%"
+                                )
                                     //Schaltflaeche MHAN
-                                    div.text-center(style="width:100%;border-top-left-radius: 3px;border-top-right-radius: 3px;background-color:#f5f5f5;padding-left: 3px;padding-right: 3px") #{(gesamteKonfig.MhanZuordnung[val[0]] ? gesamteKonfig.MhanZuordnung[val[0]] : '--ohne--')}
+                                    div.text-center(
+                                        style="width:100%;border-top-left-radius: 3px;border-top-right-radius: 3px;background-color:#f5f5f5;padding-left: 3px;padding-right: 3px"
+                                    ) #{(gesamteKonfig.MhanZuordnung[val[0]] ? gesamteKonfig.MhanZuordnung[val[0]] : '--ohne--')}
                                         div.pull-right
-                                            span.glyphicon.glyphicon-chevron-down(data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.')
+                                            span.glyphicon.glyphicon-chevron-down(
+                                                data-toggle='popover'
+                                                container='panel-body'
+                                                data-placement='right'
+                                                title="Popover title"
+                                                data-html='true'
+                                                data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.'
+                                                )
+                                    //Schaltflaeche Ship
                                     div.text-center.bg-success(style="float:left; width:50%")
-                                        //Schaltflaeche Ship
-                                        div(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship',onclick='schalteKanal(event,this)',style="cursor: pointer;z-index:-1;float:left;width:20%;height: 44px;padding-top: 12px;font-size: 16px;font-weight: bold;")
+                                        
+                                        div(
+                                            id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship'
+                                            onclick='schalteKanal(event,this)'
+                                            style="cursor: pointer;z-index:-1;float:left;width:20%;height: 44px;padding-top: 12px;font-size: 16px;font-weight: bold;"
+                                        )
                                             span S
                                         div.pull-right
                                             span#test 50
                                             //span.glyphicon.glyphicon-volume-up(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]]+'ship_pegel',onclick='setzeLautstaerke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;",data-toggle='modal',data-target='#pegelModal')
-                                            span.glyphicon.glyphicon-volume-up(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship_pegel',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;", data-toggle='popover', container='panel-body' ,data-placement='right', data-html='true',data-content="<input id='ex1', type='text', data-slider-min='0', data-slider-max='100', data-slider-step='10' ,data-slider-orientation='vertical'>")
+                                            span.glyphicon.glyphicon-volume-up(
+                                            id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship_pegel'
+                                            style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;"
+                                            data-toggle='popover'
+                                            container='panel-body'
+                                            data-placement='right'
+                                            data-html='true'
+                                            data-content="<input id='ex1', type='text', data-slider-min='0', data-slider-max='100', data-slider-step='10' ,data-slider-orientation='vertical'>"
+                                        )
+                                    //Schaltflaeche Pilot
                                     div.text-center(style="float:left; width:50%;background-color:#f5f5f5")
-                                        //Schaltflaeche Pilot
                                         div(style="float:left;width:20%;height: 44px;padding-top: 12px;font-size: 16px;font-weight: bold;")
                                             span L
                                         div.pull-right
                                             span#test2 100
-                                            span.glyphicon.glyphicon-volume-up(onclick='setzeLautstaerke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;",data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<p>Lautstaerke per Softwareeinstellen<input id="ex1" type="text" data-slider-min="0" data-slider-max="100" data-slider-step="10" data-slider-orientation="vertical"/></p>')
+                                            span.glyphicon.glyphicon-volume-up(
+                                                onclick='setzeLautstaerke(this.id)'
+                                                style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;"
+                                                data-toggle='popover'
+                                                container='panel-body'
+                                                data-placement='right'
+                                                title="Popover title"
+                                                data-html='true'
+                                                data-content='<p>Lautstaerke per Softwareeinstellen<input id="ex1" type="text" data-slider-min="0" data-slider-max="100" data-slider-step="10" data-slider-orientation="vertical"/></p>'
+                                            )
                                 //Schaltflaeche Kanal
-                                div(id=index,buttonElement='Flaeche',onclick='schalteKanal(event,this,"SPAN")',style="float:left; width:100%; cursor: pointer;z-index:-1;padding-top: 3px;padding-bottom: 3px")
+                                div(
+                                    id=index
+                                    buttonElement='Flaeche'
+                                    onclick='schalteKanal(event,this,"SPAN")'
+                                    style="float:left; width:100%; cursor: pointer;z-index:-1;padding-top: 3px;padding-bottom: 3px"
+                                )
                                     if gesamteKonfig.FunkstellenDetails[val[0]].MKA
                                         h2.text-right(id=index,style="margin-top: 15px;margin-bottom: 5px;")
                                             span #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
                                             button.btn.btn-default.btn-lg.dropdown-toggle(type='button', data-toggle='modal',data-target='#mkaModal',style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 36px;margin-top: -5px;",onclick='setzeKanalMka(event,this)')
                                                 span.caret
                                     else
-                                        h2.text-center(id=index,style="margin-top: 15px;margin-bottom: 5px;") #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
+                                        h2.text-center(
+                                            id=index
+                                            style="margin-top: 15px;margin-bottom: 5px;"
+                                        ) #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
                                     //Atis Kennung
-                                    div.panel.panel-default.text-center(buttonElement='atis',style="float:left;width:100%;margin-top:15px;margin-bottom:0px") ATIS
+                                    div.panel.panel-default.text-center(
+                                        buttonElement='atis'
+                                        style="float:left;width:100%;margin-top:15px;margin-bottom:0px"
+                                    ) ATIS
                                     //Funkstellen
                                     div(style="float:left;padding-left: 3px;padding-right: 3px;padding-top: 2px;padding-bottom: 2px;height:25px;width:100%")
-                                        div.bg-success(id=(val[0] ? gesamteKonfig.FunkstellenDetails[val[0]].id : '--ohne--'),style="float:left; width:50%;border: 1px solid;border-color:#ddd;padding-left: 3px;padding-right: 3px")
+                                        div.bg-success(
+                                            id=(val[0] ? gesamteKonfig.FunkstellenDetails[val[0]].id : '--ohne--')
+                                            style="float:left; width:50%;border: 1px solid;border-color:#ddd;padding-left: 3px;padding-right: 3px"
+                                        )
                                             //Geraete von der Komponeten-ID abschneiden
                                             - test = val[0] ? val[0] : '---------------------';
                                             - test2 = test.substr(15,6);
                                             span #{val[0] ? test2 : '-ohne-'}
                                             //div.pull-right
                                             // span H
-                                        div.bg-success(id=(val[1] ? gesamteKonfig.FunkstellenDetails[val[1]].id : '--ohne--'),style="float:left; width:50%;border: 1px solid;border-color:#ddd;padding-left: 3px;padding-right: 3px")
+                                        div.bg-success(
+                                            id=(val[1] ? gesamteKonfig.FunkstellenDetails[val[1]].id : '--ohne--')
+                                            style="float:left; width:50%;border: 1px solid;border-color:#ddd;padding-left: 3px;padding-right: 3px"
+                                        )
                                             //Geraete von der Komponeten-ID abschneiden
                                             - test = val[1] ? val[1] : '---------------------';
                                             - test2 = test.substr(15,6);
@@ -82,10 +136,20 @@ block content
                                             //div.pull-right
                                             // span R
                                 //SPAN
-                                div.text-center(id=gesamteKonfig.ArbeitsplatzGeraete.SPAN01,style="float:left; width:100%;border-bottom-left-radius: 3px;border-bottom-right-radius: 3px;padding-left: 3px;padding-right: 3px") SPAN
+                                div.text-center(
+                                    id=gesamteKonfig.ArbeitsplatzGeraete.SPAN01
+                                    style="float:left; width:100%;border-bottom-left-radius: 3px;border-bottom-right-radius: 3px;padding-left: 3px;padding-right: 3px"
+                                ) SPAN
                                     //ZUM Test fuer PTT Darstellung span.label.label-danger PTT
                                     div.pull-right
-                                        span.glyphicon.glyphicon-chevron-down(data-toggle='popover', container='panel-body' ,data-placement='right', title="Popover title", data-html='true',data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.')
+                                        span.glyphicon.glyphicon-chevron-down(
+                                            data-toggle='popover'
+                                            container='panel-body'
+                                            data-placement='right'
+                                            title="Popover title"
+                                            data-html='true'
+                                            data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.'
+                                        )
 
 
 
@@ -93,7 +157,13 @@ block content
                     div#popover-content.hidden
                         p Lautstaerke per Softwareeinstellen
                         //input#ex1(data-slider-id='ex1Slider', type='text', data-slider-min='0', data-slider-max='100', data-slider-step='1', data-slider-value='15',data-slider-orientation='vertical')
-                        input#ex1(type='text', data-slider-min='0', data-slider-max='100', data-slider-step='10' ,data-slider-orientation='vertical')
+                        input#ex1(
+                            type='text'
+                            data-slider-min='0'
+                            data-slider-max='100'
+                            data-slider-step='10'
+                            data-slider-orientation='vertical'
+                        )
 
 
 
@@ -108,7 +178,7 @@ block content
                                 .modal-header
                                     button.close(type='button', data-dismiss='modal', aria-label='Close')
                                         span(aria-hidden='true')
-                                    h4#mkaModalLabel.modal-title Modal title
+                                    h4#mkaModalLabel.modal-title Kanalauswahl für Mehrkanal-Anlage
                                 .modal-body
                                     p
                                         button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 1
@@ -126,24 +196,23 @@ block content
                                         button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 69
                                         button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 68
 
-                                .modal-footer
-                                    button.btn.btn-default(type='button', data-dismiss='modal') Close
-                                    button.btn.btn-primary(type='button') Save changes
+                                    #mySpinbox.spinbox(data-initialize='spinbox', style="font-size: 20px; width: 20%;")
+                                        input.form-control.input-mini.spinbox-input(type='text', style="height: 80px;font-size:25px")
+                                        div.spinbox-buttons.btn-group.btn-group-vertical(style="width:60px")
+                                            button.btn.btn-default.spinbox-up.btn-lg(type='button', style=" width: 63px; height: 36px;")
+                                                span.glyphicon.glyphicon-chevron-up
+                                                span.sr-only Increase
+                                            button.btn.btn-default.spinbox-down.btn-lg(type='button', style=" width: 63px; height: 36px;")
+                                                span.glyphicon.glyphicon-chevron-down
+                                                span.sr-only Decrease
 
-                    #errorModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='errorModalLabel')
-                        .modal-dialog(role='document')
-                            .modal-content
-                                .modal-header
-                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
-                                        span(aria-hidden='true')
-                                    h4#errorModalLabel.modal-title Fehler
-                                .modal-body
-                                    p
-                                        | Verbindung zum Server abgebrochen. Bitte verwenden Sie folgende alternativen Server:
-                                    p
-                                        each val, index in gesamteKonfig.IpConfig.alternativeIPs
-                                            a(href='http://' + val[1]) #{val[0]}
-                                            | &nbsp;
+
+                                .modal-footer
+                                    button.btn.btn-default(type='button', data-dismiss='modal') schließen
+                                    button.btn.btn-primary(type='button') Ändern
+                    // errorModal als mixin ausgelagert nach layout.jade
+                    +errorModal('DUE','Fehler','Verbindung zum Server abgebrochen. Bitte verwenden Sie folgende alternativen Server:')
+                    +errorModal('RFD','RFD-Fehler','Verbindung zum RFD-Dienst abgebrochen. Bitte verwenden Sie folgende alternativen Server:')
 
 
 
@@ -167,22 +236,12 @@ block append testcode2
         var ApFunkstellen = {};
         var ArbeitsplatzGeraete;
         var Einzel = true;
-        var einzelStatus
-        var gruppenStatus
-
-        //Diese noch in eine Konfig. auslagern
-        var DUEWHV = '10.160.1.64'
-        var DUEBRB = '10.160.2.64'
-        var DUELUB = '10.160.3.64'
-        var RFDWHV = '10.160.1.96'
-        var RFDBRB = '10.92.2.42'
-        var RFDLUB = '10.92.3.42'
-
-
-
+        var einzelStatus;
+        var gruppenStatus;
+        var IpConfig;
 
         //WebSocket Verbindung herstellen
-        var aktuellerUKWserver = location.protocol + '//' + location.hostname + ':3000'
+        var aktuellerUKWserver = location.protocol + '//' + location.hostname + ':'+ location.port;
         var socket = io(aktuellerUKWserver);
 
         ladeKonfig()
@@ -198,16 +257,16 @@ block append testcode2
             position: null,
             type: "info",
             allow_dismiss: true,
-            newest_on_top: false,
+            newest_on_top: true,
             showProgressbar: false,
             placement: {
                 from: "top",
                 align: "right"
             },
-            offset: 20,
+            offset: {x:5,y:45},
             spacing: 10,
             z_index: 1031,
-            delay: 5000,
+            delay: 50000,
             timer: 1000,
             url_target: '_blank',
             mouse_over: null,
@@ -235,14 +294,21 @@ block append testcode2
         //Variablen zum Arbeitsplatz laden
         function ladeKonfig() {
             $.get("ukwKonfig", function (data) { //IP-Adress nur als Platzhalter zum Testen
+                console.log('ukwKonfig data:'+ data);
+
                 ApFunkstellen = data.Konfigdaten.FunkstellenDetails
                 SPAN = data.Konfigdaten.ArbeitsplatzGeraete.SPAN01
                 MhanZuordnung = data.Konfigdaten.MhanZuordnung
                 ArbeitsplatzGeraete = data.Konfigdaten.ArbeitsplatzGeraete
                 ApID = data.Arbeitsplatz
-
+                IpConfig = data.Konfigdaten.IpConfig
+                console.log('geladeneIPconfig: '+ JSON.stringify(data.Konfigdaten.IpConfig));
 
                 lautsprecherAufschalten(MhanZuordnung);
+            }).fail(function () {
+                console.log('ukwKonfig konnte nicht geladen werden - Kanalzuordnung kann nicht angezeigt werden.');
+                // TODO Fehlerdetail uebergeben: ukwKonfig konnte nicht geladen werden
+                $('#errorModalRFD').modal('show')
             });
         }
 
@@ -338,17 +404,17 @@ block append testcode2
         function verbindungsPruefung() {
             socket.on('connect', function () {
                 console.log('check 2------------------------VERBUNDEN', socket.connected);
-                $('#buttonWHV_DUE').removeClass("label-danger")
-                $('#buttonWHV_DUE').addClass("label-success")
-
+                $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').removeClass("label-danger")
+                $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').addClass("label-success")
             });
 
 
             socket.on('disconnect', function () {
                 console.log('check 2-----------------------GETRENNT', socket.connected);
-                $('#buttonWHV_DUE').removeClass("label-success")
-                $('#buttonWHV_DUE').addClass("label-danger")
+                $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').removeClass("label-success")
+                $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').addClass("label-danger")
                 //Zeige Error Modal Fenster
+                // TODO: Wiederverbindung versuchen, waehrend dieser Zeit kein Fehler zeigen, sondern erst dann?
                 $('#errorModalDUE').modal('show')
             });
         }
@@ -356,31 +422,34 @@ block append testcode2
 
 
 
-
-
-
         //Loeschen
         //Alle eingehenden WebSocket Nachrichten einhaengen TYP 'statusMessage'
         socket.on('statusMessage', function (msg) {
-            if (msg.RfdStatus.URL.indexOf(RFDWHV) > -1 && msg.RfdStatus.Status == 'OK') {
-                $('#buttonWHV_RFD').removeClass("label-danger")
-                $('#buttonWHV_RFD').addClass("label-success")
-
-            }
-
-            if (msg.RfdStatus.URL.indexOf(RFDWHV) > -1 && msg.RfdStatus.Status == 'Error') {
-                $('#buttonWHV_RFD').removeClass("label-success")
-                $('#buttonWHV_RFD').addClass("label-danger")
-
-            }
-
-
-            //if()
+            //-console.log("statusMessage received: "+ JSON.stringify(msg) + ' - '+ JSON.stringify(IpConfig.alternativeIPs) + '#')
+            for(var i=0; i < IpConfig.alternativeIPs.length; i++ ){
+                //-console.log('statusMessage: loop '+ i+' - '+ "  / suche rfdIP:" + IpConfig.cfgIPs.rfdIP + ' in '+msg.RfdStatus.URL + '     gefunden an Position: ' + msg.RfdStatus.URL.indexOf(IpConfig.cfgIPs.rfdIP));
+                var vergleich = IpConfig.alternativeIPs[i];
+                //- hier ist noch nicht die Zuordnung der RFD-IP zu allen RFD-IPs moeglich, da nur die eigene IP bekannt ist - alle drei in Konfig eintragen
+                //- aktueller VTR ist der bevorzugte aus Config
+                if (vergleich[0].indexOf('#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}') > -1){
+                    //- rfd IP ist die an der x. Stelle konfigurierte (trift noch ueberall zu, weil noch nicht in Config alle rdfIPs stehen)
+                    if (msg.RfdStatus.URL.indexOf(IpConfig.cfgIPs.rfdIP) > -1){
+                        if (msg.RfdStatus.Status == 'OK') {
+                            $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-danger")
+                            $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-success")
+                        } else if (msg.RfdStatus.Status == 'Error') {
+                            $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-success")
+                            $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-danger")
+                        } //if()
+                    } //if()
+                } //if()
+            } // for
         });
 
 
         //eingehende Socket Nachrichten vom TYP rfdMessage, Statusmeldungen verarbeitebn
         socket.on('ukwMessage', function (msg) {
+            //-console.log("ukwMessage received: "+ JSON.stringify(msg));
             if (typeof msg === 'object') {
                 //Empfangen aktiv
                 if ('RX' in msg && msg.RX.$.state === '1') {
@@ -391,7 +460,11 @@ block append testcode2
                     $('#' + button + ' [buttonElement="Flaeche"]').addClass("bg-danger")
                     $('#' + button + ' [buttonElement="Flaeche"] h2').addClass("text-danger")
 
-                    $.notify('Empfang:' + ApFunkstellen[msg.RX.$.id].sname)
+                    $.notify({
+                        message: 'Empfang:<br>' + ApFunkstellen[msg.RX.$.id].sname
+                    }, {
+                        type: 'danger'
+                    })
                     console.log(msg.RX.$.id)
                 }
                 //Empfangen deaktiv
@@ -471,18 +544,19 @@ block append testcode2
 
                         //aendern Darstellung fuer SPAN
                         if (msg.geschaltet.$.Ap.indexOf("SPAN") != -1) {
-                            //suche SChaltflaeche zu FunkstellenID
+                            //suche Schaltflaeche zu FunkstellenID
                             button = $('#' + msg.geschaltet.$.id).offsetParent().attr('id')
 
                             //$('#'+button+' > div > div.panel-heading > span').text( "aufgeschaltet" )
                             $('#' + button + ' > div').addClass("panel-primary")
+                            $('#' + button + ' > div').css("background-color", "#d9edf7")
                             $('#' + button + ' > div > div:nth-child(3)').addClass("bg-primary")
 
                             ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true
-                            $.notify('Aufgeschaltet:' + ApFunkstellen[msg.geschaltet.$.id].sname + '')
+                            $.notify('Aufgeschaltet: <br>' + ApFunkstellen[msg.geschaltet.$.id].sname)
                             console.log(msg.geschaltet.$.id)
                             //geschaltetet Zustände an Server übertragen
-                            socket.emit('clientMessageSchaltzustand',{
+                            socket.emit('clientMessageSchaltzustand', {
                                 'Zustand': ApFunkstellen,
                                 'Arbeitsplatz': ApID
                             })
@@ -506,23 +580,35 @@ block append testcode2
                             button = $('#' + msg.getrennt.$.id).offsetParent().attr('id')
                             //$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
                             $('#' + button + ' > div').removeClass("panel-primary")
+                            $('#' + button + ' > div').css("background-color", "")
+
                             $('#' + button + ' > div > div:nth-child(3)').removeClass("bg-primary")
                             ApFunkstellen[msg.getrennt.$.id].aufgeschaltet = false
-                            $.notify('Getrennt:' + ApFunkstellen[msg.getrennt.$.id].sname + '')
+                            $.notify('Getrennt: <br>' + ApFunkstellen[msg.getrennt.$.id].sname)
                             console.log(msg.getrennt.$.id)
                             //geschaltetet Zustände an Server übertragen
-                            socket.emit('clientMessageSchaltzustand',{
+                            socket.emit('clientMessageSchaltzustand', {
                                 'Zustand': ApFunkstellen,
                                 'Arbeitsplatz': ApID
                             })
                         }
                     }
                 }
-            }
+
+
+            }  // if (typeof msg === 'object')
             else {
                 msgText = msg.replace("<", "")
                 msgText = msgText.replace("\>", "")
-                console.log(msgText)
+
+                // RFD Fehler
+                if (msgText.startsWith('RFD') && msgText.endsWith('fehlgeschlagen')) {
+                    //-console.log('RFD Aufruf fehlgeschlagen')
+                    $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_RFD').removeClass("label-success")
+                    $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_RFD').addClass("label-danger")
+                } else {
+                    console.log(msgText)
+                }
                 //$.notify('Meldung: '+msgText)
 
                 //$('#messages').append($('<li>').text(msg));
@@ -634,7 +720,7 @@ block append testcode2
                 'SPAN': geklickteSPANMHAN,
                 'aktion': 'trennenEinfach'
             })
-            $.notify('Trenne: ' + ApFunkstellen[geklickteID].sname + ' ...');
+            $.notify('Trenne: <br>' + ApFunkstellen[geklickteID].sname);
             //ApFunkstellen[geklickteID].aufgeschaltet=false
 
             //$('#'+geklickteID+'-Panel > div').removeClass( "panel-primary" )
@@ -648,7 +734,7 @@ block append testcode2
                 'SPAN': geklickteSPANMHAN,
                 'aktion': 'schaltenEinfach'
             })
-            $.notify('Schalte: ' + ApFunkstellen[geklickteID].sname + ' ...')
+            $.notify('Schalte: <br>' + ApFunkstellen[geklickteID].sname)
 
             //ApFunkstellen[geklickteID].aufgeschaltet=true
             //$('#'+geklickteID+'-Panel > div > div.panel-heading > span').text( "aufgeschaltet" )

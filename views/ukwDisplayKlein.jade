@@ -53,9 +53,10 @@ block content
                                                 title="Popover title"
                                                 data-html='true'
                                                 data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.'
-                                            )
+                                                )
+                                    //Schaltflaeche Ship
                                     div.text-center.bg-success(style="float:left; width:50%")
-                                        //Schaltflaeche Ship
+                                        
                                         div(
                                             id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship'
                                             onclick='schalteKanal(event,this)'
@@ -66,16 +67,16 @@ block content
                                             span#test 50
                                             //span.glyphicon.glyphicon-volume-up(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]]+'ship_pegel',onclick='setzeLautstaerke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;",data-toggle='modal',data-target='#pegelModal')
                                             span.glyphicon.glyphicon-volume-up(
-                                                id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship_pegel'
-                                                style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;"
-                                                data-toggle='popover'
-                                                container='panel-body'
-                                                data-placement='right'
-                                                data-html='true'
-                                                data-content="<input id='ex1', type='text', data-slider-min='0', data-slider-max='100', data-slider-step='10' ,data-slider-orientation='vertical'>"
-                                            )
+                                            id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship_pegel'
+                                            style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;"
+                                            data-toggle='popover'
+                                            container='panel-body'
+                                            data-placement='right'
+                                            data-html='true'
+                                            data-content="<input id='ex1', type='text', data-slider-min='0', data-slider-max='100', data-slider-step='10' ,data-slider-orientation='vertical'>"
+                                        )
+                                    //Schaltflaeche Pilot
                                     div.text-center(style="float:left; width:50%;background-color:#f5f5f5")
-                                        //Schaltflaeche Pilot
                                         div(style="float:left;width:20%;height: 44px;padding-top: 12px;font-size: 16px;font-weight: bold;")
                                             span L
                                         div.pull-right
@@ -96,7 +97,7 @@ block content
                                     buttonElement='Flaeche'
                                     onclick='schalteKanal(event,this,"SPAN")'
                                     style="float:left; width:100%; cursor: pointer;z-index:-1;padding-top: 3px;padding-bottom: 3px"
-                                    )
+                                )
                                     if gesamteKonfig.FunkstellenDetails[val[0]].MKA
                                         h2.text-right(id=index,style="margin-top: 15px;margin-bottom: 5px;")
                                             span #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
@@ -120,7 +121,7 @@ block content
                                         )
                                             //Geraete von der Komponeten-ID abschneiden
                                             - test = val[0] ? val[0] : '---------------------';
-                                            - test2 = test.substr(8,6);
+                                            - test2 = test.substr(15,6);
                                             span #{val[0] ? test2 : '-ohne-'}
                                             //div.pull-right
                                             // span H
@@ -130,7 +131,7 @@ block content
                                         )
                                             //Geraete von der Komponeten-ID abschneiden
                                             - test = val[1] ? val[1] : '---------------------';
-                                            - test2 = test.substr(8,6);
+                                            - test2 = test.substr(15,6);
                                             span #{val[1] ? test2 : '-ohne-'}
                                             //div.pull-right
                                             // span R
@@ -209,23 +210,9 @@ block content
                                 .modal-footer
                                     button.btn.btn-default(type='button', data-dismiss='modal') schließen
                                     button.btn.btn-primary(type='button') Ändern
-
-                    #errorModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='errorModalLabel')
-                        .modal-dialog(role='document')
-                            .modal-content
-                                .modal-header
-                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
-                                        span(aria-hidden='true')
-                                    h4#errorModalLabel.modal-title Fehler
-                                .modal-body
-                                    p
-                                        | Verbindung zum Server abgebrochen. Bitte verwenden Sie folgende alternativen Server:
-                                    p
-                                        each val, index in gesamteKonfig.IpConfig.alternativeIPs
-                                            a(href='http://' + val[1]) #{val[0]}
-                                            | &nbsp;
-                                    audio(autoplay)
-                                        source(src='burst4.wav' type='audio/wav')
+                    // errorModal als mixin ausgelagert nach layout.jade
+                    +errorModal('DUE','Fehler','Verbindung zum Server abgebrochen. Bitte verwenden Sie folgende alternativen Server:')
+                    +errorModal('RFD','RFD-Fehler','Verbindung zum RFD-Dienst abgebrochen. Bitte verwenden Sie folgende alternativen Server:')
 
 
 
@@ -249,22 +236,12 @@ block append testcode2
         var ApFunkstellen = {};
         var ArbeitsplatzGeraete;
         var Einzel = true;
-        var einzelStatus
-        var gruppenStatus
-
-        //Diese noch in eine Konfig. auslagern
-        var DUEWHV = '10.160.1.64'
-        var DUEBRB = '10.160.2.64'
-        var DUELUB = '10.160.3.64'
-        var RFDWHV = '10.162.1.96'
-        var RFDBRB = '10.92.2.42'
-        var RFDLUB = '10.92.3.42'
-
-
-
+        var einzelStatus;
+        var gruppenStatus;
+        var IpConfig;
 
         //WebSocket Verbindung herstellen
-        var aktuellerUKWserver = location.protocol + '//' + location.hostname + ':3000'
+        var aktuellerUKWserver = location.protocol + '//' + location.hostname + ':'+ location.port;
         var socket = io(aktuellerUKWserver);
 
         ladeKonfig()
@@ -280,7 +257,7 @@ block append testcode2
             position: null,
             type: "info",
             allow_dismiss: true,
-            newest_on_top: false,
+            newest_on_top: true,
             showProgressbar: false,
             placement: {
                 from: "top",
@@ -320,14 +297,21 @@ block append testcode2
         //Variablen zum Arbeitsplatz laden
         function ladeKonfig() {
             $.get("ukwKonfig", function (data) { //IP-Adress nur als Platzhalter zum Testen
+                console.log('ukwKonfig data:'+ data);
+
                 ApFunkstellen = data.Konfigdaten.FunkstellenDetails
                 SPAN = data.Konfigdaten.ArbeitsplatzGeraete.SPAN01
                 MhanZuordnung = data.Konfigdaten.MhanZuordnung
                 ArbeitsplatzGeraete = data.Konfigdaten.ArbeitsplatzGeraete
                 ApID = data.Arbeitsplatz
-
+                IpConfig = data.Konfigdaten.IpConfig
+                console.log('geladeneIPconfig: '+ JSON.stringify(data.Konfigdaten.IpConfig));
 
                 lautsprecherAufschalten(MhanZuordnung);
+            }).fail(function () {
+                console.log('ukwKonfig konnte nicht geladen werden - Kanalzuordnung kann nicht angezeigt werden.');
+                // TODO Fehlerdetail uebergeben: ukwKonfig konnte nicht geladen werden
+                $('#errorModalRFD').modal('show')
             });
         }
 
@@ -423,17 +407,17 @@ block append testcode2
         function verbindungsPruefung() {
             socket.on('connect', function () {
                 console.log('check 2------------------------VERBUNDEN', socket.connected);
-                $('#buttonWHV_DUE').removeClass("label-danger")
-                $('#buttonWHV_DUE').addClass("label-success")
-
+                $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').removeClass("label-danger")
+                $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').addClass("label-success")
             });
 
 
             socket.on('disconnect', function () {
                 console.log('check 2-----------------------GETRENNT', socket.connected);
-                $('#buttonWHV_DUE').removeClass("label-success")
-                $('#buttonWHV_DUE').addClass("label-danger")
+                $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').removeClass("label-success")
+                $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').addClass("label-danger")
                 //Zeige Error Modal Fenster
+                // TODO: Wiederverbindung versuchen, waehrend dieser Zeit kein Fehler zeigen, sondern erst dann?
                 $('#errorModalDUE').modal('show')
             });
         }
@@ -441,31 +425,34 @@ block append testcode2
 
 
 
-
-
-
         //Loeschen
         //Alle eingehenden WebSocket Nachrichten einhaengen TYP 'statusMessage'
         socket.on('statusMessage', function (msg) {
-            if (msg.RfdStatus.URL.indexOf(RFDWHV) > -1 && msg.RfdStatus.Status == 'OK') {
-                $('#buttonWHV_RFD').removeClass("label-danger")
-                $('#buttonWHV_RFD').addClass("label-success")
-
-            }
-
-            if (msg.RfdStatus.URL.indexOf(RFDWHV) > -1 && msg.RfdStatus.Status == 'Error') {
-                $('#buttonWHV_RFD').removeClass("label-success")
-                $('#buttonWHV_RFD').addClass("label-danger")
-
-            }
-
-
-            //if()
+            //-console.log("statusMessage received: "+ JSON.stringify(msg) + ' - '+ JSON.stringify(IpConfig.alternativeIPs) + '#')
+            for(var i=0; i < IpConfig.alternativeIPs.length; i++ ){
+                //-console.log('statusMessage: loop '+ i+' - '+ "  / suche rfdIP:" + IpConfig.cfgIPs.rfdIP + ' in '+msg.RfdStatus.URL + '     gefunden an Position: ' + msg.RfdStatus.URL.indexOf(IpConfig.cfgIPs.rfdIP));
+                var vergleich = IpConfig.alternativeIPs[i];
+                //- hier ist noch nicht die Zuordnung der RFD-IP zu allen RFD-IPs moeglich, da nur die eigene IP bekannt ist - alle drei in Konfig eintragen
+                //- aktueller VTR ist der bevorzugte aus Config
+                if (vergleich[0].indexOf('#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}') > -1){
+                    //- rfd IP ist die an der x. Stelle konfigurierte (trift noch ueberall zu, weil noch nicht in Config alle rdfIPs stehen)
+                    if (msg.RfdStatus.URL.indexOf(IpConfig.cfgIPs.rfdIP) > -1){
+                        if (msg.RfdStatus.Status == 'OK') {
+                            $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-danger")
+                            $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-success")
+                        } else if (msg.RfdStatus.Status == 'Error') {
+                            $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-success")
+                            $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-danger")
+                        } //if()
+                    } //if()
+                } //if()
+            } // for
         });
 
 
         //eingehende Socket Nachrichten vom TYP rfdMessage, Statusmeldungen verarbeitebn
         socket.on('ukwMessage', function (msg) {
+            //-console.log("ukwMessage received: "+ JSON.stringify(msg));
             if (typeof msg === 'object') {
                 //Empfangen aktiv
                 if ('RX' in msg && msg.RX.$.state === '1') {
@@ -610,11 +597,21 @@ block append testcode2
                         }
                     }
                 }
-            }
+
+
+            }  // if (typeof msg === 'object')
             else {
                 msgText = msg.replace("<", "")
                 msgText = msgText.replace("\>", "")
-                console.log(msgText)
+
+                // RFD Fehler
+                if (msgText.startsWith('RFD') && msgText.endsWith('fehlgeschlagen')) {
+                    //-console.log('RFD Aufruf fehlgeschlagen')
+                    $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_RFD').removeClass("label-success")
+                    $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_RFD').addClass("label-danger")
+                } else {
+                    console.log(msgText)
+                }
                 //$.notify('Meldung: '+msgText)
 
                 //$('#messages').append($('<li>').text(msg));
