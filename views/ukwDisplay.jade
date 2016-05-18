@@ -54,28 +54,29 @@ block content
                                                 data-html='true'
                                                 data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.'
                                                 )
-                                        div.text-center.bg-success(style="float:left; width:50%")
-                                            //Schaltflaeche Ship
-                                            div(
-                                                id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship'
-                                                onclick='schalteKanal(event,this)'
-                                                style="cursor: pointer;z-index:-1;float:left;width:20%;height: 44px;padding-top: 12px;font-size: 16px;font-weight: bold;"
-                                            )
-                                                span S
-                                            div.pull-right
-                                                span#test 50
-                                                //span.glyphicon.glyphicon-volume-up(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]]+'ship_pegel',onclick='setzeLautstaerke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;",data-toggle='modal',data-target='#pegelModal')
-                                                span.glyphicon.glyphicon-volume-up(
-                                                id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship_pegel'
-                                                style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;"
-                                                data-toggle='popover'
-                                                container='panel-body'
-                                                data-placement='right'
-                                                data-html='true'
-                                                data-content="<input id='ex1', type='text', data-slider-min='0', data-slider-max='100', data-slider-step='10' ,data-slider-orientation='vertical'>"
-                                            )
+                                    //Schaltflaeche Ship
+                                    div.text-center.bg-success(style="float:left; width:50%")
+                                        
+                                        div(
+                                            id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship'
+                                            onclick='schalteKanal(event,this)'
+                                            style="cursor: pointer;z-index:-1;float:left;width:20%;height: 44px;padding-top: 12px;font-size: 16px;font-weight: bold;"
+                                        )
+                                            span S
+                                        div.pull-right
+                                            span#test 50
+                                            //span.glyphicon.glyphicon-volume-up(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]]+'ship_pegel',onclick='setzeLautstaerke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;",data-toggle='modal',data-target='#pegelModal')
+                                            span.glyphicon.glyphicon-volume-up(
+                                            id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship_pegel'
+                                            style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;"
+                                            data-toggle='popover'
+                                            container='panel-body'
+                                            data-placement='right'
+                                            data-html='true'
+                                            data-content="<input id='ex1', type='text', data-slider-min='0', data-slider-max='100', data-slider-step='10' ,data-slider-orientation='vertical'>"
+                                        )
+                                    //Schaltflaeche Pilot
                                     div.text-center(style="float:left; width:50%;background-color:#f5f5f5")
-                                        //Schaltflaeche Pilot
                                         div(style="float:left;width:20%;height: 44px;padding-top: 12px;font-size: 16px;font-weight: bold;")
                                             span L
                                         div.pull-right
