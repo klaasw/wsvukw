@@ -164,7 +164,7 @@ exports.sendeWebsocketNachrichtStatus = function (Nachricht) {
 //var Intervall=setInterval(function() {sendeWebSocketNachricht()},1000)
 
 
-// Create our JsSIP instance and run it:
+// Erstelle SIP User-Agent var ua. Hier mit Konfiguration DUE als Empfänger für die Statusnachrichten vom RFD
 var ua = new JsSIP.UA(cfg.jsSipConfiguration);
 ua.start();
 
@@ -182,24 +182,6 @@ var eventHandlers = {
 var options = {
     'eventHandlers': eventHandlers
 };
-
-
-//SIP Test Aufrufe
-exports.sendeSipNachricht = function (text, callback) {
-    log.debug("sendeSipNachricht: "+text);
-    try{
-        ua.sendMessage(cfg.jsSipConfiguration.testReceiverMessage, text, options);
-        callback('OK');
-    } catch (e){
-        log.error("unable to call ua.sendMessage()");
-        //log.error(JSON.stringify(e));
-        callback('ERROR',e);
-    }
-};
-exports.anruf = function () {
-    ua.call(cfg.jsSipConfiguration.testReceiverCall)
-};
-
 
 //SIP User Agent Ereignisse
 ua.on('connected', function (e) {
@@ -243,4 +225,46 @@ ua.on('newMessage', function (e) {
             log.error('keine XML in SIP Nachricht Error=' + err + ' Nachricht=' + e.message.request.body)
         }
     }); //Parser Ende
+});
+
+
+
+// Erstelle SIP User-Agent var ua. Hier mit Konfiguration RFD Mock als SENDER für die Test Statusnachrichten zum DUE
+var mockRFD = new JsSIP.UA({
+        'ws_servers': 'ws://10.162.1.64:10080',
+        'uri': 'sip:rfd@10.162.1.64:5060',
+        'password': 'rfd'
+    })
+mockRFD.start();
+
+
+//SIP Test Aufrufe
+exports.sendeSipNachricht = function (text, callback) {
+    log.debug("sendeSipNachricht: "+text);
+    try{
+        mockRFD.sendMessage('due@10.162.1.64:5060', text, options);
+        callback('OK');
+    } catch (e){
+        log.error("unable to call mockRFD.sendMessage()");
+        //log.error(JSON.stringify(e));
+        callback('ERROR',e);
+    }
+};
+exports.anruf = function () {
+    ua.call(cfg.jsSipConfiguration.testReceiverCall)
+};
+
+//SIP User Agent Ereignisse
+mockRFD.on('connected', function (e) {
+    log.debug('mockRFD Verbunden mit SIP-Server')
+});
+
+mockRFD.on('connecting', function (e) {
+    log.debug('mockRFD Verbinde zu SIP-Server...')
+});
+
+mockRFD.on('registered', function (e) {
+    log.debug('mockRFD Registriert auf SIP-Server');
+    //sendeNachricht('Bin jetzt Registriert')
+    //anruf()
 });
