@@ -31,8 +31,8 @@ var cfg = {
         'ws_servers': 'ws://' + cfgIPs.sipIP + ':10080',
         'uri': 'sip:due@' + cfgIPs.sipIP + ':5060',
         'password': 'due',
-        'testReceiverMessage': 'sip:rfd@192.168.56.102:5060',
-        'testReceiverCall': 'sip:test@192.168.56.103'
+        'testReceiverMessage': 'sip:rfd@' + cfgIPs.sipIP + ':5060',
+        'testReceiverCall': 'sip:test@' + cfgIPs.sipIP
     },
     "port": cfgIPs.port,
     "configPath": '../config/',

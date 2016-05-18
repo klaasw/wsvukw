@@ -17,9 +17,13 @@ exports.socket = function (server) {
     log.debug("server: " + server);
 
     io.listen(server).on('connect', function (socket) {
-        log.debug('Benutzer hat sich per Websocket verbunden. IP: ' + socket.request.connection.remoteAddress);
+        log.debug('Benutzer hat Websocket-Verbindung mit ID '+ socket.id + ' hergestellt. IP: ' + socket.request.connection.remoteAddress);
         // TODO: Pruefung Berechtigung !
         socketGlobal = socket;
+
+        socket.on('*', function(msg) {
+            log.debug('* message: ' + JSON.stringify(msg))
+        });
 
         socket.on('mock message', function (msg) {
             socket.broadcast.emit('mock message', msg);
@@ -33,13 +37,13 @@ exports.socket = function (server) {
 
         //'Standardnachrichten für Weiterleitung an RFD schalten,trennen, MKA'
         socket.on('clientMessage', function (msg) {
-            log.debug(FILENAME + ' Funktion: empfangeWebNachricht ' + 'clientMessage: WebSocket Nachricht: ' + JSON.stringify(msg))
+            log.debug(FILENAME + ' Funktion: empfangeWebNachricht ' + 'clientMessage: WebSocket Nachricht: ' + JSON.stringify(msg));
             ukw.sendeWebServiceNachricht(msg.FstID, msg.SPAN, msg.aktion, msg.Kanal);//Sende WebServiceNachricht an RFD
         });
 
         //Speichern der Kanal Lotsenzuordnung
         socket.on('clientMessageSpeichern', function (msg) {
-            log.info(FILENAME + ' Funktion: empfangeWebNachricht ' + 'clientMessageSpeichern: WebSocket Nachricht: ' + JSON.stringify(msg))
+            log.info(FILENAME + ' Funktion: empfangeWebNachricht ' + 'clientMessageSpeichern: WebSocket Nachricht: ' + JSON.stringify(msg));
 
             //Speichern
             for (var LotsenAp in msg.LotsenApBenutzer) {
@@ -50,10 +54,10 @@ exports.socket = function (server) {
         //Speichern der Schaltzustände der Clients
         socket.on('clientMessageSchaltzustand', function (msg) {
 
-            ApID = msg.Arbeitsplatz.replace(/ /g, "_")
-            Zustand = JSON.stringify(msg.Zustand)
+            ApID = msg.Arbeitsplatz.replace(/ /g, "_");
+            Zustand = JSON.stringify(msg.Zustand);
 
-            log.info(FILENAME + ' Funktion: empfangeWebNachricht ' + 'clientMessageSchaltzustand: WebSocket Nachricht: ' + JSON.stringify(msg))
+            log.info(FILENAME + ' Funktion: empfangeWebNachricht ' + 'clientMessageSchaltzustand: WebSocket Nachricht: ' + JSON.stringify(msg));
 
             files.writeFile(ApID + '_Zustand.json', Zustand, 'utf8', function (err, data) {
                 if (err) {
@@ -69,6 +73,7 @@ exports.socket = function (server) {
 
         // Client hat Verbindung unterbrochen:
         socket.on('disconnect', function (msg) {
+            log.warn('Benutzer hat Websocket-Verbindung mit ID '+ socket.id + ' getrennt. IP: ' + socket.request.connection.remoteAddress);
             socketGlobal = undefined;
         });
 
@@ -81,6 +86,7 @@ exports.emit = function emit(messagetype, message) {
     if (socketGlobal == undefined) {
         log.debug("no client connected, not able to send message "+ messagetype);
     } else {
+        log.debug(FILENAME + " emitting ...");
         return socketGlobal.emit(messagetype, message);
     }
 };

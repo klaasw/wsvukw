@@ -1,14 +1,15 @@
-mixin errorModal
-    #errorModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='errorModalLabel')
+//- Multiple errorModal moeglich: type ergaenzt die id
+mixin errorModal(type,title,errorMessage)
+    div.modal.fade(id='errorModal#{type}', tabindex='-1', role='dialog', aria-labelledby='errorModalLabel')
         .modal-dialog(role='document')
             .modal-content
                 .modal-header
                     button.close(type='button', data-dismiss='modal', aria-label='Close')
                         span(aria-hidden='true')
-                    h4#errorModalLabel.modal-title Fehler
+                    h4#errorModalLabel.modal-title #{title}
                 .modal-body
                     p.
-                        Verbindung zum Server abgebrochen. Bitte verwenden Sie folgende alternativen Server:
+                        #{errorMessage}
                     p
                         each val, index in gesamteKonfig.IpConfig.alternativeIPs
                             a(href='http://' + val[1]) #{val[0]}
@@ -62,9 +63,9 @@ html
                                     a(href='/overview') &Uuml;bersicht
                                 li#konf
                                     a(href='/zuordnung') RL Kanalzuordnung
-                            // Schleife ueber alle alternativen Server, ID dynamisch zusammensetzen
-                            // wichtig dabei: Variable #{val[0]} in einfachen Anführungzeichen, sonst Interpolation-Fehler
-                            if (!error)
+                            //- Schleife ueber alle alternativen Server, ID dynamisch zusammensetzen
+                            //- wichtig dabei: Variable #{val[0]} in einfachen Anführungzeichen, sonst Interpolation-Fehler
+                            if (!error && (typeof gesamteKonfig != 'undefined'))
                                 - aktiverServer=gesamteKonfig.IpConfig.aktuellerServer
                                 each val, index in gesamteKonfig.IpConfig.alternativeIPs
                                     //- log.debg("cfg.httpIP: "+gesamteKonfig.IpConfig.cfgIPs.httpIP+":"+gesamteKonfig.IpConfig.port)
@@ -73,12 +74,12 @@ html
                                     //- var buttonActiveVTR_DUE = (val[1] == gesamteKonfig.IpConfig.cfgIPs.httpIP+":"+gesamteKonfig.IpConfig.port ? ' buttonActiveVTR_DUE': '')
                                     //- var buttonActiveVTR_RFD = (val[1] == gesamteKonfig.IpConfig.cfgIPs.httpIP+":"+gesamteKonfig.IpConfig.port ? ' buttonActiveVTR_RFD': '')
                                     //- log.debug('buttonActiveVTR: '+buttonActiveVTR)
-                                    
+
                                     //a(href='http://' + val[1])
                                     //    button.btn.btn-default.navbar-btn.navbar-right(id='button'+'#{val[0]}') &nbsp#{val[0]}&nbsp
                                     //        span.label.label-default(id='button'+'#{val[0]}'+'_DUE') DUE
                                     //        span.label.label-default(id='button'+'#{val[0]}'+'_RFD') RFD
-                                    
+
                                     - server = val[1].split(":")
                                     if server[0] == aktiverServer
                                         a(href='http://' + val[1])

@@ -36,11 +36,11 @@ exports.pruefeRfdWS = function () {
 
         if (!error && response.statusCode == 200) {
             log.debug(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK');
-            sendeWebNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'OK'}})
+            exports.sendeWebsocketNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'OK'}})
         }
         else {
             log.error(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + error);
-            sendeWebNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'Error'}})
+            exports.sendeWebsocketNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'Error'}})
         }
     })
 };
@@ -117,7 +117,7 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
             });
             //log.info('RFD '+aktion+' fehlgeschlagen')
 
-            sendeWebNachricht('RFD ' + aktion + ' fehlgeschlagen')
+            exports.sendeWebSocketNachricht('RFD ' + aktion + ' fehlgeschlagen')
 
         }
         else {
@@ -130,12 +130,12 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
 
                         erfolgreich = result['S:Envelope']['S:Body'][0]['ns2:' + aktion + 'Response'][0]['return'][0];
                         if (erfolgreich === 'true') {
-                            sendeWebNachricht(antwortFuerWebsocket)
+                            exports.sendeWebSocketNachricht(antwortFuerWebsocket)
                         }
                         else {
                             log.error('RFD ' + aktion + ' fehlgeschlagen');
-                            sendeWebNachricht('RFD ' + aktion + ' fehlgeschlagen');
-                            sendeWebNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'Error'}});
+                            exports.sendeWebSocketNachricht('RFD ' + aktion + ' fehlgeschlagen');
+                            exports.sendeWebsocketNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'Error'}});
                         }
                     }
                 }
@@ -146,14 +146,14 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
 
 
 //Zum Senden von UKW bezogenen Nachrichten
-sendeWebNachricht = function (Nachricht) {
-    log.info(FILENAME + ' Funktion: sendeWebNachricht ' + 'ukwMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht));
+exports.sendeWebSocketNachricht = function (Nachricht) {
+    log.info(FILENAME + ' Funktion: sendeWebSocketNachricht ' + 'ukwMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht));
     io.emit('ukwMessage', Nachricht);
 };
 
 //Zum Senden von Status-Meldungen
-sendeWebNachrichtStatus = function (Nachricht) {
-    log.debug(FILENAME + ' Funktion: sendeWebNachrichtStatus ' + 'statusMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht));
+exports.sendeWebsocketNachrichtStatus = function (Nachricht) {
+    log.debug(FILENAME + ' Funktion: sendeWebsocketNachrichtStatus ' + 'statusMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht));
     io.emit('statusMessage', Nachricht);
 };
 
@@ -161,7 +161,7 @@ sendeWebNachrichtStatus = function (Nachricht) {
 /*
  zum Testen
  */
-//var Intervall=setInterval(function() {sendeWebNachricht()},1000)
+//var Intervall=setInterval(function() {sendeWebSocketNachricht()},1000)
 
 
 // Create our JsSIP instance and run it:
@@ -172,10 +172,10 @@ ua.start();
 // Register callbacks to desired message event
 var eventHandlers = {
     'succeeded': function (e) {
-        log.debug('Nachricht gesendet')
+        log.debug('SIP-Nachricht gesendet.')
     },
     'failed': function (e) {
-        log.error('Nachricht NICHT gesendet')
+        log.error('SIP-Nachricht NICHT gesendet, Details: ' + require('util').inspect(e));
     }
 };
 
@@ -185,12 +185,20 @@ var options = {
 
 
 //SIP Test Aufrufe
-function sendeSipNachricht(text) {
-    ua.sendMessage(cfg.jsSipConfiguration.testReceiverMessage, text, options);
-}
-function anruf() {
+exports.sendeSipNachricht = function (text, callback) {
+    log.debug("sendeSipNachricht: "+text);
+    try{
+        ua.sendMessage(cfg.jsSipConfiguration.testReceiverMessage, text, options);
+        callback('OK');
+    } catch (e){
+        log.error("unable to call ua.sendMessage()");
+        //log.error(JSON.stringify(e));
+        callback('ERROR',e);
+    }
+};
+exports.anruf = function () {
     ua.call(cfg.jsSipConfiguration.testReceiverCall)
-}
+};
 
 
 //SIP User Agent Ereignisse
@@ -223,13 +231,13 @@ ua.on('newMessage', function (e) {
     log.info(FILENAME + ' Funktion: newSipMessage : ' + e.message.request.body);
     //log.debug('SIP Body: '+e.message.request.body)
     //Sende WebSocket Nachricht beim Senden und Empfangen. Richtung noch einbauen
-    sendeWebNachricht(e.message.request.body);
+    exports.sendeWebSocketNachricht(e.message.request.body);
     parser.parseString(e.message.request.body, function (err, result) {
         log.error(err);
         if (err == null) {
             log.error(result);
 
-            sendeWebNachricht(result)
+            exports.sendeWebSocketNachricht(result)
         }
         else {
             log.error('keine XML in SIP Nachricht Error=' + err + ' Nachricht=' + e.message.request.body)
