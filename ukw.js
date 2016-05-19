@@ -135,7 +135,12 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
                         else {
                             log.error('RFD ' + aktion + ' fehlgeschlagen');
                             exports.sendeWebSocketNachricht('RFD ' + aktion + ' fehlgeschlagen');
-                            exports.sendeWebsocketNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'Error'}});
+                            exports.sendeWebsocketNachrichtStatus({
+                                RfdStatus: {
+                                    URL: cfg.urlRFDWebservice,
+                                    Status: 'Error'
+                                }
+                            });
                         }
                     }
                 }
@@ -215,10 +220,8 @@ ua.on('newMessage', function (e) {
     //Sende WebSocket Nachricht beim Senden und Empfangen. Richtung noch einbauen
     exports.sendeWebSocketNachricht(e.message.request.body);
     parser.parseString(e.message.request.body, function (err, result) {
-        log.error(err);
         if (err == null) {
-            log.error(result);
-
+            log.debug("sip parse result: " + JSON.stringify(result));
             exports.sendeWebSocketNachricht(result)
         }
         else {
@@ -228,7 +231,6 @@ ua.on('newMessage', function (e) {
 });
 
 
-
 // Erstelle SIP User-Agent var ua. Hier mit Konfiguration RFD Mock als SENDER für die Test Statusnachrichten zum DUE
 var mockRFD = new JsSIP.UA(cfg.jsSipConfiguration_mockRFD);
 mockRFD.start();
@@ -236,14 +238,15 @@ mockRFD.start();
 
 //SIP Test Aufrufe
 exports.sendeSipNachricht = function (text, callback) {
-    log.debug("sendeSipNachricht: "+text);
-    try{
-        mockRFD.sendMessage('due@10.162.1.64:5060', text, options);
-        callback('OK');
-    } catch (e){
+    var SIPreceiver = cfg.jsSipConfiguration_DUE.uri.replace("sip:", "");
+    log.debug("sendeSipNachricht an " + SIPreceiver + " : " + text);
+    try {
+        mockRFD.sendMessage(SIPreceiver, text, options);
+        callback('OK', text);
+    } catch (e) {
         log.error("unable to call mockRFD.sendMessage()");
         //log.error(JSON.stringify(e));
-        callback('ERROR',e);
+        callback('ERROR', e);
     }
 };
 exports.anruf = function () {

@@ -22,11 +22,11 @@ router.get('/', function (req, res, next) {
 
 /* GET UKW uebersicht */
 router.get('/overview', function (req, res) {
-    if(Funkstellen.length==0) {
+    if (Funkstellen.length == 0) {
         log.error('Topologie nicht eingelesen, wird aber jetzt gebraucht, mit Fehler antworten!');
         res.status(404)        // HTTP status 404: NotFound
             .send('ukwKonfig konnte nicht geladen werden.');
-    }else{
+    } else {
         res.render('ukwOverview', {
             "funkstellen": Funkstellen
         })
@@ -38,7 +38,7 @@ router.get('/zuordnung', function (req, res) {
     var benutzer = findeApNachIp(req.ip); //Arbeitsplatz aus Konfig lesen
     if (benutzer) {
         log.info(FILENAME + ' Funktion router.get /zuordnung Arbeitsplatz gefunden! IP: ' + req.ip);
-        // TODO: ueberpruefen, ob hier das richte uebergeben wird:
+        // TODO: ueberpruefen, ob hier das Richtige uebergeben wird:
         erstelleKonfigFuerLotsenKanal(benutzer, false, function (konfig) {
             //Uebergebe Funkstellen ID an Jade Template
             log.info(FILENAME + ' Funktion router.get /zuordnung Konfig: ' + konfig);
@@ -60,8 +60,10 @@ router.get('/testen', function (req, res) {
 
 /* GET UKW Display */
 router.get('/ukw', function (req, res) {
-    log.debug(req.ip);
-    var benutzer = findeApNachIp(req.ip); //Arbeitsplatz aus Konfig lesen
+    var clientIP=req.ip;
+    log.debug("Benutzer IP: " + clientIP);
+    var benutzer = findeApNachIp(clientIP); //Arbeitsplatz aus Konfig lesen
+    log.debug("Ermittelter Benutzer: "+ benutzer);
     if (benutzer) {
         log.debug(FILENAME + ' Arbeitsplatz gefunden! IP: ' + req.ip);
         erstelleKonfigFurAp(benutzer, function (konfig) {
@@ -79,7 +81,7 @@ router.get('/ukw', function (req, res) {
     //kein Benutzer zu IP gefunden
     else {
         res.render('error', {
-            message: 'keine Benutzer konfiguriert zu IP: ' + req.ip,
+            message: 'keine Benutzer konfiguriert zu IP: ' + clientIP,
             error: {
                 status: 'kein'
             }
@@ -147,9 +149,9 @@ router.get('/ukw_gr', function (req, res) {
 }); //router Ende
 
 /* GET UKW Konfiguration
-*
-* TODO wenn die Konfiguration noch nicht eingelesen ist in Funkstellen, dann warten bis verfuegbar, nach Timeout mit Fehler antworten, Fehlerhandling clientseitig
-* */
+ *
+ * TODO wenn die Konfiguration noch nicht eingelesen ist in Funkstellen, dann warten bis verfuegbar, nach Timeout mit Fehler antworten, Fehlerhandling clientseitig
+ * */
 router.get('/ukwKonfig', function (req, res) {
     log.info(FILENAME + ' Funktion: router get /ukwKonfig von IP: ' + req.ip);
     log.info(FILENAME + ' Funktion: router get /ukwKonfig von IP als Parameter: ' + JSON.stringify(req.query));
@@ -158,7 +160,7 @@ router.get('/ukwKonfig', function (req, res) {
     //log.debug(findeApNachIp(req.ip))
     //log.debug(findeApNachIp(req.query.ip))
 
-    if(Funkstellen.length==0){
+    if (Funkstellen.length == 0) {
         log.error('Topologie nicht eingelesen, wird aber jetzt gebraucht, mit Fehler antworten!');
         res.status(404)        // HTTP status 404: NotFound
             .send('ukwKonfig konnte nicht geladen werden.');
@@ -247,17 +249,35 @@ router.get('/liesTopologie', function (req, res) {
 
 router.get('/mockmessage', function (req, res) {
     //log.debug(FILENAME + ' mockmessage von IP: ' + req.ip + ", message: "+ require('util').inspect( req) );
-    log.debug(FILENAME + ' mockmessage messageText: '+ req.query.messageText);
-    ukw.sendeSipNachricht(req.query.messageText, function (result, error) {
-        if(result=='OK'){
-            res.send("abgesendet - ok");
-        } else{
-            res.send("abgesendet, fehler: "+ e.prototype.message);
+    var msgText= req.query.messageText;
+    log.debug(FILENAME + ' mockmessage messageText: ' + msgText);
+    ukw.sendeSipNachricht(msgText, function (result, error) {
+        if (result == 'OK') {
+            res.send("Abgesendet: " + error.replace("<","").replace("/>",""));
+        } else {
+            res.send("Fehler: " + e.prototype.message);
         }
 
     });
 
 });
+
+router.get('/arbeitsplaetze', function (req, res) {
+    var arbeitsplaetze = require(cfg.configPath + '/users/arbeitsplaetze.json')
+    files.readFile("config/users/arbeitsplaetze.json", 'utf8', function (err, data) {
+        if (err) {
+            log.error(err);
+            res.status(404).send("Fehler beim Einlesen der Arbeitsplatzkonfiguration");
+        } else {
+            log.debug(FILENAME + ' Arbeitplaetze geladen: ');
+            arbeitsplaetze = JSON.parse(data);
+            log.debug("arbeitsplaetze: " + arbeitsplaetze);
+            res.send(arbeitsplaetze);
+        }
+    });
+
+});
+
 
 /*
  files.readFile("funkstellen.json", 'utf8', function (err, data) {
@@ -331,7 +351,7 @@ function leseRfdTopologie(callback) {
                             Funkstellen.push(tmp)
 
                         }
-                        
+
                         //Gleichwellen-Anlagen auslesen und in Funkstellen variable schreiben
                         FstGW = result['FKGW'];
                         for (i = 0; i < FstGW.length; i++) {
@@ -385,6 +405,32 @@ function findeApNachIp(ip) {
         log.error(FILENAME + ' Benutzer NICHT gefunden zu IP: ' + ip);
     }
     return Ap
+}
+
+function findeApNachIpREST(ip) {
+    var Ap = '';
+    log.debug("function findeNachIp " + ip);
+    // TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
+    var url = "http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/arbeitsplaetze";
+    log.debug("function findeNachIp " + url);
+    request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            log.debug("body: " + body);
+            var alle_Ap = JSON.parse(body);
+            log.debug(alle_Ap);
+
+            for (i = 0; i < alle_Ap.length; i++) {
+                //Benutzer gefunden
+                if (ip in alle_Ap[i]) {
+                    Ap = alle_Ap[i][ip].user;
+                    log.debug(FILENAME + ' Benutzer gefunden: ' + Ap);
+                    return Ap
+                }
+            } //for Ende
+            log.error(FILENAME + ' Benutzer NICHT gefunden zu IP: ' + ip);
+            return ''
+        }
+    });
 }
 
 function findeFstNachId(Id) {
