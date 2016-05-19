@@ -27,13 +27,19 @@ var cfgIPs = getIPs();
 var cfg = {
     "urlRFDWebservice": 'http://' + cfgIPs.rfdIP + ':8789/I_RFD_DUE_Steuerung',
 
-    "jsSipConfiguration": {
+    "jsSipConfiguration_DUE": {
         'ws_servers': 'ws://' + cfgIPs.sipIP + ':10080',
         'uri': 'sip:due@' + cfgIPs.sipIP + ':5060',
-        'password': 'due',
-        'testReceiverMessage': 'sip:rfd@' + cfgIPs.sipIP + ':5060',
-        'testReceiverCall': 'sip:test@' + cfgIPs.sipIP
+        // TODO fuer unterschiedliche Passwoerter dev/stage/prod: noch in serverIPs auslagern
+        'password': 'due'
     },
+    "jsSipConfiguration_mockRFD": {
+        'ws_servers': 'ws://' + cfgIPs.sipIP + ':10080',
+        'uri': 'sip:rfd@' + cfgIPs.sipIP + ':5060',
+        // TODO fuer unterschiedliche Passwoerter dev/stage/prod: noch in serverIPs auslagern, unterschiedliche Passwoerter vergeben, mindestens produktiv
+        'password': 'rfd'
+    },
+    
     "port": cfgIPs.port,
     "configPath": '../config/',
     "intervall": 10000,

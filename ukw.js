@@ -165,7 +165,7 @@ exports.sendeWebsocketNachrichtStatus = function (Nachricht) {
 
 
 // Erstelle SIP User-Agent var ua. Hier mit Konfiguration DUE als Empfänger für die Statusnachrichten vom RFD
-var ua = new JsSIP.UA(cfg.jsSipConfiguration);
+var ua = new JsSIP.UA(cfg.jsSipConfiguration_DUE);
 ua.start();
 
 
@@ -230,11 +230,7 @@ ua.on('newMessage', function (e) {
 
 
 // Erstelle SIP User-Agent var ua. Hier mit Konfiguration RFD Mock als SENDER für die Test Statusnachrichten zum DUE
-var mockRFD = new JsSIP.UA({
-        'ws_servers': 'ws://10.162.1.64:10080',
-        'uri': 'sip:rfd@10.162.1.64:5060',
-        'password': 'rfd'
-    })
+var mockRFD = new JsSIP.UA(cfg.jsSipConfiguration_mockRFD);
 mockRFD.start();
 
 
