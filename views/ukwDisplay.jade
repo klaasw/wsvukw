@@ -451,11 +451,11 @@ block append testcode2
 
         //eingehende Socket Nachrichten vom TYP rfdMessage, Statusmeldungen verarbeitebn
         socket.on('ukwMessage', function (msg) {
-            //-console.log("ukwMessage received: "+ JSON.stringify(msg));
+            - console.log("ukwMessage received: "+ JSON.stringify(msg));
             if (typeof msg === 'object') {
                 //Empfangen aktiv
                 if ('RX' in msg && msg.RX.$.state === '1') {
-                    //suche SChaltflaeche zu FunkstellenID
+                    //suche Schaltflaeche zu FunkstellenID
                     button = $('#' + msg.RX.$.id).offsetParent().attr('id')
 
                     //Kanalflaeche faerben
@@ -467,27 +467,28 @@ block append testcode2
                     }, {
                         type: 'danger'
                     })
-                    console.log(msg.RX.$.id)
+                    console.log("RX state 1: " + msg.RX.$.id)
                 }
                 //Empfangen deaktiv
                 if ('RX' in msg && msg.RX.$.state === '0') {
-                    //suche SChaltflaeche zu FunkstellenID
+                    //suche Schaltflaeche zu FunkstellenID
                     button = $('#' + msg.RX.$.id).offsetParent().attr('id')
 
                     //Kanalflaeche entfaerben
                     $('#' + button + ' [buttonElement="Flaeche"]').removeClass("bg-danger")
                     $('#' + button + ' [buttonElement="Flaeche"] h2').removeClass("text-danger")
 
-                    console.log(msg.RX.$.id)
+                    console.log("RX state 0: " + msg.RX.$.id)
                 }
                 //Senden aktiv
                 if ('TX' in msg && msg.TX.$.state === '1') {
                     //Pruefen ob SPAN ID in TX Objekt
                     if (msg.TX.$.id.indexOf("SPAN") != -1) {
                         //erstmal nichts machen. ggf in SPAN Element etwas anzeigen
+                        console.log("TX state 1 ohne SPAN: " + msg.TX.$.id)
                     }
                     else {
-                        //suche SChaltflaeche zu FunkstellenID
+                        //suche Schaltflaeche zu FunkstellenID
                         button = $('#' + msg.TX.$.id).offsetParent().attr('id')
 
                         //Kanalflaeche faerben
@@ -495,42 +496,44 @@ block append testcode2
                         $('#' + button + ' [buttonElement="Flaeche"] h2').addClass("text-success")
 
 
-                        console.log(msg.TX.$.id)
+                        console.log("TX state 1 mit SPAN: " + msg.TX.$.id)
                     }
                 }
                 //Senden deaktiv
                 if ('TX' in msg && msg.TX.$.state === '0') {
                     if (msg.TX.$.id.indexOf("SPAN") != -1) {
                         //erstmal nichts machen. ggf in SPAN Element etwas anzeigen
+                        console.log("TX state 0 ohne SPAN: " + msg.TX.$.id)
                     }
                     else {
-                        //suche SChaltflaeche zu FunkstellenID
+                        //suche Schaltflaeche zu FunkstellenID
                         button = $('#' + msg.TX.$.id).offsetParent().attr('id')
 
                         //Kanalflaeche entfaerben
                         $('#' + button + ' [buttonElement="Flaeche"]').removeClass("bg-success")
                         $('#' + button + ' [buttonElement="Flaeche"] h2').removeClass("text-success")
 
-                        console.log(msg.TX.$.id)
+                        console.log("TX state 0 mit SPAN: " + msg.TX.$.id)
                     }
                 }
 
                 if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '0') {
                     $('#' + msg.FSTSTATUS.$.id).closest('div').removeClass("bg-danger")
                     $('#' + msg.FSTSTATUS.$.id).closest('div').addClass("bg-success")
-                    console.log(msg.FSTSTATUS.$.id)
+                    console.log("FSTSTATUS state 0: " + msg.FSTSTATUS.$.id)
 
                     //Bei Kanalaenderung die Kanalnummer setzen
                     if (msg.FSTSTATUS.$.channel > -1) {
                         button = $('#' + msg.FSTSTATUS.$.id).offsetParent().attr('id')
                         $('#' + button + ' > div > div  > h2 > span').text(msg.FSTSTATUS.$.channel)
+                        console.log("channel: " + msg.FSTSTATUS.$.channel)
                     }
 
                 }
                 if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1') {
                     $('#' + msg.FSTSTATUS.$.id).closest('div').removeClass("bg-success")
                     $('#' + msg.FSTSTATUS.$.id).closest('div').addClass("bg-danger")
-                    console.log(msg.FSTSTATUS.$.id)
+                    console.log("FSTSTATUS state 1: " + msg.FSTSTATUS.$.id)
                 }
                 //Schalten fuer SPrechANlagen und MitHoerANlagen
                 if ('geschaltet' in msg && msg.geschaltet.$.state === '1') {
@@ -578,7 +581,7 @@ block append testcode2
                         //Aendern Darstellung fuer SPAN
                         if (msg.getrennt.$.Ap.indexOf("SPAN") != -1) {
 
-                            //suche SChaltflaeche zu FunkstellenID
+                            //suche Schaltflaeche zu FunkstellenID
                             button = $('#' + msg.getrennt.$.id).offsetParent().attr('id')
                             //$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
                             $('#' + button + ' > div').removeClass("panel-primary")
@@ -609,7 +612,7 @@ block append testcode2
                     $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_RFD').removeClass("label-success")
                     $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_RFD').addClass("label-danger")
                 } else {
-                    console.log(msgText)
+                    console.log(" sonstige ukwMessage: " + msgText)
                 }
                 //$.notify('Meldung: '+msgText)
 
