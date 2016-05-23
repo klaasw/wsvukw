@@ -121,7 +121,9 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
 
         }
         else {
+            log.debug(FILENAME + ' parsing response');
             parser.parseString(body, function (err, result) {
+                //log.debug(FILENAME + ' result  ' + JSON.stringify(result));
                 if (result !== undefined && result !== null && typeof result === 'object') {
                     if (result['S:Envelope'] !== undefined) {
                         log.info(FILENAME + ' Funktion: sendeWebServiceNachricht response: ' + JSON.stringify(result));
@@ -142,7 +144,13 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
                                 }
                             });
                         }
+                    } else{
+                        // TODO: Client ggf. informieren, dass der letzte Request nicht verarbeitet werden konnte - anders als der healthcheck ist die Ursache aber vielfaeltiger
+                        log.error(FILENAME + ' no envelope');
                     }
+                } else{
+                    // TODO: Client ggf. informieren, dass der letzte Request nicht verarbeitet werden konnte - anders als der healthcheck ist die Ursache aber vielfaeltiger
+                    log.error(FILENAME + ' result undefined or unexpected');
                 }
             }); // Parser ende
         }// ELse ende

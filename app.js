@@ -80,8 +80,7 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 app.use(function (err, req, res, next) {
     res.status(err.status || 500);
-    log.error("cfg bei error: " + JSON.stringify(cfg));
-    log.error("cfg bei error: " + JSON.stringify(cfg.alternativeIPs));
+    log.info("cfg bei error: " + JSON.stringify(cfg));
     res.render('error', {
         message: err.message,
         error: {}
