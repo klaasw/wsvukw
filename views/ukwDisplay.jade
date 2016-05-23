@@ -235,8 +235,8 @@ block append testcode2
         var ApFunkstellen = {};
         var ArbeitsplatzGeraete;
         var Einzel = true;
-        var einzelStatus;
-        var gruppenStatus;
+        var einzelStatus = "{}";
+        var gruppenStatus = "{}";
         var IpConfig;
 
         //WebSocket Verbindung herstellen
@@ -402,7 +402,7 @@ block append testcode2
 
         //Ereignisse fuer Verbindungsueberwachung
         //Dafuer in der Navleiste eine Statusflaeche einbauen
-        //Wenn lokaler DUE getrennt dann lokaler RFD auf undefined --ygrau
+        //Wenn lokaler DUE getrennt dann lokaler RFD auf undefined -- grau
         function verbindungsPruefung() {
             socket.on('connect', function () {
                 console.log('check 2------------------------VERBUNDEN', socket.connected);
@@ -451,7 +451,7 @@ block append testcode2
 
         //eingehende Socket Nachrichten vom TYP rfdMessage, Statusmeldungen verarbeitebn
         socket.on('ukwMessage', function (msg) {
-            - console.log("ukwMessage received: "+ JSON.stringify(msg));
+            console.log("ukwMessage received: "+ JSON.stringify(msg));
             if (typeof msg === 'object') {
                 //Empfangen aktiv
                 if ('RX' in msg && msg.RX.$.state === '1') {
@@ -709,14 +709,15 @@ block append testcode2
                     //trenne aufgeschaltet
                 })
             }
+            if (ApFunkstellen[geklickteFstID] != undefined) {
+                if (ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
+                    trennen(geklickteFstID, geklickteSPANMHAN)
 
-            if (ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
-                trennen(geklickteFstID, geklickteSPANMHAN)
+                }
+                else {
+                    schalten(geklickteFstID, geklickteSPANMHAN)
 
-            }
-            else {
-                schalten(geklickteFstID, geklickteSPANMHAN)
-
+                }
             }
         }
 
@@ -749,14 +750,6 @@ block append testcode2
             //$('.popover-title').css("color", "black"); $('.popover').css("color", "black");
 
         }
-
-
-
-
-
-
-
-
 
 
         function setzeLautstaerke(geklickteID, level) {
@@ -792,12 +785,7 @@ block append testcode2
 
         }
 
-
-
-
-
         function gruppen(buttonID) {
-
             //Wechsel zu Gruppenschaltung
             if (Einzel === true) {
                 Einzel = false
@@ -806,7 +794,6 @@ block append testcode2
                 $('#' + buttonID + ' > a').text("Gruppenschaltung")
                 zustandWiederherstellen(JSON.parse(gruppenStatus))// lade Gruppenzustand
             }
-
             else {
                 Einzel = true
                 gruppenStatus = JSON.stringify(ApFunkstellen)//speichere geschalteten Zustand
@@ -822,19 +809,24 @@ block append testcode2
             //Backup, da die Funktionen schalten und trennen mit Rueckmeldung schon in ApFunkstellen schreiben
             backupApFunkstellen = ApFunkstellen
             $.each(backupApFunkstellen, function (key, value) {
-                if (value.aufgeschaltet == true && AufschalteZustand[key].aufgeschaltet == true) {
-                    //nix
-                }
-                if (value.aufgeschaltet == true && AufschalteZustand[key].aufgeschaltet == false) {
-                    //trennen
-                    trennen(AufschalteZustand[key].id, SPAN)
-                }
-                if (value.aufgeschaltet == false && AufschalteZustand[key].aufgeschaltet == true) {
-                    //schalten
-                    schalten(AufschalteZustand[key].id, SPAN)
-                }
-                if (value.aufgeschaltet == false && AufschalteZustand[key].aufgeschaltet == false) {
-                    //nix
+                if(AufschalteZustand[key] !== undefined ) {
+                    console.log("key='" + key + "', value='" + JSON.stringify(value) + "'")
+                    console.log("AufschalteZustand[key]='" + JSON.stringify(AufschalteZustand[key]) + "'")
+
+                    if (value.aufgeschaltet == true && AufschalteZustand[key].aufgeschaltet == true) {
+                        //nix
+                    }
+                    if (value.aufgeschaltet == true && AufschalteZustand[key].aufgeschaltet == false) {
+                        //trennen
+                        trennen(AufschalteZustand[key].id, SPAN)
+                    }
+                    if (value.aufgeschaltet == false && AufschalteZustand[key].aufgeschaltet == true) {
+                        //schalten
+                        schalten(AufschalteZustand[key].id, SPAN)
+                    }
+                    if (value.aufgeschaltet == false && AufschalteZustand[key].aufgeschaltet == false) {
+                        //nix
+                    }
                 }
             })
 
@@ -843,18 +835,7 @@ block append testcode2
         }
 
         function setzeKanal(element) {
-
             console.log('clientMessage', {'FstID': geklickteMKA, 'Kanal': element.innerText, 'aktion': 'setzeKanal'})
             socket.emit('clientMessage', {'FstID': geklickteMKA, 'Kanal': element.innerText, 'aktion': 'setzeKanal'})
             //  $.notify('Setze Kanal: '+ApFunkstellen[geklickteMKA].sname +' auf '+ element.innerText +' ...')
         }
-
-
-
-   
-  
-     
-    
-  
-
-   
