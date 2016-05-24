@@ -289,7 +289,7 @@ router.get('/arbeitsplaetze', function (req, res) {
 router.get('/lieskonfig', function (req, res) {
     var configdata;
     var configfile = req.query.configfile;
-    files.readFile("config/" + configfile + ".json", 'utf8', function (err, data) {
+    files.readFile("config/revier/" + configfile + ".json", 'utf8', function (err, data) {
         if (err) {
             log.error(err);
             res.status(404).send("Fehler beim Einlesen der Konfiguration " + configfile);
