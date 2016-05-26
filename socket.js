@@ -92,13 +92,32 @@ exports.emit = function emit(messagetype, message) {
 };
 
 //TODO: Gegenseitige Serverüberwachung
-var client = socketClient.connect('http://10.162.1.84:3000')
-client.on('connect',function() {
-    log.debug("Verbunden mit..........................");
+//Funktioniert noch nicht richt. Test mit Namespace oder Rooms
+var client_bei_serverA = socketClient.connect('http://10.162.1.74:3000')
+client_bei_serverA.on('connect',function() {
+    log.debug("Verbunden mit..........................A");
 }); 
 
-client.on('disconnect', function() {
-    log.debug("Getrennt von...........................")
+client_bei_serverA.on('disconnect', function() {
+    log.debug("Getrennt von...........................A")
 });
+
+var client_bei_serverB = socketClient.connect('http://10.162.1.84:3000')
+client_bei_serverB.on('connect',function() {
+    log.debug("Verbunden mit..........................B");
+}); 
+
+client_bei_serverB.on('disconnect', function() {
+    log.debug("Getrennt von...........................B")
+
+});
+
+
+client_bei_serverB.on('statusMessage', function (msg) {
+    log.debug('Status von Server B: '+ JSON.stringify(msg))
+    exports.emit('statusMessage', msg)
+});
+
+
 
 
