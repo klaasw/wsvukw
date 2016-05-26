@@ -1,7 +1,7 @@
 var log = require('./log.js');
 var fs = require('fs'); // Zugriff auf das Dateisystem
 
-AKTUELLER_SERVER='' //globale Variable für aktuellen Server. Einbindung in Konfig zur Darstellung des aktuellen Server via Jade Template layout.jade
+var AKTUELLER_SERVER='' //globale Variable für aktuellen Server. Einbindung in Konfig zur Darstellung des aktuellen Server via Jade Template layout.jade
 
 function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
     // eine existierende Datei in ./config/servers/ geht vor, damit man auf einer Maschine mehrfach mit unterschiedlichen Ports starten kann:
@@ -10,12 +10,12 @@ function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
     } catch (e) {
         // try next
     }
-    var nInterfaces = require('os').networkInterfaces();
-    for (interface in nInterfaces) {
-        for (adapter in nInterfaces[interface]) {
+    var networkInterfaces = require('os').networkInterfaces();
+    for (var netInterface in networkInterfaces) {
+        for (adapter in networkInterfaces[netInterface]) {
             try {
-                AKTUELLER_SERVER = nInterfaces[interface][adapter].address //TODO:Port auslesen bzw. einbinden
-                return require('./config/servers/' + nInterfaces[interface][adapter].address + '/serverIPs.json');
+                AKTUELLER_SERVER = networkInterfaces[netInterface][adapter].address //TODO:Port auslesen bzw. einbinden
+                return require('./config/servers/' + networkInterfaces[netInterface][adapter].address + '/serverIPs.json');
             } catch (e) {
                 // try next
             }
