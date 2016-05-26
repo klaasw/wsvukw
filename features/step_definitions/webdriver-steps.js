@@ -1,11 +1,11 @@
 var myStepDefinitionsWrapper = function () {
-
-    if (false){
-        var cfg = require('../../cfg.js');
-    }
+    var cfg = require('../../cfg.js');
 
     this.When(/^Webseite "([^"]*)" aufgerufen wird$/, function (url) {
-        browser.url(url);
+        var ip = cfg.cfgIPs.httpIP;
+        var port = cfg.port;
+        var openUrl = "http://" + ip + ":" + port + url.replace("UKWDisplay",""); 
+        browser.url(openUrl);
     });
 
     this.Then(/^lautet der Titel "([^"]*)"$/, function (title) {
@@ -14,50 +14,56 @@ var myStepDefinitionsWrapper = function () {
 
     this.When(/^Button "([^"]*)" geschaltet wird$/, function (button) {
         //assert("Button11" === button);
-        browser.click("div#"+button);
+        browser.click("div#" + button);
     });
 
     this.Then(/^wird in "([^"]*)" der Hintergrund "([^"]*)"$/, function (button, color) {
-        var styleExists;
-        switch(color) {
-            case "gruen":
-                styleExists = "panel-success";
+        console.log("teste Hintergrundfarbe "+ color+" fuer Button: "+button);
+        var styleExists = '#' + button + 'panel div.panel.panel-default';
+        switch (color) {
+            case "weiss":
+                styleExists = styleExists;
                 break;
             case "blau":
-                styleExists = "panel-primary";
+                styleExists = styleExists+ ".panel-primary";
+                break;
+            case "gruen":
+                styleExists = "div#" + button + ".bg-success";
+                break;
+            case "rot":
+                styleExists = "div#" + button + ".bg-danger";
                 break;
         }
-        // Warten auf Reaktion (notify)
-        browser.waitForExist("div.alert", 15000);
-            //expect(browser.getElement(button)).getStyle().toEqual(styleExists);
-
-
-        //browser.getCssProperty('#someElement', 'color').then(function(color) {console.log(color);});
-
-        expect(browser.getCssProperty('div#'+button+'panel.div', 'background-color').parsed.hex).toEqual('#D9EDF7');
+        console.log("suche nach Element: "+styleExists);
+        browser.waitForExist(styleExists, 15000);
     });
 
 
     this.When(/^SIPNachricht "([^"]*)" mit state "([^"]*)" an FunkstellenID "([^"]*)" gesendet wird$/, function (nachrichtentyp, state, id) {
-        var message="<"+ nachrichtentyp +" id='"+ id +"' state='"+ state +"'/>";
+        var message = "<" + nachrichtentyp + " id='" + id + "' state='" + state + "'/>";
         var ip = cfg.cfgIPs.httpIP;
         var port = cfg.port;
-        var url = "http://"+ ip +":"+ port +"/mockmessage?messageText="+message;
-        console.log(" URL : "+ url);
+        var url = "http://" + ip + ":" + port + "/mockmessage?messageText=" + message;
+        console.log(" URL : " + JSON.stringify(url));
         request(url, function (error, response, body) {
             if (!error && response.statusCode == 200) {
-                var response = JSON.parse(body);
-                console.log(" REST response: " + JSON.stringify(response));
+                var response = body;
+                console.log(" REST response: " + response);
+                //expect(response).toEqual("Abgesendet: " + nachrichtentyp + " id='" + id + "' state='" + state + "'");
+                console.log("fertig2");
             } else {
-                console.log("Fehler. " + JSON.stringify(error));
+                console.log("Fehler. " + error);
+                console.log("fertig3");
             }
         });
+        console.log("fertig1");
     });
 
+
     this.When(/^SIPNachricht "([^"]*)" mit state "([^"]*)" an FunkstellenID "([^"]*)" und Kanal gesendet wird$/, function (nachrichtentyp, state, id, channel) {
-        var message="<"+ nachrichtentyp +" id='"+ id +"' state='"+ state +"' channel='"+channel +"'/>";
-        console.log("message: "+ message);
-        request("http://10.22.30.1:3000/mockmessage?messageText="+message, function (error, response, body) {
+        var message = "<" + nachrichtentyp + " id='" + id + "' state='" + state + "' channel='" + channel + "'/>";
+        console.log("message: " + message);
+        request("http://10.22.30.1:3000/mockmessage?messageText=" + message, function (error, response, body) {
             if (!error && response.statusCode == 200) {
                 var response = JSON.parse(body);
                 console.log(" REST response: " + JSON.stringify(response));
@@ -66,7 +72,6 @@ var myStepDefinitionsWrapper = function () {
             }
         });
     });
-
 
 
 };
