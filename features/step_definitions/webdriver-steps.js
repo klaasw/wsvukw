@@ -19,7 +19,7 @@ var myStepDefinitionsWrapper = function () {
     });
 
     this.Then(/^wird in "([^"]*)" der Hintergrund "([^"]*)"$/, function (button, color) {
-        console.log("\t\tteste Hintergrundfarbe " + color + " fuer Button: " + button);
+        //console.log("\t\tteste Hintergrundfarbe " + color + " fuer Button: " + button);
         var styleExists = '#' + button + 'panel div.panel.panel-default';
         switch (color) {
             case "weiss":
@@ -35,7 +35,7 @@ var myStepDefinitionsWrapper = function () {
                 styleExists = "div#" + button + ".bg-danger";
                 break;
         }
-        console.log("\t\tsuche nach Element: " + styleExists);
+        //console.log("\t\tsuche nach Element: " + styleExists);
         browser.waitForExist(styleExists, 15000);
     });
 
@@ -45,20 +45,8 @@ var myStepDefinitionsWrapper = function () {
         var ip = cfg.cfgIPs.httpIP;
         var port = cfg.port;
         var url = "http://" + ip + ":" + port + "/mockmessage?messageText=" + message;
-        console.log("\t\tURL : " + JSON.stringify(url));
-        // yield
-            request(url).then(function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-                var response = body;
-                console.log(" REST response: " + response);
-                //expect(response).toEqual("Abgesendet: " + nachrichtentyp + " id='" + id + "' state='" + state + "'");
-                console.log("fertig2");
-            } else {
-                console.log("Fehler. " + error);
-                console.log("fertig3");
-            }
-        });
-        console.log("fertig1");
+        //console.log("\t\tURL : " + JSON.stringify(url));
+        request(url);
     });
 
 
@@ -68,25 +56,42 @@ var myStepDefinitionsWrapper = function () {
         pending();
     });
 
-    this.When(/^Mehrkanalanlage "([^"]*)" auf Kanal "([^"]*)" umgeschaltet wird$/, function (button, channel) {
-        // Write the automation code here
-        pending();
-        // html body.fuelux div.container-fluid div.content div.col-md-12 div.row div#Button22panel.col-md-2 div.panel.panel-default div#Button22 h2#Button22.text-right button.btn.btn-default.btn-lg.dropdown-toggle
-        browser.click("h2#"+ button+ ".text-right button.btn.btn-default.btn-lg.dropdown-toggle");
-        // html body.fuelux.modal-open div.container-fluid div.content div.col-md-12 div#mkaModal.modal.fade.in div.modal-dialog div.modal-content div.modal-body p button.btn.btn-default.btn-lg
+    this.When(/^Mehrkanalanlage "([^"]*)" mit FunkstellenID "([^"]*)" auf Kanal "([^"]*)" umgeschaltet wird$/, function (button, funkstellenid, channel) {
+        browser.click("h2#" + button + " button");
+        browser.waitForExist("div#mkaModal.modal.fade.in", 65000);
+        //console.log("\t\tgefunden: button#channel"+channel);
 
-        browser.waitForExist(styleExists, 15000);
+        browser.click("button#channel" + channel);
+
+        // TODO simulieren der Kanal-Umschaltung
+        var message = "<FSTSTATUS id='" + funkstellenid + "' state='0' channel='" + channel + "'/>";
+        request("http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/mockmessage?messageText=" + message);
     });
 
 
-    this.Then(/^wird in "([^"]*)" der Kanal "([^"]*)" angezeigt$/, function (button, channel) {
-        browser.getText("h2#" + button).toEqual(channel);
+    this.When(/^wird in "([^"]*)" der Kanal "([^"]*)" angezeigt$/, function (button, channel) {
+        expect(browser.getText("h2#" + button)).toEqual(channel);
     });
 
 
-    this.When(/^Mehrkanalanlage "([^"]*)" auf Kanaleingabefeld "([^"]*)" eingegeben wird$/, function (arg1, arg2) {
-        // Write the automation code here
-        pending();
+    this.When(/^Mehrkanalanlage "([^"]*)" mit FunkstellenID "([^"]*)" im Kanaleingabefeld "([^"]*)" eingegeben wird$/, function (button, id, channelinput) {
+        if (true) {
+            pending();
+        } else {
+            console.log("\t\ttestfür spinbox");
+            browser.click("h2#" + button + " button");
+            browser.waitForExist("div#mkaModal.modal.fade.in", 65000);
+            console.log("\t\tzwischenzustand für spinbox");
+            browser.setValue("#mySpinbox", channelinput)
+                .getValue("#mySpinbox").then(function (value) {
+                assert(value === channelinput); // true
+            });
+            browser.click("div.modal-footer button.btn-primary");
+
+            // TODO simulieren der Kanal-Umschaltung
+            var message = "<FSTSTATUS id='" + funkstellenid + "' state='0' channel='" + channel + "'/>";
+            request("http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/mockmessage?messageText=" + message);
+        }
     });
 
 
@@ -113,8 +118,21 @@ var myStepDefinitionsWrapper = function () {
         browser.click('li#gruppe a');
     });
 
-    this.Then(/^Test jetzt beenden.$/, function (){
-       browser.end();
+
+    this.When(/^in Button "([^"]*)" für den Lautstärkepegel "([^"]*)" der Wert "([^"]*)" angezeigt wird$/, function (button, shipOrL, value) {
+        // Write the automation code here
+        pending();
     });
+
+    this.When(/^in Button "([^"]*)" der Lautstärkepegel "([^"]*)" auf Wert "([^"]*)" geschaltet wird$/, function (button, shipOrL, value) {
+        // Write the automation code here
+        pending();
+    });
+
+    this.When(/^Test jetzt beenden.$/, function () {
+        browser.end();
+    });
+
+
 };
 module.exports = myStepDefinitionsWrapper;
