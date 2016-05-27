@@ -87,6 +87,18 @@
     }
   },
   {
+    "10.160.230.170": {
+      "user": "WR NvD",
+      "revier": "Warenmuende Traffic"
+    }
+  },
+  {
+    "10.160.230.65": {
+      "user": "WR NvD",
+      "revier": "Warenmuende Traffic"
+    }
+  },
+  {
     "fe80::95f9:204a:bc4a:b605": {
       "user": "JA NvD",
       "revier": "Jade Traffic"

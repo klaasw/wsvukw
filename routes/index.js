@@ -448,6 +448,7 @@ function findeApNachIp(ip, callback) {
                 }
                 log.debug("debug alle_Ap[" + i + "]: " + JSON.stringify(alle_Ap[i]));
             } //for Ende
+            //TODO: Diese Bedingung wird nicht erreicht, wenn keine IP in Arbeitsplätze.json eingetragen ist.
             if(Ap = ''){
                 log.error(FILENAME + ' Benutzer NICHT gefunden zu IP: ' + ip);
                 callback('')

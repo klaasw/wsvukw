@@ -178,7 +178,14 @@ exports.sendeWebsocketNachrichtStatus = function (Nachricht) {
 
 
 // Erstelle SIP User-Agent var ua. Hier mit Konfiguration DUE als Empfänger für die Statusnachrichten vom RFD
-var ua = new JsSIP.UA(cfg.jsSipConfiguration_DUE);
+//Die Übernahme aus der cfg funktioniert in der Produktivumgebung nicht. Callback? 
+//var ua = new JsSIP.UA(cfg.jsSipConfiguration_DUE);
+var ua = new JsSIP.UA({
+        'ws_servers': 'ws://10.160.2.64:10080',
+        'uri': 'sip:due@10.160.2.64:5060',
+        // TODO fuer unterschiedliche Passwoerter dev/stage/prod: noch in serverIPs auslagern
+        'password': 'due'
+});
 ua.start();
 
 
@@ -198,15 +205,15 @@ var options = {
 
 //SIP User Agent Ereignisse
 ua.on('connected', function (e) {
-    log.debug('Verbunden mit SIP-Server')
+    log.debug('DUE Verbunden mit SIP-Server')
 });
 
 ua.on('connecting', function (e) {
-    log.debug('Verbinde zu SIP-Server...')
+    log.debug('DUE Verbinde zu SIP-Server...')
 });
 
 ua.on('registered', function (e) {
-    log.debug('Registriert auf SIP-Server');
+    log.debug('DUE Registriert auf SIP-Server');
     //sendeNachricht('Bin jetzt Registriert')
     //anruf()
 });
