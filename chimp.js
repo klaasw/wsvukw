@@ -8,6 +8,9 @@ module.exports = {
 
     // '- - - - DEBUGGING  - - - -
     log: 'debug',
+    screenshotsOnError: true,
+    jsonOutput: 'cucumber_output.json',
+
     debug: false,
     seleniumDebug: false,
     webdriverLogLevel: false
