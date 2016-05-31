@@ -182,20 +182,11 @@ block content
                                     h4#mkaModalLabel.modal-title Kanalauswahl für Mehrkanal-Anlage
                                 .modal-body
                                     p
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 1
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 2
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 3
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 4
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 5
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 6
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 7
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 8
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 9
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 10
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 11
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 12
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 69
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 68
+                                        - for (var i = 1; i < 13; ++i) {
+                                            button.btn.btn-default.btn-lg(id='channel'+i,type='button',onclick='setzeKanal(this)',data-dismiss='modal') #{i}
+                                        - }
+                                        button#channel69.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 69
+                                        button#channel68.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 68
 
                                     #mySpinbox.spinbox(data-initialize='spinbox', style="font-size: 20px; width: 20%;")
                                         input.form-control.input-mini.spinbox-input(type='text', style="height: 75px;font-size:25px")
