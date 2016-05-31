@@ -48,8 +48,10 @@ block content
                                                 data-content='<b>Vivamus</b> sagittis lacus vel augue laoreet rutrum faucibus.'
                                                 )
                                     //Schaltflaeche Ship
-                                    div.text-center(style="float:left; width:50%; background-color:#f5f5f5")
-
+                                    div.text-center(
+                                        buttonElement='Mhan_ship'
+                                        style="float:left; width:50%; background-color:#f5f5f5"
+                                        )
                                         div(
                                             id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship'
                                             onclick='schalteKanal(event,this)'
@@ -57,7 +59,7 @@ block content
                                         )
                                             span S
                                         div.pull-right
-                                            span#test 50
+                                            span#test 100
                                             //span.glyphicon.glyphicon-volume-up(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]]+'ship_pegel',onclick='setzeLautstaerke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;",data-toggle='modal',data-target='#pegelModal')
                                             span.glyphicon.glyphicon-volume-up(
                                             id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship_pegel'
@@ -69,7 +71,10 @@ block content
                                             data-content="<input id='ex1', type='text', data-slider-min='0', data-slider-max='100', data-slider-step='10' ,data-slider-orientation='vertical'>"
                                         )
                                     //Schaltflaeche Pilot
-                                    div.text-center(style="float:left; width:50%;background-color:#f5f5f5")
+                                    div.text-center(
+                                        buttonElement='Mhan_pilot'
+                                        style="float:left; width:50%;background-color:#f5f5f5"
+                                        )
                                         div(style="float:left;width:20%;height: 44px;padding-top: 12px;font-size: 16px;font-weight: bold;")
                                             span L
                                         div.pull-right
@@ -117,7 +122,7 @@ block content
                                             - kompomentenID = val[0] ? val[0] : '---------------------';
                                             - geraet = kompomentenID.substr(15,6);
                                             - standort = kompomentenID.substr(8,6);
-                                            span #{val[0] ? geraet : '-ohne-'}
+                                            span #{val[0] ? standort : '-ohne-'}
                                             //div.pull-right
                                             // span H
                                         div.bg(
@@ -129,7 +134,7 @@ block content
                                             - kompomentenID = val[1] ? val[1] : '---------------------';
                                             - geraet = kompomentenID.substr(15,6);
                                             - standort = kompomentenID.substr(8,6);
-                                            span #{val[1] ? geraet : '-ohne-'}
+                                            span #{val[1] ? standort : '-ohne-'}
                                             //div.pull-right
                                             // span R
                                 //SPAN
@@ -182,11 +187,20 @@ block content
                                     h4#mkaModalLabel.modal-title Kanalauswahl für Mehrkanal-Anlage
                                 .modal-body
                                     p
-                                        - for (var i = 1; i < 13; ++i) {
-                                            button.btn.btn-default.btn-lg(id='channel'+i,type='button',onclick='setzeKanal(this)',data-dismiss='modal') #{i}
-                                        - }
-                                        button#channel69.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 69
-                                        button#channel68.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 68
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 1
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 2
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 3
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 4
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 5
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 6
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 7
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 8
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 9
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 10
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 11
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 12
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 69
+                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 68
 
                                     #mySpinbox.spinbox(data-initialize='spinbox', style="font-size: 20px; width: 20%;")
                                         input.form-control.input-mini.spinbox-input(type='text', style="height: 75px;font-size:25px")
@@ -565,8 +579,10 @@ block append testcode2
 
                         //aendern Darstellung fuer MHAN
                         if (msg.geschaltet.$.Ap.indexOf("MHAN") != -1) {
-                            $('#' + msg.geschaltet.$.Ap + 'ship').parent().css("background-color","")
-                            $('#' + msg.geschaltet.$.Ap + 'ship').parent().addClass("bg-primary")
+                            //suche Schaltflaeche zu FunkstellenID
+                            button = $('#' + msg.geschaltet.$.id).offsetParent().attr('id')
+                            $('#' + button + ' [buttonElement="Mhan_ship"]').css("background-color","")
+                            $('#' + button + ' [buttonElement="Mhan_ship"]').addClass("bg-primary")
 
                         }
 
