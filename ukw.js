@@ -33,12 +33,15 @@ FILENAME = __filename.slice(__dirname.length + 1);
 exports.pruefeRfdWS = function () {
     //Pruefung lokaler VTR
     request(cfg.urlRFDWebservice, {timeout: 2000}, function (error, response, body) {
+
         if (!error && response.statusCode == 200) {
-            //log.debug(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK')
-            sendeWebNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'OK'}})
+            log.debug(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK');
+            exports.sendeWebsocketNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'OK'}})
         }
-        if (error)
-            log.error(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + error)
+        else {
+            log.error(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + error);
+            exports.sendeWebsocketNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'Error'}})
+        }
     })
 };
 
@@ -114,11 +117,13 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
             });
             //log.info('RFD '+aktion+' fehlgeschlagen')
 
-            sendeWebNachricht('RFD ' + aktion + ' fehlgeschlagen')
+            exports.sendeWebSocketNachricht('RFD ' + aktion + ' fehlgeschlagen')
 
         }
         else {
+            log.debug(FILENAME + ' parsing response');
             parser.parseString(body, function (err, result) {
+                //log.debug(FILENAME + ' result  ' + JSON.stringify(result));
                 if (result !== undefined && result !== null && typeof result === 'object') {
                     if (result['S:Envelope'] !== undefined) {
                         log.info(FILENAME + ' Funktion: sendeWebServiceNachricht response: ' + JSON.stringify(result));
@@ -127,13 +132,25 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
 
                         erfolgreich = result['S:Envelope']['S:Body'][0]['ns2:' + aktion + 'Response'][0]['return'][0];
                         if (erfolgreich === 'true') {
-                            sendeWebNachricht(antwortFuerWebsocket)
+                            exports.sendeWebSocketNachricht(antwortFuerWebsocket)
                         }
                         else {
                             log.error('RFD ' + aktion + ' fehlgeschlagen');
-                            sendeWebNachricht('RFD ' + aktion + ' fehlgeschlagen')
+                            exports.sendeWebSocketNachricht('RFD ' + aktion + ' fehlgeschlagen');
+                            exports.sendeWebsocketNachrichtStatus({
+                                RfdStatus: {
+                                    URL: cfg.urlRFDWebservice,
+                                    Status: 'Error'
+                                }
+                            });
                         }
+                    } else{
+                        // TODO: Client ggf. informieren, dass der letzte Request nicht verarbeitet werden konnte - anders als der healthcheck ist die Ursache aber vielfaeltiger
+                        log.error(FILENAME + ' no envelope');
                     }
+                } else{
+                    // TODO: Client ggf. informieren, dass der letzte Request nicht verarbeitet werden konnte - anders als der healthcheck ist die Ursache aber vielfaeltiger
+                    log.error(FILENAME + ' result undefined or unexpected');
                 }
             }); // Parser ende
         }// ELse ende
@@ -142,36 +159,43 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
 
 
 //Zum Senden von UKW bezogenen Nachrichten
-sendeWebNachricht = function (Nachricht) {
-    log.info(FILENAME + ' Funktion: sendeWebNachricht ' + 'ukwMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht))
+exports.sendeWebSocketNachricht = function (Nachricht) {
+    log.info(FILENAME + ' Funktion: sendeWebSocketNachricht ' + 'ukwMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht));
     io.emit('ukwMessage', Nachricht);
-}
+};
 
 //Zum Senden von Status-Meldungen
-sendeWebNachrichtStatus = function (Nachricht) {
-    log.debug(FILENAME + ' Funktion: sendeWebNachrichtStatus ' + 'statusMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht))
+exports.sendeWebsocketNachrichtStatus = function (Nachricht) {
+    log.debug(FILENAME + ' Funktion: sendeWebsocketNachrichtStatus ' + 'statusMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht));
     io.emit('statusMessage', Nachricht);
-}
+};
 
 
 /*
  zum Testen
  */
-//var Intervall=setInterval(function() {sendeWebNachricht()},1000)
+//var Intervall=setInterval(function() {sendeWebSocketNachricht()},1000)
 
 
-// Create our JsSIP instance and run it:
-var ua = new JsSIP.UA(cfg.jsSipConfiguration);
+// Erstelle SIP User-Agent var ua. Hier mit Konfiguration DUE als Empfänger für die Statusnachrichten vom RFD
+//Die Übernahme aus der cfg funktioniert in der Produktivumgebung nicht. Callback? 
+//var ua = new JsSIP.UA(cfg.jsSipConfiguration_DUE);
+var ua = new JsSIP.UA({
+        'ws_servers': 'ws://10.160.2.64:10080',
+        'uri': 'sip:due@10.160.2.64:5060',
+        // TODO fuer unterschiedliche Passwoerter dev/stage/prod: noch in serverIPs auslagern
+        'password': 'due'
+});
 ua.start();
 
 
 // Register callbacks to desired message event
 var eventHandlers = {
     'succeeded': function (e) {
-        log.debug('Nachricht gesendet')
+        log.debug('SIP-Nachricht gesendet.')
     },
     'failed': function (e) {
-        log.error('Nachricht NICHT gesendet')
+        log.error('SIP-Nachricht NICHT gesendet, Details: ' + require('util').inspect(e));
     }
 };
 
@@ -179,27 +203,17 @@ var options = {
     'eventHandlers': eventHandlers
 };
 
-
-//SIP Test Aufrufe
-function sendeSipNachricht(text) {
-    ua.sendMessage(cfg.jsSipConfiguration.testReceiverMessage, text, options);
-}
-function anruf() {
-    ua.call(cfg.jsSipConfiguration.testReceiverCall)
-}
-
-
 //SIP User Agent Ereignisse
 ua.on('connected', function (e) {
-    log.debug('Verbunden mit SIP-Server')
+    log.debug('DUE Verbunden mit SIP-Server')
 });
 
 ua.on('connecting', function (e) {
-    log.debug('Verbinde zu SIP-Server...')
+    log.debug('DUE Verbinde zu SIP-Server...')
 });
 
 ua.on('registered', function (e) {
-    log.debug('Registriert auf SIP-Server');
+    log.debug('DUE Registriert auf SIP-Server');
     //sendeNachricht('Bin jetzt Registriert')
     //anruf()
 });
@@ -219,16 +233,53 @@ ua.on('newMessage', function (e) {
     log.info(FILENAME + ' Funktion: newSipMessage : ' + e.message.request.body);
     //log.debug('SIP Body: '+e.message.request.body)
     //Sende WebSocket Nachricht beim Senden und Empfangen. Richtung noch einbauen
-    sendeWebNachricht(e.message.request.body);
+    exports.sendeWebSocketNachricht(e.message.request.body);
     parser.parseString(e.message.request.body, function (err, result) {
-        log.error(err);
         if (err == null) {
-            log.error(result);
-
-            sendeWebNachricht(result)
+            log.debug("sip parse result: " + JSON.stringify(result));
+            exports.sendeWebSocketNachricht(result)
         }
         else {
             log.error('keine XML in SIP Nachricht Error=' + err + ' Nachricht=' + e.message.request.body)
         }
     }); //Parser Ende
+});
+
+
+// Erstelle SIP User-Agent var ua. Hier mit Konfiguration RFD Mock als SENDER für die Test Statusnachrichten zum DUE
+var mockRFD = new JsSIP.UA(cfg.jsSipConfiguration_mockRFD);
+mockRFD.start();
+
+// GET-Aufruf fuer SIP-Message: http://10.22.30.1:3000/mockmessage?messageText=%3CFSTSTATUS+id%3D%221-H-RFD-BHVVTA-FKEK-1%22+state%3D%220%22+channel%3D%22-1%22%2F%3E
+
+//SIP Test Aufrufe
+exports.sendeSipNachricht = function (text, callback) {
+    var SIPreceiver = cfg.jsSipConfiguration_DUE.uri.replace("sip:", "");
+    log.debug("sendeSipNachricht an " + SIPreceiver + " : " + text);
+    try {
+        mockRFD.sendMessage(SIPreceiver, text, options);
+        callback('OK', text);
+    } catch (e) {
+        log.error("unable to call mockRFD.sendMessage()");
+        //log.error(JSON.stringify(e));
+        callback('ERROR', e);
+    }
+};
+exports.anruf = function () {
+    ua.call(cfg.jsSipConfiguration.testReceiverCall)
+};
+
+//SIP User Agent Ereignisse
+mockRFD.on('connected', function (e) {
+    log.debug('mockRFD Verbunden mit SIP-Server')
+});
+
+mockRFD.on('connecting', function (e) {
+    log.debug('mockRFD Verbinde zu SIP-Server...')
+});
+
+mockRFD.on('registered', function (e) {
+    log.debug('mockRFD Registriert auf SIP-Server');
+    //sendeNachricht('Bin jetzt Registriert')
+    //anruf()
 });

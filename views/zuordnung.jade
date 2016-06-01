@@ -164,17 +164,6 @@ block append testcode2
     script.
         $('#myCombobox').combobox();
 
-        //Diese noch in eine Konfig. auslagern
-        var DUEWHV = '10.160.1.64'
-        var DUEBRB = '10.160.2.64'
-        var DUELUB = '10.160.3.64'
-        var RFDWHV = '10.160.1.96'
-        var RFDBRB = '10.92.2.42'
-        var RFDLUB = '10.92.3.42'
-
-
-
-
         //WebSocket Verbindung herstellen
         var aktuellerUKWserver = location.protocol + '//' + location.hostname + ':3000';
         var LotsenApStandard; //Standard Kanalzuordnung
@@ -192,16 +181,16 @@ block append testcode2
                 console.log('check 2------------------------VERBUNDEN', socket.connected);
 
 
-                $('#buttonWHV_DUE').removeClass("label-danger")
-                $('#buttonWHV_DUE').addClass("label-success")
+                $('#buttonActiveVTR_DUE').removeClass("label-danger")
+                $('#buttonActiveVTR_DUE').addClass("label-success")
 
             });
 
 
             socket.on('disconnect', function () {
                 console.log('check 2-----------------------GETRENNT', socket.connected);
-                $('#buttonWHV_DUE').removeClass("label-success")
-                $('#buttonWHV_DUE').addClass("label-danger")
+                $('#buttonActiveVTR_DUE').removeClass("label-success")
+                $('#buttonActiveVTR_DUE').addClass("label-danger")
 
             });
         }

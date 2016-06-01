@@ -1,0 +1,11 @@
+{
+  "port":	"3000",
+  "httpIP": "10.22.30.1",
+  "rfdIP":  "10.22.30.1",
+  "sipIP":  "10.22.30.100",
+  "alternativeServer":  [
+    ["alternative1", "10.22.30.1:3000"],
+    ["alternative2", "10.22.30.1:3001"],
+    ["alternative3", "10.22.30.1:3002"]
+  ]
+}

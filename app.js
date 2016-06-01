@@ -80,6 +80,7 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 app.use(function (err, req, res, next) {
     res.status(err.status || 500);
+    log.info("cfg bei error: " + JSON.stringify(cfg));
     res.render('error', {
         message: err.message,
         error: {}
@@ -112,7 +113,9 @@ var socket = require('./socket.js');
 socket.socket(server);
 
 // Setze Intervall fuer Pruefung
-var Intervall=setInterval(function() {ukw.pruefeRfdWS()}, cfg.intervall)
+var Intervall = setInterval(function () {
+    ukw.pruefeRfdWS()
+}, cfg.intervall)
 
 
 /**

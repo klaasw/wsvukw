@@ -12,6 +12,8 @@ Dies ist die Benutzer-Oberfläche im DUE für die Nutzung des Revierfunkdienstes
 - xml2js (XML in JSON Wandler)
 - file-stream-rotator (für Datei-Logging)
 - moment (vielleicht)
+- chimp (Test?)
+- chimp-widget (Test?)
 
 ## Weitere Software
 - resipprocate als SIP-Server zur entgegennahem der Zustandsmeldungen via SIP IM Nachricht

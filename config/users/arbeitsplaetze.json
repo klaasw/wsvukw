@@ -13,7 +13,7 @@
   },
   {
     "10.162.1.96": {
-      "user": "JA NvD",
+      "user": "WR NvD",
       "revier": "Jade Traffic"
     }
   },
@@ -29,8 +29,27 @@
       "revier": "Jade Traffic"
     }
   },
- {
+  {
     "::ffff:10.22.30.1": {
+      "user": "JA NvD",
+      "revier": "Jade Traffic"
+    }
+  },
+  {
+    "::ffff:10.7.246.32": {
+      "user": "JA NvD",
+      "revier": "Jade Traffic"
+    }
+  },
+  {
+    "::ffff:10.7.246.31": {
+      "user": "JA NvD",
+      "revier": "Jade Traffic"
+    }
+  },
+
+  {
+    "::ffff:10.7.243.168": {
       "user": "JA NvD",
       "revier": "Jade Traffic"
     }
@@ -65,6 +84,48 @@
     "192.168.56.8": {
       "user": "CX NvD",
       "revier": "Cuxhaven Elbe Traffic"
+    }
+  },
+  {
+    "10.160.230.170": {
+      "user": "WR NvD",
+      "revier": "Warnemuende Traffic"
+    }
+  },
+  {
+    "10.160.230.65": {
+      "user": "WR NvD",
+      "revier": "Warnemuende Traffic"
+    }
+  },
+  {
+    "10.160.230.81": {
+      "user": "WR NA1",
+      "revier": "Warnemuende Traffic"
+    }
+  },
+   {
+    "10.160.230.97": {
+      "user": "ST NA1",
+      "revier": "Stralsund Traffic"
+    }
+  },
+   {
+    "10.160.230.113": {
+      "user": "WO NA1",
+      "revier": "Wolgast Traffic"
+    }
+  },
+   {
+    "10.160.230.129": {
+      "user": "WAR Lotse1",
+      "revier": "Warenmuende Traffic"
+    }
+  },
+  {
+    "fe80::95f9:204a:bc4a:b605": {
+      "user": "JA NvD",
+      "revier": "Jade Traffic"
     }
   }
 ]
