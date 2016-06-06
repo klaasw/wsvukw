@@ -13,21 +13,20 @@ log.debug("socket.js geladen.");
 
 
 exports.socket = function (server) {
-    log.debug("Socket established");
-    log.debug("server: " + server);
-
-    io.listen(server).on('connect', function (socket) {
-        log.debug('Benutzer hat Websocket-Verbindung mit ID '+ socket.id + ' hergestellt. IP: ' + socket.request.connection.remoteAddress);
+    log.debug(FILENAME + " Socket Server established");
+    log.debug(FILENAME + " server: " +server); //Log ggf. wieder weg, da Server Objekt keine relevanten Info enthält
+        io.listen(server).on('connect', function (socket) {
+        log.debug(FILENAME + ' Funktion connect: Benutzer hat Websocket-Verbindung mit ID '+ socket.id + ' hergestellt. IP: ' + socket.request.connection.remoteAddress);
         // TODO: Pruefung Berechtigung !
         socketGlobal = socket;
 
         socket.on('*', function(msg) {
-            log.debug('* message: ' + JSON.stringify(msg))
+            log.debug(FILENAME + ' Funktion * message: ' + JSON.stringify(msg))
         });
 
         socket.on('mock message', function (msg) {
             socket.broadcast.emit('mock message', msg);
-            log.debug('mock message: ' + JSON.stringify(msg))
+            log.debug(FILENAME + ' Funktion mock message: ' + JSON.stringify(msg))
         });
         socket.on('chat message', function (msg) {
             //io.emit('chat message', msg);
@@ -73,7 +72,7 @@ exports.socket = function (server) {
 
         // Client hat Verbindung unterbrochen:
         socket.on('disconnect', function (msg) {
-            log.warn('Benutzer hat Websocket-Verbindung mit ID '+ socket.id + ' getrennt. IP: ' + socket.request.connection.remoteAddress);
+            log.warn(FILENAME + ' Funktion disconnect: Benutzer hat Websocket-Verbindung mit ID '+ socket.id + ' getrennt. IP: ' + socket.request.connection.remoteAddress);
             socketGlobal = undefined;
         });
 
@@ -84,9 +83,9 @@ exports.socket = function (server) {
 exports.emit = function emit(messagetype, message) {
     log.debug(FILENAME + " Funktion: socket.emit MessageType: " + messagetype + "  message: " + JSON.stringify(message));
     if (socketGlobal == undefined) {
-        log.error("no client connected, not able to send message "+ messagetype);
+        log.error(FILENAME + " Funktion emit: no client connected, not able to send message "+ messagetype);
     } else {
-        log.debug(FILENAME + " emitting ...");
+        log.debug(FILENAME + " Funktion emit: emitting messages to clients...");
         return socketGlobal.emit(messagetype, message);
     }
 };

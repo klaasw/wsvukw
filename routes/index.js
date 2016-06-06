@@ -428,13 +428,13 @@ function liesAusRESTService(configfile, callback) {
 function findeApNachIp(ip, callback) {
     var Ap = '';
     //var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
-    log.debug("function findeNachIp " + ip);
+    log.debug(FILENAME + " function findeNachIp: " + ip);
     // TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
     var url = "http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/arbeitsplaetze";
-    log.debug("function findeNachIp " + url);
+    log.debug(FILENAME + " function findeNachIp " + url);
     request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
-            log.debug("body: " + body);
+            //log.debug("body: " + body);
             var alle_Ap = JSON.parse(body);
             log.debug(alle_Ap);
 
@@ -442,15 +442,14 @@ function findeApNachIp(ip, callback) {
                 //Benutzer gefunden
                 if (ip in alle_Ap[i]) {
                     Ap = alle_Ap[i][ip].user;
-                    log.debug(FILENAME + ' Benutzer gefunden: ' + JSON.stringify(Ap));
+                    log.debug(FILENAME + ' function findeNachIp: Benutzer gefunden: ' + JSON.stringify(Ap));
                     callback(Ap);
                     break;
                 }
                 log.debug("debug alle_Ap[" + i + "]: " + JSON.stringify(alle_Ap[i]));
             } //for Ende
-            //TODO: Diese Bedingung wird nicht erreicht, wenn keine IP in Arbeitsplätze.json eingetragen ist.
-            if(Ap = ''){
-                log.error(FILENAME + ' Benutzer NICHT gefunden zu IP: ' + ip);
+            if(Ap == ''){
+                log.error(FILENAME + ' function findeNachIp: Benutzer NICHT gefunden zu IP: ' + ip);
                 callback('')
             }
         } else {
