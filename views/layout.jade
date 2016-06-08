@@ -14,8 +14,18 @@ mixin errorModal(type,title,errorMessage)
                         each val, index in gesamteKonfig.IpConfig.alternativeIPs
                             a(href='http://' + val[1]) #{val[0]}
                             | &nbsp;
-                    audio(autoplay)
-                        source(src='burst4.wav' type='audio/wav')
+                    
+
+// mixin für die Zustandsanzeige der Server
+mixin serverListe(ip, idName)
+    li
+        a(href='http://' + ip)
+            button.btn.btn-default(
+            	id='button'+idName
+            	style='width: 135px;text-align: right;'
+            ) &nbsp#{idName}&nbsp
+                span.label.label-default(id='button'+idName+'_DUE') DUE
+                span.label.label-default(id='button'+idName+'_RFD') RFD
 
 
 doctype html
@@ -38,7 +48,7 @@ html
             script(src='/javascripts/bootstrap-slider.js')
 
 
-        block testcode
+        block codeTeil1
             script.
                 console.log("Lade Navigationslayout")
 
@@ -59,42 +69,39 @@ html
                             ul.nav.navbar-nav
                                 li#gruppe(onclick='gruppen(this.id)')
                                     a(href='#') Einzelschaltung
-                                li#uebersicht
-                                    a(href='/overview') &Uuml;bersicht
                                 li#konf
                                     a(href='/zuordnung') RL Kanalzuordnung
                             //- Schleife ueber alle alternativen Server, ID dynamisch zusammensetzen
                             //- wichtig dabei: Variable #{val[0]} in einfachen Anführungzeichen, sonst Interpolation-Fehler
                             if (!error && (typeof gesamteKonfig != 'undefined'))
-                                - aktiverServer=gesamteKonfig.IpConfig.aktuellerServer
-                                each val, index in gesamteKonfig.IpConfig.alternativeIPs
-                                    //- log.debg("cfg.httpIP: "+gesamteKonfig.IpConfig.cfgIPs.httpIP+":"+gesamteKonfig.IpConfig.port)
-                                    //- log.debug("vergleich mit: "+val[1])
-                                    //- var buttonActiveVTR = (val[1] == gesamteKonfig.IpConfig.cfgIPs.httpIP+":"+gesamteKonfig.IpConfig.port ? ' buttonActiveVTR': '')
-                                    //- var buttonActiveVTR_DUE = (val[1] == gesamteKonfig.IpConfig.cfgIPs.httpIP+":"+gesamteKonfig.IpConfig.port ? ' buttonActiveVTR_DUE': '')
-                                    //- var buttonActiveVTR_RFD = (val[1] == gesamteKonfig.IpConfig.cfgIPs.httpIP+":"+gesamteKonfig.IpConfig.port ? ' buttonActiveVTR_RFD': '')
-                                    //- log.debug('buttonActiveVTR: '+buttonActiveVTR)
+                                - aktiverServer = gesamteKonfig.IpConfig.aktuellerServer
+                                    each val, index in gesamteKonfig.IpConfig.alternativeIPs
+                                        - server = val[1].split(":")
+                                            if server[0] == aktiverServer
+                                                div.btn-group.navbar-btn.navbar-right#server    
+                                                    button.btn.btn-primary.dropdown-toggle(
+                                                        id='button'+'#{val[0]}'
+                                                        type='button'
+                                                        data-toggle='dropdown'
+                                                        aria-haspopup='true'
+                                                        aria-expanded='false'
+                                                    ) &nbsp#{val[0]}&nbsp
+                                                        span.label.label-default(id='buttonAktiv'+'#{val[0]}'+'_DUE') DUE
+                                                        span.label.label-default(id='buttonAktiv'+'#{val[0]}'+'_RFD') RFD
+                                                        span.caret
+                                                    ul.dropdown-menu
+                                                        each val1, index1 in gesamteKonfig.IpConfig.alternativeIPs
+                                                            +serverListe(val1[1], val1[0])
+                                                - break;
+                                            
 
-                                    //a(href='http://' + val[1])
-                                    //    button.btn.btn-default.navbar-btn.navbar-right(id='button'+'#{val[0]}') &nbsp#{val[0]}&nbsp
-                                    //        span.label.label-default(id='button'+'#{val[0]}'+'_DUE') DUE
-                                    //        span.label.label-default(id='button'+'#{val[0]}'+'_RFD') RFD
+                                                
 
-                                    - server = val[1].split(":")
-                                    if server[0] == aktiverServer
-                                        a(href='http://' + val[1])
-                                            button.btn.btn-primary.navbar-btn.navbar-right(id='button'+'#{val[0]}') &nbsp#{val[0]}&nbsp
-                                                span.label.label-default(id='button'+'#{val[0]}'+'_DUE') DUE
-                                                span.label.label-default(id='button'+'#{val[0]}'+'_RFD') RFD
-                                    else
-                                        a(href='http://' + val[1])
-                                            button.btn.btn-default.navbar-btn.navbar-right(id='button'+'#{val[0]}') &nbsp#{val[0]}&nbsp
-                                                span.label.label-default(id='button'+'#{val[0]}'+'_DUE') DUE
-                                                span.label.label-default(id='button'+'#{val[0]}'+'_RFD') RFD
+                                                
 
-
+                                    
             block content
-            block testcode2
+            block codeTeil2
                 script.
                     console.log("Navigationslayout geladen...")
       
