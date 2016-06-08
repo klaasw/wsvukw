@@ -83,6 +83,3 @@ oder config anpassen /etc/oversip
 repro.config 2x
 oversip.conf 2x
 domain und user in repro anpassen
-socket anpassen in:
--view ukwDisplay
--view layout
