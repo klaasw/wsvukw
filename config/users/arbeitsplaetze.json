@@ -12,6 +12,12 @@
     }
   },
   {
+    "::ffff:10.160.77.96": {
+      "user": "JA NvD",
+      "revier": "Jade Traffic"
+    }
+  },
+  {
     "::ffff:10.162.1.96": {
       "user": "WR NvD",
       "revier": "Jade Traffic"
