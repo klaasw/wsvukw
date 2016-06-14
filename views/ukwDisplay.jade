@@ -57,9 +57,15 @@ block content
                                             onclick='schalteKanal(event,this)'
                                             style="cursor: pointer;z-index:-1;float:left;width:20%;height: 44px;padding-top: 12px;font-size: 16px;font-weight: bold;"
                                         )
-                                            span S
+                                            span(
+                                                id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship'
+                                            ) S
                                         div.pull-right
-                                            span#test 100
+                                            span(
+                                                id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship'
+                                                onclick='schalteKanal(event,this)'
+                                                style="cursor: pointer; padding-bottom: 15px; padding-top: 15px"
+                                            ) 100
                                             //span.glyphicon.glyphicon-volume-up(id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]]+'ship_pegel',onclick='setzeLautstaerke(this.id)',style="cursor: pointer;padding-top: 15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;",data-toggle='modal',data-target='#pegelModal')
                                             span.glyphicon.glyphicon-volume-up(
                                             id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]] + 'ship_pegel'
