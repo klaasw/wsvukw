@@ -278,9 +278,8 @@ router.get('/arbeitsplaetze', function (req, res) {
             log.error(err);
             res.status(404).send("Fehler beim Einlesen der Arbeitsplatzkonfiguration");
         } else {
-            log.debug(FILENAME + ' Arbeitplaetze geladen: ');
             arbeitsplaetze = JSON.parse(data);
-            log.debug("arbeitsplaetze: " + arbeitsplaetze);
+            log.debug(FILENAME + ' Funktion: /arbeitplaetze Arbeitplaetze geladen: ' + JSON.stringify(arbeitsplaetze));
             res.send(arbeitsplaetze);
         }
     });
@@ -348,7 +347,12 @@ function leseRfdTopologie(callback) {
                             //log.debug(FstEK[i]['$'])
                             tmp = FstEK[i]['$'];
                             tmp.MKA = false;
+                            tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
                             //log.debug(tmp)
+                            //unoetige Variablen entfernen
+                            delete tmp.ipaddr
+                            delete tmp.portsip
+                            delete tmp.portrtp
                             Funkstellen.push(tmp)
 
                         }
@@ -359,7 +363,12 @@ function leseRfdTopologie(callback) {
                             //log.debug(FstEK[i]['$'])
                             tmp = FstHK[i]['$'];
                             tmp.MKA = false;
+                            tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
                             //log.debug(tmp)
+                            //unoetige Variablen entfernen
+                            delete tmp.ipaddr
+                            delete tmp.portsip
+                            delete tmp.portrtp
                             Funkstellen.push(tmp)
 
                         }
@@ -370,7 +379,12 @@ function leseRfdTopologie(callback) {
                             //log.debug(FstMK[i]['$'])
                             tmp = FstMK[i]['$'];
                             tmp.MKA = true;
+                            tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
                             //log.debug(tmp)
+                            //unoetige Variablen entfernen
+                            delete tmp.ipaddr
+                            delete tmp.portsip
+                            delete tmp.portrtp
                             Funkstellen.push(tmp)
 
                         }
@@ -382,7 +396,12 @@ function leseRfdTopologie(callback) {
                             tmp = FstGW[i]['$'];
                             tmp.MKA = false;
                             tmp.GW = true;
+                            tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
                             //log.debug(tmp)
+                            //unoetige Variablen entfernen
+                            delete tmp.ipaddr
+                            delete tmp.portsip
+                            delete tmp.portrtp
                             Funkstellen.push(tmp)
 
                         }
@@ -428,29 +447,24 @@ function liesAusRESTService(configfile, callback) {
 function findeApNachIp(ip, callback) {
     var Ap = '';
     //var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
-    log.debug("function findeNachIp " + ip);
+    log.debug(FILENAME + " function findeNachIp: " + ip);
     // TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
     var url = "http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/arbeitsplaetze";
-    log.debug("function findeNachIp " + url);
+    log.debug(FILENAME + " function findeNachIp " + url);
     request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
-            log.debug("body: " + body);
+            //log.debug("body: " + body);
             var alle_Ap = JSON.parse(body);
-            log.debug(alle_Ap);
+            log.debug(FILENAME + ' function findeNachIp: ' + alle_Ap);
 
-            for (i = 0; i < alle_Ap.length; i++) {
-                //Benutzer gefunden
-                if (ip in alle_Ap[i]) {
-                    Ap = alle_Ap[i][ip].user;
-                    log.debug(FILENAME + ' Benutzer gefunden: ' + JSON.stringify(Ap));
-                    callback(Ap);
-                    break;
-                }
-                log.debug("debug alle_Ap[" + i + "]: " + JSON.stringify(alle_Ap[i]));
-            } //for Ende
-            //TODO: Diese Bedingung wird nicht erreicht, wenn keine IP in Arbeitsplätze.json eingetragen ist.
-            if(Ap = ''){
-                log.error(FILENAME + ' Benutzer NICHT gefunden zu IP: ' + ip);
+            if(alle_Ap.hasOwnProperty(ip)){
+                Ap = alle_Ap[ip].user;
+                log.debug(FILENAME + ' function findeNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
+                callback(Ap);
+            }
+            
+            else{
+                log.error(FILENAME + ' function findeNachIp: Benutzer NICHT gefunden zu IP: ' + ip);
                 callback('')
             }
         } else {

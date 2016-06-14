@@ -179,13 +179,7 @@ exports.sendeWebsocketNachrichtStatus = function (Nachricht) {
 
 // Erstelle SIP User-Agent var ua. Hier mit Konfiguration DUE als Empfänger für die Statusnachrichten vom RFD
 //Die Übernahme aus der cfg funktioniert in der Produktivumgebung nicht. Callback? 
-//var ua = new JsSIP.UA(cfg.jsSipConfiguration_DUE);
-var ua = new JsSIP.UA({
-        'ws_servers': 'ws://10.160.2.64:10080',
-        'uri': 'sip:due@10.160.2.64:5060',
-        // TODO fuer unterschiedliche Passwoerter dev/stage/prod: noch in serverIPs auslagern
-        'password': 'due'
-});
+var ua = new JsSIP.UA(cfg.jsSipConfiguration_DUE);
 ua.start();
 
 
@@ -205,42 +199,41 @@ var options = {
 
 //SIP User Agent Ereignisse
 ua.on('connected', function (e) {
-    log.debug('DUE Verbunden mit SIP-Server')
+    log.debug(FILENAME + ' Funktion: connected mit SIP-Server: ' + cfg.jsSipConfiguration_DUE.uri)
 });
 
 ua.on('connecting', function (e) {
-    log.debug('DUE Verbinde zu SIP-Server...')
+    log.debug(FILENAME + ' Funktion connecting zu SIP-Server: ' + cfg.jsSipConfiguration_DUE.uri)
 });
 
 ua.on('registered', function (e) {
-    log.debug('DUE Registriert auf SIP-Server');
+    log.debug(FILENAME +' Funktion: registered auf SIP-Server ' + cfg.jsSipConfiguration_DUE.uri);
     //sendeNachricht('Bin jetzt Registriert')
     //anruf()
 });
 
 ua.on('registrationFailed', function (e) {
-    log.error('Registrierungsfehler auf SIP-Server')
+    log.error(FILENAME + ' Funktion: registrationFailed auf SIP-Server ' + cfg.jsSipConfiguration_DUE.uri)
 });
 
 
 ua.on('disconnected', function (e) {
-    log.debug('Getrennt vom SIP-Server')
+    log.debug(FILENAME +' Funktion: Getrennt vom SIP-Server '+ cfg.jsSipConfiguration_DUE.uri)
 });
 
 ua.on('newMessage', function (e) {
-    log.debug('neue SIP Nachricht');
-    log.debug('SIP Richtung: ' + e.message.direction);
-    log.info(FILENAME + ' Funktion: newSipMessage : ' + e.message.request.body);
+    log.debug(FILENAME + ' Funktion: newMessage Richtung: ' + e.message.direction);
+    log.info(FILENAME + ' Funktion: newMessage Inhalt: ' + e.message.request.body);
     //log.debug('SIP Body: '+e.message.request.body)
     //Sende WebSocket Nachricht beim Senden und Empfangen. Richtung noch einbauen
     exports.sendeWebSocketNachricht(e.message.request.body);
     parser.parseString(e.message.request.body, function (err, result) {
         if (err == null) {
-            log.debug("sip parse result: " + JSON.stringify(result));
+            log.debug(FILENAME + " Funktion: newMessage sip parse result: " + JSON.stringify(result));
             exports.sendeWebSocketNachricht(result)
         }
         else {
-            log.error('keine XML in SIP Nachricht Error=' + err + ' Nachricht=' + e.message.request.body)
+            log.error(FILENAME + ' Funktion: newMessage keine XML in SIP Nachricht Error=' + err + ' Nachricht=' + e.message.request.body)
         }
     }); //Parser Ende
 });
@@ -271,15 +264,15 @@ exports.anruf = function () {
 
 //SIP User Agent Ereignisse
 mockRFD.on('connected', function (e) {
-    log.debug('mockRFD Verbunden mit SIP-Server')
+    log.debug(FILENAME + ' Funktion: mockRFD Verbunden mit SIP-Server '+ cfg.jsSipConfiguration_mockRFD.uri)
 });
 
 mockRFD.on('connecting', function (e) {
-    log.debug('mockRFD Verbinde zu SIP-Server...')
+    log.debug(FILENAME + ' Funktion: mockRFD Verbinde zu SIP-Server... '+ cfg.jsSipConfiguration_mockRFD.uri)
 });
 
 mockRFD.on('registered', function (e) {
-    log.debug('mockRFD Registriert auf SIP-Server');
+    log.debug(FILENAME + ' Funktion: mockRFD Registriert auf SIP-Server '+ cfg.jsSipConfiguration_mockRFD.uri);
     //sendeNachricht('Bin jetzt Registriert')
     //anruf()
 });
