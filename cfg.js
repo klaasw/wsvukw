@@ -11,8 +11,9 @@ function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
         // try next
     }
     var networkInterfaces = require('os').networkInterfaces();
+    console.log(networkInterfaces)
     for (var netInterface in networkInterfaces) {
-        for (adapter in networkInterfaces[netInterface]) {
+        for (var adapter in networkInterfaces[netInterface]) {
             try {
                 AKTUELLER_SERVER = networkInterfaces[netInterface][adapter].address //TODO:Port auslesen bzw. einbinden
                 return require('./config/servers/' + networkInterfaces[netInterface][adapter].address + '/serverIPs.json');
