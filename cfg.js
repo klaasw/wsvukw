@@ -11,7 +11,6 @@ function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
         // try next
     }
     var networkInterfaces = require('os').networkInterfaces();
-    console.log(networkInterfaces)
     for (var netInterface in networkInterfaces) {
         for (var adapter in networkInterfaces[netInterface]) {
             try {
