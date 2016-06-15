@@ -9,7 +9,7 @@ var myStepDefinitionsWrapper = function () {
         browser.url(openUrl);
     });
 
-    this.Then(/^lautet der Titel "([^"]*)"$/, function (title) {
+    this.When(/^lautet der Titel "([^"]*)"$/, function (title) {
         expect(browser.getTitle()).toEqual(title);
     });
 
@@ -18,7 +18,7 @@ var myStepDefinitionsWrapper = function () {
         browser.click("div#" + button);
     });
 
-    this.Then(/^wird in "([^"]*)" der Hintergrund "([^"]*)"$/, function (button, color) {
+    this.When(/^(?:wird |ist |)(?:in |)(?:Button |)"([^"]*)" (?:der |)(?:Hintergrund |)(?:ist |)"([^"]*)"$/, function (button, color) {
         //console.log("\t\tteste Hintergrundfarbe " + color + " fuer Button: " + button);
         var styleExists = '#' + button + 'panel div.panel.panel-default';
         switch (color) {
@@ -50,15 +50,16 @@ var myStepDefinitionsWrapper = function () {
     });
 
 
-    this.When(/^SIPNachricht "([^"]*)" mit state "([^"]*)" an FunkstellenID von "([^"]*)" gesendet wird$/, function (nachrichtentyp, state, button) {
+    this.When(/^SIPNachricht "([^"]*)" mit state "([^"]*)" an (?:FunkstellenID von |)(?:Button |)"([^"]*)" gesendet wird$/, function (nachrichtentyp, state, button) {
         // Write the automation code here
         // FunkstellenID aus der Arbeitsplatzkonfig heraus bestimmen (Hauptanalgen-ID), NebenanlagenID
         pending();
     });
 
     this.When(/^Mehrkanalanlage "([^"]*)" mit FunkstellenID "([^"]*)" auf Kanal "([^"]*)" umgeschaltet wird$/, function (button, funkstellenid, channel) {
+        browser.waitForExist("h2#" + button + " button", 5000);
         browser.click("h2#" + button + " button");
-        browser.waitForExist("div#mkaModal.modal.fade.in", 65000);
+        browser.waitForExist("div#mkaModal.modal.fade.in", 15000);
         //console.log("\t\tgefunden: button#channel"+channel);
 
         browser.click("button#channel" + channel);
@@ -70,7 +71,11 @@ var myStepDefinitionsWrapper = function () {
 
 
     this.When(/^wird in "([^"]*)" der Kanal "([^"]*)" angezeigt$/, function (button, channel) {
-        expect(browser.getText("h2#" + button)).toEqual(channel);
+        // muss nicht sofort stimmen, warte 4 Sekunden
+        // .text-right > span:nth-child(1)
+
+        browser.waitForText("div#" + button + "panel div#" + button + " span", 15000, "" + channel);
+        //expect(browser.getText("h2#" + button)).toEqual(channel);
     });
 
 
@@ -80,7 +85,7 @@ var myStepDefinitionsWrapper = function () {
         } else {
             console.log("\t\ttestfür spinbox");
             browser.click("h2#" + button + " button");
-            browser.waitForExist("div#mkaModal.modal.fade.in", 65000);
+            browser.waitForExist("div#mkaModal.modal.fade.in", 15000);
             console.log("\t\tzwischenzustand für spinbox");
             browser.setValue("#mySpinbox", channelinput)
                 .getValue("#mySpinbox").then(function (value) {
@@ -131,6 +136,27 @@ var myStepDefinitionsWrapper = function () {
 
     this.When(/^Test jetzt beenden.$/, function () {
         browser.end();
+    });
+
+
+    this.When(/^warte "(.*)" Sekunden$/, function (interval, callback) {
+        var self = this;
+        var waitmode = process.env.WAIT || "busy";
+        if (waitmode === "busy") {
+            while ((new Date() - self.time) < (interval * 1000)) {
+                // noop
+                browser.getText("none");
+            }
+            callback();
+        }
+        else if (waitmode === "sleep") {
+            setTimeout(
+                function () {
+                    callback();
+                },
+                interval * 1000
+            );
+        }
     });
 
 
