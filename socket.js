@@ -23,6 +23,10 @@ exports.socket = function (server) {
             log.debug(FILENAME + ' Funktion connect: Benutzer hat Websocket-Verbindung mit ID '+ socket.id + ' hergestellt. IP: ' + socket.request.connection.remoteAddress);
             // TODO: Pruefung Berechtigung !
             socketGlobal = socket;
+            
+            
+
+
             leseSchaltzustand(socket.id, socket.request.connection.remoteAddress)
 
         socket.on('*', function(msg) {
@@ -59,11 +63,11 @@ exports.socket = function (server) {
         socket.on('clientMessageSchaltzustand', function (msg) {
 
             ApID = msg.Arbeitsplatz.replace(/ /g, "_");
-            Zustand = JSON.stringify(msg.Zustand);
+            Zustand = JSON.stringify(msg.Zustand, null, 4);
 
             log.info(FILENAME + ' Funktion: empfangeWebNachricht ' + 'clientMessageSchaltzustand: WebSocket Nachricht: ' + JSON.stringify(msg));
 
-            files.writeFile(ApID + '_Zustand.json', Zustand, 'utf8', function (err, data) {
+            files.writeFile('state/' + ApID + '_Zustand.json', Zustand, 'utf8', function (err, data) {
                 if (err) {
                     log.error(FILENAME + ' Funktion: speichereSchaltzustand: ' + ApID + '_Zustand.json konnte nicht geschrieben werden' + err)
                 }
@@ -103,15 +107,14 @@ exports.emit = function emit(messagetype, message, socketID) {
 
 //in Arbeit
 //Einlesen des Schaltzustands und übermittlung bei connect
-
 function leseSchaltzustand(socketID, IP){
     var zustand='';
 
-    findeApNachIp(IP, function(benutzer){
+    findeApNachIp(IP, socketID, function(benutzer){
         
         benutzer = benutzer.replace(/ /g, "_");
 
-        files.readFile(benutzer+'_Zustand.json', 'utf8', function (err, data) {
+        files.readFile('state/' + benutzer+'_Zustand.json', 'utf8', function (err, data) {
             if (err){
                 log.error(FILENAME + ' Funktion: leseSchaltzustand: ' + benutzer + '_Zustand.json konnte nicht gelesen werden' + err)
             }
@@ -125,7 +128,7 @@ function leseSchaltzustand(socketID, IP){
 }
 
 
-function findeApNachIp(ip, callback) {
+function findeApNachIp(ip, socketID, callback) {
     var Ap = '';
     //var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
     log.debug(FILENAME + " function findeNachIp: " + ip);
@@ -141,6 +144,15 @@ function findeApNachIp(ip, callback) {
             if(alle_Ap.hasOwnProperty(ip)){
                 Ap = alle_Ap[ip].user;
                 log.debug(FILENAME + ' function findeNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
+                
+                //SocketID und Verbinungszeit in Variable schreiben
+                ApInfo             = alle_Ap[ip]
+                ApInfo.socketID    = socketID;
+                ApInfo.connectTime = new Date().toJSON();
+                
+                //Schreiben in aktiveArbeitsplaetze
+                schreibeSocketInfo(ApInfo, ip)
+
                 callback(Ap);
             }
             
@@ -155,6 +167,31 @@ function findeApNachIp(ip, callback) {
     });
 }
 
+//schreibe Verbindungsinfo socketID und Zeitstempel in aktiveArbeitsplaetze
+//TODO: löschen bei Disconnect oder Disconnect Zeitstempel oder inaktiveListe führen
+function schreibeSocketInfo(socketInfo, ip){
+
+    files.readFile('state/aktiveArbeitsplaetze.json', 'utf8', function (err, data) {
+        if (err){
+                log.error(FILENAME + ' Funktion: schreibeSocketInfo: aktiveArbeitsplaetze.json konnte nicht gelesen werden' + err)
+            }
+
+        else{
+            var alle_Ap = JSON.parse(data);
+            
+            alle_Ap[ip] = socketInfo
+
+            files.writeFile('state/aktiveArbeitsplaetze.json', JSON.stringify(alle_Ap, null, 4), 'utf8', function (err, data) {
+                if (err) {
+                    log.error(FILENAME + ' Funktion: schreibeSocketInfo: ' + 'aktiveArbeitsplaetze.json konnte nicht geschrieben werden' + err)
+                }
+                else {
+                    log.info(FILENAME + ' Funktion: schreibeSocketInfo: konfig.json ' + 'aktiveArbeitsplaetze.json geschrieben')
+                }
+            })
+        }
+    })
+}
 
 
 

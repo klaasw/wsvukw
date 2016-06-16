@@ -1,0 +1,26 @@
+{
+    "::ffff:10.162.1.97": {
+        "user": "JA NvD",
+        "revier": "Jade Traffic",
+        "socketID": "/#i70f8dP7Wpk35IuZAAAA",
+        "connectTime": "2016-06-12T03:36:07.652Z"
+    },
+    "::ffff:10.162.2.96": {
+        "user": "JA NvD",
+        "revier": "Jade Traffic",
+        "socketID": "/#U14ZDu_BMazrC_zvAAAA",
+        "connectTime": "2016-06-12T03:30:56.752Z"
+    },
+    "::ffff:10.162.1.34": {
+        "user": "JA NvD",
+        "revier": "Jade Traffic",
+        "socketID": "/#U14ZDu_BMazrC_zvAAAA",
+        "connectTime": "2016-06-12T03:30:56.752Z"
+    },
+    "::ffff:10.162.1.96": {
+        "user": "WR NvD",
+        "revier": "Jade Traffic",
+        "socketID": "/#-4CjzVUJTxd6rzrXAAAB",
+        "connectTime": "2016-06-12T05:22:29.784Z"
+    }
+}
