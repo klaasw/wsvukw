@@ -11,6 +11,7 @@ var socketClient = require('socket.io/node_modules/socket.io-client')
 var socketGlobal;
 
 var cfg = require('./cfg.js');
+var db = require('./datenbank.js')
 
 log.debug(FILENAME+ " socket.js geladen.");
 
@@ -26,8 +27,8 @@ exports.socket = function (server) {
             
             
 
-
-            leseSchaltzustand(socket.id, socket.request.connection.remoteAddress)
+            leseZustand(socket.id) //Status der Funkstellen übertragen
+            leseSchaltzustand(socket.id, socket.request.connection.remoteAddress) //letzten Schaltzustandübertragen
 
         socket.on('*', function(msg) {
             log.debug(FILENAME + ' Funktion * message: ' + JSON.stringify(msg))
@@ -126,6 +127,48 @@ function leseSchaltzustand(socketID, IP){
         })
     })
 }
+
+
+//Lese Zustandsmeldungen in zustandKomponenten
+//{"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
+//TODO: 
+function leseZustand(socketID){
+    
+    db.findeElement('zustandKomponenten', '', function(doc){
+        console.log(doc)
+
+        for (var i = 0; i < doc.length; i++){
+             var zustand = {
+                'FSTSTATUS':{
+                    '$':doc[i].status
+                }
+             }
+             console.log(zustand)
+             exports.emit('ukwMessage', zustand, socketID)
+        }
+
+
+    })
+        
+
+        /**
+        files.readFile('state/zustandKomponenten.json', 'utf8', function (err, data) {
+            if (err){
+                    log.error(FILENAME + ' Funktion: leseZustand: zustandKomponenten.json konnte nicht gelesen werden' + err)
+                }
+    
+                else{
+                    var alle_Zustaende = JSON.parse(data);
+                    console.log(alle_Zustaende)
+                    for (var fst in alle_Zustaende){
+                        //console.log(fst)
+                        exports.emit('ukwMessage', {'FSTSTATUS':alle_Zustaende[fst]}, socketID)
+                    }
+
+                }
+        })**/
+}
+
 
 
 function findeApNachIp(ip, socketID, callback) {

@@ -1,5 +1,16 @@
-var JsSIP = require('jssip'); //Javascript SIP Uaser Agent
+/* Modul zur Auswertung und Weiterleitung der SIP Meldungen vom RFD
+*
+*
+*
+* @Author: Klaas Wuellner
+*/
 
+
+//TODO: in xml2js attrkey: 'attribute' aendern statt $ Zeichen. Dies muss aber in allen Modulen berücksichtigt werden.
+// Uebergangsweise Ersaetzen wo in Datenbank gelesen und geschrieben wird.
+
+var JsSIP = require('jssip'); //Javascript SIP Uaser Agent
+var files = require('fs'); // Zugriff auf das Dateisystem
 var request = require('request'); //Modul zu Abfrage von WebServices
 var xml2js = require('xml2js'); // zum Konvertieren von XML zu JS
 var parser = new xml2js.Parser({explicitRoot: true});// Parserkonfiguration
@@ -8,6 +19,8 @@ var log = require('./log.js');
 var cfg = require('./cfg.js');
 
 var io = require('./socket.js');
+
+var db = require('./datenbank.js') // Module zur Verbindung zur Datenbank
 
 
 FILENAME = __filename.slice(__dirname.length + 1);
@@ -177,6 +190,52 @@ exports.sendeWebsocketNachrichtStatus = function (Nachricht) {
 //var Intervall=setInterval(function() {sendeWebSocketNachricht()},1000)
 
 
+//schreibe Zustandsmeldungen in zustandKomponenten
+//{"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
+//TODO: 
+function schreibeZustand(Nachricht){
+    if (Nachricht.hasOwnProperty("FSTSTATUS")){
+        
+        var zustand = {
+            '_id' : Nachricht.FSTSTATUS.$.id,
+            'status': Nachricht.FSTSTATUS.$,
+            'letzteMeldung': new Date().toJSON()
+        }
+        
+        console.log(Nachricht.FSTSTATUS.$.id)
+        var selector = {'_id':Nachricht.FSTSTATUS.$.id}
+
+        db.schreibeInDb('zustandKomponenten', selector, zustand);
+
+        /**
+        files.readFile('state/zustandKomponenten.json', 'utf8', function (err, data) {
+            if (err){
+                    log.error(FILENAME + ' Funktion: schreibeSocketInfo: zustandKomponenten.json konnte nicht gelesen werden' + err)
+                }
+    
+                else{
+                    var alle_Zustaende = JSON.parse(data);
+                    
+                    alle_Zustaende[Nachricht.FSTSTATUS.$.id] = Nachricht.FSTSTATUS
+                    alle_Zustaende[Nachricht.FSTSTATUS.$.id].letzteMeldung = new Date().toJSON();
+
+                    files.writeFile('state/zustandKomponenten.json', JSON.stringify(alle_Zustaende, null, 4), 'utf8', function (err, data) {
+                        if (err) {
+                            log.error(FILENAME + ' Funktion: schreibeZustand: ' + 'zustandKomponenten.json konnte nicht geschrieben werden' + err)
+                        }
+                        else {
+                            log.info(FILENAME + ' Funktion: schreibeZustand: ' + 'zustandKomponenten.json geschrieben')
+                        }
+                    })
+                }
+        })**/
+    }
+    else{
+        //nichts machen
+    }
+}
+
+
 // Erstelle SIP User-Agent var ua. Hier mit Konfiguration DUE als Empfänger für die Statusnachrichten vom RFD
 //Die Übernahme aus der cfg funktioniert in der Produktivumgebung nicht. Callback? 
 var ua = new JsSIP.UA(cfg.jsSipConfiguration_DUE);
@@ -222,15 +281,14 @@ ua.on('disconnected', function (e) {
 });
 
 ua.on('newMessage', function (e) {
-    log.debug(FILENAME + ' Funktion: newMessage Richtung: ' + e.message.direction);
-    log.info(FILENAME + ' Funktion: newMessage Inhalt: ' + e.message.request.body);
+    log.info(FILENAME + ' Funktion: newSipMessage Richtung: ' + e.message.direction + ' Inhalt: ' + e.message.request.body );
     //log.debug('SIP Body: '+e.message.request.body)
     //Sende WebSocket Nachricht beim Senden und Empfangen. Richtung noch einbauen
-    exports.sendeWebSocketNachricht(e.message.request.body);
     parser.parseString(e.message.request.body, function (err, result) {
         if (err == null) {
             log.debug(FILENAME + " Funktion: newMessage sip parse result: " + JSON.stringify(result));
             exports.sendeWebSocketNachricht(result)
+            schreibeZustand(result)
         }
         else {
             log.error(FILENAME + ' Funktion: newMessage keine XML in SIP Nachricht Error=' + err + ' Nachricht=' + e.message.request.body)

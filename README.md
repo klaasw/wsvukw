@@ -14,6 +14,13 @@ Dies ist die Benutzer-Oberfläche im DUE für die Nutzung des Revierfunkdienstes
 - moment (vielleicht)
 - chimp (Test?)
 - chimp-widget (Test?)
+- mongodb (Native MongoDB Treiber)
+## TODO: für eine Neuinstallation notwendige Pakete mit Version in package.json eintragen
+
+globale Module (npm install ... -g) sollten sein:
+- pm2 (Prozessmanager)
+- express-generator (erzeugt Ordner Struktur)
+- 
 
 ## Weitere Software
 - resipprocate als SIP-Server zur entgegennahem der Zustandsmeldungen via SIP IM Nachricht
