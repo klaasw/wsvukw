@@ -1,4 +1,4 @@
 /tmp
 /log
-/config/servers/serverIPs.json
 /.idea
+/node_modules
