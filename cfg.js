@@ -1,3 +1,10 @@
+/* Modul zur Gernerierung von Konfigurationsvariablen
+* Die Parameter werden aus der Datei config/server/IP_des_Servers/serverIPS.json bezogen
+* 
+* @Author: Klaas Wuellner
+* 
+*/
+
 var log = require('./log.js');
 var fs = require('fs'); // Zugriff auf das Dateisystem
 
@@ -39,9 +46,12 @@ var cfg = {
         // TODO fuer unterschiedliche Passwoerter dev/stage/prod: noch in serverIPs auslagern, unterschiedliche Passwoerter vergeben, mindestens produktiv
         'password': 'rfd'
     },
+
+    "mongodb":'mongodb://ukwserver:due@' + cfgIPs.mongoDbs.toString() + '/ukw?replicaSet=dueReplicaSet',
     
+    //HTTP Port für die nodeJS Instanz
     "port": cfgIPs.port,
-    "configPath": '../config/',
+    "configPath": 'config/',
     "intervall": 10000,
 
     "alternativeIPs": cfgIPs.alternativeServer,

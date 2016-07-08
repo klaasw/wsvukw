@@ -5,17 +5,15 @@
 * 
 */
 
-
 var MongoClient = require('mongodb').MongoClient
 var assert = require('assert')
 
-
+var cfg = require('./cfg.js')
 var dbVerbindung //Zur Nutzung der Datenbank Verbindung. Verhindert dauerndes öffen und schließen
 
 
 // Connection URL
-//TODO: url Konfig auslagern in ServerIPs
-var url = 'mongodb://ukwserver:due@10.162.1.60:27017,10.162.1.70:27017,10.162.1.80:27017/ukw?replicaSet=dueReplicaSet';
+var url = cfg.mongodb;
 
 
 //vor dem Schreiben prüfen ob eine Verbindung besteht:
