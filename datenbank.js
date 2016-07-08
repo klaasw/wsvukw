@@ -21,7 +21,7 @@ var url = cfg.mongodb;
 exports.schreibeInDb = function (collection, selector, inhalt) {
 	//console.log(dbVerbindung)
     if (dbVerbindung == undefined){
-        verbindeDatenbank( function(){
+        exports.verbindeDatenbank( function(){
             // Insert a single document
         	schreibeInDb2(collection, selector, inhalt)
         })
@@ -37,7 +37,7 @@ exports.schreibeInDb = function (collection, selector, inhalt) {
 exports.findeElement = function (collection, element, callback) {
 	//console.log(dbVerbindung)
     if (dbVerbindung == undefined){
-        verbindeDatenbank( function(){
+        exports.verbindeDatenbank( function(){
             // Insert a single document
         	findeElement2(collection, element, function(doc){
         	    callback(doc)
@@ -65,9 +65,9 @@ function findeElement2 (collection, element, callback){
 // tatsächlich in DB schreiben, Ausführung als Upsert
 function schreibeInDb2 (collection, selector, inhalt){
 	tmp = dbVerbindung.collection(collection)
-    tmp.updateOne(selector, inhalt, {upsert : true, w : 1}).then(function(result){
-    	assert.equal(1, result.result.n)
-    	console.log('in DB geschrieben')
+        tmp.updateOne(selector, inhalt, {upsert : true, w : 1}).then(function(result){
+            assert.equal(1, result.result.n)
+    	    console.log('in DB geschrieben')
     })
 
     /*
@@ -82,19 +82,25 @@ function schreibeInDb2 (collection, selector, inhalt){
 
 
 // Verbindung zur DB aufbauen. Dies wird beim ersten Aufruf von finde oder schreibe aufgerufen
-function verbindeDatenbank (aktion){
-	MongoClient.connect(url, function(err, db) {
+exports.verbindeDatenbank = function(aktion){
+	console.log(url)
+        MongoClient.connect(url, function(err, db) {
         
+        if(err){
+            console.log(err)
+
+        }
+
         assert.equal(null, err)
         console.log("Connected correctly to server")
         dbVerbindung = db
         
         if(err) throw err;
-
-        aktion()
-   
+        if (typeof aktion === "function"){
+            aktion()
+        }
         
-        //Ereignislister für Topologie Änderungen im ReplicaSet
+        //Ereignislister fuer Topologie Aenderungen im ReplicaSet
         db.topology.on('serverDescriptionChanged', function(event) {
             console.log('received serverDescriptionChanged');
             console.log(JSON.stringify(event, null, 2));

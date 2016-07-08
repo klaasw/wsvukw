@@ -22,5 +22,17 @@
         "revier": "Jade Traffic",
         "socketID": "/#-4CjzVUJTxd6rzrXAAAB",
         "connectTime": "2016-06-12T05:22:29.784Z"
+    },
+    "::ffff:10.160.230.113": {
+        "user": "WO NA1",
+        "revier": "Wolgast Traffic",
+        "socketID": "/#BiKiodgQZs_ZOUR7AAAA",
+        "connectTime": "2016-07-08T10:30:52.856Z"
+    },
+    "::ffff:10.160.230.97": {
+        "user": "ST NA1",
+        "revier": "Stralsund Traffic",
+        "socketID": "/#mwlFu53cBAZwHVtuAAAA",
+        "connectTime": "2016-07-08T09:35:15.281Z"
     }
 }

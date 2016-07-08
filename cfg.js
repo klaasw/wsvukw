@@ -30,7 +30,7 @@ function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
     }
 }
 var cfgIPs = getIPs();
-
+console.log(cfgIPs)
 var cfg = {
     "urlRFDWebservice": 'http://' + cfgIPs.rfdIP + ':8789/I_RFD_DUE_Steuerung',
 
@@ -46,7 +46,7 @@ var cfg = {
         // TODO fuer unterschiedliche Passwoerter dev/stage/prod: noch in serverIPs auslagern, unterschiedliche Passwoerter vergeben, mindestens produktiv
         'password': 'rfd'
     },
-
+   
     "mongodb":'mongodb://ukwserver:due@' + cfgIPs.mongoDbs.toString() + '/ukw?replicaSet=dueReplicaSet',
     
     //HTTP Port für die nodeJS Instanz

@@ -21,7 +21,7 @@ var cfg = require('./cfg.js');
 var io = require('./socket.js');
 
 var db = require('./datenbank.js') // Module zur Verbindung zur Datenbank
-
+db.verbindeDatenbank()
 
 FILENAME = __filename.slice(__dirname.length + 1);
 
