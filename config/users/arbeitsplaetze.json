@@ -32,18 +32,6 @@
 "::ffff:10.161.9.120": {
       "user": "EM NvD",
       "revier": "Jade Traffic"},
-"192.168.56.2": {
-      "user": "JA NA",
-      "revier": "Jade Traffic"},
-"192.168.56.4": {
-      "user": "GB NA",
-      "revier": "German Bight Traffic"},
-"192.168.56.8": {
-      "user": "CX NvD",
-      "revier": "Cuxhaven Elbe Traffic"},
-"10.160.230.170": {
-      "user": "WR NvD",
-      "revier": "Warnemuende Traffic"},
 "::ffff:10.160.230.65": {
       "user": "WR NvD",
       "revier": "Warnemuende Traffic"},
