@@ -14,17 +14,17 @@ var dbVerbindung //Zur Nutzung der Datenbank Verbindung. Verhindert dauerndes ö
 
 // Connection URL
 var url = cfg.mongodb;
-
+//var url2 = 'mongodb://ukwserver:due@10.160.2.80:27017,10.160.1.80:27017,10.160.3.80:27017/ukw?replicaSet=dueReplicaSet'
 
 //vor dem Schreiben prüfen ob eine Verbindung besteht:
 //TODO: ReplicaSet, Ausfall, Umschwenken, Zustandsmeldungen nur von einem Server senden
 exports.schreibeInDb = function (collection, selector, inhalt) {
 	//console.log(dbVerbindung)
     if (dbVerbindung == undefined){
-        exports.verbindeDatenbank( function(){
+        //exports.verbindeDatenbank( function(){
             // Insert a single document
-        	schreibeInDb2(collection, selector, inhalt)
-        })
+        //	schreibeInDb2(collection, selector, inhalt)
+        //})
     } 
    
     else{
@@ -37,12 +37,12 @@ exports.schreibeInDb = function (collection, selector, inhalt) {
 exports.findeElement = function (collection, element, callback) {
 	//console.log(dbVerbindung)
     if (dbVerbindung == undefined){
-        exports.verbindeDatenbank( function(){
+       // exports.verbindeDatenbank( function(){
             // Insert a single document
-        	findeElement2(collection, element, function(doc){
-        	    callback(doc)
-            })
-        })
+        //	findeElement2(collection, element, function(doc){
+        //	    callback(doc)
+          //  })
+       // })
     } 
    
     else{
@@ -84,14 +84,17 @@ function schreibeInDb2 (collection, selector, inhalt){
 // Verbindung zur DB aufbauen. Dies wird beim ersten Aufruf von finde oder schreibe aufgerufen
 exports.verbindeDatenbank = function(aktion){
 	console.log(url)
-        MongoClient.connect(url, function(err, db) {
+        MongoClient.connect(url, {connectTimeoutMS : 2000, socketTimeoutMS: 2000 }, function(err, db) {
         
-        if(err){
-            console.log(err)
+            if(err){
+                console.log(err)
 
         }
-
+        
+        console.log(db)
+        
         assert.equal(null, err)
+        console.log(err)
         console.log("Connected correctly to server")
         dbVerbindung = db
         
