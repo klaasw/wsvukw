@@ -34,5 +34,17 @@
         "revier": "Stralsund Traffic",
         "socketID": "/#mwlFu53cBAZwHVtuAAAA",
         "connectTime": "2016-07-08T09:35:15.281Z"
+    },
+    "::ffff:10.160.1.110": {
+        "user": "RE NvD",
+        "revier": "Test Referenz",
+        "socketID": "/#FcBnUE9hJ6-fR1oIAAAO",
+        "connectTime": "2016-07-15T08:39:58.724Z"
+    },
+    "::ffff:10.160.1.2": {
+        "user": "RE NvD",
+        "revier": "Test Referenz",
+        "socketID": "/#2CIn6oldmwu_JUTvAAAA",
+        "connectTime": "2016-07-14T13:53:16.908Z"
     }
 }

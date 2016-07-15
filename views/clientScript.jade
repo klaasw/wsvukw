@@ -15,9 +15,7 @@ script.
         var gruppenStatus = "";
         var IpConfig;
 
-        //WebSocket Verbindung herstellen
-        var aktuellerUKWserver = location.protocol + '//' + location.hostname + ':'+ location.port;
-        var socket = io(aktuellerUKWserver);
+
 
         //Datei zur Wiedergabe bei Fehlern
         var audioAlarm = new Audio('burst4.wav');
@@ -25,8 +23,11 @@ script.
 
 
         ladeKonfig()
-        verbindungsPruefung()
+        
 
+        //WebSocket Verbindung herstellen
+        var aktuellerUKWserver = location.protocol + '//' + location.hostname + ':'+ location.port;
+        var socket
 
 
 
@@ -86,8 +87,14 @@ script.
                 ApID = data.Arbeitsplatz
                 IpConfig = data.Konfigdaten.IpConfig
                 console.log('geladeneIPconfig: '+ JSON.stringify(data.Konfigdaten.IpConfig));
-
+                
+                
+                socket = io(aktuellerUKWserver);
+                
+                ereignisUeberwachung()
+                verbindungsPruefung()
                 lautsprecherAufschalten(MhanZuordnung);
+
             }).fail(function () {
                 console.log('ukwKonfig konnte nicht geladen werden - Kanalzuordnung kann nicht angezeigt werden.');
                 // TODO Fehlerdetail uebergeben: ukwKonfig konnte nicht geladen werden
@@ -216,6 +223,7 @@ script.
 
 
         
+        function ereignisUeberwachung(){
         //Alle eingehenden WebSocket Nachrichten einhaengen TYP 'statusMessage'
         socket.on('statusMessage', function (msg) {
             //-console.log("statusMessage received: "+ JSON.stringify(msg) + ' - '+ JSON.stringify(IpConfig.alternativeIPs) + '#')
@@ -253,8 +261,11 @@ script.
         //eingehende Socket Nachrichten vom TYP rfdMessage, Statusmeldungen verarbeitebn
         socket.on('ukwMessage', function (msg) {
             console.log("ukwMessage received: "+ JSON.stringify(msg));
-            if (typeof msg === 'object') {
-                //Empfangen aktiv
+            var msgKeys = Object.keys(msg) //z.B. RX, FSTSTATUS
+            var msgTyp = msgKeys[0]
+            console.log(msgTyp)
+            if (typeof msg === 'object' && ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id)) {
+                //Empfangen aktiv0
                 if ('RX' in msg && msg.RX.$.state === '1') {
                     //suche Schaltflaeche zu FunkstellenID
                     button = $('#' + msg.RX.$.id).offsetParent().attr('id')
@@ -332,7 +343,8 @@ script.
                     }
 
                 }
-                if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1') {
+                // -SEN- darf nicht in der ID vorkommen 
+                if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') == -1) {
                     $('#' + msg.FSTSTATUS.$.id).closest('div').removeClass("bg-success")
                     $('#' + msg.FSTSTATUS.$.id).closest('div').addClass("bg-danger")
                     $('#' + msg.FSTSTATUS.$.id).closest('div').css("background-color", "")
@@ -466,20 +478,29 @@ script.
                 }
 
 
-            }  // if (typeof msg === 'object')
+            }  // Ende if (typeof msg === 'object')
+            // TODO: pruefen was mit anderen Meldungen vom RFD geschehen soll. Ert
             else {
-                msgText = msg.replace("<", "")
-                msgText = msgText.replace("\>", "")
+                //msgText = msg.replace("<", "")
+                //msgText = msgText.replace("\>", "")
 
-                // RFD Fehler
-                if (msgText.startsWith('RFD') && msgText.endsWith('fehlgeschlagen')) {
-                    //-console.log('RFD Aufruf fehlgeschlagen')
-                    $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_RFD').removeClass("label-success")
-                    $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_RFD').addClass("label-danger")
-                } else {
-                    console.log(" sonstige ukwMessage: " + msgText)
-                }
-                //$.notify('Meldung: '+msgText)
+                //RFD Fehler
+                msgText = JSON.stringify(msg)
+                if (msgText.indexOf('fehlgeschlagen') > -1 ) {
+                //     //-console.log('RFD Aufruf fehlgeschlagen')
+                //     $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_RFD').removeClass("label-success")
+                //     $('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_RFD').addClass("label-danger")
+                // 
+                        $.notify({
+                           message: 'Störung:<br>' + JSON.stringify(msg)
+                           }, {
+                           type: 'danger'
+                        })
+                } 
+                //else {
+                //     console.log(" sonstige ukwMessage: " + msgText)
+                // }
+                //$.notify('Meldung: '+JSON.stringify(msg))
 
                 //$('#messages').append($('<li>').text(msg));
                 //$('#messages').append($.text(msg));
@@ -488,6 +509,7 @@ script.
 
 
         });
+        }// Ende EreignisUeberwachung
 
         //Pruefe welches Element geklickt wurde
         //Vermeide aufschalten/trennen bei MKA Dropdown

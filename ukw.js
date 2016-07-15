@@ -150,12 +150,14 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
                         else {
                             log.error('RFD ' + aktion + ' fehlgeschlagen');
                             exports.sendeWebSocketNachricht('RFD ' + aktion + ' fehlgeschlagen');
-                            exports.sendeWebsocketNachrichtStatus({
-                                RfdStatus: {
-                                    URL: cfg.urlRFDWebservice,
-                                    Status: 'Error'
-                                }
-                            });
+                            
+							//TODO: Bei False Verarbeitung muss RFD muss nicht gestört sein. Abfangen 
+							//exports.sendeWebsocketNachrichtStatus({
+                            //    RfdStatus: {
+                            //        URL: cfg.urlRFDWebservice,
+                            //        Status: 'Error'
+                            //    }
+                            //});
                         }
                     } else{
                         // TODO: Client ggf. informieren, dass der letzte Request nicht verarbeitet werden konnte - anders als der healthcheck ist die Ursache aber vielfaeltiger

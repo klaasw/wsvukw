@@ -104,7 +104,8 @@ exports.verbindeDatenbank = function(aktion){
         }
         
         //Ereignislister fuer Topologie Aenderungen im ReplicaSet
-        db.topology.on('serverDescriptionChanged', function(event) {
+        /**
+		db.topology.on('serverDescriptionChanged', function(event) {
             console.log('received serverDescriptionChanged');
             console.log(JSON.stringify(event, null, 2));
         });
@@ -148,6 +149,7 @@ exports.verbindeDatenbank = function(aktion){
             console.log('received topologyDescriptionChanged');
             console.log(JSON.stringify(event, null, 2));
         });
+		*/
     })
 }
 
