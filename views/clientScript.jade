@@ -78,7 +78,7 @@ script.
         //Variablen zum Arbeitsplatz laden
         function ladeKonfig() {
             $.get("ukwKonfig", function (data) { //IP-Adress nur als Platzhalter zum Testen
-                console.log('ukwKonfig data:'+ data);
+                console.log('ukwKonfig data:'+ data); //TODO: unwichtige, sicherheitsrelevante Informationen nicht uebermitteln
 
                 ApFunkstellen = data.Konfigdaten.FunkstellenDetails
                 SPAN = data.Konfigdaten.ArbeitsplatzGeraete.SPAN01
@@ -226,31 +226,89 @@ script.
         function ereignisUeberwachung(){
         //Alle eingehenden WebSocket Nachrichten einhaengen TYP 'statusMessage'
         socket.on('statusMessage', function (msg) {
+            var dienst = msg.dienst
+            var status = msg.status.Status
+            var url = msg.status.URL
+            var urlVtrIp = url.split(".")
+            urlVtrIp = urlVtrIp[2]
+            var ort = null
+
+            for (var i = 0; i < IpConfig.alternativeIPs.length; i++ ){
+                var vergleich = IpConfig.alternativeIPs[i]
+                var vergleichVtrIp = vergleich[1].split(".")
+                vergleichVtrIp = vergleichVtrIp[2]
+
+
+                if (vergleichVtrIp  == urlVtrIp){
+                    ort = vergleich[0]
+                }
+            }
+
+            if (status == 'OK') {
+                $('#button'+ ort +'_' + dienst).removeClass("label-danger")
+                $('#button'+ ort +'_' + dienst).addClass("label-success")
+                $('#buttonAktiv'+ ort +'_' + dienst).removeClass("label-danger")
+                $('#buttonAktiv'+ ort +'_' + dienst).addClass("label-success")
+                
+                $('#button'+ ort +'_' + dienst).closest('button').removeAttr("disabled")
+                $('#button'+ ort +'_' + dienst).closest('li').removeClass("disabled")
+            }
+            else if (status == 'Error') {
+                $('#button'+ ort +'_' + dienst).removeClass("label-success")
+                $('#button'+ ort +'_' + dienst).addClass("label-danger")
+                $('#button'+ ort +'_' + dienst).closest('button').attr("disabled", "disabled")
+                
+                $('#buttonAktiv'+ ort +'_' + dienst).removeClass("label-success")
+                $('#buttonAktiv'+ ort +'_' + dienst).addClass("label-danger")
+                
+                $('#button'+ ort +'_' + dienst).closest('li').addClass("disabled")
+
+
+                //button add attribute disabled="disabled" und auf dem li class="disabled"
+
+                //Alarm und Fenster nur zeigen wenn aktueller Server betroffen ist
+                //audioAlarm.play();
+                //$('#errorModalRFD').modal('show')
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             //-console.log("statusMessage received: "+ JSON.stringify(msg) + ' - '+ JSON.stringify(IpConfig.alternativeIPs) + '#')
-            for(var i=0; i < IpConfig.alternativeIPs.length; i++ ){
-                //-console.log('statusMessage: loop '+ i+' - '+ "  / suche rfdIP:" + IpConfig.cfgIPs.rfdIP + ' in '+msg.RfdStatus.URL + '     gefunden an Position: ' + msg.RfdStatus.URL.indexOf(IpConfig.cfgIPs.rfdIP));
-                var vergleich = IpConfig.alternativeIPs[i];
-                //- hier ist noch nicht die Zuordnung der RFD-IP zu allen RFD-IPs moeglich, da nur die eigene IP bekannt ist - alle drei in Konfig eintragen
-                //- aktueller VTR ist der bevorzugte aus Config
-                if (vergleich[0].indexOf('#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}') > -1){
-                    //- rfd IP ist die an der x. Stelle konfigurierte (trift noch ueberall zu, weil noch nicht in Config alle rdfIPs stehen)
-                    if (msg.RfdStatus.URL.indexOf(IpConfig.cfgIPs.rfdIP) > -1){
-                        if (msg.RfdStatus.Status == 'OK') {
-                            $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-danger")
-                            $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-success")
-                            $('#buttonAktiv'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-danger")
-                            $('#buttonAktiv'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-success")
-                        } else if (msg.RfdStatus.Status == 'Error') {
-                            $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-success")
-                            $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-danger")
-                            $('#buttonAktiv'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-success")
-                            $('#buttonAktiv'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-danger")
-                            audioAlarm.play();
-                            $('#errorModalRFD').modal('show')
-                        } //if()
-                    } //if()
-                } //if()
-            } // for
+            //for(var i=0; i < IpConfig.alternativeIPs.length; i++ ){
+            //    //-console.log('statusMessage: loop '+ i+' - '+ "  / suche rfdIP:" + IpConfig.cfgIPs.rfdIP + ' in '+msg.RfdStatus.URL + '     gefunden an Position: ' + msg.RfdStatus.URL.indexOf(IpConfig.cfgIPs.rfdIP));
+            //    var vergleich = IpConfig.alternativeIPs[i];
+            //    //- hier ist noch nicht die Zuordnung der RFD-IP zu allen RFD-IPs moeglich, da nur die eigene IP bekannt ist - alle drei in Konfig eintragen
+            //    //- aktueller VTR ist der bevorzugte aus Config
+            //    if (vergleich[0].indexOf('#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}') > -1){
+            //        //- rfd IP ist die an der x. Stelle konfigurierte (trift noch ueberall zu, weil noch nicht in Config alle rdfIPs stehen)
+            //        if (msg.RfdStatus.URL.indexOf(IpConfig.cfgIPs.rfdIP) > -1){
+            //            if (msg.RfdStatus.Status == 'OK') {
+            //                $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-danger")
+            //                $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-success")
+            //                $('#buttonAktiv'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-danger")
+            //                $('#buttonAktiv'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-success")
+            //            } else if (msg.RfdStatus.Status == 'Error') {
+            //                $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-success")
+            //                $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-danger")
+            //                $('#buttonAktiv'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-success")
+            //                $('#buttonAktiv'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-danger")
+            //                audioAlarm.play();
+            //                $('#errorModalRFD').modal('show')
+            //            } //if()
+            //        } //if()
+            //    } //if()
+            //} // for
         });
 
         //eingehende ZustandsMessage für gespeicherte Schaltzustaende

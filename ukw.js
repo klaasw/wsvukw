@@ -49,11 +49,13 @@ exports.pruefeRfdWS = function () {
 
         if (!error && response.statusCode == 200) {
             log.debug(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK');
-            exports.sendeWebsocketNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'OK'}})
+            exports.sendeWebsocketNachrichtStatus({dienst:'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}})
+            exports.sendeWebsocketNachrichtServer({dienst:'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}})
         }
         else {
             log.error(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + error);
-            exports.sendeWebsocketNachrichtStatus({RfdStatus: {URL: cfg.urlRFDWebservice, Status: 'Error'}})
+            exports.sendeWebsocketNachrichtStatus({dienst:'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'Error'}})
+            exports.sendeWebsocketNachrichtServer({dienst:'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'Error'}})
         }
     })
 };
@@ -183,6 +185,12 @@ exports.sendeWebSocketNachricht = function (Nachricht) {
 exports.sendeWebsocketNachrichtStatus = function (Nachricht) {
     log.debug(FILENAME + ' Funktion: sendeWebsocketNachrichtStatus ' + 'statusMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht));
     io.emit('statusMessage', Nachricht);
+};
+
+//Zum Senden von Status-Meldungen
+exports.sendeWebsocketNachrichtServer = function (Nachricht) {
+    log.debug(FILENAME + ' Funktion: sendeWebsocketNachrichtServer ' + 'ServerMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht));
+    io.emit('serverMessage', Nachricht);
 };
 
 

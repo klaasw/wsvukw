@@ -7,6 +7,7 @@
 
 var log = require('./log.js');
 var fs = require('fs'); // Zugriff auf das Dateisystem
+var HOSTNAME = require('os').hostname();
 
 var AKTUELLER_SERVER='' //globale Variable für aktuellen Server. Einbindung in Konfig zur Darstellung des aktuellen Server via Jade Template layout.jade
 
@@ -56,7 +57,8 @@ var cfg = {
 
     "alternativeIPs": cfgIPs.alternativeServer,
     "cfgIPs": cfgIPs,
-    "aktuellerServer": AKTUELLER_SERVER
+    "aktuellerServer": AKTUELLER_SERVER,
+    "aktuellerHostname": HOSTNAME
 };
 
 module.exports = cfg;

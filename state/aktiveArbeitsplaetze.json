@@ -1,50 +1,8 @@
 {
-    "::ffff:10.162.1.97": {
-        "user": "JA NvD",
-        "revier": "Jade Traffic",
-        "socketID": "/#i70f8dP7Wpk35IuZAAAA",
-        "connectTime": "2016-06-12T03:36:07.652Z"
-    },
-    "::ffff:10.162.2.96": {
-        "user": "JA NvD",
-        "revier": "Jade Traffic",
-        "socketID": "/#U14ZDu_BMazrC_zvAAAA",
-        "connectTime": "2016-06-12T03:30:56.752Z"
-    },
-    "::ffff:10.162.1.34": {
-        "user": "JA NvD",
-        "revier": "Jade Traffic",
-        "socketID": "/#U14ZDu_BMazrC_zvAAAA",
-        "connectTime": "2016-06-12T03:30:56.752Z"
-    },
-    "::ffff:10.162.1.96": {
-        "user": "WR NvD",
-        "revier": "Jade Traffic",
-        "socketID": "/#-4CjzVUJTxd6rzrXAAAB",
-        "connectTime": "2016-06-12T05:22:29.784Z"
-    },
-    "::ffff:10.160.230.113": {
-        "user": "WO NA1",
-        "revier": "Wolgast Traffic",
-        "socketID": "/#LEZ77J1g-j7C_UqZAAAz",
-        "connectTime": "2016-07-11T11:26:54.264Z"
-    },
-    "::ffff:10.160.230.97": {
-        "user": "ST NA1",
-        "revier": "Stralsund Traffic",
-        "socketID": "/#mwlFu53cBAZwHVtuAAAA",
-        "connectTime": "2016-07-08T09:35:15.281Z"
-    },
-    "::ffff:10.160.1.110": {
-        "user": "RE NvD",
-        "revier": "Test Referenz",
-        "socketID": "/#FcBnUE9hJ6-fR1oIAAAO",
-        "connectTime": "2016-07-15T08:39:58.724Z"
-    },
     "::ffff:10.160.1.2": {
         "user": "RE NvD",
         "revier": "Test Referenz",
-        "socketID": "/#2CIn6oldmwu_JUTvAAAA",
-        "connectTime": "2016-07-14T13:53:16.908Z"
+        "socketID": "/#BTAetblWkD0ZXnYhAAAC",
+        "connectTime": "2016-08-11T09:14:31.001Z"
     }
 }
