@@ -8,7 +8,7 @@ FILENAME = __filename.slice(__dirname.length + 1);
 var io = require('socket.io');
 var socketClient = require('socket.io/node_modules/socket.io-client')
 
-var socketGlobal;
+var socketServer; //Variable um die Sockets ausserhalb der Funktion "on.connect" aufzurufen
 
 var cfg = require('./cfg.js');
 var db = require('./datenbank.js')
@@ -24,13 +24,14 @@ exports.socket = function (server) {
     log.debug(FILENAME + " Socket Server established");
     log.debug(FILENAME + " server: " +server); //Log ggf. wieder weg, da Server Objekt keine relevanten Info enthält
         
-        io.listen(server).on('connect', function (socket) {
+        socketServer = io.listen(server)
+        socketServer.on('connect', function (socket) {
             log.debug(FILENAME + ' Funktion connect: Benutzer hat Websocket-Verbindung mit ID '+ socket.id + ' hergestellt. IP: ' + socket.request.connection.remoteAddress);
             // TODO: Pruefung Berechtigung !
             
             //!!!!!!
             //TODO: Architektur mit socket prüfen!!!
-            socketGlobal = socket; //socketGlobal funktioniert nicht. Es gilt dann nur die letzte Verbindung. Das funktioniert nicht für mehrere Clients!
+            //socketGlobal = socket; //socketGlobal funktioniert nicht. Es gilt dann nur die letzte Verbindung. Das funktioniert nicht für mehrere Clients!
             
             
 
@@ -96,24 +97,29 @@ exports.socket = function (server) {
 
     });
 
-    //io.emit('test')
+    
 };
 
 exports.emit = function emit(messagetype, message, socketID) {
     log.debug(FILENAME + " Funktion: socket.emit MessageType: " + messagetype + "  message: " + JSON.stringify(message));
     
-    if (socketGlobal == undefined) {
-        log.error(FILENAME + " Funktion emit: no client connected, not able to send message "+ messagetype);
-    } else {
+    if (socketID == undefined) {
         log.debug(FILENAME + " Funktion emit: emitting messages to clients...");
-        return socketGlobal.emit(messagetype, message);
+        return socketServer.emit(messagetype, message);
     }
+
     
     if (socketID){
         log.debug(FILENAME + " Funktion emit: emitting messages to client: "+ socketID);
-        return socketGlobal.broadcast.to(socketID).emit(messagetype, message);
+        return socketServer.to(socketID).emit(messagetype, message);
     }
 
+    /** Pruefung ob Clients verbunden sind
+    if () {
+        log.error(FILENAME + " Funktion emit: no client connected, not able to send message "+ messagetype);
+    }
+
+    **/
 };
 
 
@@ -135,6 +141,7 @@ function leseSchaltzustand(socketID, IP){
                 log.debug(FILENAME + ' Funktion: leseSchaltzustand: ' + benutzer + '_Zustand.json gelesen, Inhalt: '+ JSON.stringify(zustand))
                 exports.emit('zustandsMessage', zustand, socketID)
                 exports.emit('statusMessage', dueStatusServerA, socketID)
+                log.debug(dueStatusServerA)
                 exports.emit('statusMessage', dueStatusServerB, socketID)
             }
         })
