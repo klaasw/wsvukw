@@ -342,68 +342,76 @@ function leseRfdTopologie(callback) {
                     //CDATA Objekt der Response erneut parsen
                     parser.parseString(ergebnis1cdata, function (err, result) {
                         //Einzelkanal-Anlagenauslesen und in Funkstellen variable schreiben
-                        FstEK = result['FKEK'];
-                        for (var i = 0; i < FstEK.length; i++) {
-                            //log.debug(FstEK[i]['$'])
-                            tmp = FstEK[i]['$'];
-                            tmp.MKA = false;
-                            tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
-                            //log.debug(tmp)
-                            //unoetige Variablen entfernen
-                            delete tmp.ipaddr
-                            delete tmp.portsip
-                            delete tmp.portrtp
-                            Funkstellen.push(tmp)
-
+                        if (result['FKEK']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
+                            FstEK = result['FKEK'];
+                            for (var i = 0; i < FstEK.length; i++) {
+                                //log.debug(FstEK[i]['$'])
+                                tmp = FstEK[i]['$'];
+                                tmp.MKA = false;
+                                tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
+                                //log.debug(tmp)
+                                //unoetige Variablen entfernen
+                                delete tmp.ipaddr
+                                delete tmp.portsip
+                                delete tmp.portrtp
+                                Funkstellen.push(tmp)
+    
+                            }
                         }
 
                         //HK-Anlagenauslesen und in Funkstellen variable schreiben
-                        FstHK = result['FKHK'];
-                        for (i = 0; i < FstHK.length; i++) {
-                            //log.debug(FstEK[i]['$'])
-                            tmp = FstHK[i]['$'];
-                            tmp.MKA = false;
-                            tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
-                            //log.debug(tmp)
-                            //unoetige Variablen entfernen
-                            delete tmp.ipaddr
-                            delete tmp.portsip
-                            delete tmp.portrtp
-                            Funkstellen.push(tmp)
-
+                        if (result['FKHK']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
+                            FstHK = result['FKHK'];
+                            for (i = 0; i < FstHK.length; i++) {
+                                //log.debug(FstEK[i]['$'])
+                                tmp = FstHK[i]['$'];
+                                tmp.MKA = false;
+                                tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
+                                //log.debug(tmp)
+                                //unoetige Variablen entfernen
+                                delete tmp.ipaddr
+                                delete tmp.portsip
+                                delete tmp.portrtp
+                                Funkstellen.push(tmp)
+    
+                            }
                         }
 
                         //Mehrkanal-Anlagenauslesen und in Funkstellen variable schreiben
-                        FstMK = result['FKMK'];
-                        for (i = 0; i < FstMK.length; i++) {
-                            //log.debug(FstMK[i]['$'])
-                            tmp = FstMK[i]['$'];
-                            tmp.MKA = true;
-                            tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
-                            //log.debug(tmp)
-                            //unoetige Variablen entfernen
-                            delete tmp.ipaddr
-                            delete tmp.portsip
-                            delete tmp.portrtp
-                            Funkstellen.push(tmp)
-
+                        if (result['FKMK']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
+                            FstMK = result['FKMK'];
+                            for (i = 0; i < FstMK.length; i++) {
+                                //log.debug(FstMK[i]['$'])
+                                tmp = FstMK[i]['$'];
+                                tmp.MKA = true;
+                                tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
+                                //log.debug(tmp)
+                                //unoetige Variablen entfernen
+                                delete tmp.ipaddr
+                                delete tmp.portsip
+                                delete tmp.portrtp
+                                Funkstellen.push(tmp)
+    
+                            }
                         }
 
                         //Gleichwellen-Anlagen auslesen und in Funkstellen variable schreiben
-                        FstGW = result['FKGW'];
-                        for (i = 0; i < FstGW.length; i++) {
-                            //log.debug(FstMK[i]['$'])
-                            tmp = FstGW[i]['$'];
-                            tmp.MKA = false;
-                            tmp.GW = true;
-                            tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
-                            //log.debug(tmp)
-                            //unoetige Variablen entfernen
-                            delete tmp.ipaddr
-                            delete tmp.portsip
-                            delete tmp.portrtp
-                            Funkstellen.push(tmp)
-
+                        if (result['FKGW']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
+                            FstGW = result['FKGW'];
+                            for (i = 0; i < FstGW.length; i++) {
+                                //log.debug(FstMK[i]['$'])
+                                tmp = FstGW[i]['$'];
+                                tmp.MKA = false;
+                                tmp.GW = true;
+                                tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
+                                //log.debug(tmp)
+                                //unoetige Variablen entfernen
+                                delete tmp.ipaddr
+                                delete tmp.portsip
+                                delete tmp.portrtp
+                                Funkstellen.push(tmp)
+    
+                            }
                         }
                         callback();
                         //log.debug(Funkstellen)
