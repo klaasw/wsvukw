@@ -15,6 +15,8 @@ Dies ist die Benutzer-Oberfläche im DUE für die Nutzung des Revierfunkdienstes
 - chimp (Test?)
 - chimp-widget (Test?)
 - mongodb (Native MongoDB Treiber)
+- pug (ehemals Jade. Template Engine für NodeJs)
+- jstransformer-markdown-it (Verwendung von Markdown Dokumenten in Jade/ Pug Templates
 ## TODO: für eine Neuinstallation notwendige Pakete mit Version in package.json eintragen
 
 globale Module (npm install ... -g) sollten sein:
