@@ -85,3 +85,8 @@ mkdir /var/run/oversip
 oversip -P /var/run/oversip/oversip.pid
 
 oder config anpassen /etc/oversip
+
+
+### Powershell Skript
+user_zu_ip.ps1 Login Skript zur Übertragung des Benutzernamen und der IP-Adresse an den UKW-Server.
+
