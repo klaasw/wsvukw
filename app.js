@@ -50,8 +50,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // debugger;   // if in debugging mode, set breakpoint here
 var routes = require('./routes/index.js');
+var users = require('./routes/user.js')
 
 app.use('/', routes);
+app.use('/user', users);
 var ukw = require('./ukw.js');
 
 
