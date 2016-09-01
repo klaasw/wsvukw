@@ -106,7 +106,7 @@ router.get('/ukwTest', function (req, res) {
                 //Uebergebe Funkstellen ID an Jade Template
                 log.info('ukw - konfigfuerAP.Button11: ' + JSON.stringify(konfig.FunkstellenDetails[konfig.FunkstellenReihe['Button11'][0]]));
                 //ukwDisplay --> zum Testen eines neuen Layouts
-                res.render('ukwDisplayTest', {
+                res.render('entwicklung/ukwDisplayTest', {
                     "log": log,  // logging auch im Jade-Template moeglich!
                     "gesamteKonfig": konfig
 
