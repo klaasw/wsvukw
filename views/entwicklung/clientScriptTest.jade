@@ -20,8 +20,6 @@ script.
         //Datei zur Wiedergabe bei Fehlern
         var audioAlarm = new Audio('burst4.wav');
 
-
-
         ladeKonfig()
         
 
@@ -284,31 +282,7 @@ script.
 
 
 
-            //-console.log("statusMessage received: "+ JSON.stringify(msg) + ' - '+ JSON.stringify(IpConfig.alternativeIPs) + '#')
-            //for(var i=0; i < IpConfig.alternativeIPs.length; i++ ){
-            //    //-console.log('statusMessage: loop '+ i+' - '+ "  / suche rfdIP:" + IpConfig.cfgIPs.rfdIP + ' in '+msg.RfdStatus.URL + '     gefunden an Position: ' + msg.RfdStatus.URL.indexOf(IpConfig.cfgIPs.rfdIP));
-            //    var vergleich = IpConfig.alternativeIPs[i];
-            //    //- hier ist noch nicht die Zuordnung der RFD-IP zu allen RFD-IPs moeglich, da nur die eigene IP bekannt ist - alle drei in Konfig eintragen
-            //    //- aktueller VTR ist der bevorzugte aus Config
-            //    if (vergleich[0].indexOf('#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}') > -1){
-            //        //- rfd IP ist die an der x. Stelle konfigurierte (trift noch ueberall zu, weil noch nicht in Config alle rdfIPs stehen)
-            //        if (msg.RfdStatus.URL.indexOf(IpConfig.cfgIPs.rfdIP) > -1){
-            //            if (msg.RfdStatus.Status == 'OK') {
-            //                $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-danger")
-            //                $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-success")
-            //                $('#buttonAktiv'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-danger")
-            //                $('#buttonAktiv'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-success")
-            //            } else if (msg.RfdStatus.Status == 'Error') {
-            //                $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-success")
-            //                $('#button'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-danger")
-            //                $('#buttonAktiv'+ IpConfig.alternativeIPs[i][0] +'_RFD').removeClass("label-success")
-            //                $('#buttonAktiv'+ IpConfig.alternativeIPs[i][0] +'_RFD').addClass("label-danger")
-            //                audioAlarm.play();
-            //                $('#errorModalRFD').modal('show')
-            //            } //if()
-            //        } //if()
-            //    } //if()
-            //} // for
+
         });
 
         //eingehende ZustandsMessage für gespeicherte Schaltzustaende
@@ -326,7 +300,7 @@ script.
                 //Empfangen aktiv0
                 if ('RX' in msg && msg.RX.$.state === '1') {
                     //suche Schaltflaeche zu FunkstellenID
-                    button = $('#' + msg.RX.$.id).offsetParent().attr('id')
+                    button = $('#' + msg.RX.$.id).parent().parent().offsetParent().attr('id')
 
                     //Kanalflaeche faerben
                     $('#' + button + ' [buttonElement="Flaeche"]').addClass("bg-danger")
@@ -342,7 +316,7 @@ script.
                 //Empfangen deaktiv
                 if ('RX' in msg && msg.RX.$.state === '0') {
                     //suche Schaltflaeche zu FunkstellenID
-                    button = $('#' + msg.RX.$.id).offsetParent().attr('id')
+                    button = $('#' + msg.RX.$.id).parent().parent().offsetParent().attr('id')
 
                     //Kanalflaeche entfaerben
                     $('#' + button + ' [buttonElement="Flaeche"]').removeClass("bg-danger")
@@ -359,7 +333,7 @@ script.
                     }
                     else {
                         //suche Schaltflaeche zu FunkstellenID
-                        button = $('#' + msg.TX.$.id).offsetParent().attr('id')
+                        button = $('#' + msg.TX.$.id).parent().parent().offsetParent().attr('id')
 
                         //Kanalflaeche faerben
                         $('#' + button + ' [buttonElement="Flaeche"]').addClass("bg-success")
@@ -377,7 +351,7 @@ script.
                     }
                     else {
                         //suche Schaltflaeche zu FunkstellenID
-                        button = $('#' + msg.TX.$.id).offsetParent().attr('id')
+                        button = $('#' + msg.TX.$.id).parent().parent().offsetParent().attr('id')
 
                         //Kanalflaeche entfaerben
                         $('#' + button + ' [buttonElement="Flaeche"]').removeClass("bg-success")
@@ -388,26 +362,40 @@ script.
                 }
 
                 if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '0') {
-                    $('#' + msg.FSTSTATUS.$.id).closest('div').removeClass("bg-danger")
-                    $('#' + msg.FSTSTATUS.$.id).closest('div').addClass("bg-success")
-                    $('#' + msg.FSTSTATUS.$.id).closest('div').css("background-color", "")
-                    $('#' + msg.FSTSTATUS.$.id).closest('div').attr("fstStatus", "0")
+                    $('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass("label-danger")
+                    $('#' + msg.FSTSTATUS.$.id + ' span.label').addClass("label-success")
+                    $('#' + msg.FSTSTATUS.$.id + ' span.label').text("OK")
+                    $('#' + msg.FSTSTATUS.$.id).attr("fstStatus", "0")
+                    standortButton = $('#' + msg.FSTSTATUS.$.id).parent().prev()
+                    $(standortButton[0]).children().addClass("label-success")
+                    $(standortButton[0]).children().removeClass("label-danger")
+                    $(standortButton[0]).children().text("OK")
+                    
+
+
+
+
+
                     console.log(msg.FSTSTATUS.$.id)
 
                     //Bei Kanalaenderung die Kanalnummer setzen
                     if (msg.FSTSTATUS.$.channel > -1) {
-                        button = $('#' + msg.FSTSTATUS.$.id).offsetParent().attr('id')
-                        $('#' + button + ' > div > div  > h2 > span').text(msg.FSTSTATUS.$.channel)
+                        button = $('#' + msg.FSTSTATUS.$.id).parent().parent().offsetParent().attr('id')
+                        $('#' + button + ' [buttonElement="kanalNr"] > SPAN').text(msg.FSTSTATUS.$.channel)
                     }
 
                 }
                 // -SEN- darf nicht in der ID vorkommen 
                 if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') == -1) {
-                    $('#' + msg.FSTSTATUS.$.id).closest('div').removeClass("bg-success")
-                    $('#' + msg.FSTSTATUS.$.id).closest('div').addClass("bg-danger")
-                    $('#' + msg.FSTSTATUS.$.id).closest('div').css("background-color", "")
-                    $('#' + msg.FSTSTATUS.$.id).closest('div').attr("fstStatus", "1")
-                    
+                    $('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass("label-success")
+                    $('#' + msg.FSTSTATUS.$.id + ' span.label').addClass("label-danger")
+                    $('#' + msg.FSTSTATUS.$.id + ' span.label').text("Error")
+                    $('#' + msg.FSTSTATUS.$.id).attr("fstStatus", "1")
+                    standortButton = $('#' + msg.FSTSTATUS.$.id).parent().prev()
+                    $(standortButton[0]).children().addClass("label-danger")
+                    $(standortButton[0]).children().removeClass("label-success")
+                    $(standortButton[0]).children().text("Error")
+                             
                     //Notify by Störung
                     $.notify({
                         message: 'Störung:<br>' + ApFunkstellen[msg.FSTSTATUS.$.id].sname
@@ -465,12 +453,11 @@ script.
                         //aendern Darstellung fuer SPAN
                         if (msg.geschaltet.$.Ap.indexOf("SPAN") != -1) {
                             //suche Schaltflaeche zu FunkstellenID
-                            button = $('#' + msg.geschaltet.$.id).offsetParent().attr('id')
+                            button = $('#' + msg.geschaltet.$.id).parent().parent().offsetParent().attr('id')
 
                             //$('#'+button+' > div > div.panel-heading > span').text( "aufgeschaltet" )
                             $('#' + button + ' > div').addClass("panel-primary")
-                            $('#' + button + ' > div').css("background-color", "#d9edf7")
-                            $('#' + button + ' > div > div:nth-child(3)').addClass("bg-primary")
+                            $('#' + button + ' [buttonElement="span"]').addClass("btn-primary")
 
                             ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true
                             $.notify('Aufgeschaltet: <br>' + ApFunkstellen[msg.geschaltet.$.id].sname)
@@ -513,12 +500,12 @@ script.
                         if (msg.getrennt.$.Ap.indexOf("SPAN") != -1) {
 
                             //suche Schaltflaeche zu FunkstellenID
-                            button = $('#' + msg.getrennt.$.id).offsetParent().attr('id')
+                            button = $('#' + msg.getrennt.$.id).parent().parent().offsetParent().attr('id')
                             //$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
+                            
                             $('#' + button + ' > div').removeClass("panel-primary")
-                            $('#' + button + ' > div').css("background-color", "")
+                            $('#' + button + ' [buttonElement="span"]').removeClass("btn-primary")
 
-                            $('#' + button + ' > div > div:nth-child(3)').removeClass("bg-primary")
                             
                             ApFunkstellen[msg.getrennt.$.id].aufgeschaltet = false
                             
@@ -571,16 +558,22 @@ script.
 
         //Pruefe welches Element geklickt wurde
         //Vermeide aufschalten/trennen bei MKA Dropdown
-        function angeklickt(e, element) {
-            if (element) {
-                e = e || event
-                var ziel = e.target || e.srcElement
-                if (ziel.id == element.id)
-                    return true
-                else
-                    return false
+        function angeklickt(event, element) {
+            geklicktesElement = $(element).attr('data-target')
+            ziel = $(event.target).attr('data-target')
+            
+            //Dropdown wurde angeklickt Element und Ziel sind gleich
+            if (geklicktesElement == '#mkaModal' && ziel == '#mkaModal'){
+                return true
             }
-            else return true
+            //Dropdown wurde angeklickt Element und Ziel sind ungleich. Das Panel-Div nicht auswerten
+            if (geklicktesElement != '#mkaModal' && ziel == '#mkaModal'){
+                return false
+            }
+            //Es wurde neben Dropdown geklickt
+            else {
+                return true
+            }
         }
 
         //setze Variable geklickteMKA fuer geklickte MKA Funkstellen ID
@@ -591,7 +584,7 @@ script.
                 //Funkstellen ID finden
                 //geklickteMKA=$('#'+button +'> div > div:nth-child(2) > div:nth-child(2) > span').attr('class')
                 //geklickteMKA=$('#'+button +'> div > div:nth-child(2) > div > span').attr('id')
-                geklickteMKA = $('#' + button + ' > div div:nth-child(2) > div > div:nth-child(1)').attr('id')
+                geklickteMKA = $('#' + button + ' [buttonElement="anlage1"]').attr('id')
                 console.log("Dropdown von:" + geklickteMKA)
 
 
@@ -604,16 +597,19 @@ script.
             if (angeklickt(event, element)) {
                 if (SPAN) {
                     //uebergeordnetes Element
-                    button = $('#' + element.id).offsetParent().attr('id')
+                    button = $(element).offsetParent().attr('id')
                     //console.log(element)
                     //console.log("Klick: "+element.id)
                     //console.log(button)
 
                     console.log($('#' + button + ' > div div:nth-child(2) > div > div:nth-child(1)').attr('id'))
                     console.log($('#' + button + ' > div > div:nth-child(3)').attr('id'))
-                    geklickteFstHaupt = $('#' + button + ' > div div:nth-child(2) > div > div:nth-child(1)').attr('id')
-                    geklickteFstReser = $('#' + button + ' > div div:nth-child(2) > div > div:nth-child(2)').attr('id')
-                    geklickteSPAN = ($('#' + button + ' > div > div:nth-child(3)').attr('id'))
+                    ' [buttonElement="Mhan_ship"]'
+                    geklickteFstHaupt = $('#' + button + ' [buttonElement="anlage1"]').attr('id')
+                    geklickteFstReser = $('#' + button + ' [buttonElement="anlage2"]').attr('id')
+                    geklickteSPAN     = $('#' + button + ' [buttonElement="span"]').attr('id')
+
+                                        //$('#' + button + ' [buttonElement="Mhan_ship"]').addClass("bg-primary")
 
                     //Status der Funkstellen
                     geklickteFstHauptStatus = $('#' + geklickteFstHaupt).attr('fstStatus')
@@ -621,11 +617,11 @@ script.
 
 
                     //nur schalten, wenn Status 0 bzw. ok
-                    //if (geklickteFstHauptStatus == "0"){
+                    if (geklickteFstHauptStatus == "0"){
                         schalteKanalID(geklickteFstHaupt, geklickteSPAN, 'SPAN')
-                    //}
+                    }
                     //TODO: versuche Reserveanlage zu schalten
-                    /**
+                    
                     else {
                         $.notify({
                             message: 'Hauptanlage gestört'
@@ -636,7 +632,7 @@ script.
                         //TODO:
     
                     }
-                    **/
+                    
 
                 }
                 

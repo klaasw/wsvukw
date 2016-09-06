@@ -539,7 +539,8 @@ function erstelleKonfigFurAp(Ap, callback) {
         FunkstellenDetails: {},
         ArbeitsplatzGeraete: {},
         MhanZuordnung: {},
-        IpConfig: cfg
+        IpConfig: cfg,
+        KanalListe : []
     };
 
     log.debug(FILENAME + ' uebergebener Arbeitsplatz: ' + Ap);
@@ -558,10 +559,22 @@ function erstelleKonfigFurAp(Ap, callback) {
             for (t = 0; t < fstReihe[button].length; t++) {
                 //Funkstellendetails schreiben
                 Konfig.FunkstellenDetails[fstReihe[button][t]] = findeFstNachId(fstReihe[button][t])
+                //Kanalnummern in Array schreiben. Dient zur dynamischen Befüllung im MKA Dialog
+                kanalNummer = Konfig.FunkstellenDetails[fstReihe[button][t]].channel
+                if (kanalNummer != null){
+                    Konfig.KanalListe.push(kanalNummer)
+                }
             }
         }
+        //KanalListe sortieren und Doppel entfernen. Hilfsfunktionen siehe weiter unten.
+        Konfig.KanalListe.sort(vergleicheZahlen)
+        Konfig.KanalListe = entferneDoppel(Konfig.KanalListe)
+
+
 
         Konfig.FunkstellenReihe = fstReihe;
+
+
         //log.debug("FertigeKonfig:"+Konfig.FunkstellenDetails)
         //log.debug(FILENAME + ' ----------------------------------------------------------------------')
         //inspect(Konfig)
@@ -641,6 +654,25 @@ function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
         } //While Ende
     });
 } //Funktion Ende
+
+
+
+/* Hilfsfunktionen für Arrays 
+*  ggf. noch auslagern?
+*  
+*/ 
+// Zahlen vergleichen: Dient als Funktion für Array.sort() da sort nur alphabetisch sortiert
+function vergleicheZahlen (a, b) {
+    return a - b;
+}
+
+// Doppeleinträge aus Array entfernen.
+function entferneDoppel(array) {
+    einzelArray = array.filter(function(item, position, self){
+        return self.indexOf(item) == position
+    })
+    return einzelArray
+}
 
 
 module.exports = router;

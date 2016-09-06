@@ -1,4 +1,4 @@
-﻿# Hilfe zur Datenbank
+# Hilfe zur Datenbank
 
 Die Mongodatenbank ist mit einer Replicaset Konfiguration als Cluster eingerichtet. Dabei ist ein Server der Primary (Master) und die anderen die Secondaries (Slaves).
 Nur der Primary erlaubt Schreibaktionen. Von den Secondaries kann gelesen werden.

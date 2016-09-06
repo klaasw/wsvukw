@@ -1,4 +1,5 @@
 extends layoutTest
+include mixins
 block append codeTeil1
 
 
@@ -30,89 +31,81 @@ block content
                                 style='border-width: 2px;',
                                 class=(val[0] == 'frei' ? 'hidden' : '')
                             )
-                                div.btn.btn-default(
-                                    buttonElement='Mhan',
-                                    id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]],
-                                    class=(val[0] == 'frei' ? 'hidden' : ''),
-                                    style='width: 100%;border-bottom-left-radius: 0;border-bottom-right-radius: 0;border-top-width: 0px;border-left-width: 0px;border-right-width: 0px;padding-top: 10px;padding-bottom: 10px',
-                                    type='button', 
-                                    data-toggle='modal',
-                                    data-target='#mithoerenModal',
-                                    ) #{(gesamteKonfig.MhanZuordnung[val[0]] ? gesamteKonfig.MhanZuordnung[val[0]] : '--ohne--')}
-                                div.dropdown.text-center
-                                    - kompomentenID = val[0] ? val[0] : '---------------------';
-                                    - geraet = kompomentenID.substr(15,6);
-                                    - standort = kompomentenID.substr(8,6);
-                                    button.btn.btn-default(
-                                        buttonElement='Standort'
-                                        aktiv=kompomentenID
-                                        style='width: 138px;margin-top: 10px;margin-left: 0px;margin-right: 0px;border-right-width: 1px;border-left-width: 1px;padding-top: 2px;padding-bottom: 2px;',
-                                        type='button'
-                                        data-toggle='dropdown'
-                                        aria-haspopup='true'
-                                        aria-expanded='false'
-                                        id='standortListe'
-                                        ) #{standort}&nbsp
-                                        span.label.label-default ??
-                                    ul.dropdown-menu(
-                                        style='width:250px'
-                                        aria-labelledby='standortListe'
-                                        )
-                                        li
-                                            div.radio
-                                                label.radio-custom(
-                                                    data-initialize='radio'
-                                                )
-                                                    input.sr-only.input-lg(
-                                                        type='radio',
-                                                        name='funkstelle',
-                                                        value='1',
-                                                        )
-                                                    - komponentenID = val[0] ? val[0] : '---------------------';
-                                                    - geraet = komponentenID.substr(15,6);
-                                                    - standort = komponentenID.substr(8,6);
-                                                    span(
-                                                        id=(val[0] ? gesamteKonfig.FunkstellenDetails[val[0]].id : '--ohne--')
-                                                        fstStatus="-1"
-                                                    ) #{val[0] ? komponentenID : '-ohne-'}&nbsp
-                                                        span.label.label-default ??
-                                        li
-                                            div.radio
-                                                label.radio-custom(
-                                                    data-initialize='radio'
-                                                )
-                                                    input.sr-only.input-lg(
-                                                        type='radio',
-                                                        name='funkstelle',
-                                                        value='2',
-                                                        )
-                                                    - komponentenID = val[1] ? val[1] : '---------------------';
-                                                    - geraet = komponentenID.substr(15,6);
-                                                    - standort = komponentenID.substr(8,6);
-                                                    span(
-                                                        id=(val[0] ? gesamteKonfig.FunkstellenDetails[val[0]].id : '--ohne--')
-                                                         fstStatus="-1"
-                                                    ) #{val[1] ? komponentenID : '-ohne-'}&nbsp
-                                                        span.label.label-default ??
-                                if gesamteKonfig.FunkstellenDetails[val[0]].MKA
-                                    h2.text-right(id=index,style="margin-top: 4px;margin-bottom: 5px;")
-                                        span #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
-                                        button.btn.btn-default.btn-lg.dropdown-toggle(type='button', data-toggle='modal',data-target='#mkaModal',style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 32px;margin-top: -5px;",onclick='setzeKanalMka(event,this)')
-                                            span.caret
-                                else
-                                    h2.text-center(
-                                        onclick='schalteKanal(event,this,"SPAN")',
-                                        id=index
-                                        style='margin-top: 4px; margin-bottom: 4px;'
-                                    ) #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
-                                p.text-center(
-                                    buttonElement='atis'
-                                ) 9 211 03 6580
-                                div.btn.btn-default(
-                                    onclick='schalteKanal(event,this,"SPAN")'
-                                    id=gesamteKonfig.ArbeitsplatzGeraete.SPAN01
-                                    style='width: 100%;border-top-left-radius: 0;border-top-right-radius: 0;border-bottom-width: 0px;border-left-width: 0px;border-right-width: 0px;'
-                                    ) SPAN
+                                div(buttonElement='Flaeche')
+                                    div.btn.btn-default(
+                                        buttonElement='Mhan',
+                                        id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]],
+                                        class=(val[0] == 'frei' ? 'hidden' : ''),
+                                        style='width: 100%;border-bottom-left-radius: 0;border-bottom-right-radius: 0;border-top-width: 0px;border-left-width: 0px;border-right-width: 0px;padding-top: 10px;padding-bottom: 10px',
+                                        type='button', 
+                                        data-toggle='modal',
+                                        data-target='#mithoerenModal',
+                                        ) #{(gesamteKonfig.MhanZuordnung[val[0]] ? gesamteKonfig.MhanZuordnung[val[0]] : '--ohne--')}
+                                    div.dropdown.text-center
+                                        - kompomentenID = val[0] ? val[0] : '---------------------';
+                                        - geraet = kompomentenID.substr(15,6);
+                                        - standort = kompomentenID.substr(8,6);
+                                        button.btn.btn-default(
+                                            buttonElement='Standort'
+                                            aktiv=kompomentenID
+                                            style='width: 138px;margin-top: 10px;margin-left: 0px;margin-right: 0px;border-right-width: 1px;border-left-width: 1px;padding-top: 2px;padding-bottom: 2px;',
+                                            type='button'
+                                            data-toggle='dropdown'
+                                            aria-haspopup='true'
+                                            aria-expanded='false'
+                                            id='standortListe'
+                                            ortStatus='-1'
+                                            ) #{standort}&nbsp
+                                            span.label.label-default ??
+                                        ul.dropdown-menu(
+                                            style='width:250px'
+                                            aria-labelledby='standortListe'
+                                            )
+                                            each val2, index2 in val
+                                                if val2.length > 1
+                                                    li(
+                                                        buttonElement='anlage'+ (index2 + 1)
+                                                        id=val2
+                                                        fstStatus='-1'
+                                                    )
+                                                        div.radio
+                                                            label.radio-custom(
+                                                                data-initialize='radio'
+                                                                
+                                                            )
+                                                                input.sr-only.input-lg(
+                                                                    type='radio',
+                                                                    name='funkstelle',
+                                                                    value='1',
+                                                                    checked='checked'
+                                                                    )
+                                                                span #{val2}&nbsp
+                                                                    span.label.label-default ??
+                                    if gesamteKonfig.FunkstellenDetails[val[0]].MKA
+                                        h2.text-right(
+                                            id=index,
+                                            style='margin-top: 4px;margin-bottom: 5px;'
+                                            buttonElement='kanalNr'
+                                            )
+                                            span #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
+                                            button.btn.btn-default.btn-lg.dropdown-toggle(type='button', data-toggle='modal',data-target='#mkaModal',style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 32px;margin-top: -5px;",onclick='setzeKanalMka(event,this)')
+                                                span.caret
+                                    else
+                                        h2.text-center(
+                                            onclick='schalteKanal(event,this,"SPAN")',
+                                            id=index
+                                            style='margin-top: 4px; margin-bottom: 4px;'
+                                            buttonElement='kanalNr'
+                                        ) #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
+                                    p.text-center(
+                                        buttonElement='atis'
+                                    ) 9 211 03 6580
+                                    div.btn.btn-default.hidden(
+                                        buttonElement='span'
+                                        onclick='schalteKanal(event,this,"SPAN")'
+                                        id=gesamteKonfig.ArbeitsplatzGeraete.SPAN01
+                                        style='width: 100%;border-top-left-radius: 0;border-top-right-radius: 0;border-bottom-width: 0px;border-left-width: 0px;border-right-width: 0px;'
+                                        ) SPAN
 
 
 
@@ -145,69 +138,7 @@ block content
 
 
 
-                    div.row
-                        div.col-md-2(
-                            style='padding-left: 5px; padding-right: 5px;'
-                        )
-                            div.panel.panel-default(
-                                style='border-width: 2px;'
-
-                            )
-                                div.btn.btn-default(
-                                    style='width: 100%;border-bottom-left-radius: 0;border-bottom-right-radius: 0;border-top-width: 0px;border-left-width: 0px;border-right-width: 0px;padding-top: 10px;padding-bottom: 10px',
-                                    type='button', 
-                                    data-toggle='modal',
-                                    data-target='#mithoerenModal',
-                                    ) MHANxy
-                                div.dropdown.text-center
-                                    button.btn.btn-default(
-                                        style='width: 138px;margin-top: 10px;margin-left: 0px;margin-right: 0px;border-right-width: 1px;border-left-width: 1px;padding-top: 2px;padding-bottom: 2px;',
-                                        type='button'
-                                        data-toggle='dropdown'
-                                        aria-haspopup='true'
-                                        aria-expanded='false'
-                                        id='dtest'
-                                        ) Standort&nbsp
-                                        span.label.label-success Ok
-                                    ul.dropdown-menu(
-                                        style='width:250px'
-                                        aria-labelledby='dtest'
-                                        )
-                                        li
-                                            div.radio
-                                                label.radio-custom(
-                                                    data-initialize='radio'
-                                                )
-                                                    input.sr-only.input-lg(
-                                                        type='radio',
-                                                        name='funkstelle',
-                                                        value='1',
-                                                        )
-                                                    span 1-H-RFD-WHVVTA-FKEK-1&nbsp
-                                                        span.label.label-success Ok
-                                        li
-                                            div.radio
-                                                label.radio-custom(
-                                                    data-initialize='radio'
-                                                )
-                                                    input.sr-only.input-lg(
-                                                        type='radio',
-                                                        name='funkstelle',
-                                                        value='2',
-                                                        )
-                                                    span 1-H-RFD-WHVVTA-FKEK-2&nbsp
-                                                        span.label.label-success Ok
-                                                
-                                                    
-                                h2.text-center(
-                                    style='margin-top: 4px; margin-bottom: 4px;'
-                                ) 77
-                                p.text-center 9 211 03 6580
-                                div.btn.btn-default(
-                                    style='width: 100%;border-top-left-radius: 0;border-top-right-radius: 0;border-bottom-width: 0px;border-left-width: 0px;border-right-width: 0px;'
-                                    ) SPANxy
-                        
-                        div.col-md-2
+                    
                             
 
 
@@ -221,34 +152,7 @@ block content
                                     h4#mkaModalLabel.modal-title Kanalauswahl für Mehrkanal-Anlage
                                 div.modal-body
                                     p
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 1
-                                        &nbsp
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 2
-                                        &nbsp
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 3
-                                        &nbsp
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 4
-                                        &nbsp
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 5
-                                        &nbsp
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 6
-                                        &nbsp
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 7
-                                        &nbsp
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 8
-                                        &nbsp
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 9
-                                        &nbsp
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 10
-                                        &nbsp
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 11
-                                        &nbsp
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 12
-                                        &nbsp
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 69
-                                        &nbsp
-                                        button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') 68
-                                        &nbsp
+                                        +mkaButtonListe(gesamteKonfig.KanalListe)
 
                                     #mySpinbox.spinbox(data-initialize='spinbox', style="font-size: 20px; width: 20%;")
                                         input.form-control.input-mini.spinbox-input(type='text', style="height: 75px;font-size:25px")
