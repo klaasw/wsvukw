@@ -1,0 +1,36 @@
+{
+    "1-H-RFD-EMSVTA-FKEK-3": {
+        "$": {
+            "id": "1-H-RFD-EMSVTA-FKEK-3",
+            "state": "0",
+            "channel": "-1",
+            "letzteMeldung": "2016-07-06T02:05:17.135Z"
+        },
+        "letzteMeldung": "2016-07-06T02:05:17.148Z"
+    },
+    "1-H-RFD-EMSVTA-FKEK-4": {
+        "$": {
+            "id": "1-H-RFD-EMSVTA-FKEK-4",
+            "state": "0",
+            "channel": "-1",
+            "letzteMeldung": "2016-07-06T02:16:13.633Z"
+        },
+        "letzteMeldung": "2016-07-06T02:16:13.650Z"
+    },
+    "1-H-RFD-EMSVTA-FKEK-5": {
+        "$": {
+            "id": "1-H-RFD-EMSVTA-FKEK-5",
+            "state": "0",
+            "channel": "-1"
+        },
+        "letzteMeldung": "2016-07-06T03:23:59.379Z"
+    },
+    "1-H-RFD-EMSVTA-FKEK-1": {
+        "$": {
+            "id": "1-H-RFD-EMSVTA-FKEK-1",
+            "state": "0",
+            "channel": "-1"
+        },
+        "letzteMeldung": "2016-07-06T03:24:27.419Z"
+    }
+}

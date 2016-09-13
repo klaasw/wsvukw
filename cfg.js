@@ -1,5 +1,13 @@
+/* Modul zur Gernerierung von Konfigurationsvariablen
+* Die Parameter werden aus der Datei config/server/IP_des_Servers/serverIPS.json bezogen
+* 
+* @Author: Klaas Wuellner
+* 
+*/
+
 var log = require('./log.js');
 var fs = require('fs'); // Zugriff auf das Dateisystem
+var HOSTNAME = require('os').hostname();
 
 var AKTUELLER_SERVER='' //globale Variable für aktuellen Server. Einbindung in Konfig zur Darstellung des aktuellen Server via Jade Template layout.jade
 
@@ -12,7 +20,7 @@ function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
     }
     var networkInterfaces = require('os').networkInterfaces();
     for (var netInterface in networkInterfaces) {
-        for (adapter in networkInterfaces[netInterface]) {
+        for (var adapter in networkInterfaces[netInterface]) {
             try {
                 AKTUELLER_SERVER = networkInterfaces[netInterface][adapter].address //TODO:Port auslesen bzw. einbinden
                 return require('./config/servers/' + networkInterfaces[netInterface][adapter].address + '/serverIPs.json');
@@ -23,7 +31,7 @@ function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
     }
 }
 var cfgIPs = getIPs();
-
+console.log(cfgIPs)
 var cfg = {
     "urlRFDWebservice": 'http://' + cfgIPs.rfdIP + ':8789/I_RFD_DUE_Steuerung',
 
@@ -39,14 +47,18 @@ var cfg = {
         // TODO fuer unterschiedliche Passwoerter dev/stage/prod: noch in serverIPs auslagern, unterschiedliche Passwoerter vergeben, mindestens produktiv
         'password': 'rfd'
     },
+   
+    "mongodb":'mongodb://ukwserver:due@' + cfgIPs.mongoDbs.toString() + '/ukw?replicaSet=dueReplicaSet',
     
+    //HTTP Port für die nodeJS Instanz
     "port": cfgIPs.port,
-    "configPath": '../config/',
+    "configPath": 'config/',
     "intervall": 10000,
 
     "alternativeIPs": cfgIPs.alternativeServer,
     "cfgIPs": cfgIPs,
-    "aktuellerServer": AKTUELLER_SERVER
+    "aktuellerServer": AKTUELLER_SERVER,
+    "aktuellerHostname": HOSTNAME
 };
 
 module.exports = cfg;

@@ -14,9 +14,18 @@ Dies ist die Benutzer-Oberfläche im DUE für die Nutzung des Revierfunkdienstes
 - moment (vielleicht)
 - chimp (Test?)
 - chimp-widget (Test?)
+- mongodb (Native MongoDB Treiber)
+- pug (ehemals Jade. Template Engine für NodeJs)
+- jstransformer-markdown-it (Verwendung von Markdown Dokumenten in Jade/ Pug Templates
+## TODO: für eine Neuinstallation notwendige Pakete mit Version in package.json eintragen
+
+globale Module (npm install ... -g) sollten sein:
+- pm2 (Prozessmanager)
+- express-generator (erzeugt Ordner Struktur)
+- 
 
 ## Weitere Software
-- resipprocate als SIP-Server zur entgegennahem der Zustandsmeldungen via SIP IM Nachricht
+- resipprocate als SIP-Server zur Aufnahme der Zustandsmeldungen via SIP IM Nachricht
 - OverSip zur Einbindung der jssip Moduls als WebRTC. Würde theoretisch auch direkt auf resiprocate gehen
 - weitere Details zur SIP Umgebung müssen noch geschrieben werden
 
@@ -34,23 +43,21 @@ ggf. apt-get update
 apt-get install repro
 
 ### config anpassen
-IP=10.160.1.70
-WSPort=10088  //Prüfen ob funktioniert
-AssumePath = true
-DisableOutbound = false
-EnableFlowTokens = true
-recordrouteuri = 10.160.1.70 //wozu ? ist im Test konfiguriert
+- IP=10.160.1.70 Eigene IP des Servers
+- WSPort=10088  //Prüfen ob funktioniert
+- AssumePath = true
+- DisableOutbound = false
+- EnableFlowTokens = true
+- recordrouteuri = 10.160.1.70 //wozu ? ist im Test konfiguriert
 
 ### Web Interface:
-ip:5080
-user:admin
-pw:admin
+- ip:5080
+- user:admin
+- pw:admin
+
+Die Pakete vom RFD kommen via UDP ebenfalls Port 5060. Dies in Repro konfigurieren
 
 
---------
-Die PAkete vom RFD kommen via UDP ebenfalls Port 5060. Dies in Repro konfigurieren
-
---------
 
 ## Installieren von OverSIP:
 http://oversip.net/documentation/2.0.x/installation/debian_and_ubuntu/
@@ -78,11 +85,3 @@ mkdir /var/run/oversip
 oversip -P /var/run/oversip/oversip.pid
 
 oder config anpassen /etc/oversip
-
---------IP-ADRESSEN--------
-repro.config 2x
-oversip.conf 2x
-domain und user in repro anpassen
-socket anpassen in:
--view ukwDisplay
--view layout

@@ -1,0 +1,86 @@
+{
+    "1-H-RFD-BHVVTA-FKEK-1": {
+        "id": "1-H-RFD-BHVVTA-FKEK-1",
+        "name": "1-H-RFD-BHVVTA-FKEK-1",
+        "sname": "RFD-FKEK1-BHVVTA",
+        "channel": "16",
+        "MKA": false,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WHVVKZ-MHAN-34": true
+        }
+    },
+    "1-H-RFD-BHVVTA-FKEK-2": {
+        "id": "1-H-RFD-BHVVTA-FKEK-2",
+        "name": "1-H-RFD-BHVVTA-FKEK-2",
+        "sname": "RFD-FKEK2-BHVVTA",
+        "channel": "5",
+        "MKA": false,
+        "aufgeschaltet": false
+    },
+    "frei": "frei",
+    "1-H-RFD-WHVVTA-FKEK-3": {
+        "id": "1-H-RFD-WHVVTA-FKEK-3",
+        "name": "1-H-RFD-WHVVTA-FKEK-3",
+        "sname": "RFD-FKEK3-WHVVTA",
+        "channel": "63",
+        "MKA": false,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WHVVKZ-MHAN-32": true
+        }
+    },
+    "1-H-RFD-WHVVTA-FKEK-4": "frei",
+    "1-H-RFD-WHVVTA-FKMK-1": {
+        "id": "1-H-RFD-WHVVTA-FKMK-1",
+        "name": "1-H-RFD-WHVVTA-FKMK-1",
+        "sname": "RFD-FKMK1-WHVVTA",
+        "channel": "13",
+        "MKA": true,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WHVVKZ-MHAN-33": true
+        }
+    },
+    "": "frei",
+    "1-H-RFD-WHVVTA-FKEK-2": {
+        "id": "1-H-RFD-WHVVTA-FKEK-2",
+        "name": "1-H-RFD-WHVVTA-FKEK-2",
+        "sname": "RFD-FKEK2-WHVVTA",
+        "channel": "20",
+        "MKA": false,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WHVVKZ-MHAN-31": true
+        }
+    },
+    "1-H-RFD-BRBVTR-GWST-1": "frei",
+    "1-H-RFD-DAENHO-FKGW-1": {
+        "id": "1-H-RFD-DAENHO-FKGW-1",
+        "name": "1-H-RFD-DAENHO-FKGW-1",
+        "sname": "RFD-FKGW1-DAENHO",
+        "channel": "67",
+        "gwid": "",
+        "MKA": false,
+        "GW": true,
+        "aufgeschaltet": false
+    },
+    "1-H-RFD-DROSEV-FKGW-1": {
+        "id": "1-H-RFD-DROSEV-FKGW-1",
+        "name": "1-H-RFD-DROSEV-FKGW-1",
+        "sname": "RFD-FKGW1-DROSEV",
+        "channel": "13",
+        "gwid": "",
+        "MKA": false,
+        "GW": true,
+        "aufgeschaltet": false
+    },
+    "1-H-RFD-WHVVTA-FKEK-1": {
+        "id": "1-H-RFD-WHVVTA-FKEK-1",
+        "name": "1-H-RFD-WHVVTA-FKEK-1",
+        "sname": "RFD-FKEK1-WHVVTA",
+        "channel": "16",
+        "MKA": false,
+        "aufgeschaltet": false
+    }
+}

@@ -93,6 +93,39 @@ router.get('/ukw', function (req, res) {
     });
 }); //router Ende
 
+/* GET UKW Display */
+router.get('/ukwTest', function (req, res) {
+    var clientIP = req.ip;
+    log.debug("Benutzer IP: " + clientIP);
+    findeApNachIp(clientIP, function (benutzer) {
+        log.debug("ukw - Ermittelter Benutzer: " + benutzer);
+        if (benutzer) {
+            log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + req.ip);
+            erstelleKonfigFurAp(benutzer, function (konfig) {
+                log.debug(" -- 4");
+                //Uebergebe Funkstellen ID an Jade Template
+                log.info('ukw - konfigfuerAP.Button11: ' + JSON.stringify(konfig.FunkstellenDetails[konfig.FunkstellenReihe['Button11'][0]]));
+                //ukwDisplay --> zum Testen eines neuen Layouts
+                res.render('entwicklung/ukwDisplayTest', {
+                    "log": log,  // logging auch im Jade-Template moeglich!
+                    "gesamteKonfig": konfig
+
+                }); //res send ende
+            }); //erstelleKonfigFurAp Ende
+        } //if Ende
+
+        //kein Benutzer zu IP gefunden
+        else {
+            res.render('error', {
+                message: 'keine Benutzer konfiguriert zu IP: ' + clientIP,
+                error: {
+                    status: 'kein'
+                }
+            })
+        }
+    });
+}); //router Ende
+
 /* GET UKW Display Kleine Schaltflaechen*/
 router.get('/ukw_kl', function (req, res) {
     log.debug(req.ip);
@@ -278,9 +311,8 @@ router.get('/arbeitsplaetze', function (req, res) {
             log.error(err);
             res.status(404).send("Fehler beim Einlesen der Arbeitsplatzkonfiguration");
         } else {
-            log.debug(FILENAME + ' Arbeitplaetze geladen: ');
             arbeitsplaetze = JSON.parse(data);
-            log.debug("arbeitsplaetze: " + arbeitsplaetze);
+            log.debug(FILENAME + ' Funktion: /arbeitplaetze Arbeitplaetze geladen: ' + JSON.stringify(arbeitsplaetze));
             res.send(arbeitsplaetze);
         }
     });
@@ -343,48 +375,76 @@ function leseRfdTopologie(callback) {
                     //CDATA Objekt der Response erneut parsen
                     parser.parseString(ergebnis1cdata, function (err, result) {
                         //Einzelkanal-Anlagenauslesen und in Funkstellen variable schreiben
-                        FstEK = result['FKEK'];
-                        for (var i = 0; i < FstEK.length; i++) {
-                            //log.debug(FstEK[i]['$'])
-                            tmp = FstEK[i]['$'];
-                            tmp.MKA = false;
-                            //log.debug(tmp)
-                            Funkstellen.push(tmp)
-
+                        if (result['FKEK']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
+                            FstEK = result['FKEK'];
+                            for (var i = 0; i < FstEK.length; i++) {
+                                //log.debug(FstEK[i]['$'])
+                                tmp = FstEK[i]['$'];
+                                tmp.MKA = false;
+                                tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
+                                //log.debug(tmp)
+                                //unoetige Variablen entfernen
+                                delete tmp.ipaddr
+                                delete tmp.portsip
+                                delete tmp.portrtp
+                                Funkstellen.push(tmp)
+    
+                            }
                         }
 
                         //HK-Anlagenauslesen und in Funkstellen variable schreiben
-                        FstHK = result['FKHK'];
-                        for (i = 0; i < FstHK.length; i++) {
-                            //log.debug(FstEK[i]['$'])
-                            tmp = FstHK[i]['$'];
-                            tmp.MKA = false;
-                            //log.debug(tmp)
-                            Funkstellen.push(tmp)
-
+                        if (result['FKHK']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
+                            FstHK = result['FKHK'];
+                            for (i = 0; i < FstHK.length; i++) {
+                                //log.debug(FstEK[i]['$'])
+                                tmp = FstHK[i]['$'];
+                                tmp.MKA = false;
+                                tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
+                                //log.debug(tmp)
+                                //unoetige Variablen entfernen
+                                delete tmp.ipaddr
+                                delete tmp.portsip
+                                delete tmp.portrtp
+                                Funkstellen.push(tmp)
+    
+                            }
                         }
 
                         //Mehrkanal-Anlagenauslesen und in Funkstellen variable schreiben
-                        FstMK = result['FKMK'];
-                        for (i = 0; i < FstMK.length; i++) {
-                            //log.debug(FstMK[i]['$'])
-                            tmp = FstMK[i]['$'];
-                            tmp.MKA = true;
-                            //log.debug(tmp)
-                            Funkstellen.push(tmp)
-
+                        if (result['FKMK']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
+                            FstMK = result['FKMK'];
+                            for (i = 0; i < FstMK.length; i++) {
+                                //log.debug(FstMK[i]['$'])
+                                tmp = FstMK[i]['$'];
+                                tmp.MKA = true;
+                                tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
+                                //log.debug(tmp)
+                                //unoetige Variablen entfernen
+                                delete tmp.ipaddr
+                                delete tmp.portsip
+                                delete tmp.portrtp
+                                Funkstellen.push(tmp)
+    
+                            }
                         }
 
                         //Gleichwellen-Anlagen auslesen und in Funkstellen variable schreiben
-                        FstGW = result['FKGW'];
-                        for (i = 0; i < FstGW.length; i++) {
-                            //log.debug(FstMK[i]['$'])
-                            tmp = FstGW[i]['$'];
-                            tmp.MKA = false;
-                            tmp.GW = true;
-                            //log.debug(tmp)
-                            Funkstellen.push(tmp)
-
+                        if (result['FKGW']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
+                            FstGW = result['FKGW'];
+                            for (i = 0; i < FstGW.length; i++) {
+                                //log.debug(FstMK[i]['$'])
+                                tmp = FstGW[i]['$'];
+                                tmp.MKA = false;
+                                tmp.GW = true;
+                                tmp.aufgeschaltet = false //default Zustand für Varbeitung von Schaltzuständen
+                                //log.debug(tmp)
+                                //unoetige Variablen entfernen
+                                delete tmp.ipaddr
+                                delete tmp.portsip
+                                delete tmp.portrtp
+                                Funkstellen.push(tmp)
+    
+                            }
                         }
                         callback();
                         //log.debug(Funkstellen)
@@ -428,29 +488,24 @@ function liesAusRESTService(configfile, callback) {
 function findeApNachIp(ip, callback) {
     var Ap = '';
     //var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
-    log.debug("function findeNachIp " + ip);
+    log.debug(FILENAME + " function findeNachIp: " + ip);
     // TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
     var url = "http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/arbeitsplaetze";
-    log.debug("function findeNachIp " + url);
+    log.debug(FILENAME + " function findeNachIp " + url);
     request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
-            log.debug("body: " + body);
+            //log.debug("body: " + body);
             var alle_Ap = JSON.parse(body);
-            log.debug(alle_Ap);
+            log.debug(FILENAME + ' function findeNachIp: ' + alle_Ap);
 
-            for (i = 0; i < alle_Ap.length; i++) {
-                //Benutzer gefunden
-                if (ip in alle_Ap[i]) {
-                    Ap = alle_Ap[i][ip].user;
-                    log.debug(FILENAME + ' Benutzer gefunden: ' + JSON.stringify(Ap));
-                    callback(Ap);
-                    break;
-                }
-                log.debug("debug alle_Ap[" + i + "]: " + JSON.stringify(alle_Ap[i]));
-            } //for Ende
-            //TODO: Diese Bedingung wird nicht erreicht, wenn keine IP in Arbeitsplätze.json eingetragen ist.
-            if(Ap = ''){
-                log.error(FILENAME + ' Benutzer NICHT gefunden zu IP: ' + ip);
+            if(alle_Ap.hasOwnProperty(ip)){
+                Ap = alle_Ap[ip].user;
+                log.debug(FILENAME + ' function findeNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
+                callback(Ap);
+            }
+            
+            else{
+                log.error(FILENAME + ' function findeNachIp: Benutzer NICHT gefunden zu IP: ' + ip);
                 callback('')
             }
         } else {
@@ -459,6 +514,8 @@ function findeApNachIp(ip, callback) {
     });
 }
 
+
+//TODO: hier vielleicht auch mit hasOwnProperty die Funkstelle schneller finden als drüber iterieren.
 function findeFstNachId(Id) {
     if (Id === undefined || Id == 'frei' || Id == '') {
         return 'frei'
@@ -484,7 +541,8 @@ function erstelleKonfigFurAp(Ap, callback) {
         FunkstellenDetails: {},
         ArbeitsplatzGeraete: {},
         MhanZuordnung: {},
-        IpConfig: cfg
+        IpConfig: cfg,
+        KanalListe : []
     };
 
     log.debug(FILENAME + ' uebergebener Arbeitsplatz: ' + Ap);
@@ -503,10 +561,22 @@ function erstelleKonfigFurAp(Ap, callback) {
             for (t = 0; t < fstReihe[button].length; t++) {
                 //Funkstellendetails schreiben
                 Konfig.FunkstellenDetails[fstReihe[button][t]] = findeFstNachId(fstReihe[button][t])
+                //Kanalnummern in Array schreiben. Dient zur dynamischen Befüllung im MKA Dialog
+                kanalNummer = Konfig.FunkstellenDetails[fstReihe[button][t]].channel
+                if (kanalNummer != null){
+                    Konfig.KanalListe.push(kanalNummer)
+                }
             }
         }
+        //KanalListe sortieren und Doppel entfernen. Hilfsfunktionen siehe weiter unten.
+        Konfig.KanalListe.sort(vergleicheZahlen)
+        Konfig.KanalListe = entferneDoppel(Konfig.KanalListe)
+
+
 
         Konfig.FunkstellenReihe = fstReihe;
+
+
         //log.debug("FertigeKonfig:"+Konfig.FunkstellenDetails)
         //log.debug(FILENAME + ' ----------------------------------------------------------------------')
         //inspect(Konfig)
@@ -586,6 +656,25 @@ function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
         } //While Ende
     });
 } //Funktion Ende
+
+
+
+/* Hilfsfunktionen für Arrays 
+*  ggf. noch auslagern?
+*  
+*/ 
+// Zahlen vergleichen: Dient als Funktion für Array.sort() da sort nur alphabetisch sortiert
+function vergleicheZahlen (a, b) {
+    return a - b;
+}
+
+// Doppeleinträge aus Array entfernen.
+function entferneDoppel(array) {
+    einzelArray = array.filter(function(item, position, self){
+        return self.indexOf(item) == position
+    })
+    return einzelArray
+}
 
 
 module.exports = router;
