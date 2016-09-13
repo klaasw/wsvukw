@@ -6,14 +6,30 @@
       "user": "JA NvD",
       "revier": "Jade Traffic"},
 "::ffff:10.162.1.96": {
+<<<<<<< HEAD
       "user": "WR NvD",
+=======
+      "user": "JA Lotse1",
+>>>>>>> d440d0ebeadc3677bda0f3ca8b88530c329eb84b
       "revier": "Jade Traffic"},
 "::ffff:10.162.1.143": {
       "user": "JA NvD",
       "revier": "Jade Traffic"},
+<<<<<<< HEAD
 "::ffff:10.160.1.64": {
       "user": "JA NvD",
       "revier": "Jade Traffic"},
+=======
+"::ffff:10.160.77.64": {
+      "user": "JA NvD",
+      "revier": "Jade Traffic"},
+"::ffff:10.160.1.110": {
+      "user": "RE NvD",
+      "revier": "Test Referenz"},
+"::ffff:10.160.1.2": {
+      "user": "RE NvD",
+      "revier": "Test Referenz"},
+>>>>>>> d440d0ebeadc3677bda0f3ca8b88530c329eb84b
 "::ffff:10.22.30.1": {
       "user": "JA NvD",
       "revier": "Jade Traffic"},
@@ -50,4 +66,8 @@
 "fe80::95f9:204a:bc4a:b605": {
       "user": "JA NvD",
       "revier": "Jade Traffic"}
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> d440d0ebeadc3677bda0f3ca8b88530c329eb84b
