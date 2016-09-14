@@ -16,7 +16,7 @@ var log = new winston.Logger({
             tailable: true
         }),
         new winston.transports.Console({
-            level: 'error',
+            level: 'debug',
             timestamp: true,
 			//prettyPrint: true,
 			handleExceptions: true,

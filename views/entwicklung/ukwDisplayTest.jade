@@ -27,6 +27,7 @@ block content
 
                         div.col-md-2(id=index + 'panel',style="padding-left: 5px;padding-right: 5px;")
                             div.panel.panel-default(
+                                buttonElement='Panel',
                                 onclick='schalteKanal(event,this,"SPAN")',
                                 style='border-width: 2px;',
                                 class=(val[0] == 'frei' ? 'hidden' : '')
@@ -40,6 +41,8 @@ block content
                                         type='button', 
                                         data-toggle='modal',
                                         data-target='#mithoerenModal',
+                                        data-funkstelle=val[0],
+                                        data-lautstaerke='100'
                                         ) #{(gesamteKonfig.MhanZuordnung[val[0]] ? gesamteKonfig.MhanZuordnung[val[0]] : '--ohne--')}
                                     div.dropdown.text-center
                                         - kompomentenID = val[0] ? val[0] : '---------------------';
@@ -83,12 +86,19 @@ block content
                                                                     span.label.label-default ??
                                     if gesamteKonfig.FunkstellenDetails[val[0]].MKA
                                         h2.text-right(
+                                            onclick='schalteKanal(event,this,"SPAN")'
                                             id=index,
                                             style='margin-top: 4px;margin-bottom: 5px;'
                                             buttonElement='kanalNr'
-                                            )
-                                            span #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
-                                            button.btn.btn-default.btn-lg.dropdown-toggle(type='button', data-toggle='modal',data-target='#mkaModal',style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 32px;margin-top: -5px;",onclick='setzeKanalMka(event,this)')
+                                            ) #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
+                                            button.btn.btn-default.btn-lg.dropdown-toggle(
+                                                buttonElement='mkaDropdown',
+                                                type='button', 
+                                                data-toggle='modal',
+                                                data-target='#mkaModal',
+                                                style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 32px;margin-top: -5px;",
+                                                onclick='setzeKanalMka(event,this)'
+                                                )
                                                 span.caret
                                     else
                                         h2.text-center(
@@ -100,8 +110,9 @@ block content
                                     p.text-center(
                                         buttonElement='atis'
                                     ) 9 211 03 6580
-                                    div.btn.btn-default.hidden(
+                                    div.btn.btn-default(
                                         buttonElement='span'
+                                        span='SPAN01'
                                         onclick='schalteKanal(event,this,"SPAN")'
                                         id=gesamteKonfig.ArbeitsplatzGeraete.SPAN01
                                         style='width: 100%;border-top-left-radius: 0;border-top-right-radius: 0;border-bottom-width: 0px;border-left-width: 0px;border-right-width: 0px;'
@@ -118,24 +129,6 @@ block content
 
                 //- Abschliessendes Row-DIV
                 != "</div><!-- row>"
-
-
-
-
-
-
-                    //Test fuer Slider
-                    div#popover-content.hidden
-                        p Lautstaerke per Softwareeinstellen
-                        //input#ex1(data-slider-id='ex1Slider', type='text', data-slider-min='0', data-slider-max='100', data-slider-step='1', data-slider-value='15',data-slider-orientation='vertical')
-                        input#ex1(
-                            type='text'
-                            data-slider-min='0'
-                            data-slider-max='100'
-                            data-slider-step='10'
-                            data-slider-orientation='vertical'
-                        )
-
 
 
                     
@@ -169,10 +162,6 @@ block content
                                     button.btn.btn-default(type='button', data-dismiss='modal') Abbrechen
                                     button.btn.btn-primary(type='button', data-dismiss='modal', onclick='setzeKanal()') Ändern
                     
-                    // errorModal als mixin ausgelagert nach layout.jade
-                    +errorModal('DUE','Fehler','Verbindung zum Server abgebrochen. Bitte verwenden Sie folgende alternativen Server:')
-                    +errorModal('RFD','RFD-Fehler','Verbindung zum RFD-Dienst abgebrochen. Bitte verwenden Sie folgende alternativen Server:')
-
                     // Modalfenster fuer Mithoeren und Zuordnung
                     div#mithoerenModal.modal(aria-labelledby='mithoerenModalLabel')
                         div.modal-dialog
@@ -188,23 +177,26 @@ block content
                                                 div.panel-heading Wähle Lautsprecher
                                                 div.panel-content
                                                     div.btn.btn-group-vertical
-                                                        button.btn.btn-default MHAN01
-                                                        button.btn.btn-default MHAN02
-                                                        button.btn.btn-default MHAN03
-                                                        button.btn.btn-default MHAN04
-                                                        button.btn.btn-default MHAN05
-                                                        button.btn.btn-default MHAN06
-                                                        button.btn.btn-default MHAN07
-                                                        button.btn.btn-default MHAN08
+                                                        each val , index in gesamteKonfig.ArbeitsplatzGeraete
+                                                            if index.indexOf('MHAN') == 0
+                                                                button.btn.btn-default(
+                                                                buttonElement = 'mhanButtonModal'
+                                                                id = val
+                                                                ) #{index}
+
                                         div.col-md-6
                                             div.panel.panel-default
                                                 div.panel-heading Wähle Lautstärke für diesen Kanal
-                                                div.panel-content
+                                                div.panel-content(
+                                                    style='height: 50px;margin-top: 40px;'
+                                                )
                                                     input#sliderModal(
+                                                        style='width: 100%; margin-top: 40px; margin-bottom: 20px;'
                                                         type='text'
                                                         data-slider-min='0'
                                                         data-slider-max='100'
                                                         data-slider-step='10'
+                                                        data-slider-value=''
                                                     )
                                     div.row
                                         div.col-md-12
@@ -223,6 +215,9 @@ block content
                                     button.btn.btn-primary(type='button', data-dismiss='modal', onclick='setzeKanal()') Ändern
 
 
+                    // errorModal als mixin ausgelagert nach layout.jade
+                    +errorModal('DUE','Fehler','Verbindung zum Server abgebrochen. Bitte verwenden Sie folgende alternativen Server:')
+                    +errorModal('RFD','RFD-Fehler','Verbindung zum RFD-Dienst abgebrochen. Bitte verwenden Sie folgende alternativen Server:')
 
 block append codeTeil2
     include clientScriptTest

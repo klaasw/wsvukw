@@ -50,10 +50,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // debugger;   // if in debugging mode, set breakpoint here
 var routes = require('./routes/index.js');
-var users = require('./routes/user.js')
+var users = require('./routes/benutzer.js');
+var verbindungen = require('./routes/verbindungen.js')
 
 app.use('/', routes);
-app.use('/user', users);
+app.use('/user', users); //nach Anpassung des Scriptes deutsche Route verwenden
+app.use('/benutzer', users);
+app.use('/verbindungen', verbindungen);
 var ukw = require('./ukw.js');
 
 

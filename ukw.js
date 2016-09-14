@@ -20,12 +20,12 @@ var cfg = require('./cfg.js');
 
 var io = require('./socket.js');
 
-var db = require('./datenbank.js') // Module zur Verbindung zur Datenbank
-db.verbindeDatenbank()
+var db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
+db.verbindeDatenbank();
 
 FILENAME = __filename.slice(__dirname.length + 1);
 
-/* ToDo
+/* TODO:
  *  - Ungueltige Nutzer abfangen
  *  - Timeout oder Zustand der Server darstellen und Bedienung verhindern
  *  - Mithoeren darstellen
@@ -62,12 +62,12 @@ exports.pruefeRfdWS = function () {
 
 
 /*Block zur Implementierung der WebService Abfragen an RFD
- *
+ * TODO: ApID in Client ergaeznen damit schaltzustand zum AP geschrieben werden kann
  *
  *
  *
  */
-exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
+exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span_mhanApNr, ApID) {
     var parameterRfdWebService = {
         url: cfg.urlRFDWebservice,
         method: 'POST',
@@ -148,12 +148,17 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal) {
                         erfolgreich = result['S:Envelope']['S:Body'][0]['ns2:' + aktion + 'Response'][0]['return'][0];
                         if (erfolgreich === 'true') {
                             exports.sendeWebSocketNachricht(antwortFuerWebsocket)
+
+                            if (aktion == 'schaltenEinfach' || aktion == 'trennenEinfach'){
+                                schreibeSchaltzustand(Fst, Span_Mhan, aktion, span_mhanApNr, ApID)
+                            }
+
                         }
                         else {
                             log.error('RFD ' + aktion + ' fehlgeschlagen');
                             exports.sendeWebSocketNachricht('RFD ' + aktion + ' fehlgeschlagen');
-                            
-							//TODO: Bei False Verarbeitung muss RFD muss nicht gestört sein. Abfangen 
+
+							//TODO: Bei False Verarbeitung muss RFD muss nicht gestört sein. Abfangen
 							//exports.sendeWebsocketNachrichtStatus({
                             //    RfdStatus: {
                             //        URL: cfg.urlRFDWebservice,
@@ -200,18 +205,49 @@ exports.sendeWebsocketNachrichtServer = function (Nachricht) {
 //var Intervall=setInterval(function() {sendeWebSocketNachricht()},1000)
 
 
+//schreibe Schaltzzustand in DB
+function schreibeSchaltzustand(fst, Span_Mhan, aktion, span_mhanApNr, ApID){
+
+    var selector = {'ApID':ApID, 'funkstelle':fst, 'span_mhan':Span_Mhan}
+    var aufgeschaltet = true
+
+    if (aktion == 'trennenEinfach') {
+        aufgeschaltet = false
+    }
+
+    var schaltZustand = {
+        'ApID' : ApID, // z.B. JA NvD
+        'funkstelle' : fst, // z.B. 1-H-RFD-WHVVTA-FKEK-1
+        'span_mhan' : Span_Mhan, // z.B. 1-H-RFD-WHVVKZ-SPAN-01
+        'span_mhanApNr' : span_mhanApNr, // z.B. MHAN05
+        'zustand' : {
+            "aufgeschaltet" : aufgeschaltet, // true - false
+            "letzterWechsel" : new Date().toJSON()
+        }
+    }
+
+    db.schreibeInDb('schaltZustaende', selector, schaltZustand)
+}
+
+
+
+
+
+
+
+
 //schreibe Zustandsmeldungen in zustandKomponenten
 //{"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
-//TODO: 
+//TODO:
 function schreibeZustand(Nachricht){
     if (Nachricht.hasOwnProperty("FSTSTATUS")){
-        
+
         var zustand = {
             '_id' : Nachricht.FSTSTATUS.$.id,
             'status': Nachricht.FSTSTATUS.$,
             'letzteMeldung': new Date().toJSON()
         }
-        
+
         console.log(Nachricht.FSTSTATUS.$.id)
         var selector = {'_id':Nachricht.FSTSTATUS.$.id}
 
@@ -222,10 +258,10 @@ function schreibeZustand(Nachricht){
             if (err){
                     log.error(FILENAME + ' Funktion: schreibeSocketInfo: zustandKomponenten.json konnte nicht gelesen werden' + err)
                 }
-    
+
                 else{
                     var alle_Zustaende = JSON.parse(data);
-                    
+
                     alle_Zustaende[Nachricht.FSTSTATUS.$.id] = Nachricht.FSTSTATUS
                     alle_Zustaende[Nachricht.FSTSTATUS.$.id].letzteMeldung = new Date().toJSON();
 
@@ -247,7 +283,7 @@ function schreibeZustand(Nachricht){
 
 
 // Erstelle SIP User-Agent var ua. Hier mit Konfiguration DUE als Empfänger für die Statusnachrichten vom RFD
-//Die Übernahme aus der cfg funktioniert in der Produktivumgebung nicht. Callback? 
+//Die Übernahme aus der cfg funktioniert in der Produktivumgebung nicht. Callback?
 var ua = new JsSIP.UA(cfg.jsSipConfiguration_DUE);
 ua.start();
 

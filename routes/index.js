@@ -514,6 +514,8 @@ function findeApNachIp(ip, callback) {
     });
 }
 
+
+//TODO: hier vielleicht auch mit hasOwnProperty die Funkstelle schneller finden als drüber iterieren.
 function findeFstNachId(Id) {
     if (Id === undefined || Id == 'frei' || Id == '') {
         return 'frei'

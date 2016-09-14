@@ -23,17 +23,12 @@ var dueStatusServerB = null
 exports.socket = function (server) {
     log.debug(FILENAME + " Socket Server established");
     log.debug(FILENAME + " server: " +server); //Log ggf. wieder weg, da Server Objekt keine relevanten Info enthält
-        
+
         socketServer = io.listen(server)
         socketServer.on('connect', function (socket) {
             log.debug(FILENAME + ' Funktion connect: Benutzer hat Websocket-Verbindung mit ID '+ socket.id + ' hergestellt. IP: ' + socket.request.connection.remoteAddress);
             // TODO: Pruefung Berechtigung !
-            
-            //!!!!!!
-            //TODO: Architektur mit socket prüfen!!!
-            //socketGlobal = socket; //socketGlobal funktioniert nicht. Es gilt dann nur die letzte Verbindung. Das funktioniert nicht für mehrere Clients!
-            
-            
+
 
             leseZustand(socket.id) //Status der Funkstellen übertragen
             leseSchaltzustand(socket.id, socket.request.connection.remoteAddress) //letzten Schaltzustandübertragen
@@ -55,7 +50,7 @@ exports.socket = function (server) {
         //'Standardnachrichten für Weiterleitung an RFD schalten,trennen, MKA'
         socket.on('clientMessage', function (msg) {
             log.debug(FILENAME + ' Funktion: empfangeWebNachricht ' + 'clientMessage: WebSocket Nachricht: ' + JSON.stringify(msg));
-            ukw.sendeWebServiceNachricht(msg.FstID, msg.SPAN, msg.aktion, msg.Kanal);//Sende WebServiceNachricht an RFD
+            ukw.sendeWebServiceNachricht(msg.FstID, msg.SPAN, msg.aktion, msg.Kanal, msg.span_mhanApNr, msg.ApID);//Sende WebServiceNachricht an RFD
         });
 
         //Speichern der Kanal Lotsenzuordnung
@@ -68,26 +63,6 @@ exports.socket = function (server) {
             }
         });
 
-        //Speichern der Schaltzustände der Clients
-        socket.on('clientMessageSchaltzustand', function (msg) {
-
-            ApID = msg.Arbeitsplatz.replace(/ /g, "_");
-            Zustand = JSON.stringify(msg.Zustand, null, 4);
-
-            log.info(FILENAME + ' Funktion: empfangeWebNachricht ' + 'clientMessageSchaltzustand: WebSocket Nachricht: ' + JSON.stringify(msg));
-
-            files.writeFile('state/' + ApID + '_Zustand.json', Zustand, 'utf8', function (err, data) {
-                if (err) {
-                    log.error(FILENAME + ' Funktion: speichereSchaltzustand: ' + ApID + '_Zustand.json konnte nicht geschrieben werden' + err)
-                }
-                else {
-                    log.info(FILENAME + ' Funktion: speichereSchaltzustand: konfig.json ' + ApID + '_Zustand.json geschrieben')
-                }
-
-            })
-
-        });
-
         // Client hat Verbindung unterbrochen:
         socket.on('disconnect', function (msg) {
             log.warn(FILENAME + ' Funktion disconnect: Benutzer hat Websocket-Verbindung mit ID '+ socket.id + ' getrennt. IP: ' + socket.request.connection.remoteAddress);
@@ -97,18 +72,18 @@ exports.socket = function (server) {
 
     });
 
-    
+
 };
 
 exports.emit = function emit(messagetype, message, socketID) {
     log.debug(FILENAME + " Funktion: socket.emit MessageType: " + messagetype + "  message: " + JSON.stringify(message));
-    
+
     if (socketID == undefined) {
         log.debug(FILENAME + " Funktion emit: emitting messages to clients...");
         return socketServer.emit(messagetype, message);
     }
 
-    
+
     if (socketID){
         log.debug(FILENAME + " Funktion emit: emitting messages to client: "+ socketID);
         return socketServer.to(socketID).emit(messagetype, message);
@@ -126,23 +101,29 @@ exports.emit = function emit(messagetype, message, socketID) {
 //in Arbeit
 //Einlesen des Schaltzustands und übermittlung bei connect
 function leseSchaltzustand(socketID, IP){
-    var zustand='';
+
+    var zustand = {};
 
     findeApNachIp(IP, socketID, function(benutzer){
-        
-        benutzer = benutzer.replace(/ /g, "_");
 
-        files.readFile('state/' + benutzer+'_Zustand.json', 'utf8', function (err, data) {
-            if (err){
-                log.error(FILENAME + ' Funktion: leseSchaltzustand: ' + benutzer + '_Zustand.json konnte nicht gelesen werden' + err)
-            }
-            else{
-                zustand = JSON.parse(data)
-                log.debug(FILENAME + ' Funktion: leseSchaltzustand: ' + benutzer + '_Zustand.json gelesen, Inhalt: '+ JSON.stringify(zustand))
+        url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/verbindungen/liesVerbindungen?arbeitsplatz=' + benutzer + '&aktiveVerbindungen=true'
+        console.log(url)
+
+        request(url, function (error, response, body) {
+
+            if (!error && response.statusCode == 200) {
+                body = JSON.parse(body)
+                for (verbindung of body) {
+                    //erstelle Objekt nach Muster 1-H-RFD-WHVVTA-FKEK-1:MHAN01
+                    //In Verbindung mit der AP Konfuguration der Geaete kann der Client die Verbindungen wieder schalten
+                    zustand[verbindung.funkstelle] = verbindung.span_mhanApNr
+                }
+
+                log.debug(FILENAME + 'zustandsMessage ' + JSON.stringify(zustand))
                 exports.emit('zustandsMessage', zustand, socketID)
-                exports.emit('statusMessage', dueStatusServerA, socketID)
-                log.debug(dueStatusServerA)
-                exports.emit('statusMessage', dueStatusServerB, socketID)
+            }
+            else {
+                log.error(FILENAME + ' Funktion: leseSchaltzustand aus REST Service Fehler: ' + error)
             }
         })
     })
@@ -151,10 +132,12 @@ function leseSchaltzustand(socketID, IP){
 
 //Lese Zustandsmeldungen in zustandKomponenten
 //{"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
-//TODO: 
+//TODO:
 function leseZustand(socketID){
-    
-    db.findeElement('zustandKomponenten', '', function(doc){
+
+    var selector = {}
+
+    db.findeElement('zustandKomponenten', selector, function(doc){
         console.log(doc)
 
         for (var i = 0; i < doc.length; i++){
@@ -163,20 +146,20 @@ function leseZustand(socketID){
                     '$':doc[i].status
                 }
              }
-             console.log(zustand)
+             //console.log(zustand)
              exports.emit('ukwMessage', zustand, socketID)
         }
 
 
     })
-        
+
 
         /**
         files.readFile('state/zustandKomponenten.json', 'utf8', function (err, data) {
             if (err){
                     log.error(FILENAME + ' Funktion: leseZustand: zustandKomponenten.json konnte nicht gelesen werden' + err)
                 }
-    
+
                 else{
                     var alle_Zustaende = JSON.parse(data);
                     console.log(alle_Zustaende)
@@ -207,18 +190,18 @@ function findeApNachIp(ip, socketID, callback) {
             if(alle_Ap.hasOwnProperty(ip)){
                 Ap = alle_Ap[ip].user;
                 log.debug(FILENAME + ' function findeNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
-                
+
                 //SocketID und Verbinungszeit in Variable schreiben
                 ApInfo             = alle_Ap[ip]
                 ApInfo.socketID    = socketID;
                 ApInfo.connectTime = new Date().toJSON();
-                
+
                 //Schreiben in aktiveArbeitsplaetze
                 schreibeSocketInfo(ApInfo, ip)
 
                 callback(Ap);
             }
-            
+
             else{
                 log.error(FILENAME + ' function findeNachIp: Benutzer NICHT gefunden zu IP: ' + ip);
                 callback('')
@@ -234,12 +217,12 @@ function findeApNachIp(ip, socketID, callback) {
 //TODO: löschen bei Disconnect oder Disconnect Zeitstempel oder inaktiveListe führen
 function schreibeSocketInfo(socketInfo, ip){
 
-    socketInfo._id = ip 
+    socketInfo._id = ip
 
     var selector = {'_id':ip}
 
     db.schreibeInDb('aktiveArbeitsplaetze', selector, socketInfo);
-   
+
     /**
     files.readFile('state/aktiveArbeitsplaetze.json', 'utf8', function (err, data) {
         if (err){
@@ -248,7 +231,7 @@ function schreibeSocketInfo(socketInfo, ip){
 
         else{
             var alle_Ap = JSON.parse(data);
-            
+
             alle_Ap[ip] = socketInfo
 
             files.writeFile('state/aktiveArbeitsplaetze.json', JSON.stringify(alle_Ap, null, 4), 'utf8', function (err, data) {
@@ -279,7 +262,7 @@ client_bei_serverA.on('connect',function() {
     log.debug("Funktion: Serverueberwachung SOCKET verbunden mit: " + serverA);
     exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverA[1], Status: 'OK'}})
     dueStatusServerA = {dienst:'DUE', status: {URL: serverA[1], Status: 'OK'}}
-}); 
+});
 
 client_bei_serverA.on('disconnect', function() {
     log.debug("Funktion: Serverueberwachung SOCKET getrennt von: " + serverA)
@@ -311,7 +294,7 @@ client_bei_serverB.on('connect',function() {
     log.debug("Funktion: Serverueberwachung SOCKET verbunden mit: " + serverB);
     exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverB[1], Status: 'OK'}})
     dueStatusServerB = {dienst:'DUE', status: {URL: serverB[1], Status: 'OK'}}
-}); 
+});
 
 client_bei_serverB.on('disconnect', function() {
     log.debug("Funktion: Serverueberwachung SOCKET getrennt von: " + serverB)
@@ -346,7 +329,3 @@ client_bei_serverB.on('serverMessage', function (msg) {
     log.debug('Status von Server B: '+ JSON.stringify(msg))
     exports.emit('statusMessage', msg)
 });
-
-
-
-
