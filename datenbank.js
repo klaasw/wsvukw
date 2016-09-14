@@ -26,7 +26,7 @@ var url = cfg.mongodb+'&readPreference=nearest';
 //TODO: ReplicaSet, Ausfall, Umschwenken, Zustandsmeldungen nur von einem Server senden
 exports.schreibeInDb = function (collection, selector, inhalt) {
 	//console.log(dbVerbindung)
-    if (dbVerbindung == undefined){
+    if (dbVerbindung === undefined){
         //exports.verbindeDatenbank( function(){
             // Insert a single document
         //	schreibeInDb2(collection, selector, inhalt)
@@ -34,7 +34,7 @@ exports.schreibeInDb = function (collection, selector, inhalt) {
     }
 
     else{
-        if (verbundenMitPrimary == true){
+        if (verbundenMitPrimary === true){
             schreibeInDb2(collection, selector, inhalt);
         }
 
@@ -45,7 +45,7 @@ exports.schreibeInDb = function (collection, selector, inhalt) {
 //finde Dokumente
 exports.findeElement = function (collection, element, callback) {
 	//console.log(dbVerbindung)
-    if (dbVerbindung == undefined){
+    if (dbVerbindung === undefined){
        // exports.verbindeDatenbank( function(){
             // Insert a single document
         //	findeElement2(collection, element, function(doc){
@@ -67,7 +67,7 @@ function findeElement2 (collection, element, callback){
 	var selector = {};
     log.debug(JSON.stringify(element));
 
-    if (element != undefined ) {
+    if (element !== undefined ) {
         selector = element;
     }
 
