@@ -22,7 +22,7 @@ Dies ist die Benutzer-Oberfläche im DUE für die Nutzung des Revierfunkdienstes
 globale Module (npm install ... -g) sollten sein:
 - pm2 (Prozessmanager)
 - express-generator (erzeugt Ordner Struktur)
-- 
+-
 
 ## Weitere Software
 - resipprocate als SIP-Server zur Aufnahme der Zustandsmeldungen via SIP IM Nachricht
@@ -32,7 +32,7 @@ globale Module (npm install ... -g) sollten sein:
 # Weitere Erläuterungen
 
 # Installation
-    code Anleitung
+    Anleitung
     shell skript
 
 # Installation SIP Module
@@ -78,7 +78,7 @@ chown oversip oversip
 ### config anpassen:
 explizit angeben
 - IP Adresse SIP
-- IP Adresse Websocket 
+- IP Adresse Websocket
 
 ### STARTEN
 mkdir /var/run/oversip
@@ -89,4 +89,3 @@ oder config anpassen /etc/oversip
 
 ### Powershell Skript
 user_zu_ip.ps1 Login Skript zur Übertragung des Benutzernamen und der IP-Adresse an den UKW-Server.
-
