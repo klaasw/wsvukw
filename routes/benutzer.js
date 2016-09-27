@@ -24,7 +24,7 @@ FILENAME = __filename.slice(__dirname.length + 1);
 router.get('/zeigeWindowsBenutzer', function (req, res) {
     
 
-    db.findeElement('windowsBenutzer', '', function(doc){
+    db.findeElement('windowsBenutzer', {}, function(doc){
         res.send(doc)
     })
 });
