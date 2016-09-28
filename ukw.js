@@ -62,7 +62,7 @@ exports.pruefeRfdWS = function () {
 
 
 /*Block zur Implementierung der WebService Abfragen an RFD
- * TODO: ApID in Client ergaeznen damit schaltzustand zum AP geschrieben werden kann
+ * TODO: noch erforderlich? ApID in Client ergaeznen damit schaltzustand zum AP geschrieben werden kann
  *
  *
  *
@@ -207,7 +207,7 @@ exports.sendeWebsocketNachrichtServer = function (Nachricht) {
 
 //schreibe Schaltzzustand in DB
 function schreibeSchaltzustand(fst, Span_Mhan, aktion, span_mhanApNr, ApID){
-
+    var schreibeLokal = false //es wird auf jeden Fall geschrieben
     var selector = {'ApID':ApID, 'funkstelle':fst, 'span_mhan':Span_Mhan}
     var aufgeschaltet = true
 
@@ -226,7 +226,7 @@ function schreibeSchaltzustand(fst, Span_Mhan, aktion, span_mhanApNr, ApID){
         }
     }
 
-    db.schreibeInDb('schaltZustaende', selector, schaltZustand)
+    db.schreibeInDb('schaltZustaende', selector, schaltZustand, schreibeLokal)
 }
 
 
@@ -241,7 +241,7 @@ function schreibeSchaltzustand(fst, Span_Mhan, aktion, span_mhanApNr, ApID){
 //TODO:
 function schreibeZustand(Nachricht){
     if (Nachricht.hasOwnProperty("FSTSTATUS")){
-
+        var schreibeLokal = true //es wird nur geschrieben wenn die aktuelle Instanz und Mongo Primary in einem VTR sind
         var zustand = {
             '_id' : Nachricht.FSTSTATUS.$.id,
             'status': Nachricht.FSTSTATUS.$,
@@ -251,7 +251,7 @@ function schreibeZustand(Nachricht){
         console.log(Nachricht.FSTSTATUS.$.id)
         var selector = {'_id':Nachricht.FSTSTATUS.$.id}
 
-        db.schreibeInDb('zustandKomponenten', selector, zustand);
+        db.schreibeInDb('zustandKomponenten', selector, zustand, schreibeLokal);
 
         /**
         files.readFile('state/zustandKomponenten.json', 'utf8', function (err, data) {

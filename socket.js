@@ -66,6 +66,8 @@ exports.socket = function (server) {
         // Client hat Verbindung unterbrochen:
         socket.on('disconnect', function (msg) {
             log.warn(FILENAME + ' Funktion disconnect: Benutzer hat Websocket-Verbindung mit ID '+ socket.id + ' getrennt. IP: ' + socket.request.connection.remoteAddress);
+            schreibeSocketInfo('false', socket.request.connection.remoteAddress)
+
             //socketGlobal = undefined;
         });
 
@@ -192,12 +194,13 @@ function findeApNachIp(ip, socketID, callback) {
                 log.debug(FILENAME + ' function findeNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
 
                 //SocketID und Verbinungszeit in Variable schreiben
-                ApInfo             = alle_Ap[ip]
+                ApInfo             = alle_Ap[ip];
                 ApInfo.socketID    = socketID;
-                ApInfo.connectTime = new Date().toJSON();
+                ApInfo.connectTime = new Date();
+                ApInfo.aktiv       = true;
 
                 //Schreiben in aktiveArbeitsplaetze
-                schreibeSocketInfo(ApInfo, ip)
+                schreibeSocketInfo(ApInfo, ip);
 
                 callback(Ap);
             }
@@ -214,14 +217,22 @@ function findeApNachIp(ip, socketID, callback) {
 }
 
 //schreibe Verbindungsinfo socketID und Zeitstempel in aktiveArbeitsplaetze
-//TODO: löschen bei Disconnect oder Disconnect Zeitstempel oder inaktiveListe führen
 function schreibeSocketInfo(socketInfo, ip){
-
+    var schreibeLokal = false //auf jeden Fall schreiben in Primary Datenbank schreiben
     socketInfo._id = ip
+
+    if (socketInfo === 'false') {
+        socketInfo = {
+            $set : {
+                aktiv : false,
+                disconnectTime : new Date()
+            }
+        }
+    }
 
     var selector = {'_id':ip}
 
-    db.schreibeInDb('aktiveArbeitsplaetze', selector, socketInfo);
+    db.schreibeInDb('aktiveArbeitsplaetze', selector, socketInfo, schreibeLokal);
 
     /**
     files.readFile('state/aktiveArbeitsplaetze.json', 'utf8', function (err, data) {
