@@ -21,6 +21,8 @@ var verbundenMitPrimary;
 // Connection URL
 var url = cfg.mongodb+'&readPreference=nearest';
 //var url2 = 'mongodb://ukwserver:due@10.160.2.80:27017,10.160.1.80:27017,10.160.3.80:27017/ukw?replicaSet=dueReplicaSet'
+//TODO: Prio 2 Verbindung zu unterschiedlichen Datenbanken herstellen. Damit WindowsBenutzer von ukw Datenbank entkoppelt sind
+//TODO: Prio 1 Schreiben auch von nicht 'VTR lokalen' Node - DB Verbindungen zum Schreiben von Schaltzustaenden, aktivenAnwerden und WindowsBenutzern.... 
 
 //vor dem Schreiben prüfen ob eine Verbindung besteht:
 //TODO: ReplicaSet, Ausfall, Umschwenken, Zustandsmeldungen nur von einem Server senden
