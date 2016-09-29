@@ -3,7 +3,8 @@ var ukw = require('./ukw.js');
 var files = require('fs'); // Zugriff auf das Dateisystem
 var request = require('request'); //Modul zu Abfrage von WebServices
 
-FILENAME = __filename.slice(__dirname.length + 1);
+//FILENAME = __filename.slice(__dirname.length + 1);
+FILENAME = __filename;
 
 var io = require('socket.io');
 var socketClient = require('socket.io/node_modules/socket.io-client')
@@ -140,7 +141,7 @@ function leseZustand(socketID){
     var selector = {}
 
     db.findeElement('zustandKomponenten', selector, function(doc){
-        console.log(doc)
+        //console.log(doc)
 
         for (var i = 0; i < doc.length; i++){
              var zustand = {
@@ -151,37 +152,24 @@ function leseZustand(socketID){
              //console.log(zustand)
              exports.emit('ukwMessage', zustand, socketID)
         }
-
-
     })
-
-
-        /**
-        files.readFile('state/zustandKomponenten.json', 'utf8', function (err, data) {
-            if (err){
-                    log.error(FILENAME + ' Funktion: leseZustand: zustandKomponenten.json konnte nicht gelesen werden' + err)
-                }
-
-                else{
-                    var alle_Zustaende = JSON.parse(data);
-                    console.log(alle_Zustaende)
-                    for (var fst in alle_Zustaende){
-                        //console.log(fst)
-                        exports.emit('ukwMessage', {'FSTSTATUS':alle_Zustaende[fst]}, socketID)
-                    }
-
-                }
-        })**/
 }
 
 
 
 function findeApNachIp(ip, socketID, callback) {
     var Ap = '';
+
+    //IPv6 Anteil aus Anfrage kuerzen
+    var ipv6Ende = ip.lastIndexOf(':')
+    if (ipv6Ende > -1 ){
+        ip = ip.slice(ipv6Ende + 1 , ip.length)
+    }
+
     //var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
     log.debug(FILENAME + " function findeNachIp: " + ip);
     // TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
-    var url = "http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/arbeitsplaetze";
+    var url = "http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/benutzer/zeigeWindowsBenutzer";
     log.debug(FILENAME + " function findeNachIp " + url);
     request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {

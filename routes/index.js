@@ -68,16 +68,25 @@ router.get('/ukw', function (req, res) {
         log.debug("ukw - Ermittelter Benutzer: " + benutzer);
         if (benutzer) {
             log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + req.ip);
-            erstelleKonfigFurAp(benutzer, function (konfig) {
-                log.debug(" -- 4");
-                //Uebergebe Funkstellen ID an Jade Template
-                log.info('ukw - konfigfuerAP.Button11: ' + JSON.stringify(konfig.FunkstellenDetails[konfig.FunkstellenReihe['Button11'][0]]));
-                //ukwDisplay --> zum Testen eines neuen Layouts
-                res.render('ukwDisplay', {
-                    "log": log,  // logging auch im Jade-Template moeglich!
-                    "gesamteKonfig": konfig
+            erstelleKonfigFurAp(benutzer, function (konfig, errString) {
+                if (konfig == 'Fehler'){
+                    res.render('error', {
+                        message: 'keine Konfiguration zu Arbeitsplatz: ' + benutzer + ' Fehler: ' + errString,
+                        error: {
+                            status: 'kein'
+                        }
+                    })
+                }
+                else {
+                    //Uebergebe Funkstellen ID an Jade Template
+                    log.info('ukw - konfigfuerAP: an Jade Template uebergeben');
+                    //ukwDisplay --> zum Testen eines neuen Layouts
+                    res.render('ukwDisplay', {
+                        "log": log,  // logging auch im Jade-Template moeglich!
+                        "gesamteKonfig": konfig
 
-                }); //res send ende
+                    }); //res send ende
+                }
             }); //erstelleKonfigFurAp Ende
         } //if Ende
 
@@ -324,7 +333,7 @@ router.get('/lieskonfig', function (req, res) {
     files.readFile("config/revier/" + configfile + ".json", 'utf8', function (err, data) {
         if (err) {
             log.error(err);
-            res.status(404).send("Fehler beim Einlesen der Konfiguration " + configfile);
+            res.status(404).send("Fehler beim Einlesen der Konfiguration " + configfile + ' ' + err);
         } else {
             configdata = JSON.parse(data);
             log.debug(FILENAME + "configfile: " + JSON.stringify(configdata));
@@ -388,7 +397,7 @@ function leseRfdTopologie(callback) {
                                 delete tmp.portsip
                                 delete tmp.portrtp
                                 Funkstellen.push(tmp)
-    
+
                             }
                         }
 
@@ -406,7 +415,7 @@ function leseRfdTopologie(callback) {
                                 delete tmp.portsip
                                 delete tmp.portrtp
                                 Funkstellen.push(tmp)
-    
+
                             }
                         }
 
@@ -424,7 +433,7 @@ function leseRfdTopologie(callback) {
                                 delete tmp.portsip
                                 delete tmp.portrtp
                                 Funkstellen.push(tmp)
-    
+
                             }
                         }
 
@@ -443,7 +452,7 @@ function leseRfdTopologie(callback) {
                                 delete tmp.portsip
                                 delete tmp.portrtp
                                 Funkstellen.push(tmp)
-    
+
                             }
                         }
                         callback();
@@ -476,34 +485,50 @@ function liesAusRESTService(configfile, callback) {
     request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var response = JSON.parse(body);
-            log.debug(" REST response: " + JSON.stringify(response));
+            log.debug(" liesAusRESTService response: " + JSON.stringify(response));
             callback(response);
         } else {
-            log.error("Fehler. " + JSON.stringify(error));
-            callback('');
+            if (error) {
+                log.error(" liesAusRESTService Fehler: " + JSON.stringify(error));
+                callback('Fehler');//TODO: hier Fehlerhandling wenn Service nicht erreichbar
+            }
+            else {
+                log.error(" liesAusRESTService Fehler: " + JSON.stringify(body));
+                //log.error(" liesAusRESTService Fehler: " + JSON.stringify(response));
+                callback(body);
+            }
+
+
         }
     });
 }
 
 function findeApNachIp(ip, callback) {
     var Ap = '';
+
+    //IPv6 Anteil aus Anfrage kuerzen
+    var ipv6Ende = ip.lastIndexOf(':')
+    if (ipv6Ende > -1 ){
+        ip = ip.slice(ipv6Ende + 1 , ip.length)
+    }
+
     //var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
     log.debug(FILENAME + " function findeNachIp: " + ip);
     // TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
-    var url = "http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/arbeitsplaetze";
+    var url = "http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/benutzer/zeigeWindowsBenutzer";
     log.debug(FILENAME + " function findeNachIp " + url);
     request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             //log.debug("body: " + body);
             var alle_Ap = JSON.parse(body);
-            log.debug(FILENAME + ' function findeNachIp: ' + alle_Ap);
+            log.debug(FILENAME + ' function findeNachIp: ' + JSON.stringify(alle_Ap));
 
             if(alle_Ap.hasOwnProperty(ip)){
                 Ap = alle_Ap[ip].user;
                 log.debug(FILENAME + ' function findeNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
                 callback(Ap);
             }
-            
+
             else{
                 log.error(FILENAME + ' function findeNachIp: Benutzer NICHT gefunden zu IP: ' + ip);
                 callback('')
@@ -532,6 +557,11 @@ function findeFstNachId(Id) {
     return 'frei'
 }
 
+
+// Konfigurationsobjekt fuer den Arbeitsplatz erstellen.
+// Einlesen der Konfig.Dateien
+// TODO: Auslesen aus Datenbank
+// TODO: Fehlermeldung und Errorhandling wenn keine Konfig vorliegt
 function erstelleKonfigFurAp(Ap, callback) {
 
     //Bilde temporaeres Objekt um Funkstelle als Value hinzuzufuegen
@@ -553,52 +583,59 @@ function erstelleKonfigFurAp(Ap, callback) {
     //Dateinamen noch durch Variable ersetzen
     var revieranteil = rev_ap[0];
     liesAusRESTService(revieranteil, function (response1) {
-        fstReihe = response1;
-        //Durch JA ueber Buttons iterieren
-        for (var button in fstReihe) {
-            log.debug(button + '  ' + fstReihe[button]);
-            //Durch Funkstelln in Buttons iterien
-            for (t = 0; t < fstReihe[button].length; t++) {
-                //Funkstellendetails schreiben
-                Konfig.FunkstellenDetails[fstReihe[button][t]] = findeFstNachId(fstReihe[button][t])
-                //Kanalnummern in Array schreiben. Dient zur dynamischen Befüllung im MKA Dialog
-                kanalNummer = Konfig.FunkstellenDetails[fstReihe[button][t]].channel
-                if (kanalNummer != null){
-                    Konfig.KanalListe.push(kanalNummer)
+        log.debug(JSON.stringify(response1))
+        if (typeof response1 === 'string' && response1.indexOf('Fehler') > -1 ){
+            callback('Fehler', response1)
+        }
+        else {
+            fstReihe = response1;
+            //Durch JA ueber Buttons iterieren
+            for (var button in fstReihe) {
+                log.debug(button + '  ' + fstReihe[button]);
+                //Durch Funkstelln in Buttons iterien
+                for (t = 0; t < fstReihe[button].length; t++) {
+                    //Funkstellendetails schreiben
+                    Konfig.FunkstellenDetails[fstReihe[button][t]] = findeFstNachId(fstReihe[button][t])
+                    //Kanalnummern in Array schreiben. Dient zur dynamischen Befüllung im MKA Dialog
+                    kanalNummer = Konfig.FunkstellenDetails[fstReihe[button][t]].channel
+                    if (kanalNummer != null){
+                        Konfig.KanalListe.push(kanalNummer)
+                    }
                 }
             }
-        }
-        //KanalListe sortieren und Doppel entfernen. Hilfsfunktionen siehe weiter unten.
-        Konfig.KanalListe.sort(vergleicheZahlen)
-        Konfig.KanalListe = entferneDoppel(Konfig.KanalListe)
+            //KanalListe sortieren und Doppel entfernen. Hilfsfunktionen siehe weiter unten.
+            Konfig.KanalListe.sort(vergleicheZahlen)
+            Konfig.KanalListe = entferneDoppel(Konfig.KanalListe)
+            Konfig.FunkstellenReihe = fstReihe;
 
-
-
-        Konfig.FunkstellenReihe = fstReihe;
-
-
-        //log.debug("FertigeKonfig:"+Konfig.FunkstellenDetails)
-        //log.debug(FILENAME + ' ----------------------------------------------------------------------')
-        //inspect(Konfig)
-        //log.debug(FILENAME + ' ----------------------------------------------------------------------')
-
-        //2. Geraete fuer Arbeitsplatz einlesen
-        //Dateinamen noch durch Variable ersetzen
-        log.debug(" -- 1");
-        liesAusRESTService(rev_ap[0] + "_" + rev_ap[1], function (response2) {
-            log.debug(" -- 2");
-            Konfig.ArbeitsplatzGeraete = response2;
-            //3. MHAN Zuordnung fuer Arbeitsplatz einlesen
+            //2. Geraete fuer Arbeitsplatz einlesen
             //Dateinamen noch durch Variable ersetzen
-            liesAusRESTService(rev_ap[0] + "_" + rev_ap[1] + "_mhan_zuordnung", function (response3) {
-                log.debug(" -- 3");
-                Konfig.MhanZuordnung = response3;
-                //----------------------------------------------------------------------------------------
-                //Hier die Callback fuer die Res.send einbauen, die die Rueckmeldung aus Konfig benoetigt
+            log.debug(" -- 1");
+            liesAusRESTService(rev_ap[0] + "_" + rev_ap[1], function (response2) {
+                if (typeof response2 === 'string' && response2.indexOf('Fehler') > -1 ){
+                    callback('Fehler', response2)
+                }
+                else {
+                    log.debug(" -- 2");
+                    Konfig.ArbeitsplatzGeraete = response2;
+                    //3. MHAN Zuordnung fuer Arbeitsplatz einlesen
+                    //Dateinamen noch durch Variable ersetzen
+                    liesAusRESTService(rev_ap[0] + "_" + rev_ap[1] + "_mhan_zuordnung", function (response3) {
+                        if (typeof response3 === 'string' && response3.indexOf('Fehler') > -1 ){
+                            callback('Fehler', response3)
+                        }
+                        else {
+                            log.debug(" -- 3");
+                            Konfig.MhanZuordnung = response3;
+                            //----------------------------------------------------------------------------------------
+                            //Hier die Callback fuer die Res.send einbauen, die die Rueckmeldung aus Konfig benoetigt
 
-                callback(Konfig);
+                            callback(Konfig);
+                        }//Else Ende
+                    });
+                }//Else Ende
             });
-        });
+        }//Else Ende
     });
 } //Funktion Ende
 
@@ -659,10 +696,10 @@ function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
 
 
 
-/* Hilfsfunktionen für Arrays 
+/* Hilfsfunktionen für Arrays
 *  ggf. noch auslagern?
-*  
-*/ 
+*
+*/
 // Zahlen vergleichen: Dient als Funktion für Array.sort() da sort nur alphabetisch sortiert
 function vergleicheZahlen (a, b) {
     return a - b;

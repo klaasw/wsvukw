@@ -22,10 +22,14 @@ FILENAME = __filename.slice(__dirname.length + 1);
 
 /* Erster Test */
 router.get('/zeigeWindowsBenutzer', function (req, res) {
-
+    var arbeitsplaetze = {}
 
     db.findeElement('windowsBenutzer', {}, function(doc){
-        res.send(doc)
+
+        for (ap of doc) {
+            arbeitsplaetze[ap._id] = ap
+        }
+        res.send(arbeitsplaetze)
     })
 });
 
@@ -55,7 +59,7 @@ router.put('/schreibeWindowsBenutzer', function(req, res){
         schreibeParameter = {
             $set: {
                 ip: benutzer.ip,
-                user: benutzer.user,
+                user: benutzer.user.toLowerCase(),
                 loginZeit : new Date(),
                 angemeldet : benutzer.angemeldet
             }
@@ -65,7 +69,7 @@ router.put('/schreibeWindowsBenutzer', function(req, res){
         schreibeParameter = {
             $set: {
                 ip: benutzer.ip,
-                user: benutzer.user,
+                user: benutzer.user.toLowerCase(),
                 logoutZeit : new Date(),
                 angemeldet : benutzer.angemeldet
             }
