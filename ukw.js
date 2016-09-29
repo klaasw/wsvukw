@@ -242,39 +242,38 @@ function schreibeSchaltzustand(fst, Span_Mhan, aktion, span_mhanApNr, ApID){
 function schreibeZustand(Nachricht){
     if (Nachricht.hasOwnProperty("FSTSTATUS")){
         var schreibeLokal = true //es wird nur geschrieben wenn die aktuelle Instanz und Mongo Primary in einem VTR sind
-        var zustand = {
-            '_id' : Nachricht.FSTSTATUS.$.id,
-            'status': Nachricht.FSTSTATUS.$,
-            'letzteMeldung': new Date().toJSON()
+
+        //entfernen da dieser sonst den Kanal im DUE wieder mit -1 ueberschreibt
+        if (Nachricht.FSTSTATUS.$.channel == '-1') {
+            var zustand = {
+                $set: {
+                    letzteMeldung : new Date(),
+                    "status.connectState" : Nachricht.FSTSTATUS.$.connectState,
+                    "status.state" : Nachricht.FSTSTATUS.$.state,
+                },
+                $setOnInsert: {
+                    "status.id" : Nachricht.FSTSTATUS.$.id
+                }    
+            }
+        }
+        else{
+            var zustand = {
+                $set: {
+                    letzteMeldung : new Date(),
+                    "status.connectState" : Nachricht.FSTSTATUS.$.connectState,
+                    "status.state" : Nachricht.FSTSTATUS.$.state,
+                    "status.channel" : Nachricht.FSTSTATUS.$.channel
+                },
+                $setOnInsert: {
+                    "status.id" : Nachricht.FSTSTATUS.$.id
+                }
+            }
         }
 
-        console.log(Nachricht.FSTSTATUS.$.id)
+        //console.log(Nachricht.FSTSTATUS.$.id)
         var selector = {'_id':Nachricht.FSTSTATUS.$.id}
 
         db.schreibeInDb('zustandKomponenten', selector, zustand, schreibeLokal);
-
-        /**
-        files.readFile('state/zustandKomponenten.json', 'utf8', function (err, data) {
-            if (err){
-                    log.error(FILENAME + ' Funktion: schreibeSocketInfo: zustandKomponenten.json konnte nicht gelesen werden' + err)
-                }
-
-                else{
-                    var alle_Zustaende = JSON.parse(data);
-
-                    alle_Zustaende[Nachricht.FSTSTATUS.$.id] = Nachricht.FSTSTATUS
-                    alle_Zustaende[Nachricht.FSTSTATUS.$.id].letzteMeldung = new Date().toJSON();
-
-                    files.writeFile('state/zustandKomponenten.json', JSON.stringify(alle_Zustaende, null, 4), 'utf8', function (err, data) {
-                        if (err) {
-                            log.error(FILENAME + ' Funktion: schreibeZustand: ' + 'zustandKomponenten.json konnte nicht geschrieben werden' + err)
-                        }
-                        else {
-                            log.info(FILENAME + ' Funktion: schreibeZustand: ' + 'zustandKomponenten.json geschrieben')
-                        }
-                    })
-                }
-        })**/
     }
     else{
         //nichts machen
