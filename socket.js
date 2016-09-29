@@ -33,6 +33,10 @@ exports.socket = function (server) {
 
             leseZustand(socket.id) //Status der Funkstellen übertragen
             leseSchaltzustand(socket.id, socket.request.connection.remoteAddress) //letzten Schaltzustandübertragen
+            // Uebertragen der DUE Server Zustaende
+            exports.emit('statusMessage', dueStatusServerA, socket.id)
+            exports.emit('statusMessage', dueStatusServerB, socket.id)
+
 
         socket.on('*', function(msg) {
             log.debug(FILENAME + ' Funktion * message: ' + JSON.stringify(msg))
