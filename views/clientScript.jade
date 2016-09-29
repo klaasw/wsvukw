@@ -2,25 +2,19 @@ script.
         var test = false;
         var ApID = ''; //zb.JA NvD
         var SPAN = ''; //zb. 1-H-RFD-WHVVKZ-SPAN-01
-        var MhanZuordnung = {
-            "MHAN01": "1-H-RFD-WHVVTA-FKEK-2",
-            "MHAN02": "1-H-RFD-TETTEN-FKEK-2",
-            "MHAN03": "1-H-RFD-HELGLT-FKEK-1",
-            "MHAN04": "1-H-RFD-WHVVTA-FKMK-1"
-        };
+        var MhanZuordnung = {} //"MHAN01": "1-H-RFD-WHVVTA-FKEK-2", "MHAN02": "1-H-RFD-TETTEN-FKEK-2"
         var ApFunkstellen = {};
         var ArbeitsplatzGeraete;
         var Einzel = true;
         var einzelStatus = "";
         var gruppenStatus = "";
         var IpConfig;
+        
 
 
 
         //Datei zur Wiedergabe bei Fehlern
         var audioAlarm = new Audio('burst4.wav');
-
-
 
         ladeKonfig()
         
@@ -81,6 +75,7 @@ script.
                 console.log('ukwKonfig data:'+ data); //TODO: unwichtige, sicherheitsrelevante Informationen nicht uebermitteln
 
                 ApFunkstellen = data.Konfigdaten.FunkstellenDetails
+                
                 SPAN = data.Konfigdaten.ArbeitsplatzGeraete.SPAN01
                 MhanZuordnung = data.Konfigdaten.MhanZuordnung
                 ArbeitsplatzGeraete = data.Konfigdaten.ArbeitsplatzGeraete
@@ -170,7 +165,8 @@ script.
                     'FstID': funkstelle,
                     'ApID': ApID,
                     'SPAN': ArbeitsplatzGeraete[mhan[funkstelle]],
-                    'aktion': 'schaltenEinfach'
+                    'aktion': 'schaltenEinfach',
+                    'span_mhanApNr': mhan[funkstelle]
                 })
 
             }
@@ -314,6 +310,7 @@ script.
         //eingehende ZustandsMessage für gespeicherte Schaltzustaende
         socket.on('zustandsMessage', function(msg){
             console.log(msg)
+            lautsprecherAufschalten(msg)
         })
 
         //eingehende Socket Nachrichten vom TYP rfdMessage, Statusmeldungen verarbeitebn
@@ -613,7 +610,8 @@ script.
                     console.log($('#' + button + ' > div > div:nth-child(3)').attr('id'))
                     geklickteFstHaupt = $('#' + button + ' > div div:nth-child(2) > div > div:nth-child(1)').attr('id')
                     geklickteFstReser = $('#' + button + ' > div div:nth-child(2) > div > div:nth-child(2)').attr('id')
-                    geklickteSPAN = ($('#' + button + ' > div > div:nth-child(3)').attr('id'))
+                    geklickteSPAN          = ($('#' + button + ' > div > div:nth-child(3)').attr('id'))
+                    geklicktespan_mhanApNr = ($('#' + button + ' > div > div:nth-child(3)').attr('span'))
 
                     //Status der Funkstellen
                     geklickteFstHauptStatus = $('#' + geklickteFstHaupt).attr('fstStatus')
@@ -622,7 +620,7 @@ script.
 
                     //nur schalten, wenn Status 0 bzw. ok
                     //if (geklickteFstHauptStatus == "0"){
-                        schalteKanalID(geklickteFstHaupt, geklickteSPAN, 'SPAN')
+                        schalteKanalID(geklickteFstHaupt, geklickteSPAN, 'SPAN', geklicktespan_mhanApNr)
                     //}
                     //TODO: versuche Reserveanlage zu schalten
                     /**
@@ -666,7 +664,7 @@ script.
 
 
         //Funktion zur Prüfung ob aufgeschaltet ODER getrennt werden soll
-        function schalteKanalID(geklickteFstID, geklickteSPANMHAN, SPAN) {
+        function schalteKanalID(geklickteFstID, geklickteSPANMHAN, SPAN, geklicktespan_mhanApNr) {
             //console.log("Klick: "+geklickteID)
             //$.notify('test:'+ApFunkstellen[geklickteID].kurzname);
 
@@ -677,7 +675,7 @@ script.
                         $.each(ApFunkstellen, function (key, value) {
                             if (value.aufgeschaltet === true && key != geklickteFstID) {
                                 console.log(key, value.aufgeschaltet)
-                                trennen(key, geklickteSPANMHAN)
+                                trennen(key, geklickteSPANMHAN, geklicktespan_mhanApNr)
                             }
                             //trenne aufgeschaltet
                         })
@@ -689,7 +687,7 @@ script.
     
                         }
                         else {
-                            schalten(geklickteFstID, geklickteSPANMHAN)
+                            schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
     
                     }
                 }
@@ -712,12 +710,13 @@ script.
 
         }
 
-        function trennen(geklickteID, geklickteSPANMHAN) {
+        function trennen(geklickteID, geklickteSPANMHAN, geklicktespan_mhanApNr) {
             socket.emit('clientMessage', {
                 'FstID': geklickteID,
                 'ApID': ApID,
                 'SPAN': geklickteSPANMHAN,
-                'aktion': 'trennenEinfach'
+                'aktion': 'trennenEinfach',
+                'span_mhanApNr': geklicktespan_mhanApNr
             })
             $.notify('Trenne: <br>' + ApFunkstellen[geklickteID].sname);
             //ApFunkstellen[geklickteID].aufgeschaltet=false
@@ -726,12 +725,13 @@ script.
             //$('#'+geklickteID+'-Panel > div > div.panel-heading > span').text( "getrennt" )
         }
 
-        function schalten(geklickteID, geklickteSPANMHAN) {
+        function schalten(geklickteID, geklickteSPANMHAN, geklicktespan_mhanApNr) {
             socket.emit('clientMessage', {
                 'FstID': geklickteID,
                 'ApID': ApID,
                 'SPAN': geklickteSPANMHAN,
-                'aktion': 'schaltenEinfach'
+                'aktion': 'schaltenEinfach',
+                'span_mhanApNr': geklicktespan_mhanApNr
             })
             $.notify('Schalte: <br>' + ApFunkstellen[geklickteID].sname)
 
