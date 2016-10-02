@@ -373,7 +373,7 @@ script.
                     //Bei Kanalaenderung die Kanalnummer setzen
                     if (msg.FSTSTATUS.$.channel > -1) {
                         button = $('#' + msg.FSTSTATUS.$.id).parent().parent().offsetParent().attr('id')
-                        $('#' + button + ' [buttonElement="kanalNr"] > SPAN').text(msg.FSTSTATUS.$.channel)
+                        $('#' + button + ' [buttonElement="kanalNr"] > span').text(msg.FSTSTATUS.$.channel)
                     }
 
                 }
