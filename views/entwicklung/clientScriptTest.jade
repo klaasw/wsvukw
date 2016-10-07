@@ -49,7 +49,19 @@ script.
 
                     //$('#' + geklickteID).prev().text(ev.value.newValue)
                     setzeLautstaerke(mhanButton, ev.value.newValue, fuerFunkstelle)
-            });//Slide Event zu
+            }); //Slide Event zu
+            
+            //Arbeitsplaetze bzw SPAN zum Mithoeren laden
+            $.getJSON('verbindungen/liesVerbindungen?funkstelle='+ fuerFunkstelle +'&aktiveVerbindungen=true', function( data ) {
+                var items = [];
+                $.each( data, function( key, val ) {
+                    if (val.span_mhan.indexOf('SPAN') > -1){
+                        items.push('<button class="btn btn-default" id="' + val.span_mhan + '">' + val.ApID + '</button>')
+                    }
+                    //items.push( "<li id='" + key + "'>" + val + "</li>" );
+                });
+                $('#mithoerenModal [buttonElement="ap_mithoeren"]').html(items)
+            })
 
 
             

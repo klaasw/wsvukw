@@ -22,13 +22,13 @@ FILENAME = __filename.slice(__dirname.length + 1);
 
 /* liesVerbindungen aus Datenbank.
 *  TODO: Einbindung von Abfrage Parametern
-* 
-* 
+*
+*
 */
 router.get('/liesVerbindungen', function (req, res) {
-    
+
     log.debug(FILENAME + ' /liesVerbindungen: ' + JSON.stringify(req.query))
-    
+
     // variabel fuer die Abfrageparameter. Undefined lassen um ungueltige Abfragen an die Datenbank zu vermeiden
 	var selector
 	var aktiveVerbindungen
@@ -56,7 +56,7 @@ router.get('/liesVerbindungen', function (req, res) {
 		selector['zustand.aufgeschaltet'] = false
 	}
 
-	
+
     if (selector != undefined) {
         db.findeElement('schaltZustaende', selector, function(doc){
                 if (doc.length > 0){
@@ -65,12 +65,12 @@ router.get('/liesVerbindungen', function (req, res) {
                 else {
                 	res.send('keine Verbindungen für Abfrageparameter:' + JSON.stringify(req.query))
                 }
-    
+
         })
     }
     else {
     	res.send('keine Verbindungen für Abfrageparameter:' + JSON.stringify(req.query) +
-    		     ' gültige Abfragen sind: ?revier=Revierkürzel oder ?arbeitsplatz=Revierkürzel Leerzeichen Rolle'
+    		     ' gültige Abfragen sind: ?revier=Revierkürzel oder ?arbeitsplatz=Revierkürzel Leerzeichen Rolle oder ?funkstelle=Komponenten-ID'
     		)
     }
 });

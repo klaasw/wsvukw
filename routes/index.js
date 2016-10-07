@@ -110,16 +110,25 @@ router.get('/ukwTest', function (req, res) {
         log.debug("ukw - Ermittelter Benutzer: " + benutzer);
         if (benutzer) {
             log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + req.ip);
-            erstelleKonfigFurAp(benutzer, function (konfig) {
-                log.debug(" -- 4");
-                //Uebergebe Funkstellen ID an Jade Template
-                log.info('ukw - konfigfuerAP.Button11: ' + JSON.stringify(konfig.FunkstellenDetails[konfig.FunkstellenReihe['Button11'][0]]));
-                //ukwDisplay --> zum Testen eines neuen Layouts
-                res.render('entwicklung/ukwDisplayTest', {
-                    "log": log,  // logging auch im Jade-Template moeglich!
-                    "gesamteKonfig": konfig
+            erstelleKonfigFurAp(benutzer, function (konfig, errString) {
+                if (konfig == 'Fehler'){
+                    res.render('error', {
+                        message: 'keine Konfiguration zu Arbeitsplatz: ' + benutzer + ' Fehler: ' + errString,
+                        error: {
+                            status: 'kein'
+                        }
+                    })
+                }
+                else {
+                    //Uebergebe Funkstellen ID an Jade Template
+                    log.info('ukw - konfigfuerAP: an Jade Template uebergeben');
+                    //ukwDisplay --> zum Testen eines neuen Layouts
+                    res.render('entwicklung/ukwDisplayTest', {
+                        "log": log,  // logging auch im Jade-Template moeglich!
+                        "gesamteKonfig": konfig
 
-                }); //res send ende
+                    }); //res send ende
+                }
             }); //erstelleKonfigFurAp Ende
         } //if Ende
 
@@ -127,36 +136,6 @@ router.get('/ukwTest', function (req, res) {
         else {
             res.render('error', {
                 message: 'keine Benutzer konfiguriert zu IP: ' + clientIP,
-                error: {
-                    status: 'kein'
-                }
-            })
-        }
-    });
-}); //router Ende
-
-/* GET UKW Display Kleine Schaltflaechen*/
-router.get('/ukw_kl', function (req, res) {
-    log.debug(req.ip);
-    findeApNachIp(req.ip, function (benutzer) {
-        if (benutzer) {
-            log.debug(FILENAME + ' Arbeitsplatz gefunden! IP: ' + req.ip);
-            erstelleKonfigFurAp(benutzer, function (konfig) {
-                //Uebergebe Funkstellen ID an Jade Template
-                log.info(konfig.FunkstellenDetails[konfig.FunkstellenReihe['Button11'][0]]);
-                //ukwDisplay --> zum Testen eines neuen Layouts
-                res.render('ukwDisplayKlein', {
-
-                    "gesamteKonfig": konfig
-
-                }); //res send ende
-            }); //erstelleKonfigFurAp Ende
-        } //if Ende
-
-        //kein Benutzer zu IP gefunden
-        else {
-            res.render('error', {
-                message: 'keine Benutzer konfiguriert zu IP: ' + req.ip,
                 error: {
                     status: 'kein'
                 }
