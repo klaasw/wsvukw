@@ -70,10 +70,16 @@ exports.socket = function (server) {
 
         // Client hat Verbindung unterbrochen:
         socket.on('disconnect', function (msg) {
-            log.warn(FILENAME + ' Funktion disconnect: Benutzer hat Websocket-Verbindung mit ID '+ socket.id + ' getrennt. IP: ' + socket.request.connection.remoteAddress);
-            schreibeSocketInfo('false', socket.request.connection.remoteAddress)
+            var ip = socket.request.connection.remoteAddress;
+            //IPv6 Anteil aus Anfrage kuerzen
+            var ipv6Ende = ip.lastIndexOf(':');
+            if (ipv6Ende > -1 ){
+                ip = ip.slice(ipv6Ende + 1 , ip.length);
+            }
 
-            //socketGlobal = undefined;
+            log.warn(FILENAME + ' Funktion disconnect: Benutzer hat Websocket-Verbindung mit ID '+ socket.id + ' getrennt. IP: ' + ip);
+            schreibeSocketInfo('false', ip);
+
         });
 
 

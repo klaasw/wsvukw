@@ -1,0 +1,18 @@
+extends layout
+block content
+    div.container-fluid
+        div.content
+            div.col-md-2
+            div.col-md-6
+                case datei
+                    when 'powershell'
+                        include:markdown POWERSHELL.md
+                    when 'datenbank'
+                        include:markdown DATENBANK.md
+                    when 'readme'
+                        include:markdown ../../README.md
+                    default
+                        include:markdown ../../README.md
+script.
+    
+    

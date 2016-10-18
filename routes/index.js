@@ -53,12 +53,29 @@ router.get('/zuordnung', function (req, res) {
     });
 });
 
-/* GET UKW uebersicht */
+/* GET UKW Test */
 router.get('/testen', function (req, res) {
     res.render('testen', {
         "funkstellen": Funkstellen
     });
 });
+
+/* GET UKW Dokumentation */
+router.get('/dokumentation', function (req, res) {
+    if (req.query.dokument) {
+      res.render('technik/dokumentation', {datei: req.query.dokument});
+    } else {
+      res.render('technik/dokumentation');
+    }
+
+});
+
+/* GET UKW Status */
+router.get('/status', function (req, res) {
+      res.render('technik/status', {datei: req.query.dokument});
+
+});
+
 
 /* GET UKW Display */
 router.get('/ukw', function (req, res) {
