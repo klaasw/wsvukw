@@ -253,7 +253,7 @@ function schreibeZustand(Nachricht){
                 },
                 $setOnInsert: {
                     "status.id" : Nachricht.FSTSTATUS.$.id
-                }    
+                }
             }
         }
         else{
@@ -332,6 +332,10 @@ ua.on('newMessage', function (e) {
     parser.parseString(e.message.request.body, function (err, result) {
         if (err == null) {
             log.debug(FILENAME + " Funktion: newMessage sip parse result: " + JSON.stringify(result));
+            //setze Zeitstempel in Status Meldungen vom RFD
+            if ('FSTSTATUS' in result) {
+                result.FSTSTATUS.letzteMeldung = new Date();
+            }
             exports.sendeWebSocketNachricht(result)
             schreibeZustand(result)
         }
