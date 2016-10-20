@@ -77,4 +77,20 @@ router.get('/liesVerbindungen', function (req, res) {
   }
 });
 
+router.get('/liesZustand', function (req, res) {
+  log.debug(FILENAME + ' /liesZustand: ' + JSON.stringify(req.query));
+  var selector = {};
+  
+  db.findeElement('zustandKomponenten', selector, function (doc) {
+    if (doc.length > 0) {
+      res.send(doc);
+    } else {
+      res.send('keine Verbindungen für Abfrageparameter:' + JSON.stringify(req.query));
+    }
+  });
+
+
+});
+
+
 module.exports = router;

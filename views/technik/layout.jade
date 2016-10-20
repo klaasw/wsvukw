@@ -22,14 +22,17 @@ html
         link(rel='stylesheet', href='/stylesheets/bootstrap/bootstrap.css')
         link(rel='stylesheet', href='/javascripts/fuelux/css/fuelux.min.css')
         link(rel='stylesheet', href='/stylesheets/bootstrap-slider.css')
+        link(rel='stylesheet', href='/stylesheets/dataTables.bootstrap.min.css')
 
 
         block scripts
             script(src='/javascripts/jquery.min.js')
             script(src='/javascripts/bootstrap/bootstrap.min.js')
             script(src='/javascripts/fuelux/js/fuelux.min.js')
-
-
+            script(src='/javascripts/jquery.dataTables.min.js')
+            
+            script(src='/javascripts/dataTables.bootstrap.js')
+            
             script(src='/socket.io/socket.io.js')
             script(src='/javascripts/bootstrap-notify.min.js')
             script(src='/javascripts/bootstrap-slider.js')
@@ -64,11 +67,7 @@ html
                                     a(href='/status') Status
             block content
             block codeTeil2
-                script.
-                    console.log("Navigationslayout geladen...")
-                    $('li.active').removeClass('active');
-                    var url = location.pathname + location.search;
-                    $('a[href="' + url + '"]').closest('li').addClass('active'); 
+            
       
       
   

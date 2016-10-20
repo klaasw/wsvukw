@@ -156,7 +156,8 @@ function leseZustand(socketID){
         for (var i = 0; i < doc.length; i++){
              var zustand = {
                 'FSTSTATUS':{
-                    '$':doc[i].status
+                    '$' : doc[i].status,
+                    'letzteMeldung' : doc[i].letzteMeldung
                 }
              }
              //console.log(zustand)
