@@ -54,9 +54,9 @@ block append codeTeil2
         //var i = 0
         function erneuereTabelle(){
             //dataSet[0].kanal = i++;
-            table.clear().draw();
+            table.clear().draw('full-hold');
             table.rows.add(dataSet); // Add new data
-            table.columns.adjust().draw(); 
+            table.columns.adjust().draw('full-hold'); 
         }
         
         //setInterval(erneuereTabelle, 3000);
