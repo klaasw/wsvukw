@@ -25,11 +25,15 @@ block append codeTeil2
                 //    val.status.connectState || 'null',
                 //    val.status.channel
                 //]
+                var kanal = '-';
+                if (val.status.channel){
+                    kanal = val.status.channel == '-1' || '' ? '-' : val.status.channel
+                }
                 item = {
                     id : val._id,
                     zeit: new Date(val.letzteMeldung).toLocaleString(),
                     status : val.status.connectState || 'null',
-                    kanal : val.status.channel
+                    kanal : kanal
                 }
             dataSet.push(item);
             })
@@ -47,7 +51,17 @@ block append codeTeil2
                    { data: 'zeit', title : 'Zeitstempel'},
                    { data: 'status', title : 'Status'},
                    { data: 'kanal', title : 'Kanal'}
-            ]
+            ],
+            rowCallback: function( row, data, index){
+                if(data.status === 'AUSGEFALLEN'){
+                    $(row).addClass('danger')
+                }
+                if(data.status === 'GESTOERT'){
+                    $(row).addClass('warning')
+                }
+           },
+           lengthMenu: [20, 10, 50] 
+
         }); 
         $('#example').addClass('table table-striped table-bordered')
           
@@ -69,7 +83,7 @@ block append codeTeil2
                     if (val.id === idInMsg) {
                         val.status = msg.FSTSTATUS.$.connectState;
                         val.zeit = new Date(msg.FSTSTATUS.letzteMeldung).toLocaleString();
-                        val.kanal = msg.FSTSTATUS.$.channel;
+                        val.kanal = msg.FSTSTATUS.$.channel == '-1' || '' ? '-' : msg.FSTSTATUS.$.channel
                     }
                 })
                 erneuereTabelle();
