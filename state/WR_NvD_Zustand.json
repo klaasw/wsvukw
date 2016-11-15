@@ -1,0 +1,204 @@
+{
+    "1-H-RFD-WARVTA-FKEK-3": {
+        "id": "1-H-RFD-WARVTA-FKEK-3",
+        "name": "1-H-RFD-WARVTA-FKEK-3",
+        "sname": "RFD-FKEK3-WARVTA",
+        "channel": "73",
+        "MKA": false,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-11": true
+        }
+    },
+    "": "frei",
+    "1-H-RFD-DAENHO-FKEK-3": {
+        "id": "1-H-RFD-DAENHO-FKEK-3",
+        "name": "1-H-RFD-DAENHO-FKEK-3",
+        "sname": "",
+        "channel": "67",
+        "MKA": false,
+        "aufgeschaltet": false
+    },
+    "1-H-RFD-DASORT-FKEK-2": {
+        "id": "1-H-RFD-DASORT-FKEK-2",
+        "name": "1-H-RFD-DASORT-FKEK-2",
+        "sname": "RFD-FKEK2-DASORT",
+        "channel": "71",
+        "MKA": false,
+        "aufgeschaltet": false
+    },
+    "1-H-RFD-DASORT-FKEK-3": {
+        "id": "1-H-RFD-DASORT-FKEK-3",
+        "name": "1-H-RFD-DASORT-FKEK-3",
+        "sname": "RFD-FKEK3-DASORT",
+        "channel": "71",
+        "MKA": false,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-11": true
+        }
+    },
+    "1-H-RFD-KARLHA-FKEK-2": {
+        "id": "1-H-RFD-KARLHA-FKEK-2",
+        "name": "1-H-RFD-KARLHA-FKEK-2",
+        "sname": "RFD-FKEK2-KARLHA",
+        "channel": "9",
+        "MKA": false,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-14": true
+        }
+    },
+    "1-H-RFD-STUBBE-FKEK-2": {
+        "id": "1-H-RFD-STUBBE-FKEK-2",
+        "name": "1-H-RFD-STUBBE-FKEK-2",
+        "sname": "",
+        "channel": "13",
+        "MKA": false,
+        "aufgeschaltet": false
+    },
+    "1-H-RFD-WARVTA-FKEK-1": {
+        "id": "1-H-RFD-WARVTA-FKEK-1",
+        "name": "1-H-RFD-WARVTA-FKEK-1",
+        "sname": "RFD-FKEK1-WARVTA",
+        "channel": "16",
+        "MKA": false,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-15": true
+        }
+    },
+    "1-H-RFD-DAENHO-FKEK-1": {
+        "id": "1-H-RFD-DAENHO-FKEK-1",
+        "name": "1-H-RFD-DAENHO-FKEK-1",
+        "sname": "RFD-FKEK1-DAENHO",
+        "channel": "16",
+        "MKA": false,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-16": true
+        }
+    },
+    "1-H-RFD-DASORT-FKEK-1": {
+        "id": "1-H-RFD-DASORT-FKEK-1",
+        "name": "1-H-RFD-DASORT-FKEK-1",
+        "sname": "RFD-FKEK1-DASORT",
+        "channel": "16",
+        "MKA": false,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-15": true
+        }
+    },
+    "1-H-RFD-KARLHA-FKEK-1": {
+        "id": "1-H-RFD-KARLHA-FKEK-1",
+        "name": "1-H-RFD-KARLHA-FKEK-1",
+        "sname": "RFD-FKEK1-KARLHA",
+        "channel": "16",
+        "MKA": false,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-18": true
+        }
+    },
+    "1-H-RFD-STUBBE-FKEK-1": {
+        "id": "1-H-RFD-STUBBE-FKEK-1",
+        "name": "1-H-RFD-STUBBE-FKEK-1",
+        "sname": "RFD-FKEK1-STUBBE",
+        "channel": "16",
+        "MKA": false,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-17": true
+        }
+    },
+    "1-H-RFD-WARVTA-FKMK-1": {
+        "id": "1-H-RFD-WARVTA-FKMK-1",
+        "name": "1-H-RFD-WARVTA-FKMK-1",
+        "sname": "RFD-FKMK1-WARVTA",
+        "channel": "63",
+        "MKA": true,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-11": true
+        }
+    },
+    "1-H-RFD-DAENHO-FKMK-1": {
+        "id": "1-H-RFD-DAENHO-FKMK-1",
+        "name": "1-H-RFD-DAENHO-FKMK-1",
+        "sname": "RFD-FKMK1-DAENHO",
+        "channel": "12",
+        "MKA": true,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-12": true
+        }
+    },
+    "frei": "frei",
+    "1-H-RFD-KARLHA-FKMK-1": {
+        "id": "1-H-RFD-KARLHA-FKMK-1",
+        "name": "1-H-RFD-KARLHA-FKMK-1",
+        "sname": "RFD-FKMK1-KARLHA",
+        "channel": "15",
+        "MKA": true,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-14": true
+        }
+    },
+    "1-H-RFD-STUBBE-FKMK-1": {
+        "id": "1-H-RFD-STUBBE-FKMK-1",
+        "name": "1-H-RFD-STUBBE-FKMK-1",
+        "sname": "RFD-FKMK1-STUBBE",
+        "channel": "10",
+        "MKA": true,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-13": true
+        }
+    },
+    "1-H-RFD-WARVTA-FKEK-2": {
+        "id": "1-H-RFD-WARVTA-FKEK-2",
+        "name": "1-H-RFD-WARVTA-FKEK-2",
+        "sname": "RFD-FKEK2-WARVTA",
+        "channel": "14",
+        "MKA": false,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-15": true
+        }
+    },
+    "1-H-RFD-DAENHO-FKEK-2": {
+        "id": "1-H-RFD-DAENHO-FKEK-2",
+        "name": "1-H-RFD-DAENHO-FKEK-2",
+        "sname": "RFD-FKEK2-DAENHO",
+        "channel": "14",
+        "MKA": false,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-16": true
+        }
+    },
+    "1-H-RFD-KARLHA-FKEK-3": {
+        "id": "1-H-RFD-KARLHA-FKEK-3",
+        "name": "1-H-RFD-KARLHA-FKEK-3",
+        "sname": "RFD-FKEK3-KARLHA",
+        "channel": "14",
+        "MKA": false,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-18": true
+        }
+    },
+    "1-H-RFD-DROSEV-FKEK-1": {
+        "id": "1-H-RFD-DROSEV-FKEK-1",
+        "name": "1-H-RFD-DROSEV-FKEK-1",
+        "sname": "RFD-FKEK1-DROSEV",
+        "channel": "16",
+        "MKA": false,
+        "aufgeschaltet": false,
+        "mhan_aufgeschaltet": {
+            "1-H-RFD-WARVKZ-MHAN-17": true
+        }
+    }
+}

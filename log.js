@@ -12,10 +12,11 @@ var log = new winston.Logger({
             maxFiles: 10,
             handleExceptions: true,
             json: false, //true,
-            colorize: false
+            colorize: false,
+            tailable: true
         }),
         new winston.transports.Console({
-            level: 'debug',
+            level: 'error',
             timestamp: true,
 			//prettyPrint: true,
 			handleExceptions: true,
