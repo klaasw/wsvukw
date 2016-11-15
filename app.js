@@ -1,3 +1,5 @@
+"use strict";
+
 var express = require('express');
 var fs = require('fs');
 var http = require('http');
@@ -50,8 +52,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // debugger;   // if in debugging mode, set breakpoint here
 var routes = require('./routes/index.js');
+var users = require('./routes/user.js')
 
 app.use('/', routes);
+app.use('/user', users);
 var ukw = require('./ukw.js');
 
 
@@ -80,8 +84,7 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 app.use(function (err, req, res, next) {
     res.status(err.status || 500);
-    log.error("cfg bei error: " + JSON.stringify(cfg));
-    log.error("cfg bei error: " + JSON.stringify(cfg.alternativeIPs));
+    log.info("cfg bei error: " + JSON.stringify(cfg));
     res.render('error', {
         message: err.message,
         error: {}
