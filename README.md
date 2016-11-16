@@ -17,7 +17,11 @@ Dies ist die Benutzer-Oberfläche im DUE für die Nutzung des Revierfunkdienstes
 - mongodb (Native MongoDB Treiber)
 - pug (ehemals Jade. Template Engine für NodeJs)
 - jstransformer-markdown-it (Verwendung von Markdown Dokumenten in Jade/ Pug Templates
-## TODO: für eine Neuinstallation notwendige Pakete mit Version in package.json eintragen
+## TODO: für eine Neuinstallation notwendige Pakete mit Version in package.json eintragen oder mit npm install <Paket> --save installieren. Dann wird das Paket mit in die package.json eingetragen
+
+## ATIS Kennung
+Zur Dekodierung ist die mids.json im Hauptverzeichnis enthalten. Diese enthält die Landeskennung, die dazugehörigen Abkürzungen (2 und 3 Zeichen) sowie den Ländernamen
+- Diese wurde bezogen von https://github.com/S73417H/MIDs
 
 globale Module (npm install ... -g) sollten sein:
 - pm2 (Prozessmanager)
