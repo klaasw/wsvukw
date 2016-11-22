@@ -595,7 +595,7 @@ function erstelleKonfigFurAp(Ap, callback) {
                     //Funkstellendetails schreiben
                     Konfig.FunkstellenDetails[fstReihe[button][t]] = findeFstNachId(fstReihe[button][t]);
                     //Kanalnummern in Array schreiben. Dient zur dynamischen Befüllung im MKA Dialog
-                    kanalNummer = Konfig.FunkstellenDetails[fstReihe[button][t]].channel;
+                    var kanalNummer = Konfig.FunkstellenDetails[fstReihe[button][t]].channel;
                     if (kanalNummer !== null){
                         Konfig.KanalListe.push(kanalNummer);
                     }
@@ -710,7 +710,7 @@ function vergleicheZahlen (a, b) {
 
 // Doppeleinträge aus Array entfernen.
 function entferneDoppel(array) {
-    einzelArray = array.filter(function(item, position, self){
+    var einzelArray = array.filter(function(item, position, self){
         return self.indexOf(item) == position;
     });
     return einzelArray;

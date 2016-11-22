@@ -32,7 +32,7 @@ function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
     }
 }
 var cfgIPs = getIPs();
-console.log(cfgIPs)
+console.log(cfgIPs);
 var cfg = {
     "urlRFDWebservice": 'http://' + cfgIPs.rfdIP + ':8789/I_RFD_DUE_Steuerung',
 
@@ -54,7 +54,7 @@ var cfg = {
     //HTTP Port für die nodeJS Instanz
     "port": cfgIPs.port,
     "configPath": 'config/',
-    "intervall": 10000,
+    "intervall": 10000000,
 
     "alternativeIPs": cfgIPs.alternativeServer,
     "cfgIPs": cfgIPs,

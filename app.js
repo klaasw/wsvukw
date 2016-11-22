@@ -39,7 +39,7 @@ var log = require('./log.js');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -53,7 +53,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // debugger;   // if in debugging mode, set breakpoint here
 var routes = require('./routes/index.js');
 var users = require('./routes/benutzer.js');
-var verbindungen = require('./routes/verbindungen.js')
+var verbindungen = require('./routes/verbindungen.js');
 
 app.use('/', routes);
 app.use('/user', users); //nach Anpassung des Scriptes deutsche Route verwenden
@@ -122,7 +122,7 @@ socket.socket(server);
 // Setze Intervall fuer Pruefung
 var Intervall = setInterval(function () {
     ukw.pruefeRfdWS()
-}, cfg.intervall)
+}, cfg.intervall);
 
 
 /**

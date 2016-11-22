@@ -13,7 +13,7 @@ var util = require('util');
 
 var cfg = require('../cfg.js'); //
 
-var db = require('../datenbank.js')
+var db = require('../datenbank.js');
 
 var log = require('../log.js'); // Modul fuer verbessertes Logging
 FILENAME = __filename.slice(__dirname.length + 1);
@@ -22,7 +22,7 @@ FILENAME = __filename.slice(__dirname.length + 1);
 
 /* Erster Test */
 router.get('/zeigeWindowsBenutzer', function (req, res) {
-    var arbeitsplaetze = {}
+    var arbeitsplaetze = {};
 
     db.findeElement('windowsBenutzer', {}, function(doc){
 
@@ -49,11 +49,11 @@ router.get('/zeigeWindowsBenutzer', function (req, res) {
 
 
 router.put('/schreibeWindowsBenutzer', function(req, res){
-	log.debug(FILENAME + ' /schreibeWindowsBenutzer Benutzer: ' + JSON.stringify(req.body))
+	log.debug(FILENAME + ' /schreibeWindowsBenutzer Benutzer: ' + JSON.stringify(req.body));
 
-    var schreibeLokal = false // es wird auf jeden Fall in DB geschrieben
-	var benutzer = req.body
-    var schreibeParameter = {}
+    var schreibeLokal = false; // es wird auf jeden Fall in DB geschrieben
+	var benutzer = req.body;
+    var schreibeParameter = {};
 
     if (benutzer.angemeldet === true) {
         schreibeParameter = {
@@ -76,11 +76,11 @@ router.put('/schreibeWindowsBenutzer', function(req, res){
         }
     }
 
-	var benutzerId = {'_id':benutzer.ip}
+	var benutzerId = {'_id':benutzer.ip};
 
 	db.schreibeInDb('windowsBenutzer', benutzerId, schreibeParameter, schreibeLokal);
 	res.send({ message: 'Benutzer hinzugefuegt oder geaendert' });
-})
+});
 
 
 

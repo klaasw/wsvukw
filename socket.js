@@ -9,35 +9,35 @@ var request = require('request'); //Modul zu Abfrage von WebServices
 var FILENAME = __filename;
 
 var io = require('socket.io');
-var socketClient = require('socket.io/node_modules/socket.io-client')
+var socketClient = require('socket.io-client');
 
 var socketServer; //Variable um die Sockets ausserhalb der Funktion "on.connect" aufzurufen
 
 var cfg = require('./cfg.js');
-var db = require('./datenbank.js')
+var db = require('./datenbank.js');
 
 log.debug(FILENAME+ " socket.js geladen.");
 
 
-var dueStatusServerA = null
-var dueStatusServerB = null
+var dueStatusServerA = null;
+var dueStatusServerB = null;
 
 
 exports.socket = function (server) {
     log.debug(FILENAME + " Socket Server established");
     log.debug(FILENAME + " server: " +server); //Log ggf. wieder weg, da Server Objekt keine relevanten Info enthält
 
-        socketServer = io.listen(server)
+        socketServer = io.listen(server);
         socketServer.on('connect', function (socket) {
             log.debug(FILENAME + ' Funktion connect: Benutzer hat Websocket-Verbindung mit ID '+ socket.id + ' hergestellt. IP: ' + socket.request.connection.remoteAddress);
             // TODO: Pruefung Berechtigung !
 
 
-            leseZustand(socket.id) //Status der Funkstellen übertragen
+            leseZustand(socket.id); //Status der Funkstellen übertragen
             leseSchaltzustand(socket.id, socket.request.connection.remoteAddress) //letzten Schaltzustandübertragen
             // Uebertragen der DUE Server Zustaende
-            exports.emit('statusMessage', dueStatusServerA, socket.id)
-            exports.emit('statusMessage', dueStatusServerB, socket.id)
+            exports.emit('statusMessage', dueStatusServerA, socket.id);
+            exports.emit('statusMessage', dueStatusServerB, socket.id);
 
 
         socket.on('*', function(msg) {
@@ -122,12 +122,12 @@ function leseSchaltzustand(socketID, IP){
     findeApNachIp(IP, socketID, function(benutzer){
 
         url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/verbindungen/liesVerbindungen?arbeitsplatz=' + benutzer + '&aktiveVerbindungen=true'
-        console.log(url)
+        console.log(url);
 
         request(url, function (error, response, body) {
 
             if (!error && response.statusCode == 200) {
-                body = JSON.parse(body)
+                body = JSON.parse(body);
                 for (verbindung of body) {
                     //erstelle Objekt nach Muster 1-H-RFD-WHVVTA-FKEK-1:MHAN01
                     //In Verbindung mit der AP Konfuguration der Geaete kann der Client die Verbindungen wieder schalten
@@ -150,7 +150,7 @@ function leseSchaltzustand(socketID, IP){
 //TODO:
 function leseZustand(socketID){
 
-    var selector = {}
+    var selector = {};
 
     db.findeElement('zustandKomponenten', selector, function(doc){
         //console.log(doc)
@@ -161,7 +161,7 @@ function leseZustand(socketID){
                     '$' : doc[i].status,
                     'letzteMeldung' : doc[i].letzteMeldung
                 }
-             }
+             };
              //console.log(zustand)
              exports.emit('ukwMessage', zustand, socketID)
         }
@@ -174,7 +174,7 @@ function findeApNachIp(ip, socketID, callback) {
     var Ap = '';
 
     //IPv6 Anteil aus Anfrage kuerzen
-    var ipv6Ende = ip.lastIndexOf(':')
+    var ipv6Ende = ip.lastIndexOf(':');
     if (ipv6Ende > -1 ){
         ip = ip.slice(ipv6Ende + 1 , ip.length)
     }
@@ -195,7 +195,7 @@ function findeApNachIp(ip, socketID, callback) {
                 log.debug(FILENAME + ' function findeNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
 
                 //SocketID und Verbinungszeit in Variable schreiben
-                ApInfo             = alle_Ap[ip];
+                var ApInfo             = alle_Ap[ip];
                 ApInfo.socketID    = socketID;
                 ApInfo.connectTime = new Date();
                 ApInfo.aktiv       = true;
@@ -219,8 +219,8 @@ function findeApNachIp(ip, socketID, callback) {
 
 //schreibe Verbindungsinfo socketID und Zeitstempel in aktiveArbeitsplaetze
 function schreibeSocketInfo(socketInfo, ip){
-    var schreibeLokal = false //auf jeden Fall schreiben in Primary Datenbank schreiben
-    socketInfo._id = ip
+    var schreibeLokal = false; //auf jeden Fall schreiben in Primary Datenbank schreiben
+    socketInfo._id = ip;
 
     if (socketInfo === 'false') {
         socketInfo = {
@@ -231,7 +231,7 @@ function schreibeSocketInfo(socketInfo, ip){
         }
     }
 
-    var selector = {'_id':ip}
+    var selector = {'_id':ip};
 
     db.schreibeInDb('aktiveArbeitsplaetze', selector, socketInfo, schreibeLokal);
 
@@ -263,29 +263,29 @@ function schreibeSocketInfo(socketInfo, ip){
 
 //TODO: Gegenseitige Serverüberwachung
 //Funktioniert noch nicht richt. Test mit Namespace oder Rooms
-serverA = cfg.alternativeIPs[1] // z.B. { '0': 'WHV', '1': '10.160.1.64:3000' }
+var serverA = cfg.alternativeIPs[1]; // z.B. { '0': 'WHV', '1': '10.160.1.64:3000' }
 
-serverB = cfg.alternativeIPs[2]
+var serverB = cfg.alternativeIPs[2];
 
-log.debug(serverA)
+log.debug(serverA);
 
-var client_bei_serverA = socketClient.connect('http://' + serverA[1])
+var client_bei_serverA = socketClient.connect('http://' + serverA[1]);
 client_bei_serverA.on('connect',function() {
     log.debug("Funktion: Serverueberwachung SOCKET verbunden mit: " + serverA);
-    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverA[1], Status: 'OK'}})
+    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverA[1], Status: 'OK'}});
     dueStatusServerA = {dienst:'DUE', status: {URL: serverA[1], Status: 'OK'}}
 });
 
 client_bei_serverA.on('disconnect', function() {
-    log.debug("Funktion: Serverueberwachung SOCKET getrennt von: " + serverA)
-    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverA[1], Status: 'Error'}})
+    log.debug("Funktion: Serverueberwachung SOCKET getrennt von: " + serverA);
+    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverA[1], Status: 'Error'}});
     dueStatusServerA = {dienst:'DUE', status: {URL: serverA[1], Status: 'Error'}}
 });
 
 client_bei_serverA.on('error', function(err) {
-    log.debug("Funktion: Serverueberwachung SOCKET getrennt von: " + serverA)
-    log.error("Funktion: Serverueberwachung SOCKET getrennt von: " + serverA + " ErrorMsg: " + JSON.stringify(err))
-    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverA[1], Status: 'Error'}})
+    log.debug("Funktion: Serverueberwachung SOCKET getrennt von: " + serverA);
+    log.error("Funktion: Serverueberwachung SOCKET getrennt von: " + serverA + " ErrorMsg: " + JSON.stringify(err));
+    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverA[1], Status: 'Error'}});
     dueStatusServerA = {dienst:'DUE', status: {URL: serverA[1], Status: 'Error'}}
 });
 
@@ -294,30 +294,30 @@ client_bei_serverA.on('reconnecting', function(reconnectNr) {
 });
 
 client_bei_serverA.on('reconnect_error', function(err) {
-    log.error("Funktion: Serverueberwachung SOCKET Verbindungsversuch zu: " + serverA + " ErrorMsg: " + JSON.stringify(err))
-    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverA[1], Status: 'Error'}})
+    log.error("Funktion: Serverueberwachung SOCKET Verbindungsversuch zu: " + serverA + " ErrorMsg: " + JSON.stringify(err));
+    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverA[1], Status: 'Error'}});
     dueStatusServerA = {dienst:'DUE', status: {URL: serverA[1], Status: 'Error'}}
 });
 
 
 
-var client_bei_serverB = socketClient.connect('http://' + serverB[1])
+var client_bei_serverB = socketClient.connect('http://' + serverB[1]);
 client_bei_serverB.on('connect',function() {
     log.debug("Funktion: Serverueberwachung SOCKET verbunden mit: " + serverB);
-    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverB[1], Status: 'OK'}})
+    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverB[1], Status: 'OK'}});
     dueStatusServerB = {dienst:'DUE', status: {URL: serverB[1], Status: 'OK'}}
 });
 
 client_bei_serverB.on('disconnect', function() {
-    log.debug("Funktion: Serverueberwachung SOCKET getrennt von: " + serverB)
-    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverB[1], Status: 'Error'}})
+    log.debug("Funktion: Serverueberwachung SOCKET getrennt von: " + serverB);
+    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverB[1], Status: 'Error'}});
     dueStatusServerB = {dienst:'DUE', status: {URL: serverB[1], Status: 'Error'}}
 });
 
 client_bei_serverB.on('error', function(err) {
-    log.debug("Funktion: Serverueberwachung SOCKET getrennt von: " + serverB)
-    log.error("Funktion: Serverueberwachung SOCKET getrennt von: " + serverB + " ErrorMsg: " + JSON.stringify(err))
-    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverB[1], Status: 'Error'}})
+    log.debug("Funktion: Serverueberwachung SOCKET getrennt von: " + serverB);
+    log.error("Funktion: Serverueberwachung SOCKET getrennt von: " + serverB + " ErrorMsg: " + JSON.stringify(err));
+    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverB[1], Status: 'Error'}});
     dueStatusServerB = {dienst:'DUE', status: {URL: serverB[1], Status: 'Error'}}
 });
 
@@ -326,18 +326,18 @@ client_bei_serverB.on('reconnecting', function(reconnectNr) {
 });
 
 client_bei_serverB.on('reconnect_error', function(err) {
-    log.error("Funktion: Serverueberwachung SOCKET Verbindungsversuch zu: " + serverB + " ErrorMsg: " + JSON.stringify(err))
-    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverB[1], Status: 'Error'}})
+    log.error("Funktion: Serverueberwachung SOCKET Verbindungsversuch zu: " + serverB + " ErrorMsg: " + JSON.stringify(err));
+    exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverB[1], Status: 'Error'}});
     dueStatusServerB = {dienst:'DUE', status: {URL: serverB[1], Status: 'Error'}}
 });
 
 
 client_bei_serverA.on('serverMessage', function (msg) {
-    log.debug('Status von Server A: '+ JSON.stringify(msg))
+    log.debug('Status von Server A: '+ JSON.stringify(msg));
     exports.emit('statusMessage', msg)
 });
 
 client_bei_serverB.on('serverMessage', function (msg) {
-    log.debug('Status von Server B: '+ JSON.stringify(msg))
+    log.debug('Status von Server B: '+ JSON.stringify(msg));
     exports.emit('statusMessage', msg)
 });
