@@ -14,7 +14,7 @@ mixin errorModal(type,title,errorMessage)
                         each val, index in gesamteKonfig.IpConfig.alternativeIPs
                             a(href='http://' + val[1]) #{val[0]}
                             | &nbsp;
-
+                    
 
 // mixin für die Zustandsanzeige der Server
 mixin serverListe(ip, idName)
@@ -78,7 +78,7 @@ html
                                     each val, index in gesamteKonfig.IpConfig.alternativeIPs
                                         - server = val[1].split(":")
                                             if server[0] == aktiverServer
-                                                div.btn-group.navbar-btn.navbar-right#server
+                                                div.btn-group.navbar-btn.navbar-right#server    
                                                     button.btn.btn-primary.dropdown-toggle(
                                                         id='button'+'#{val[0]}'
                                                         type='button'
@@ -93,13 +93,13 @@ html
                                                         each val1, index1 in gesamteKonfig.IpConfig.alternativeIPs
                                                             +serverListe(val1[1], val1[0])
                                                 - break;
+                                            
 
+                                                
 
+                                                
 
-
-
-
-
+                                    
             block content
             block codeTeil2
                 script.

@@ -7,22 +7,23 @@
 echo 'Login Skript zur Übertragung des Benutzernamens und der IP-Adresse des Rechners auf dem sich der Benutzer angemeldet hat.'
 
 # Array der möglichen Server
-$server = @('http://10.162.1.65:3000/user/addWindowsUser',
-            'http://10.162.2.65:3000/user/addWindowsUser',
-            'http://10.162.4.65:3000/user/addWindowsUser')
+$server = @('http://10.160.2.64:3000/benutzer/schreibeWindowsBenutzer',
+            'http://10.160.1.74:3000/benutzer/schreibeWindowsBenutzer',
+            'http://10.160.3.64:3000/benutzer/schreibeWindowsBenutzer')
 
 # Benutername aus der Windows Anmeldung
 $benutzer=$env:USERNAME
 
 # IP-Adresse des Rechners auf dem das Skript ausgeführt wird
-$ip=get-WmiObject Win32_NetworkAdapterConfiguration|where{$_.Ipaddress.length -gt 1}
+$ip=get-WmiObject Win32_NetworkAdapterConfiguration|where{$_.Ipaddress.length -gt 0}
 
 # Zusammenstellung in ein JSON Objekt
 $benutzerDaten = @{
    _id=$ip.ipaddress[0]
    ip=$ip.ipaddress[0]
    user=$benutzer
-   loginZeit='Zeitstempel' #wird vom Server gesetzt. Hier nur als Platzhalter   
+   loginZeit='Zeitstempel' #wird vom Server gesetzt. Hier nur als Platzhalter 
+   angemeldet = $TRUE  
 }
 
 # Konvertierung in JSON
