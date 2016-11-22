@@ -15,7 +15,8 @@ Zum Ausführung auf den Clients müssen installiert sein:
 Dateien auf Rechner kopieren zB C:\updates
 - TODO: Kopier Skript wurde mal von IBM erstellt. Liegt irgendwo auf Server
 
-- Remote Ausführung mit dem Tool "PsExec" 
+- Remote Ausführung mit dem Tool "PsExec"
+Das Tool ist auf dem 10.160.1.42 unter wsa\SW-Verteilung installiert.
 mit den folgenden Befehlen wird die Installtion im Hintergrund ausgeführt.
 ACHTUNG der letzte Befehl führt einen neustart aus. Dies kann mit /norestart verhindert werden.
 
