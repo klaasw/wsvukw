@@ -48,35 +48,26 @@ html
                             //- wichtig dabei: Variable #{val[0]} in einfachen Anführungzeichen, sonst Interpolation-Fehler
                             if (!error && (typeof gesamteKonfig != 'undefined'))
                                 - aktiverServer = gesamteKonfig.IpConfig.aktuellerServer
-                                    each val, index in gesamteKonfig.IpConfig.alternativeIPs
-                                        - server = val[1].split(":")
-                                            if server[0] == aktiverServer
-                                                div.btn-group.navbar-btn.navbar-right#server    
-                                                    button.btn.btn-primary.dropdown-toggle(
-                                                        id='button'+'#{val[0]}'
-                                                        type='button'
-                                                        data-toggle='dropdown'
-                                                        aria-haspopup='true'
-                                                        aria-expanded='false'
-                                                    ) &nbsp#{val[0]}&nbsp
-                                                        span.label.label-default(id='buttonAktiv'+'#{val[0]}'+'_DUE') DUE
-                                                        span.label.label-default(id='buttonAktiv'+'#{val[0]}'+'_RFD') RFD
-                                                        span.caret
-                                                    ul.dropdown-menu
-                                                        each val1, index1 in gesamteKonfig.IpConfig.alternativeIPs
-                                                            +serverListe(val1[1], val1[0])
-                                                - break;
-                                            
+                                each val, index in gesamteKonfig.IpConfig.alternativeIPs
+                                    - server = val[1].split(":")
+                                    if server[0] == aktiverServer
+                                        div.btn-group.navbar-btn.navbar-right#server
+                                            button.btn.btn-primary.dropdown-toggle(
+                                            id='button' + '#{val[0]}'
+                                            type='button'
+                                            data-toggle='dropdown'
+                                            aria-haspopup='true'
+                                            aria-expanded='false'
+                                            ) &nbsp#{val[0]}&nbsp
+                                    span.label.label-default(id='buttonAktiv' + '#{val[0]}' + '_DUE') DUE
+                                    span.label.label-default(id='buttonAktiv' + '#{val[0]}' + '_RFD') RFD
+                                    span.caret
+                                    ul.dropdown-menu
+                                    each val1, index1 in gesamteKonfig.IpConfig.alternativeIPs
+                                        +serverListe(val1[1], val1[0])
+                                    - break;
 
-                                                
-
-                                                
-
-                                    
             block content
             block codeTeil2
                 script.
                     console.log("Navigationslayout geladen...")
-      
-      
-  

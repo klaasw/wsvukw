@@ -1,21 +1,21 @@
 "use strict";
 
-var express = require('express');
-var router = express.Router();
-var util = require('util');
-var files = require('fs'); // Zugriff auf das Dateisystem
-var request = require('request'); //Modul zu Abfrage von WebServices
-var xml2js = require('xml2js'); // zum Konvertieren von XML zu JS
-var parser = new xml2js.Parser({
-    explicitRoot: false
+const express = require('express');
+const router = express.Router();
+const util = require('util');
+const files = require('fs'); // Zugriff auf das Dateisystem
+const request = require('request'); //Modul zu Abfrage von WebServices
+const xml2js = require('xml2js'); // zum Konvertieren von XML zu JS
+const parser = new xml2js.Parser({
+	explicitRoot: false
 }); // Parserkonfiguration
 
-var cfg = require('../cfg.js');
+const cfg = require('../cfg.js');
 
-var log = require('../log.js'); // Modul fuer verbessertes Logging
-var FILENAME = __filename.slice(__dirname.length + 1);
+const log = require('../log.js'); // Modul fuer verbessertes Logging
+const FILENAME = __filename.slice(__dirname.length + 1);
 
-var ukw = require('../ukw.js');
+const ukw = require('../ukw.js');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -81,7 +81,7 @@ router.get('/status', function (req, res) {
 
 /* GET UKW Display */
 router.get('/ukw', function (req, res) {
-    var clientIP = req.ip;
+    const clientIP = req.ip;
     log.debug("Benutzer IP: " + clientIP);
     findeApNachIp(clientIP, function (benutzer) {
         log.debug("ukw - Ermittelter Benutzer: " + benutzer);
@@ -123,7 +123,7 @@ router.get('/ukw', function (req, res) {
 
 /* GET UKW Display */
 router.get('/ukwTest', function (req, res) {
-    var clientIP = req.ip;
+    const clientIP = req.ip;
     log.debug("Benutzer IP: " + clientIP);
     findeApNachIp(clientIP, function (benutzer) {
         log.debug("ukw - Ermittelter Benutzer: " + benutzer);
@@ -214,14 +214,14 @@ router.get('/ukwKonfig', function (req, res) {
         // /ukwKonfig mit Parameter z.B. ukwKonfig?ip=1.1.1.1
         if (req.query.ip) {
             if (req.query.ip == '1.1.1.1') {
-                var Konfig = {
-                    FunkstellenReihe: [],
-                    FunkstellenDetails: {},
-                    ArbeitsplatzGeraete: {},
-                    MhanZuordnung: {},
-                    IpConfig: cfg
+                const Konfig = {
+	                FunkstellenReihe: [],
+	                FunkstellenDetails: {},
+	                ArbeitsplatzGeraete: {},
+	                MhanZuordnung: {},
+	                IpConfig: cfg
                 };
-                for (var t = 0; t < Funkstellen.length; t++) {
+                for (let t = 0; t < Funkstellen.length; t++) {
                     log.debug(Funkstellen[t].id);
                     Konfig.FunkstellenDetails[Funkstellen[t].id] = findeFstNachId(Funkstellen[t].id); ///ab HIER weiter-------------------------------------------
 
@@ -298,7 +298,7 @@ router.get('/liesTopologie', function (req, res) {
 
 router.get('/mockmessage', function (req, res) {
     //log.debug(FILENAME + ' mockmessage von IP: ' + req.ip + ", message: "+ require('util').inspect( req) );
-    var msgText = req.query.messageText;
+    const msgText = req.query.messageText;
     log.debug(FILENAME + ' mockmessage messageText: ' + msgText);
     ukw.sendeSipNachricht(msgText, function (result, error) {
         if (result == 'OK') {
@@ -312,7 +312,7 @@ router.get('/mockmessage', function (req, res) {
 });
 
 router.get('/arbeitsplaetze', function (req, res) {
-    var arbeitsplaetze; // = require(cfg.configPath + '/users/arbeitsplaetze.json')
+    let arbeitsplaetze; // = require(cfg.configPath + '/users/arbeitsplaetze.json')
     files.readFile("config/users/arbeitsplaetze.json", 'utf8', function (err, data) {
         if (err) {
             log.error(err);
@@ -326,8 +326,8 @@ router.get('/arbeitsplaetze', function (req, res) {
 });
 
 router.get('/lieskonfig', function (req, res) {
-    var configdata;
-    var configfile = req.query.configfile;
+    let configdata;
+    const configfile = req.query.configfile;
     files.readFile("config/revier/" + configfile + ".json", 'utf8', function (err, data) {
         if (err) {
             log.error(err);
@@ -353,14 +353,14 @@ router.get('/lieskonfig', function (req, res) {
  */
 function leseRfdTopologie(callback) {
 
-    var parameterRfdWebService = {
-        url: cfg.urlRFDWebservice,
-        method: 'POST',
-        headers: {
-            'Content-Type': 'text/xml;charset=UTF-8;',
-            'SOAPAction': 'GetTopologyForRFD' //Noch beachten in WS Aufrufen
-        },
-        body: '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:strg="http://strg.rfd.dma.schnoor.de/"><soapenv:Header/><soapenv:Body><strg:GetTopologyForRFD/></soapenv:Body></soapenv:Envelope>'
+    const parameterRfdWebService = {
+	    url: cfg.urlRFDWebservice,
+	    method: 'POST',
+	    headers: {
+		    'Content-Type': 'text/xml;charset=UTF-8;',
+		    'SOAPAction': 'GetTopologyForRFD' //Noch beachten in WS Aufrufen
+	    },
+	    body: '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:strg="http://strg.rfd.dma.schnoor.de/"><soapenv:Header/><soapenv:Body><strg:GetTopologyForRFD/></soapenv:Body></soapenv:Envelope>'
     };
 
     request(parameterRfdWebService, function (error, response, body) {
@@ -378,12 +378,12 @@ function leseRfdTopologie(callback) {
                 if (result !== undefined) {
                     log.info(FILENAME + ' LeseTopologie webservice response: ' + JSON.stringify(result).substring(1, 100) + '...');
                     //log.debug(result['S:Body'][0]['ns2:GetTopologyForRFDResponse'][0]['return'][0])
-                    var ergebnis1cdata = result['S:Body'][0]['ns2:GetTopologyForRFDResponse'][0]['return'][0];
+                    const ergebnis1cdata = result['S:Body'][0]['ns2:GetTopologyForRFDResponse'][0]['return'][0];
                     //CDATA Objekt der Response erneut parsen
                     parser.parseString(ergebnis1cdata, function (err, result) {
                         //Einzelkanal-Anlagenauslesen und in Funkstellen variable schreiben
                         if (result['FKEK']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
-                            var FstEK = result['FKEK'];
+                            const FstEK = result['FKEK'];
                             for (var i = 0; i < FstEK.length; i++) {
                                 //log.debug(FstEK[i]['$'])
                                 var tmp = FstEK[i]['$'];
@@ -401,7 +401,7 @@ function leseRfdTopologie(callback) {
 
                         //HK-Anlagenauslesen und in Funkstellen variable schreiben
                         if (result['FKHK']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
-                            var FstHK = result['FKHK'];
+                            const FstHK = result['FKHK'];
                             for (var i = 0; i < FstHK.length; i++) {
                                 //log.debug(FstEK[i]['$'])
                                 tmp = FstHK[i]['$'];
@@ -419,7 +419,7 @@ function leseRfdTopologie(callback) {
 
                         //Mehrkanal-Anlagenauslesen und in Funkstellen variable schreiben
                         if (result['FKMK']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
-                            var FstMK = result['FKMK'];
+                            const FstMK = result['FKMK'];
                             for (var i = 0; i < FstMK.length; i++) {
                                 //log.debug(FstMK[i]['$'])
                                 tmp = FstMK[i]['$'];
@@ -437,7 +437,7 @@ function leseRfdTopologie(callback) {
 
                         //Gleichwellen-Anlagen auslesen und in Funkstellen variable schreiben
                         if (result['FKGW']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
-                            var FstGW = result['FKGW'];
+                            const FstGW = result['FKGW'];
                             for (var i = 0; i < FstGW.length; i++) {
                                 //log.debug(FstMK[i]['$'])
                                 tmp = FstGW[i]['$'];
@@ -478,11 +478,11 @@ function liesAusRESTService(configfile, callback) {
     // require(cfg.configPath + configfile + '.json');
     log.debug("function liesAusRESTService " + configfile);
     // TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
-    var url = "http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/lieskonfig?configfile=" + configfile;
+    const url = "http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/lieskonfig?configfile=" + configfile;
     log.debug(" liesAusRESTService url=" + url);
     request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
-            var antwortImBody = JSON.parse(body);
+            const antwortImBody = JSON.parse(body);
             log.debug(" liesAusRESTService response: " + JSON.stringify(antwortImBody));
             callback(antwortImBody);
         } else {
@@ -502,10 +502,10 @@ function liesAusRESTService(configfile, callback) {
 }
 
 function findeApNachIp(ip, callback) {
-    var Ap = '';
+    let Ap = '';
 
     //IPv6 Anteil aus Anfrage kuerzen
-    var ipv6Ende = ip.lastIndexOf(':');
+    const ipv6Ende = ip.lastIndexOf(':');
     if (ipv6Ende > -1 ){
         ip = ip.slice(ipv6Ende + 1 , ip.length);
     }
@@ -513,12 +513,12 @@ function findeApNachIp(ip, callback) {
     //var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
     log.debug(FILENAME + " function findeNachIp: " + ip);
     // TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
-    var url = "http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/benutzer/zeigeWindowsBenutzer";
+    const url = "http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/benutzer/zeigeWindowsBenutzer";
     log.debug(FILENAME + " function findeNachIp " + url);
     request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             //log.debug("body: " + body);
-            var alle_Ap = JSON.parse(body);
+            const alle_Ap = JSON.parse(body);
             log.debug(FILENAME + ' function findeNachIp: ' + JSON.stringify(alle_Ap));
 
             if(alle_Ap.hasOwnProperty(ip)){
@@ -543,7 +543,7 @@ function findeFstNachId(Id) {
     if (Id === undefined || Id === 'frei' || Id === '') {
         return 'frei';
     } else {
-        for (var i = 0; i < Funkstellen.length; i++) {
+        for (let i = 0; i < Funkstellen.length; i++) {
             if (Funkstellen[i].id == Id) {
                 //log.debug(Funkstellen[i],i)
                 return Funkstellen[i];
@@ -563,39 +563,39 @@ function findeFstNachId(Id) {
 function erstelleKonfigFurAp(Ap, callback) {
 
     //Bilde temporaeres Objekt um Funkstelle als Value hinzuzufuegen
-    var tmpArr = [];
-    var Konfig = {
-        FunkstellenReihe: [],
-        FunkstellenDetails: {},
-        ArbeitsplatzGeraete: {},
-        MhanZuordnung: {},
-        IpConfig: cfg,
-        KanalListe : []
+    let tmpArr = [];
+    const Konfig = {
+	    FunkstellenReihe: [],
+	    FunkstellenDetails: {},
+	    ArbeitsplatzGeraete: {},
+	    MhanZuordnung: {},
+	    IpConfig: cfg,
+	    KanalListe: []
     };
 
     log.debug(FILENAME + ' uebergebener Arbeitsplatz: ' + Ap);
-    var rev_ap = Ap.split(" ");
+    const rev_ap = Ap.split(" ");
     log.debug(rev_ap);
 
     //1. Funkkstellen fuer Revier einlesen
     //Dateinamen noch durch Variable ersetzen
-    var revieranteil = rev_ap[0];
+    const revieranteil = rev_ap[0];
     liesAusRESTService(revieranteil, function (response1) {
         log.debug(JSON.stringify(response1));
         if (typeof response1 === 'string' && response1.indexOf('Fehler') > -1 ){
             callback('Fehler', response1);
         }
         else {
-        var fstReihe = response1;
+        const fstReihe = response1;
             //Durch JA ueber Buttons iterieren
-            for (var button in fstReihe) {
+            for (let button in fstReihe) {
                 log.debug(button + '  ' + fstReihe[button]);
                 //Durch Funkstelln in Buttons iterien
-            for (var t = 0; t < fstReihe[button].length; t++) {
+            for (let t = 0; t < fstReihe[button].length; t++) {
                     //Funkstellendetails schreiben
                     Konfig.FunkstellenDetails[fstReihe[button][t]] = findeFstNachId(fstReihe[button][t]);
                     //Kanalnummern in Array schreiben. Dient zur dynamischen Befüllung im MKA Dialog
-                    var kanalNummer = Konfig.FunkstellenDetails[fstReihe[button][t]].channel;
+                    const kanalNummer = Konfig.FunkstellenDetails[fstReihe[button][t]].channel;
                     if (kanalNummer !== null){
                         Konfig.KanalListe.push(kanalNummer);
                     }
@@ -645,30 +645,30 @@ function erstelleKonfigFurAp(Ap, callback) {
 //Beschreibung der Funktion erstellen.....
 //
 function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
-    var Konfig = {
-        FunkstellenReihe: [],
-        FunkstellenDetails: {},
-        LotsenAp: {},
-        MhanZuordnung: {},
-        IpConfig: cfg
+    const Konfig = {
+	    FunkstellenReihe: [],
+	    FunkstellenDetails: {},
+	    LotsenAp: {},
+	    MhanZuordnung: {},
+	    IpConfig: cfg
     };
 
 
     log.debug(FILENAME + ' Funktion erstelleKonfigFuerLotsenKanal erhaltener Arbeitsplatz: ' + Ap);
-    var rev_ap = Ap.split(" ");
-    var standardbenutzer = standard ? '' : '_benutzer';  // wenn standard == true, dann default Einstellungen laden, wenn false dann _benutzer Einstellungen laden
+    const rev_ap = Ap.split(" ");
+    const standardbenutzer = standard ? '' : '_benutzer';  // wenn standard == true, dann default Einstellungen laden, wenn false dann _benutzer Einstellungen laden
 
     //1. Funkkstellen fuer Revier einlesen
     //Dateinamen noch durch Variable ersetzen, hier zum Lesen der VTA fuer das Revier
-    var revieranteil = rev_ap[0];
+    const revieranteil = rev_ap[0];
     liesAusRESTService(revieranteil, function (response) {
-        var fstReihe = response;
+        const fstReihe = response;
         log.debug(FILENAME + ' Funktion erstelleKonfigFuerLotsenKanal readFile(' + revieranteil + ') gelesene Daten: ' + fstReihe);
         //Durch JA ueber Buttons iterieren
-        for (var button in fstReihe) {
+        for (let button in fstReihe) {
             log.debug(button + '  ' + fstReihe[button]);
             //Durch Funkstelln in Buttons iterien
-            for (var t = 0; t < fstReihe[button].length; t++) {
+            for (let t = 0; t < fstReihe[button].length; t++) {
                 // TODO Funkstellendetails schreiben HIER MEHR ERKLAEREN
                 Konfig.FunkstellenDetails[fstReihe[button][t]] = findeFstNachId(fstReihe[button][t]);
             }
@@ -678,11 +678,11 @@ function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
         //ueber alle Lotsendateien //JA_Lotse1.json usw. gehen und Inhalt in die Konfig schreiben
 
         i = 1;
-        var weitereDatei = true;  //solange true bis keine weitere Datei vorliegt
+        let weitereDatei = true;  //solange true bis keine weitere Datei vorliegt
         while (weitereDatei === true) {
             try {
                 weitereDatei = files.statSync(cfg.configPath + rev_ap[0] + "_Lotse" + i + ".json").isFile();
-                var tmp = files.readFileSync(cfg.configPath + rev_ap[0] + "_Lotse" + i + standardbenutzer + ".json", 'utf8');
+                const tmp = files.readFileSync(cfg.configPath + rev_ap[0] + "_Lotse" + i + standardbenutzer + ".json", 'utf8');
                 log.debug(FILENAME + ' Funktion erstelleKonfigFuerLotsenKanal gelesene Daten: ' + util.inspect(tmp));
                 Konfig.LotsenAp[rev_ap[0] + "_Lotse" + i] = JSON.parse(tmp);
 
@@ -710,8 +710,8 @@ function vergleicheZahlen (a, b) {
 
 // Doppeleinträge aus Array entfernen.
 function entferneDoppel(array) {
-    var einzelArray = array.filter(function(item, position, self){
-        return self.indexOf(item) == position;
+    const einzelArray = array.filter(function (item, position, self) {
+	    return self.indexOf(item) == position;
     });
     return einzelArray;
 }
