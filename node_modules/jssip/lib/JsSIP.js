@@ -14,6 +14,7 @@ var UA = require('./UA');
 var URI = require('./URI');
 var NameAddrHeader = require('./NameAddrHeader');
 var Grammar = require('./Grammar');
+var WebSocketInterface = require('./WebSocketInterface');
 
 
 /**
@@ -26,6 +27,7 @@ var JsSIP = module.exports = {
   UA: UA,
   URI: URI,
   NameAddrHeader: NameAddrHeader,
+  WebSocketInterface: WebSocketInterface,
   Grammar: Grammar,
   // Expose the debug module.
   debug: require('debug'),
