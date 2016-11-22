@@ -14,7 +14,7 @@ block content
             div.col-md-12
                 //Scahaltflaechen anzeigen
 
-                != "<div class=\"row\">"
+                div.row
                     each val, index in gesamteKonfig.FunkstellenReihe
                         // - console.log(!{index})
                         // - console.log(!{val})
@@ -23,7 +23,7 @@ block content
                         if index == 'Button11'
                             //- keines, erstes DIV geht vor der schleife auf
                         if index == 'Button21' || index == 'Button31' || index == 'Button41'
-                            != "</div><div class=\"row\">"
+                            div.row
 
                         div.col-md-2(id=index + 'panel',style="padding-left: 5px;padding-right: 5px;")
                             div.panel.panel-default(
@@ -125,17 +125,6 @@ block content
 
 
 
-                                   
-                                    
-                                    
-                                
-
-                //- Abschliessendes Row-DIV
-                != "</div><!-- row>"
-
-
-                    
-                            
 
 
                     // Modalfenster fuer MKA Kanalwahl
