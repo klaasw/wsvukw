@@ -472,7 +472,7 @@ script.
                             //suche Schaltflaeche zu FunkstellenID
                             button = $('#' + msg.geschaltet.$.id).parent().parent().offsetParent().attr('id')
 
-                            //$('#'+button+' > div > div.panel-heading > span').text( "aufgeschaltet" )
+                            $('#' + button + ' [buttonElement="Flaeche"]').addClass("alert-info")
                             $('#' + button + ' > div').addClass("panel-primary")
                             $('#' + button + ' [buttonElement="span"]').addClass("btn-primary")
 
@@ -517,8 +517,8 @@ script.
 
                             //suche Schaltflaeche zu FunkstellenID
                             button = $('#' + msg.getrennt.$.id).parent().parent().offsetParent().attr('id')
-                            //$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
                             
+                            $('#' + button + ' [buttonElement="Flaeche"]').removeClass("alert-info")
                             $('#' + button + ' > div').removeClass("panel-primary")
                             $('#' + button + ' [buttonElement="span"]').removeClass("btn-primary")
 
