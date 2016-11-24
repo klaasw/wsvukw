@@ -16,12 +16,10 @@ var socketServer; //Variable um die Sockets ausserhalb der Funktion "on.connect"
 var cfg = require('./cfg.js');
 var db = require('./datenbank.js');
 
-log.debug(FILENAME+ " socket.js geladen.");
-
+log.debug(FILENAME + ' socket.js geladen.');
 
 var dueStatusServerA = null;
 var dueStatusServerB = null;
-
 
 exports.socket = function (server) {
     log.debug(FILENAME + " Socket Server established");
@@ -121,14 +119,14 @@ function leseSchaltzustand(socketID, IP){
 
     findeApNachIp(IP, socketID, function(benutzer){
 
-        url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/verbindungen/liesVerbindungen?arbeitsplatz=' + benutzer + '&aktiveVerbindungen=true'
+        var url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/verbindungen/liesVerbindungen?arbeitsplatz=' + benutzer + '&aktiveVerbindungen=true'
         console.log(url);
 
         request(url, function (error, response, body) {
 
             if (!error && response.statusCode == 200) {
                 body = JSON.parse(body);
-                for (verbindung of body) {
+                for (var verbindung of body) {
                     //erstelle Objekt nach Muster 1-H-RFD-WHVVTA-FKEK-1:MHAN01
                     //In Verbindung mit der AP Konfuguration der Geaete kann der Client die Verbindungen wieder schalten
                     zustand[verbindung.funkstelle] = verbindung.span_mhanApNr

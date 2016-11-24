@@ -164,6 +164,49 @@ router.get('/ukwTest', function (req, res) {
 }); //router Ende
 
 
+/* GET UKW Display */
+router.get('/ukwTestWue', function (req, res) {
+    const clientIP = req.ip;
+    log.debug("Benutzer IP: " + clientIP);
+    findeApNachIp(clientIP, function (benutzer) {
+        log.debug("ukw - Ermittelter Benutzer: " + benutzer);
+        if (benutzer) {
+            log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + req.ip);
+            erstelleKonfigFurAp(benutzer, function (konfig, errString) {
+                if (konfig == 'Fehler'){
+                    res.render('error', {
+                        message: 'keine Konfiguration zu Arbeitsplatz: ' + benutzer + ' Fehler: ' + errString,
+                        error: {
+                            status: 'kein'
+                        }
+                    });
+                }
+                else {
+                    //Uebergebe Funkstellen ID an Jade Template
+                    log.info('ukw - konfigfuerAP: an Jade Template uebergeben');
+                    //ukwDisplay --> zum Testen eines neuen Layouts
+                    res.render('entwicklung_wuellner/ukwDisplayTest', {
+                        "log": log,  // logging auch im Jade-Template moeglich!
+                        "gesamteKonfig": konfig
+
+                    }); //res send ende
+                }
+            }); //erstelleKonfigFurAp Ende
+        } //if Ende
+
+        //kein Benutzer zu IP gefunden
+        else {
+            res.render('error', {
+                message: 'keine Benutzer konfiguriert zu IP: ' + clientIP,
+                error: {
+                    status: 'kein'
+                }
+            });
+        }
+    });
+}); //router Ende
+
+
 /* GET UKW Display grosse Schaltflaechen*/
 router.get('/ukw_gr', function (req, res) {
     log.debug(req.ip);
