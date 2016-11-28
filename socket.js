@@ -1,25 +1,25 @@
 "use strict";
 
-var log = require('./log.js');
-var ukw = require('./ukw.js');
-var files = require('fs'); // Zugriff auf das Dateisystem
-var request = require('request'); //Modul zu Abfrage von WebServices
+const log = require('./log.js');
+const ukw = require('./ukw.js');
+let files = require('fs'); // Zugriff auf das Dateisystem
+const request = require('request'); //Modul zu Abfrage von WebServices
 
 //FILENAME = __filename.slice(__dirname.length + 1);
-var FILENAME = __filename;
+const FILENAME = __filename;
 
-var io = require('socket.io');
-var socketClient = require('socket.io-client');
+const io = require('socket.io');
+const socketClient = require('socket.io-client');
 
-var socketServer; //Variable um die Sockets ausserhalb der Funktion "on.connect" aufzurufen
+let socketServer; //Variable um die Sockets ausserhalb der Funktion "on.connect" aufzurufen
 
-var cfg = require('./cfg.js');
-var db = require('./datenbank.js');
+const cfg = require('./cfg.js');
+const db = require('./datenbank.js');
 
 log.debug(FILENAME + ' socket.js geladen.');
 
-var dueStatusServerA = null;
-var dueStatusServerB = null;
+let dueStatusServerA = null;
+let dueStatusServerB = null;
 
 exports.socket = function (server) {
     log.debug(FILENAME + " Socket Server established");
@@ -63,16 +63,16 @@ exports.socket = function (server) {
             log.info(FILENAME + ' Funktion: empfangeWebNachricht ' + 'clientMessageSpeichern: WebSocket Nachricht: ' + JSON.stringify(msg));
 
             //Speichern
-            for (var LotsenAp in msg.LotsenApBenutzer) {
+            for (let LotsenAp in msg.LotsenApBenutzer) {
                 ukw.speichereLotsenZuordnung(LotsenAp, JSON.stringify(msg.LotsenApBenutzer[LotsenAp]))
             }
         });
 
         // Client hat Verbindung unterbrochen:
         socket.on('disconnect', function (msg) {
-            var ip = socket.request.connection.remoteAddress;
+            let ip = socket.request.connection.remoteAddress;
             //IPv6 Anteil aus Anfrage kuerzen
-            var ipv6Ende = ip.lastIndexOf(':');
+            const ipv6Ende = ip.lastIndexOf(':');
             if (ipv6Ende > -1 ){
                 ip = ip.slice(ipv6Ende + 1 , ip.length);
             }
@@ -115,18 +115,18 @@ exports.emit = function emit(messagetype, message, socketID) {
 //Einlesen des Schaltzustands und übermittlung bei connect
 function leseSchaltzustand(socketID, IP){
 
-    var zustand = {};
+    const zustand = {};
 
     findeApNachIp(IP, socketID, function(benutzer){
 
-        var url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/verbindungen/liesVerbindungen?arbeitsplatz=' + benutzer + '&aktiveVerbindungen=true'
+        const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/verbindungen/liesVerbindungen?arbeitsplatz=' + benutzer + '&aktiveVerbindungen=true';
         console.log(url);
 
         request(url, function (error, response, body) {
 
             if (!error && response.statusCode == 200) {
                 body = JSON.parse(body);
-                for (var verbindung of body) {
+                for (let verbindung of body) {
                     //erstelle Objekt nach Muster 1-H-RFD-WHVVTA-FKEK-1:MHAN01
                     //In Verbindung mit der AP Konfuguration der Geaete kann der Client die Verbindungen wieder schalten
                     zustand[verbindung.funkstelle] = verbindung.span_mhanApNr
@@ -148,17 +148,17 @@ function leseSchaltzustand(socketID, IP){
 //TODO:
 function leseZustand(socketID){
 
-    var selector = {};
+    const selector = {};
 
     db.findeElement('zustandKomponenten', selector, function(doc){
         //console.log(doc)
 
-        for (var i = 0; i < doc.length; i++){
-             var zustand = {
-                'FSTSTATUS':{
-                    '$' : doc[i].status,
-                    'letzteMeldung' : doc[i].letzteMeldung
-                }
+        for (let i = 0; i < doc.length; i++){
+             const zustand = {
+	             'FSTSTATUS': {
+		             '$': doc[i].status,
+		             'letzteMeldung': doc[i].letzteMeldung
+	             }
              };
              //console.log(zustand)
              exports.emit('ukwMessage', zustand, socketID)
@@ -169,10 +169,10 @@ function leseZustand(socketID){
 
 
 function findeApNachIp(ip, socketID, callback) {
-    var Ap = '';
+    let Ap = '';
 
     //IPv6 Anteil aus Anfrage kuerzen
-    var ipv6Ende = ip.lastIndexOf(':');
+    const ipv6Ende = ip.lastIndexOf(':');
     if (ipv6Ende > -1 ){
         ip = ip.slice(ipv6Ende + 1 , ip.length)
     }
@@ -180,12 +180,12 @@ function findeApNachIp(ip, socketID, callback) {
     //var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
     log.debug(FILENAME + " function findeNachIp: " + ip);
     // TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
-    var url = "http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/benutzer/zeigeWindowsBenutzer";
+    const url = "http://" + cfg.cfgIPs.httpIP + ":" + cfg.port + "/benutzer/zeigeWindowsBenutzer";
     log.debug(FILENAME + " function findeNachIp " + url);
     request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             //log.debug("body: " + body);
-            var alle_Ap = JSON.parse(body);
+            const alle_Ap = JSON.parse(body);
             log.debug(FILENAME + ' function findeNachIp: ' + alle_Ap);
 
             if(alle_Ap.hasOwnProperty(ip)){
@@ -193,7 +193,7 @@ function findeApNachIp(ip, socketID, callback) {
                 log.debug(FILENAME + ' function findeNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
 
                 //SocketID und Verbinungszeit in Variable schreiben
-                var ApInfo             = alle_Ap[ip];
+                const ApInfo = alle_Ap[ip];
                 ApInfo.socketID    = socketID;
                 ApInfo.connectTime = new Date();
                 ApInfo.aktiv       = true;
@@ -217,7 +217,7 @@ function findeApNachIp(ip, socketID, callback) {
 
 //schreibe Verbindungsinfo socketID und Zeitstempel in aktiveArbeitsplaetze
 function schreibeSocketInfo(socketInfo, ip){
-    var schreibeLokal = false; //auf jeden Fall schreiben in Primary Datenbank schreiben
+    const schreibeLokal = false; //auf jeden Fall schreiben in Primary Datenbank schreiben
     socketInfo._id = ip;
 
     if (socketInfo === 'false') {
@@ -229,7 +229,7 @@ function schreibeSocketInfo(socketInfo, ip){
         }
     }
 
-    var selector = {'_id':ip};
+    const selector = {'_id': ip};
 
     db.schreibeInDb('aktiveArbeitsplaetze', selector, socketInfo, schreibeLokal);
 
@@ -261,13 +261,13 @@ function schreibeSocketInfo(socketInfo, ip){
 
 //TODO: Gegenseitige Serverüberwachung
 //Funktioniert noch nicht richt. Test mit Namespace oder Rooms
-var serverA = cfg.alternativeIPs[1]; // z.B. { '0': 'WHV', '1': '10.160.1.64:3000' }
+const serverA = cfg.alternativeIPs[1]; // z.B. { '0': 'WHV', '1': '10.160.1.64:3000' }
 
-var serverB = cfg.alternativeIPs[2];
+const serverB = cfg.alternativeIPs[2];
 
 log.debug(serverA);
 
-var client_bei_serverA = socketClient.connect('http://' + serverA[1]);
+const client_bei_serverA = socketClient.connect('http://' + serverA[1]);
 client_bei_serverA.on('connect',function() {
     log.debug("Funktion: Serverueberwachung SOCKET verbunden mit: " + serverA);
     exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverA[1], Status: 'OK'}});
@@ -299,7 +299,7 @@ client_bei_serverA.on('reconnect_error', function(err) {
 
 
 
-var client_bei_serverB = socketClient.connect('http://' + serverB[1]);
+const client_bei_serverB = socketClient.connect('http://' + serverB[1]);
 client_bei_serverB.on('connect',function() {
     log.debug("Funktion: Serverueberwachung SOCKET verbunden mit: " + serverB);
     exports.emit('statusMessage', {dienst:'DUE', status: {URL: serverB[1], Status: 'OK'}});

@@ -1,30 +1,30 @@
-var winston = require('winston');
+const winston = require('winston');
 winston.emitErrs = true;
 
-var log = new winston.Logger({
-    transports: [
-        new winston.transports.File({
-            level: 'debug',
+const log = new winston.Logger({
+	transports: [
+		new winston.transports.File({
+			level: 'debug',
 			timestamp: true,
 			prettyPrint: true,
 			filename: './log/ukwserver.log',
-            maxsize: 5242880, //5MB
-            maxFiles: 10,
-            handleExceptions: true,
-            json: false, //true,
-            colorize: false,
-            tailable: true
-        }),
-        new winston.transports.Console({
-            level: 'debug',
-            timestamp: true,
+			maxsize: 5242880, //5MB
+			maxFiles: 10,
+			handleExceptions: true,
+			json: false, //true,
+			colorize: false,
+			tailable: true
+		}),
+		new winston.transports.Console({
+			level: 'debug',
+			timestamp: true,
 			//prettyPrint: true,
 			handleExceptions: true,
-            json: false,
-            colorize: true
-        })
-    ],
-    exitOnError: false
+			json: false,
+			colorize: true
+		})
+	],
+	exitOnError: false
 });
 
 module.exports = log;

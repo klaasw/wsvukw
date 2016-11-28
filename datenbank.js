@@ -5,21 +5,21 @@
 *
 */
 
-var MongoClient = require('mongodb').MongoClient;
-var assert = require('assert');
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
 
-var cfg = require('./cfg.js');
-var log = require('./log.js');
+const cfg = require('./cfg.js');
+const log = require('./log.js');
 
 FILENAME = __filename.slice(__dirname.length + 1);
 
-var dbVerbindung; //Zur Nutzung der Datenbank Verbindung. Verhindert dauerndes öffen und schließen
-var verbundenMitPrimary;
+let dbVerbindung; //Zur Nutzung der Datenbank Verbindung. Verhindert dauerndes öffen und schließen
+let verbundenMitPrimary;
 
 
 
 // Connection URL
-var url = cfg.mongodb+'&readPreference=nearest';
+const url = cfg.mongodb + '&readPreference=nearest';
 //var url2 = 'mongodb://ukwserver:due@10.160.2.80:27017,10.160.1.80:27017,10.160.3.80:27017/ukw?replicaSet=dueReplicaSet'
 //TODO: Prio 2 Verbindung zu unterschiedlichen Datenbanken herstellen. Damit WindowsBenutzer von ukw Datenbank entkoppelt sind
 //vor dem Schreiben prüfen ob eine Verbindung besteht:
@@ -65,8 +65,8 @@ exports.findeElement = function (collection, element, callback) {
 
 
 function findeElement2 (collection, element, callback){
-	var tmp = dbVerbindung.collection(collection);
-	var selector = {};
+	const tmp = dbVerbindung.collection(collection);
+	let selector = {};
     log.debug(JSON.stringify(element));
 
     if (element !== undefined ) {

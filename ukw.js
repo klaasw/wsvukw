@@ -10,18 +10,18 @@
 //TODO: in xml2js attrkey: 'attribute' aendern statt $ Zeichen. Dies muss aber in allen Modulen berücksichtigt werden.
 // Uebergangsweise Ersaetzen wo in Datenbank gelesen und geschrieben wird.
 
-var JsSIP = require('jssip'); //Javascript SIP Uaser Agent
-var files = require('fs'); // Zugriff auf das Dateisystem
-var request = require('request'); //Modul zu Abfrage von WebServices
-var xml2js = require('xml2js'); // zum Konvertieren von XML zu JS
-var parser = new xml2js.Parser({explicitRoot: true});// Parserkonfiguration
-var log = require('./log.js');
+const JsSIP = require('jssip'); //Javascript SIP Uaser Agent
+let files = require('fs'); // Zugriff auf das Dateisystem
+const request = require('request'); //Modul zu Abfrage von WebServices
+const xml2js = require('xml2js'); // zum Konvertieren von XML zu JS
+const parser = new xml2js.Parser({explicitRoot: true});// Parserkonfiguration
+const log = require('./log.js');
 
-var cfg = require('./cfg.js');
+const cfg = require('./cfg.js');
 
-var io = require('./socket.js');
+const io = require('./socket.js');
 
-var db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
+const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
 db.verbindeDatenbank();
 
 FILENAME = __filename.slice(__dirname.length + 1);
@@ -69,22 +69,22 @@ exports.pruefeRfdWS = function () {
  *
  */
 exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span_mhanApNr, ApID) {
-    var parameterRfdWebService = {
-        url: cfg.urlRFDWebservice,
-        method: 'POST',
-        headers: {
-            'Content-Type': 'text/xml;charset=UTF-8;',
-            'SOAPAction': 'PLATZHALTER'                      //NOch beachten in WS Aufrufen
-        },
-        body: ''
+    const parameterRfdWebService = {
+	    url: cfg.urlRFDWebservice,
+	    method: 'POST',
+	    headers: {
+		    'Content-Type': 'text/xml;charset=UTF-8;',
+		    'SOAPAction': 'PLATZHALTER'                      //NOch beachten in WS Aufrufen
+	    },
+	    body: ''
     };
 
-    var antwortFuerWebsocket;
+    let antwortFuerWebsocket;
 
 
     if (aktion == 'trennenEinfach') {
         //Variable fuer RFD Request
-        var msg_TrennenEinfach = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><trennenEinfach xmlns="http://strg.rfd.dma.schnoor.de/"><vonId xmlns="">' + Span_Mhan + '</vonId><nachId xmlns="">' + Fst + '</nachId></trennenEinfach></s:Body></s:Envelope>';
+        const msg_TrennenEinfach = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><trennenEinfach xmlns="http://strg.rfd.dma.schnoor.de/"><vonId xmlns="">' + Span_Mhan + '</vonId><nachId xmlns="">' + Fst + '</nachId></trennenEinfach></s:Body></s:Envelope>';
         //Variable fuer true Rueckmeldung vom RFD
         antwortFuerWebsocket = {getrennt: {'$': {id: Fst, Ap: Span_Mhan, state: '1'}}};
         parameterRfdWebService.headers.SOAPAction = 'trennenEinfach';
@@ -93,7 +93,7 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span
 
     if (aktion == 'schaltenEinfach') {
         //Variable fuer RFD Request
-        var msg_SchaltenEinfach = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><schaltenEinfach xmlns="http://strg.rfd.dma.schnoor.de/"><vonId xmlns="">' + Span_Mhan + '</vonId><nachId xmlns="">' + Fst + '</nachId><duplex xmlns="">true</duplex></schaltenEinfach></s:Body></s:Envelope>';
+        const msg_SchaltenEinfach = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><schaltenEinfach xmlns="http://strg.rfd.dma.schnoor.de/"><vonId xmlns="">' + Span_Mhan + '</vonId><nachId xmlns="">' + Fst + '</nachId><duplex xmlns="">true</duplex></schaltenEinfach></s:Body></s:Envelope>';
         //Variable fuer true Rueckmeldung vom RFD
         antwortFuerWebsocket = {geschaltet: {'$': {id: Fst, Ap: Span_Mhan, state: '1'}}};
         parameterRfdWebService.headers.SOAPAction = 'schaltenEinfach';
@@ -102,7 +102,7 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span
 
     if (aktion == 'setzeKanal') {
         //Variable fuer RFD Request
-        var msg_setzeKanal = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><setzeKanal xmlns="http://strg.rfd.dma.schnoor.de/"><fstid xmlns="">' + Fst + '</fstid><channel xmlns="">' + Kanal + '</channel></setzeKanal></s:Body></s:Envelope>';
+        const msg_setzeKanal = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><setzeKanal xmlns="http://strg.rfd.dma.schnoor.de/"><fstid xmlns="">' + Fst + '</fstid><channel xmlns="">' + Kanal + '</channel></setzeKanal></s:Body></s:Envelope>';
         //Variable fuer true Rueckmeldung vom RFD
 
         //Websocket Antwort kann entfallen. Bestaetigung wird als SIP NAchricht vom RFD DM versendet
@@ -113,7 +113,7 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span
 
     if (aktion == 'SetzeAudioPegel') {
         //Variable fuer RFD Request
-        var msg_setzeAudioPegel = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><SetzeAudioPegel xmlns="http://strg.rfd.dma.schnoor.de/"><apid xmlns="">' + Span_Mhan + '</apid><fstid xmlns="">' + Fst + '</fstid><level xmlns="">' + Kanal + '</level></SetzeAudioPegel></s:Body></s:Envelope>';
+        const msg_setzeAudioPegel = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><SetzeAudioPegel xmlns="http://strg.rfd.dma.schnoor.de/"><apid xmlns="">' + Span_Mhan + '</apid><fstid xmlns="">' + Fst + '</fstid><level xmlns="">' + Kanal + '</level></SetzeAudioPegel></s:Body></s:Envelope>';
         //Variable fuer true Rueckmeldung vom RFD
 
         //Variable fuer true Rueckmeldung vom RFD
@@ -208,24 +208,24 @@ exports.sendeWebsocketNachrichtServer = function (Nachricht) {
 
 //schreibe Schaltzzustand in DB
 function schreibeSchaltzustand(fst, Span_Mhan, aktion, span_mhanApNr, ApID){
-    var schreibeLokal = false //es wird auf jeden Fall geschrieben
-    var selector = {'ApID':ApID, 'funkstelle':fst, 'span_mhan':Span_Mhan}
-    var aufgeschaltet = true
+    const schreibeLokal = false; //es wird auf jeden Fall geschrieben
+    const selector = {'ApID': ApID, 'funkstelle': fst, 'span_mhan': Span_Mhan};
+    let aufgeschaltet = true;
 
     if (aktion == 'trennenEinfach') {
         aufgeschaltet = false
     }
 
-    var schaltZustand = {
-        'ApID' : ApID, // z.B. JA NvD
-        'funkstelle' : fst, // z.B. 1-H-RFD-WHVVTA-FKEK-1
-        'span_mhan' : Span_Mhan, // z.B. 1-H-RFD-WHVVKZ-SPAN-01
-        'span_mhanApNr' : span_mhanApNr, // z.B. MHAN05
-        'zustand' : {
-            "aufgeschaltet" : aufgeschaltet, // true - false
-            "letzterWechsel" : new Date().toJSON()
-        }
-    }
+    const schaltZustand = {
+	    'ApID': ApID, // z.B. JA NvD
+	    'funkstelle': fst, // z.B. 1-H-RFD-WHVVTA-FKEK-1
+	    'span_mhan': Span_Mhan, // z.B. 1-H-RFD-WHVVKZ-SPAN-01
+	    'span_mhanApNr': span_mhanApNr, // z.B. MHAN05
+	    'zustand': {
+		    "aufgeschaltet": aufgeschaltet, // true - false
+		    "letzterWechsel": new Date().toJSON()
+	    }
+    };
 
     db.schreibeInDb('schaltZustaende', selector, schaltZustand, schreibeLokal)
 }
@@ -242,7 +242,7 @@ function schreibeSchaltzustand(fst, Span_Mhan, aktion, span_mhanApNr, ApID){
 //TODO:
 function schreibeZustand(Nachricht){
     if (Nachricht.hasOwnProperty("FSTSTATUS")){
-        var schreibeLokal = true //es wird nur geschrieben wenn die aktuelle Instanz und Mongo Primary in einem VTR sind
+        const schreibeLokal = true; //es wird nur geschrieben wenn die aktuelle Instanz und Mongo Primary in einem VTR sind
 
         //entfernen da dieser sonst den Kanal im DUE wieder mit -1 ueberschreibt
         if (Nachricht.FSTSTATUS.$.channel == '-1') {
@@ -272,7 +272,7 @@ function schreibeZustand(Nachricht){
         }
 
         //console.log(Nachricht.FSTSTATUS.$.id)
-        var selector = {'_id':Nachricht.FSTSTATUS.$.id}
+        const selector = {'_id': Nachricht.FSTSTATUS.$.id};
 
         db.schreibeInDb('zustandKomponenten', selector, zustand, schreibeLokal);
     }
@@ -284,22 +284,22 @@ function schreibeZustand(Nachricht){
 
 // Erstelle SIP User-Agent var ua. Hier mit Konfiguration DUE als Empfänger für die Statusnachrichten vom RFD
 //Die Übernahme aus der cfg funktioniert in der Produktivumgebung nicht. Callback?
-var ua = new JsSIP.UA(cfg.jsSipConfiguration_DUE);
+const ua = new JsSIP.UA(cfg.jsSipConfiguration_DUE);
 ua.start();
 
 
 // Register callbacks to desired message event
-var eventHandlers = {
-    'succeeded': function (e) {
-        log.debug('SIP-Nachricht gesendet.')
-    },
-    'failed': function (e) {
-        log.error('SIP-Nachricht NICHT gesendet, Details: ' + require('util').inspect(e));
-    }
+const eventHandlers = {
+	'succeeded': function (e) {
+		log.debug('SIP-Nachricht gesendet.')
+	},
+	'failed': function (e) {
+		log.error('SIP-Nachricht NICHT gesendet, Details: ' + require('util').inspect(e));
+	}
 };
 
-var options = {
-    'eventHandlers': eventHandlers
+const options = {
+	'eventHandlers': eventHandlers
 };
 
 //SIP User Agent Ereignisse
@@ -348,14 +348,14 @@ ua.on('newMessage', function (e) {
 
 
 // Erstelle SIP User-Agent var ua. Hier mit Konfiguration RFD Mock als SENDER für die Test Statusnachrichten zum DUE
-var mockRFD = new JsSIP.UA(cfg.jsSipConfiguration_mockRFD);
+const mockRFD = new JsSIP.UA(cfg.jsSipConfiguration_mockRFD);
 mockRFD.start();
 
 // GET-Aufruf fuer SIP-Message: http://10.22.30.1:3000/mockmessage?messageText=%3CFSTSTATUS+id%3D%221-H-RFD-BHVVTA-FKEK-1%22+state%3D%220%22+channel%3D%22-1%22%2F%3E
 
 //SIP Test Aufrufe
 exports.sendeSipNachricht = function (text, callback) {
-    var SIPreceiver = cfg.jsSipConfiguration_DUE.uri.replace("sip:", "");
+    const SIPreceiver = cfg.jsSipConfiguration_DUE.uri.replace("sip:", "");
     log.debug("sendeSipNachricht an " + SIPreceiver + " : " + text);
     try {
         mockRFD.sendMessage(SIPreceiver, text, options);

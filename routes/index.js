@@ -427,9 +427,9 @@ function leseRfdTopologie(callback) {
                         //Einzelkanal-Anlagenauslesen und in Funkstellen variable schreiben
                         if (result['FKEK']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
                             const FstEK = result['FKEK'];
-                            for (var i = 0; i < FstEK.length; i++) {
+                            for (let i = 0; i < FstEK.length; i++) {
                                 //log.debug(FstEK[i]['$'])
-                                var tmp = FstEK[i]['$'];
+                                let tmp = FstEK[i]['$'];
                                 tmp.MKA = false;
                                 tmp.aufgeschaltet = false; //default Zustand für Varbeitung von Schaltzuständen
                                 //log.debug(tmp)
@@ -445,9 +445,9 @@ function leseRfdTopologie(callback) {
                         //HK-Anlagenauslesen und in Funkstellen variable schreiben
                         if (result['FKHK']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
                             const FstHK = result['FKHK'];
-                            for (var i = 0; i < FstHK.length; i++) {
+                            for (let i = 0; i < FstHK.length; i++) {
                                 //log.debug(FstEK[i]['$'])
-                                tmp = FstHK[i]['$'];
+                                let tmp = FstHK[i]['$'];
                                 tmp.MKA = false;
                                 tmp.aufgeschaltet = false; //default Zustand für Varbeitung von Schaltzuständen
                                 //log.debug(tmp)
@@ -463,9 +463,9 @@ function leseRfdTopologie(callback) {
                         //Mehrkanal-Anlagenauslesen und in Funkstellen variable schreiben
                         if (result['FKMK']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
                             const FstMK = result['FKMK'];
-                            for (var i = 0; i < FstMK.length; i++) {
+                            for (let i = 0; i < FstMK.length; i++) {
                                 //log.debug(FstMK[i]['$'])
-                                tmp = FstMK[i]['$'];
+                                let tmp = FstMK[i]['$'];
                                 tmp.MKA = true;
                                 tmp.aufgeschaltet = false; //default Zustand für Varbeitung von Schaltzuständen
                                 //log.debug(tmp)
@@ -481,9 +481,9 @@ function leseRfdTopologie(callback) {
                         //Gleichwellen-Anlagen auslesen und in Funkstellen variable schreiben
                         if (result['FKGW']){ //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
                             const FstGW = result['FKGW'];
-                            for (var i = 0; i < FstGW.length; i++) {
+                            for (let i = 0; i < FstGW.length; i++) {
                                 //log.debug(FstMK[i]['$'])
-                                tmp = FstGW[i]['$'];
+                                let tmp = FstGW[i]['$'];
                                 tmp.MKA = false;
                                 tmp.GW = true;
                                 tmp.aufgeschaltet = false; //default Zustand für Varbeitung von Schaltzuständen
@@ -511,7 +511,7 @@ function leseRfdTopologie(callback) {
     }); // Request ende
 
 }
-var Funkstellen = [];
+const Funkstellen = [];
 
 leseRfdTopologie(function () {
 });
@@ -606,7 +606,6 @@ function findeFstNachId(Id) {
 function erstelleKonfigFurAp(Ap, callback) {
 
     //Bilde temporaeres Objekt um Funkstelle als Value hinzuzufuegen
-    let tmpArr = [];
     const Konfig = {
 	    FunkstellenReihe: [],
 	    FunkstellenDetails: {},
