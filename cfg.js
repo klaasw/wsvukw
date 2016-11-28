@@ -6,8 +6,8 @@
  *
  */
 
-let log = require('./log.js');
-let fs = require('fs'); // Zugriff auf das Dateisystem
+const log = require('./log.js');
+const fs = require('fs'); // Zugriff auf das Dateisystem
 const HOSTNAME = require('os').hostname();
 
 let AKTUELLER_SERVER = ''; //globale Variable für aktuellen Server. Einbindung in Konfig zur Darstellung des aktuellen Server via Jade Template layout.jade
@@ -16,16 +16,18 @@ function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
 	// eine existierende Datei in ./config/servers/ geht vor, damit man auf einer Maschine mehrfach mit unterschiedlichen Ports starten kann:
 	try {
 		return require('./config/servers/serverIPs.json');
-	} catch (e) {
+	}
+	catch (e) {
 		// try next
 	}
 	const networkInterfaces = require('os').networkInterfaces();
-	for (let netInterface in networkInterfaces) {
-		for (let adapter in networkInterfaces[netInterface]) {
+	for (const netInterface in networkInterfaces) {
+		for (const adapter in networkInterfaces[netInterface]) {
 			try {
-				AKTUELLER_SERVER = networkInterfaces[netInterface][adapter].address //TODO:Port auslesen bzw. einbinden
+				AKTUELLER_SERVER = networkInterfaces[netInterface][adapter].address; //TODO:Port auslesen bzw. einbinden
 				return require('./config/servers/' + networkInterfaces[netInterface][adapter].address + '/serverIPs.json');
-			} catch (e) {
+			}
+			catch (e) {
 				// try next
 			}
 		}
@@ -57,7 +59,7 @@ const cfg = {
 	"intervall": 10000000,
 
 	"alternativeIPs": cfgIPs.alternativeServer,
-	"cfgIPs": cfgIPs,
+	cfgIPs,
 	"aktuellerServer": AKTUELLER_SERVER,
 	"aktuellerHostname": HOSTNAME
 };

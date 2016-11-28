@@ -1,4 +1,4 @@
-"use strict;"
+"use strict";
 /* Modul zur Auswertung und Weiterleitung der SIP Meldungen vom RFD
 *
 *
@@ -24,7 +24,7 @@ const io = require('./socket.js');
 const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
 db.verbindeDatenbank();
 
-FILENAME = __filename.slice(__dirname.length + 1);
+const FILENAME = __filename.slice(__dirname.length + 1);
 
 /* TODO:
  *  - Ungueltige Nutzer abfangen
@@ -50,13 +50,13 @@ exports.pruefeRfdWS = function () {
 
         if (!error && response.statusCode == 200) {
             log.debug(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK');
-            exports.sendeWebsocketNachrichtStatus({dienst:'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}})
-            exports.sendeWebsocketNachrichtServer({dienst:'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}})
+            exports.sendeWebsocketNachrichtStatus({dienst:'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
+            exports.sendeWebsocketNachrichtServer({dienst:'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
         }
         else {
             log.error(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + error);
-            exports.sendeWebsocketNachrichtStatus({dienst:'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'Error'}})
-            exports.sendeWebsocketNachrichtServer({dienst:'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'Error'}})
+            exports.sendeWebsocketNachrichtStatus({dienst:'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'Error'}});
+            exports.sendeWebsocketNachrichtServer({dienst:'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'Error'}});
         }
     })
 };
@@ -146,9 +146,9 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span
                         //console.log(result['S:Envelope'])
                         //console.log(result['S:Envelope']['S:Body'][0]['ns2:'+aktion+'Response'][0])
 
-                        erfolgreich = result['S:Envelope']['S:Body'][0]['ns2:' + aktion + 'Response'][0]['return'][0];
+                        let erfolgreich = result['S:Envelope']['S:Body'][0]['ns2:' + aktion + 'Response'][0]['return'][0];
                         if (erfolgreich === 'true') {
-                            exports.sendeWebSocketNachricht(antwortFuerWebsocket)
+                            exports.sendeWebSocketNachricht(antwortFuerWebsocket);
 
                             if (aktion == 'schaltenEinfach' || aktion == 'trennenEinfach'){
                                 schreibeSchaltzustand(Fst, Span_Mhan, aktion, span_mhanApNr, ApID)
@@ -243,10 +243,11 @@ function schreibeSchaltzustand(fst, Span_Mhan, aktion, span_mhanApNr, ApID){
 function schreibeZustand(Nachricht){
     if (Nachricht.hasOwnProperty("FSTSTATUS")){
         const schreibeLokal = true; //es wird nur geschrieben wenn die aktuelle Instanz und Mongo Primary in einem VTR sind
+        let zustand;
 
         //entfernen da dieser sonst den Kanal im DUE wieder mit -1 ueberschreibt
         if (Nachricht.FSTSTATUS.$.channel == '-1') {
-            var zustand = {
+            zustand = {
                 $set: {
                     letzteMeldung : new Date(),
                     "status.connectState" : Nachricht.FSTSTATUS.$.connectState,
@@ -258,7 +259,7 @@ function schreibeZustand(Nachricht){
             }
         }
         else{
-            var zustand = {
+	        zustand = {
                 $set: {
                     letzteMeldung : new Date(),
                     "status.connectState" : Nachricht.FSTSTATUS.$.connectState,
@@ -313,8 +314,8 @@ ua.on('connecting', function (e) {
 
 ua.on('registered', function (e) {
     log.debug(FILENAME +' Funktion: registered auf SIP-Server ' + cfg.jsSipConfiguration_DUE.uri);
-    //sendeNachricht('Bin jetzt Registriert')
-    //anruf()
+    // sendeNachricht('Bin jetzt Registriert');
+    // anruf();
 });
 
 ua.on('registrationFailed', function (e) {
@@ -337,7 +338,7 @@ ua.on('newMessage', function (e) {
             if ('FSTSTATUS' in result) {
                 result.FSTSTATUS.letzteMeldung = new Date();
             }
-            exports.sendeWebSocketNachricht(result)
+            exports.sendeWebSocketNachricht(result);
             schreibeZustand(result)
         }
         else {
@@ -366,8 +367,12 @@ exports.sendeSipNachricht = function (text, callback) {
         callback('ERROR', e);
     }
 };
+
+/**
+ *
+ */
 exports.anruf = function () {
-    ua.call(cfg.jsSipConfiguration.testReceiverCall)
+    ua.call(cfg.jsSipConfiguration_mockRFD.testReceiverCall)
 };
 
 //SIP User Agent Ereignisse

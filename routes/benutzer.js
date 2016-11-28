@@ -1,36 +1,34 @@
+"use strict";
 /* Modul zur Benutzerverwaltung und Bereitstellung von REST Services
-*
-*
-* @Author: Klaas Wuellner
-* @Create: Juli 2016
-*/
+ *
+ *
+ * @Author: Klaas Wuellner
+ * @Create: Juli 2016
+ */
 
 
-var express = require('express');
-var router = express.Router();
-var util = require('util');
+const express = require('express');
+const router = express.Router();
+const util = require('util');
 
+const cfg = require('../cfg.js'); //
+const db = require('../datenbank.js');
 
-var cfg = require('../cfg.js'); //
-
-var db = require('../datenbank.js');
-
-var log = require('../log.js'); // Modul fuer verbessertes Logging
-FILENAME = __filename.slice(__dirname.length + 1);
-
+const log = require('../log.js'); // Modul fuer verbessertes Logging
+const FILENAME = __filename.slice(__dirname.length + 1);
 
 
 /* Erster Test */
 router.get('/zeigeWindowsBenutzer', function (req, res) {
-    var arbeitsplaetze = {};
+	const arbeitsplaetze = {};
 
-    db.findeElement('windowsBenutzer', {}, function(doc){
+	db.findeElement('windowsBenutzer', {}, function (doc) {
 
-        for (ap of doc) {
-            arbeitsplaetze[ap._id] = ap
-        }
-        res.send(arbeitsplaetze)
-    })
+		for (const ap of doc) {
+			arbeitsplaetze[ap._id] = ap
+		}
+		res.send(arbeitsplaetze)
+	})
 });
 
 // englische Bezeichnung nicht mehr verwenden
@@ -48,42 +46,38 @@ router.get('/zeigeWindowsBenutzer', function (req, res) {
 //})
 
 
-router.put('/schreibeWindowsBenutzer', function(req, res){
+router.put('/schreibeWindowsBenutzer', function (req, res) {
 	log.debug(FILENAME + ' /schreibeWindowsBenutzer Benutzer: ' + JSON.stringify(req.body));
 
-    var schreibeLokal = false; // es wird auf jeden Fall in DB geschrieben
-	var benutzer = req.body;
-    var schreibeParameter = {};
+	const schreibeLokal = false; // es wird auf jeden Fall in DB geschrieben
+	const benutzer = req.body;
+	let schreibeParameter = {};
 
-    if (benutzer.angemeldet === true) {
-        schreibeParameter = {
-            $set: {
-                ip: benutzer.ip,
-                user: benutzer.user.toLowerCase(),
-                loginZeit : new Date(),
-                angemeldet : benutzer.angemeldet
-            }
-        }
-    }
-    if (benutzer.angemeldet === false) {
-        schreibeParameter = {
-            $set: {
-                ip: benutzer.ip,
-                user: benutzer.user.toLowerCase(),
-                logoutZeit : new Date(),
-                angemeldet : benutzer.angemeldet
-            }
-        }
-    }
+	if (benutzer.angemeldet === true) {
+		schreibeParameter = {
+			$set: {
+				ip: benutzer.ip,
+				user: benutzer.user.toLowerCase(),
+				loginZeit: new Date(),
+				angemeldet: benutzer.angemeldet
+			}
+		}
+	}
+	if (benutzer.angemeldet === false) {
+		schreibeParameter = {
+			$set: {
+				ip: benutzer.ip,
+				user: benutzer.user.toLowerCase(),
+				logoutZeit: new Date(),
+				angemeldet: benutzer.angemeldet
+			}
+		}
+	}
 
-	var benutzerId = {'_id':benutzer.ip};
+	const benutzerId = {'_id': benutzer.ip};
 
 	db.schreibeInDb('windowsBenutzer', benutzerId, schreibeParameter, schreibeLokal);
-	res.send({ message: 'Benutzer hinzugefuegt oder geaendert' });
+	res.send({message: 'Benutzer hinzugefuegt oder geaendert'});
 });
-
-
-
-
 
 module.exports = router;
