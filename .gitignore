@@ -1,6 +1,6 @@
 /tmp
 /log
 /config/servers/serverIPs.json
-/node_modules
-/.idea
+/node_modules/*
+/.idea/*
 *.iml
