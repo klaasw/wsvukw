@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="Deploy to local VM" uploadOnCheckin="6c28900c-6993-4b45-be44-1acf3351d7a6">
+  <component name="PublishConfigData" serverName="Deploy to local VM">
     <serverData>
       <paths name="Deploy to local VM">
         <serverdata>
@@ -9,7 +9,27 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="JBoss RBB">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="JBoss Wegweiser">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="Tomcat EMA">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
     </serverData>
-    <option name="myUploadOnCheckinName" value="Deploy to local VM" />
   </component>
 </project>

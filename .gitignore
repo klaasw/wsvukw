@@ -1,4 +1,6 @@
 /tmp
 /log
-/node_modules
-/.idea
+/config/servers/serverIPs.json
+/node_modules/*
+/.idea/*
+*.iml

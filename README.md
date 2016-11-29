@@ -17,11 +17,7 @@ Dies ist die Benutzer-Oberfläche im DUE für die Nutzung des Revierfunkdienstes
 - mongodb (Native MongoDB Treiber)
 - pug (ehemals Jade. Template Engine für NodeJs)
 - jstransformer-markdown-it (Verwendung von Markdown Dokumenten in Jade/ Pug Templates
-## TODO: für eine Neuinstallation notwendige Pakete mit Version in package.json eintragen oder mit npm install <Paket> --save installieren. Dann wird das Paket mit in die package.json eingetragen
-
-## ATIS Kennung
-Zur Dekodierung ist die mids.json im Hauptverzeichnis enthalten. Diese enthält die Landeskennung, die dazugehörigen Abkürzungen (2 und 3 Zeichen) sowie den Ländernamen
-- Diese wurde bezogen von https://github.com/S73417H/MIDs
+## TODO: für eine Neuinstallation notwendige Pakete mit Version in package.json eintragen
 
 globale Module (npm install ... -g) sollten sein:
 - pm2 (Prozessmanager)
@@ -89,3 +85,8 @@ mkdir /var/run/oversip
 oversip -P /var/run/oversip/oversip.pid
 
 oder config anpassen /etc/oversip
+
+
+### Powershell Skript
+user_zu_ip.ps1 Login Skript zur Übertragung des Benutzernamen und der IP-Adresse an den UKW-Server.
+
