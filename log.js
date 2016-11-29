@@ -19,7 +19,7 @@ const log = new winston.Logger({
 		new winston.transports.Console({
 			level: 'debug',
 			timestamp: true,
-			//prettyPrint: true,
+			prettyPrint: true,
 			handleExceptions: true,
 			json: false,
 			colorize: true
