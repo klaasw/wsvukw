@@ -18,9 +18,13 @@ let dbVerbindung; //Zur Nutzung der Datenbank Verbindung. Verhindert dauerndes √
 let verbundenMitPrimary;
 
 // Connection URL
-const user_auth = (cfg.auth ? cfg.auth_user + ':' + cfg.auth_pw + '@' : '');
-const url = cfg.mongodb.replace('@user_auth', user_auth) + '&readPreference=nearest';
-//var url2 = 'mongodb://ukwserver:due@10.160.2.80:27017,10.160.1.80:27017,10.160.3.80:27017/ukw?replicaSet=dueReplicaSet'
+let url = '';
+for (const mdb of cfg.mongodb) {
+	const user_auth = (mdb.auth ? mdb.auth_user + ':' + mdb.auth_pw + '@' : '');
+	const replicaSet = (mdb.replicaSet !== '' ? '&replicaSet=' + mdb.replicaSet : '');
+	url = 'mongodb://' + user_auth + mdb.hostname + ':' + mdb.port + '/ukw?readPreference=nearest' + replicaSet;
+}
+
 //TODO: Prio 2 Verbindung zu unterschiedlichen Datenbanken herstellen. Damit WindowsBenutzer von ukw Datenbank entkoppelt sind
 //vor dem Schreiben pr√ºfen ob eine Verbindung besteht:
 exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {

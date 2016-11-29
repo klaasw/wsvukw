@@ -51,10 +51,7 @@ const cfg = {
 		'password': 'rfd'
 	},
 
-	'auth': false,
-	'auth_user': 'ukwserver',
-	'auth_pw': 'due',
-	'mongodb': 'mongodb://@user_auth' + cfgIPs.mongoDbs.toString() + '/ukw?replicaSet=dueReplicaSet',
+	'mongodb': cfgIPs.mongoDbs,
 
 	//HTTP Port für die nodeJS Instanz
 	'port': cfgIPs.port,
