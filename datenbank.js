@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /* Modul zur Herstellung der Verbindung zur Mongo Datenbank
  * In Bearbeitung....
  *
@@ -18,7 +18,8 @@ let dbVerbindung; //Zur Nutzung der Datenbank Verbindung. Verhindert dauerndes √
 let verbundenMitPrimary;
 
 // Connection URL
-const url = cfg.mongodb + '&readPreference=nearest';
+const user_auth = (cfg.auth ? cfg.auth_user + ':' + cfg.auth_pw + '@' : '');
+const url = cfg.mongodb.replace('@user_auth', user_auth) + '&readPreference=nearest';
 //var url2 = 'mongodb://ukwserver:due@10.160.2.80:27017,10.160.1.80:27017,10.160.3.80:27017/ukw?replicaSet=dueReplicaSet'
 //TODO: Prio 2 Verbindung zu unterschiedlichen Datenbanken herstellen. Damit WindowsBenutzer von ukw Datenbank entkoppelt sind
 //vor dem Schreiben pr√ºfen ob eine Verbindung besteht:
@@ -125,7 +126,7 @@ exports.verbindeDatenbank = function (aktion) {
 
 		if (err) throw err;
 
-		if (typeof aktion === "function") {
+		if (typeof aktion === 'function') {
 			aktion();
 		}
 
@@ -187,8 +188,8 @@ exports.verbindeDatenbank = function (aktion) {
 //setzt die entsprechende Variable
 function pruefeLokaleVerbindung(primaryServer) {
 	//Hostnamen teilen um Standort zu vergleichen
-	const ukwServer = cfg.aktuellerHostname.split("-");
-	const primaryDbServer = primaryServer.split("-");
+	const ukwServer = cfg.aktuellerHostname.split('-');
+	const primaryDbServer = primaryServer.split('-');
 
 	//nur den Standort in Variable schreiben
 	const ukwServerVTR = ukwServer[1];

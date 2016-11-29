@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /* Modul zur Auswertung und Weiterleitung der SIP Meldungen vom RFD
  *
  *
@@ -128,7 +128,7 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span
 		parameterRfdWebService.body = msg_setzeAudioPegel
 	}
 
-	log.debug("parameterRfdWebService.headers.SOAPAction: " + parameterRfdWebService.headers.SOAPAction);
+	log.debug('parameterRfdWebService.headers.SOAPAction: ' + parameterRfdWebService.headers.SOAPAction);
 
 	request(parameterRfdWebService, function (error, response, body) {
 		log.debug(FILENAME + ' Funktion: sendeWebServiceNachricht request mit Parameter: ' + JSON.stringify(parameterRfdWebService));
@@ -231,7 +231,7 @@ function schreibeSchaltzustand(fst, Span_Mhan, aktion, span_mhanApNr, ApID) {
 		span_mhanApNr, // z.B. MHAN05
 		'zustand': {
 			aufgeschaltet, // true - false
-			"letzterWechsel": new Date().toJSON()
+			'letzterWechsel': new Date().toJSON()
 		}
 	};
 
@@ -243,7 +243,7 @@ function schreibeSchaltzustand(fst, Span_Mhan, aktion, span_mhanApNr, ApID) {
 //{"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
 //TODO:
 function schreibeZustand(Nachricht) {
-	if (Nachricht.hasOwnProperty("FSTSTATUS")) {
+	if (Nachricht.hasOwnProperty('FSTSTATUS')) {
 		const schreibeLokal = true; //es wird nur geschrieben wenn die aktuelle Instanz und Mongo Primary in einem VTR sind
 		let zustand;
 
@@ -252,11 +252,11 @@ function schreibeZustand(Nachricht) {
 			zustand = {
 				$set: {
 					letzteMeldung: new Date(),
-					"status.connectState": Nachricht.FSTSTATUS.$.connectState,
-					"status.state": Nachricht.FSTSTATUS.$.state,
+					'status.connectState': Nachricht.FSTSTATUS.$.connectState,
+					'status.state': Nachricht.FSTSTATUS.$.state,
 				},
 				$setOnInsert: {
-					"status.id": Nachricht.FSTSTATUS.$.id
+					'status.id': Nachricht.FSTSTATUS.$.id
 				}
 			}
 		}
@@ -264,12 +264,12 @@ function schreibeZustand(Nachricht) {
 			zustand = {
 				$set: {
 					letzteMeldung: new Date(),
-					"status.connectState": Nachricht.FSTSTATUS.$.connectState,
-					"status.state": Nachricht.FSTSTATUS.$.state,
-					"status.channel": Nachricht.FSTSTATUS.$.channel
+					'status.connectState': Nachricht.FSTSTATUS.$.connectState,
+					'status.state': Nachricht.FSTSTATUS.$.state,
+					'status.channel': Nachricht.FSTSTATUS.$.channel
 				},
 				$setOnInsert: {
-					"status.id": Nachricht.FSTSTATUS.$.id
+					'status.id': Nachricht.FSTSTATUS.$.id
 				}
 			}
 		}
@@ -335,7 +335,7 @@ ua.on('newMessage', function (e) {
 	//Sende WebSocket Nachricht beim Senden und Empfangen. Richtung noch einbauen
 	parser.parseString(e.message.request.body, function (err, result) {
 		if (err == null) {
-			log.debug(FILENAME + " Funktion: newMessage sip parse result: " + JSON.stringify(result));
+			log.debug(FILENAME + ' Funktion: newMessage sip parse result: ' + JSON.stringify(result));
 			//setze Zeitstempel in Status Meldungen vom RFD
 			if ('FSTSTATUS' in result) {
 				result.FSTSTATUS.letzteMeldung = new Date();
@@ -358,14 +358,14 @@ mockRFD.start();
 
 //SIP Test Aufrufe
 exports.sendeSipNachricht = function (text, callback) {
-	const SIPreceiver = cfg.jsSipConfiguration_DUE.uri.replace("sip:", "");
-	log.debug("sendeSipNachricht an " + SIPreceiver + " : " + text);
+	const SIPreceiver = cfg.jsSipConfiguration_DUE.uri.replace('sip:', '');
+	log.debug('sendeSipNachricht an ' + SIPreceiver + ' : ' + text);
 	try {
 		mockRFD.sendMessage(SIPreceiver, text, options);
 		callback('OK', text);
 	}
 	catch (e) {
-		log.error("unable to call mockRFD.sendMessage()");
+		log.error('unable to call mockRFD.sendMessage()');
 		//log.error(JSON.stringify(e));
 		callback('ERROR', e);
 	}

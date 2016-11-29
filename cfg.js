@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /* Modul zur Gernerierung von Konfigurationsvariablen
  * Die Parameter werden aus der Datei config/server/IP_des_Servers/serverIPS.json bezogen
  *
@@ -36,32 +36,35 @@ function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
 const cfgIPs = getIPs();
 console.log(cfgIPs);
 const cfg = {
-	"urlRFDWebservice": 'http://' + cfgIPs.rfdIP + ':8789/I_RFD_DUE_Steuerung',
+	'urlRFDWebservice': 'http://' + cfgIPs.rfdIP + ':8789/I_RFD_DUE_Steuerung',
 
-	"jsSipConfiguration_DUE": {
+	'jsSipConfiguration_DUE': {
 		'ws_servers': 'ws://' + cfgIPs.sipIP + ':10080',
 		'uri': 'sip:due@' + cfgIPs.sipIP + ':5060',
 		// TODO fuer unterschiedliche Passwoerter dev/stage/prod: noch in serverIPs auslagern
 		'password': 'due'
 	},
-	"jsSipConfiguration_mockRFD": {
+	'jsSipConfiguration_mockRFD': {
 		'ws_servers': 'ws://' + cfgIPs.sipIP + ':10080',
 		'uri': 'sip:rfd@' + cfgIPs.sipIP + ':5060',
 		// TODO fuer unterschiedliche Passwoerter dev/stage/prod: noch in serverIPs auslagern, unterschiedliche Passwoerter vergeben, mindestens produktiv
 		'password': 'rfd'
 	},
 
-	"mongodb": 'mongodb://ukwserver:due@' + cfgIPs.mongoDbs.toString() + '/ukw?replicaSet=dueReplicaSet',
+	'auth': false,
+	'auth_user': 'ukwserver',
+	'auth_pw': 'due',
+	'mongodb': 'mongodb://@user_auth' + cfgIPs.mongoDbs.toString() + '/ukw?replicaSet=dueReplicaSet',
 
 	//HTTP Port für die nodeJS Instanz
-	"port": cfgIPs.port,
-	"configPath": 'config/',
-	"intervall": 10000000,
+	'port': cfgIPs.port,
+	'configPath': 'config/',
+	'intervall': 10000000,
 
-	"alternativeIPs": cfgIPs.alternativeServer,
+	'alternativeIPs': cfgIPs.alternativeServer,
 	cfgIPs,
-	"aktuellerServer": AKTUELLER_SERVER,
-	"aktuellerHostname": HOSTNAME
+	'aktuellerServer': AKTUELLER_SERVER,
+	'aktuellerHostname': HOSTNAME
 };
 
 module.exports = cfg;

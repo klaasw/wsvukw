@@ -1,4 +1,10 @@
 "use strict";
+
+/**
+ * The logging library used by this module.
+ * @external winston
+ */
+
 const winston = require('winston');
 winston.emitErrs = true;
 

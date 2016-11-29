@@ -1,11 +1,10 @@
-"use strict";
+'use strict';
 /* Modul zur Benutzerverwaltung und Bereitstellung von REST Services
  *
  *
  * @Author: Klaas Wuellner
  * @Create: Juli 2016
  */
-
 
 const express = require('express');
 const router = express.Router();
