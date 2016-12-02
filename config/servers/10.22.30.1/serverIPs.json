@@ -9,8 +9,14 @@
       "port": "27017",
       "auth": false,
       "auth_user": "ukwserver",
-      "auth_pw": "due",
-      "replicaSet": "dueReplicaSet"
+      "auth_pw": "due"
+    },
+    {
+      "hostname": "duep-whvvtr-db-1",
+      "port": "27017",
+      "auth": true,
+      "auth_user": "ukwserver",
+      "auth_pw": "due"
     }
   ],
   "alternativeServer": [

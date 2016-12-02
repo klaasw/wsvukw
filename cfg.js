@@ -52,6 +52,7 @@ const cfg = {
 	},
 
 	'mongodb': cfgIPs.mongoDbs,
+	'replicaSet': 'dueReplicaSet',
 
 	//HTTP Port für die nodeJS Instanz
 	'port': cfgIPs.port,
