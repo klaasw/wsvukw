@@ -20,6 +20,7 @@ const morgan = require('morgan');
 const logDirectory = __dirname + '/log';
 // ensure log directory exists
 fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
+
 // create a rotating write stream
 const accessLogStream = FileStreamRotator.getStream({
 	date_format: 'YYYYMMDD',
