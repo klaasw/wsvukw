@@ -54,8 +54,8 @@ module.exports = function (grunt) {
 				expand: true,
 				cwd: '_temp',
 				src: [
-					'main.css',
-					'main.css.map'
+					'styles.css',
+					'styles.css.map'
 				],
 				dest: 'stylesheets/dist/'
 			},
