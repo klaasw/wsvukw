@@ -30,21 +30,6 @@ router.get('/zeigeWindowsBenutzer', function (req, res) {
 	})
 });
 
-// englische Bezeichnung nicht mehr verwenden
-//router.put('/addWindowsUser', function(req, res){
-//	log.debug(FILENAME + ' /addWindowsUser Benutzer: ' + JSON.stringify(req.body))
-//	var schreibeLokal = false // es wird auf jeden Fall in DB geschrieben
-//	var benutzer = req.body
-//	benutzer.loginZeit = new Date().toJSON()
-//
-//
-//	var benutzerId = {'_id':benutzer.ip}
-//    console.log(benutzer)
-//	db.schreibeInDb('windowsBenutzer', benutzerId, benutzer, schreibeLokal);
-//	res.send({ message: 'Benutzer hinzugefuegt oder geaendert' });
-//})
-
-
 router.put('/schreibeWindowsBenutzer', function (req, res) {
 	log.debug(FILENAME + ' /schreibeWindowsBenutzer Benutzer: ' + JSON.stringify(req.body));
 

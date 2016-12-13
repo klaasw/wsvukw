@@ -11,7 +11,6 @@
 // Uebergangsweise Ersaetzen wo in Datenbank gelesen und geschrieben wird.
 
 const JsSIP = require('jssip'); //Javascript SIP Uaser Agent
-const files = require('fs'); // Zugriff auf das Dateisystem
 const request = require('request'); //Modul zu Abfrage von WebServices
 const xml2js = require('xml2js'); // zum Konvertieren von XML zu JS
 const parser = new xml2js.Parser({explicitRoot: true});// Parserkonfiguration
