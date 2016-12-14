@@ -12,19 +12,14 @@ script.
 	var IpConfig;
 
 
-
-
 	//Datei zur Wiedergabe bei Fehlern
 	var audioAlarm = new Audio('burst4.wav');
 
 	ladeKonfig()
 
-
 	//WebSocket Verbindung herstellen
 	var aktuellerUKWserver = location.protocol + '//' + location.hostname + ':' + location.port;
 	var socket
-
-
 
 	//Eventlistener an #mithoerenModal binden. Dies dient der Steuerung von dynmischen Inhalten basierend auf der geklickten Kanalschaltfläche
 	$('#mithoerenModal').on('shown.bs.modal', function (event) {
@@ -90,10 +85,6 @@ script.
 	$('#sliderModal').slider({
 		tooltip: 'always'
 	})
-
-
-
-
 
 
 	//Optionen fuer Notify festlegen
@@ -185,18 +176,6 @@ script.
 
 		}
 	}
-
-	//Pruefe ob Wert in Objekt vorkommt
-	function hatWert(obj, value) {
-		for (var id in obj) {
-			if (obj[id] == value) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-
 
 	//Ereignisse fuer Verbindungsueberwachung
 	//Dafuer in der Navleiste eine Statusflaeche einbauen
@@ -420,7 +399,7 @@ script.
 				//Schalten fuer SPrechANlagen und MitHoerANlagen
 				if ('geschaltet' in msg && msg.geschaltet.$.state === '1') {
 					// pruefen ob diese Meldung zu diesem Arbeitsplatz gehoert
-					if (hatWert(ArbeitsplatzGeraete, msg.geschaltet.$.Ap)) {
+					if (WSV.Utils.hatWert(ArbeitsplatzGeraete, msg.geschaltet.$.Ap)) {
 						//aendern Darstellung fuer MHAN
 						if (msg.geschaltet.$.Ap.indexOf("MHAN") != -1) {
 							//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
@@ -465,7 +444,7 @@ script.
 				//Trennen fuer SPrechANlagen und MitHoerANlagen
 				if ('getrennt' in msg && msg.getrennt.$.state === '1') {
 
-					if (hatWert(ArbeitsplatzGeraete, msg.getrennt.$.Ap)) {
+					if (WSV.Utils.hatWert(ArbeitsplatzGeraete, msg.getrennt.$.Ap)) {
 
 						//Aendern Darstellung fuer MHAN
 						if (msg.getrennt.$.Ap.indexOf("MHAN") != -1) {

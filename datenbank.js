@@ -28,7 +28,6 @@ const url = 'mongodb://' + user_auth + cfg.mongodb.join(',') + '/ukw?readPrefere
 //TODO: Prio 2 Verbindung zu unterschiedlichen Datenbanken herstellen. Damit WindowsBenutzer von ukw Datenbank entkoppelt sind
 //vor dem Schreiben prüfen ob eine Verbindung besteht:
 exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
-	//console.log(dbVerbindung)
 	if (dbVerbindung === undefined) {
 		//exports.verbindeDatenbank( function(){
 		// Insert a single document
@@ -48,7 +47,6 @@ exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 
 //finde Dokumente
 exports.findeElement = function (collection, element, callback) {
-	//console.log(dbVerbindung)
 	if (dbVerbindung === undefined) {
 		// exports.verbindeDatenbank( function(){
 		// Insert a single document
@@ -68,7 +66,7 @@ exports.findeElement = function (collection, element, callback) {
 function findeElement2(collection, element, callback) {
 	const tmp = dbVerbindung.collection(collection);
 	let selector = {};
-	log.debug(JSON.stringify(element));
+	log.debug(FILENAME + ' Funktion: findeElement2, element: ' + JSON.stringify(element));
 
 	if (element !== undefined) {
 		selector = element;
@@ -77,7 +75,6 @@ function findeElement2(collection, element, callback) {
 
 	tmp.find(selector).toArray(function (err, docs) {
 		assert.equal(err, null);
-		//console.log(docs)
 		log.debug(FILENAME + ' Funktion: findeElement2 aus DB gelesen');
 		callback(docs);
 	});
@@ -90,7 +87,6 @@ function schreibeInDb2(collection, selector, inhalt) {
 	const tmp = dbVerbindung.collection(collection);
 	tmp.updateOne(selector, inhalt, {upsert: true, w: 1}).then(function (result) {
 		assert.equal(1, result.result.n);
-		console.log('in DB geschrieben');
 		log.debug(FILENAME + ' Funktion: schreibeInDb2 in DB geschrieben');
 	});
 
@@ -99,7 +95,6 @@ function schreibeInDb2(collection, selector, inhalt) {
 	 dbVerbindung.collection(collection).insertOne(element, function(err, r) {
 	 assert.equal(null, err);
 	 assert.equal(1, r.insertedCount);
-	 console.log('in DB geschrieben')
 	 })
 	 */
 }
@@ -107,7 +102,7 @@ function schreibeInDb2(collection, selector, inhalt) {
 
 // Verbindung zur DB aufbauen. Dies wird beim ersten Aufruf von finde oder schreibe aufgerufen
 exports.verbindeDatenbank = function (aktion) {
-	console.log(url);
+	log.debug(url);
 	MongoClient.connect(url, {
         // Timeout Parameter fuehren in Entwicklungsumgebungen zu neuen Verbindungen
 		// und Toggeln der Topology, Ereignis: topologyDescriptionChanged
@@ -116,13 +111,11 @@ exports.verbindeDatenbank = function (aktion) {
 	}, function (err, db) {
 
 		if (err) {
-			console.log(err);
+			log.error(err);
 		}
 
-		//console.log(db)
-
 		assert.equal(null, err);
-		console.log(err);
+		log.debug(FILENAME + err);
 		log.info(FILENAME + ' Funktion: verbindeDatenbank Verbindung erfolgreich hergestellt');
 		log.debug(FILENAME + ' Funktion: verbindeDatenbank' + JSON.stringify(db.topology.isMasterDoc));
 		log.debug(db.topology.isMasterDoc.primary);
@@ -136,6 +129,11 @@ exports.verbindeDatenbank = function (aktion) {
 			aktion();
 		}
 
+<<<<<<< HEAD
+=======
+		log.debug(FILENAME + db.topology);
+
+>>>>>>> refs/remotes/origin/weitere_entwicklung
 		//Ereignislister fuer Topologie Aenderungen im ReplicaSet
 		db.topology.on('serverDescriptionChanged', function (event) {
 			log.debug(FILENAME + ' Funktion: verbindeDatenbank Listener: received serverDescriptionChanged');
