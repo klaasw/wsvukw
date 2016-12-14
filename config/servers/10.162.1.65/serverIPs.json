@@ -1,4 +1,6 @@
 {
+  "loglevelConsole": "debug",
+  "loglevelFile": "debug",
   "port":	"3000",
   "httpIP": "10.162.1.65",
   "rfdIP":  "10.162.1.96",

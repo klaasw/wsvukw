@@ -28,6 +28,7 @@ const url = 'mongodb://' + user_auth + cfg.mongodb.join(',') + '/ukw?readPrefere
 //TODO: Prio 2 Verbindung zu unterschiedlichen Datenbanken herstellen. Damit WindowsBenutzer von ukw Datenbank entkoppelt sind
 //vor dem Schreiben prüfen ob eine Verbindung besteht:
 exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
+	//console.log(dbVerbindung)
 	if (dbVerbindung === undefined) {
 		//exports.verbindeDatenbank( function(){
 		// Insert a single document
@@ -40,13 +41,13 @@ exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 		//}
 		//else {
 			schreibeInDb2(collection, selector, inhalt);
-		//}
 	}
 };
 
 
 //finde Dokumente
 exports.findeElement = function (collection, element, callback) {
+	//console.log(dbVerbindung)
 	if (dbVerbindung === undefined) {
 		// exports.verbindeDatenbank( function(){
 		// Insert a single document
@@ -75,6 +76,7 @@ function findeElement2(collection, element, callback) {
 
 	tmp.find(selector).toArray(function (err, docs) {
 		assert.equal(err, null);
+		//console.log(docs)
 		log.debug(FILENAME + ' Funktion: findeElement2 aus DB gelesen');
 		callback(docs);
 	});
@@ -129,11 +131,7 @@ exports.verbindeDatenbank = function (aktion) {
 			aktion();
 		}
 
-<<<<<<< HEAD
-=======
-		log.debug(FILENAME + db.topology);
 
->>>>>>> refs/remotes/origin/weitere_entwicklung
 		//Ereignislister fuer Topologie Aenderungen im ReplicaSet
 		db.topology.on('serverDescriptionChanged', function (event) {
 			log.debug(FILENAME + ' Funktion: verbindeDatenbank Listener: received serverDescriptionChanged');
