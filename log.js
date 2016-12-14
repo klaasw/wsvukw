@@ -5,13 +5,14 @@
  * @external winston
  */
 
+const cfg = require('./cfg.js');
 const winston = require('winston');
 winston.emitErrs = true;
 
 const log = new winston.Logger({
 	transports: [
 		new winston.transports.File({
-			level: 'debug',
+			level: cfg.loglevelFile || 'debug',
 			timestamp: true,
 			prettyPrint: true,
 			filename: './log/ukwserver.log',
@@ -23,7 +24,7 @@ const log = new winston.Logger({
 			tailable: true
 		}),
 		new winston.transports.Console({
-			level: 'debug',
+			level: cfg.loglevelConsole || 'info',
 			timestamp: true,
 			prettyPrint: true,
 			handleExceptions: true,
