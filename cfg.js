@@ -6,7 +6,6 @@
  *
  */
 
-const log = require('./log.js');
 const fs = require('fs'); // Zugriff auf das Dateisystem
 const HOSTNAME = require('os').hostname();
 
