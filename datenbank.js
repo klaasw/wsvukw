@@ -12,6 +12,8 @@ const util = require('util');
 
 const cfg = require('./cfg.js');
 const log = require('./log.js');
+const socket = require('./socket.js');
+
 const request = require('request'); //Modul zu Abfrage von WebServices
 
 const FILENAME = __filename.slice(__dirname.length + 1);
@@ -28,7 +30,7 @@ const url = 'mongodb://' + user_auth + cfg.mongodb.join(',') + '/ukw?readPrefere
 //vor dem Schreiben prüfen ob eine Verbindung besteht:
 exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 	if (dbVerbindung === undefined) {
-        log.error("Datenbank ist noch nicht verbunden!!!");
+        log.error("Datenbank ist noch nicht verbunden!!! Schreibversuch schlug fehl. Collection: "+ collection + ", selector: "+ selector + ", inhalt: "+inhalt);
 	} else {
 		if (verbundenMitPrimary === true && schreibeLokal === true) {
 			schreibeInDb2(collection, selector, inhalt);
@@ -39,10 +41,47 @@ exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 };
 
 
+
+
+//schreibe Verbindungsinfo socketID und Zeitstempel in aktiveArbeitsplaetze
+exports.schreibeSocketInfo = function (socketInfo, ip) {
+    const schreibeLokal = false; //auf jeden Fall schreiben in Primary Datenbank schreiben
+    if (socketInfo === 'false') {
+        socketInfo = {
+            $set: {
+                aktiv: false,
+                disconnectTime: new Date()
+            }
+        }
+    }
+    socketInfo._id = ip;
+    const selector = {'_id': ip};
+    // TODO: lieber separate Datenbank: Bewegungsdaten / Monitoring / Audit von Stammdaten trennen
+    exports.schreibeInDb('aktiveArbeitsplaetze', selector, socketInfo, schreibeLokal);
+};
+
+exports.schreibeApConnect = function (ip, socketID, getrennt) {
+    //SocketID und Verbindungszeit in DB schreiben
+    const ApInfo = { $set: {
+        "_id": ip.replace("::ffff:",""),
+        "ip": ip,
+        "aktiv" : !getrennt
+    }};
+    if(getrennt){
+        ApInfo.disconnectTime = new Date();
+    }else{
+        ApInfo.connectTime = new Date();
+    }
+    //Schreiben in aktiveArbeitsplaetze
+    exports.schreibeSocketInfo(ApInfo, ip);
+};
+
+
+
 //finde Dokumente
 exports.findeElement = function (collection, element, callback) {
 	if (dbVerbindung === undefined) {
-		log.error("Datenbank ist noch nicht verbunden!!!");
+		log.error("Datenbank ist noch nicht verbunden!!! Leseversuch schlug fehl: Collection: " + collection + ", element: "+ element);
 	} else {
 		findeElement2(collection, element, function (doc) {
 			callback(doc);
@@ -163,18 +202,9 @@ exports.verbindeDatenbank = function (aktion) {
 
 
 exports.findeApNachIp = function (ip, callback) {
-    let Ap = '';
-
-    //IPv6 Anteil aus Anfrage kuerzen
-    const ipv6Ende = ip.lastIndexOf(':');
-    if (ipv6Ende > -1) {
-        ip = ip.slice(ipv6Ende + 1, ip.length);
-    }
-
     // TODO: Aus DB auslesen, nicht mehr den Umweg über REST nehmen, weil so oft benutzt
-
-
     //var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
+    let Ap = '';
     log.debug(FILENAME + ' function findeNachIp: ' + util.inspect(ip));
     // TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
     const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/benutzer/zeigeWindowsBenutzer';
@@ -185,12 +215,16 @@ exports.findeApNachIp = function (ip, callback) {
             const alle_Ap = JSON.parse(body);
             log.debug(FILENAME + ' function findeNachIp: ' + alle_Ap);
 
-            if (alle_Ap.hasOwnProperty(ip)) {
-                Ap = alle_Ap[ip].user;
+            if (alle_Ap.hasOwnProperty(ip.replace("::ffff:",""))) {
+                Ap = alle_Ap[ip.replace("::ffff:","")].user;
                 log.debug(FILENAME + ' function findeNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
-	            callback(Ap);
+                if(typeof callback  !== 'function'){
+                    log.error("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+                }else {
+                    callback(Ap);
+                }
 			} else {
-				log.error(FILENAME + ' function findeNachIp: Benutzer NICHT gefunden zu IP: ' + ip);
+				log.error(FILENAME + ' function findeNachIp: Benutzer NICHT gefunden zu IP: ' + ip.replace("::ffff:",""));
 				callback('');
 			}
 		} else {
@@ -227,6 +261,57 @@ exports.liesAusRESTService = function (configfile, callback) {
     });
 };
 
+//in Arbeit
+//Einlesen des Schaltzustands und übermittlung bei connect
+// TODO: ersetzen durch Zugriff auf DB, Collection zustandkomponenten
+exports.leseSchaltzustand = function (socketID, IP) {
+    const zustand = {};
+
+    exports.findeApNachIp(IP, function (benutzer) {
+        const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/verbindungen/liesVerbindungen?arbeitsplatz=' + benutzer + '&aktiveVerbindungen=true';
+        log.debug(FILENAME + 'leseSchaltzustand '+ url);
+        request(url, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                body = JSON.parse(body);
+                for (const verbindung of body) {
+                    //erstelle Objekt nach Muster 1-H-RFD-WHVVTA-FKEK-1:MHAN01
+                    //In Verbindung mit der AP Konfuguration der Geaete kann der Client die Verbindungen wieder schalten
+                    zustand[verbindung.funkstelle] = verbindung.span_mhanApNr
+                }
+                log.debug(FILENAME + 'leseSchaltzustand ' + JSON.stringify(zustand));
+                socket.emit('zustandsMessage', zustand, socketID)
+            }
+            else {
+                log.error(FILENAME + ' Funktion: leseSchaltzustand aus REST Service Fehler: ' + error)
+            }
+        })
+    })
+};
+
+//schreibe Schaltzzustand in DB
+exports.schreibeSchaltzustand = function (fst, Span_Mhan, aktion, span_mhanApNr, ApID) {
+    const schreibeLokal = false; //es wird auf jeden Fall geschrieben
+    const selector = {ApID, 'funkstelle': fst, 'span_mhan': Span_Mhan};
+    let aufgeschaltet = true;
+
+    if (aktion == 'trennenEinfach') {
+        aufgeschaltet = false
+    }
+
+    const schaltZustand = {
+        ApID, // z.B. JA NvD
+        'funkstelle': fst, // z.B. 1-H-RFD-WHVVTA-FKEK-1
+        'span_mhan': Span_Mhan, // z.B. 1-H-RFD-WHVVKZ-SPAN-01
+        span_mhanApNr, // z.B. MHAN05
+        'zustand': {
+            aufgeschaltet, // true - false
+            'letzterWechsel': new Date().toJSON()
+        }
+    };
+
+    exports.schreibeInDb('schaltZustaende', selector, schaltZustand, schreibeLokal)
+}
+
 
 //Prueft ob der PRIMARY der Mongo-Datenbank und die Anwendung im selben VTR laufen und
 //setzt die entsprechende Variable
@@ -244,4 +329,4 @@ function pruefeLokaleVerbindung(primaryServer) {
 
 	log.info(FILENAME + ' Funktion: pruefeLokaleVerbindung');
 	log.debug(FILENAME + ' Funktion: pruefeLokaleVerbindung ukwServer=' + ukwServer + ' primaryDbServer=' + primaryDbServer + ' Ergebnis=' + verbundenMitPrimary);
-}
+};

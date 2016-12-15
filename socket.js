@@ -1,22 +1,21 @@
 'use strict';
 
+const cfg = require('./cfg.js');
 const log = require('./log.js');
-const ukw = require('./ukw.js');
-const files = require('fs'); // Zugriff auf das Dateisystem
+const rfd = require('./rfd.js');
 const request = require('request'); //Modul zu Abfrage von WebServices
 
-//FILENAME = __filename.slice(__dirname.length + 1);
-const FILENAME = __filename;
+const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
+
+const FILENAME = __filename.slice(__dirname.length + 1);
 
 const io = require('socket.io');
 const socketClient = require('socket.io-client');
 
 let socketServer; //Variable um die Sockets ausserhalb der Funktion "on.connect" aufzurufen
 
-const cfg = require('./cfg.js');
-const db = require('./datenbank.js');
 
-log.debug(FILENAME + ' socket.js geladen.');
+log.debug(FILENAME + ' geladen.');
 
 let dueStatusServerA = null;
 let dueStatusServerB = null;
@@ -31,10 +30,10 @@ exports.socket = function (server) {
 		// TODO: Pruefung Berechtigung !
 
         // nur einmal beim Start: Zeitpunkt der Benutzung in DB schreiben
-        schreibeApConnect(socket.request.ip, socket.id);
+        db.schreibeApConnect(socket.conn.remoteAddress, socket.id, true);
 
 		leseZustand(socket.id); //Status der Funkstellen übertragen
-		leseSchaltzustand(socket.id, socket.request.connection.remoteAddress); //letzten Schaltzustandübertragen
+		db.leseSchaltzustand(socket.id, socket.request.connection.remoteAddress); //letzten Schaltzustandübertragen
 		// Uebertragen der DUE Server Zustaende
 		exports.emit('statusMessage', dueStatusServerA, socket.id);
 		exports.emit('statusMessage', dueStatusServerB, socket.id);
@@ -50,13 +49,13 @@ exports.socket = function (server) {
 		socket.on('chat message', function (msg) {
 			//io.emit('chat message', msg);
 			log.debug('chat message: ' + JSON.stringify(msg));
-			ukw.sendeWebServiceNachricht(msg.FstID, msg.SPAN, msg.aktion, msg.Kanal);//Zum Testen eine Schleife als SIP Nachricht, die wieder als Web Nachricht zurueckgesendet wird
+			rfd.sendeWebServiceNachricht(msg.FstID, msg.SPAN, msg.aktion, msg.Kanal);//Zum Testen eine Schleife als SIP Nachricht, die wieder als Web Nachricht zurueckgesendet wird
 		});
 
 		//'Standardnachrichten für Weiterleitung an RFD schalten,trennen, MKA'
 		socket.on('clientMessage', function (msg) {
 			log.debug(FILENAME + ' Funktion: empfangeWebNachricht ' + 'clientMessage: WebSocket Nachricht: ' + JSON.stringify(msg));
-			ukw.sendeWebServiceNachricht(msg.FstID, msg.SPAN, msg.aktion, msg.Kanal, msg.span_mhanApNr, msg.ApID);//Sende WebServiceNachricht an RFD
+			rfd.sendeWebServiceNachricht(msg.FstID, msg.SPAN, msg.aktion, msg.Kanal, msg.span_mhanApNr, msg.ApID);//Sende WebServiceNachricht an RFD
 		});
 
 		//Speichern der Kanal Lotsenzuordnung
@@ -79,7 +78,7 @@ exports.socket = function (server) {
 			}
 
 			log.warn(FILENAME + ' Funktion disconnect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' getrennt. IP: ' + ip);
-			schreibeSocketInfo('false', ip);
+			db.schreibeApConnect( ip, socket.id , false);
 
 		});
 
@@ -88,6 +87,26 @@ exports.socket = function (server) {
 
 
 };
+
+
+//Zum Senden von UKW bezogenen Nachrichten
+exports.sendeWebSocketNachricht = function (Nachricht) {
+    log.info(FILENAME + ' Funktion: sendeWebSocketNachricht ' + 'ukwMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht));
+    exports.emit('ukwMessage', Nachricht);
+};
+
+//Zum Senden von Status-Meldungen
+exports.sendeWebsocketNachrichtStatus = function (Nachricht) {
+    log.debug(FILENAME + ' Funktion: sendeWebsocketNachrichtStatus ' + 'statusMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht));
+    exports.emit('statusMessage', Nachricht);
+};
+
+//Zum Senden von Status-Meldungen
+exports.sendeWebsocketNachrichtServer = function (Nachricht) {
+    log.debug(FILENAME + ' Funktion: sendeWebsocketNachrichtServer ' + 'ServerMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht));
+    exports.emit('serverMessage', Nachricht);
+};
+
 
 exports.emit = function emit(messagetype, message, socketID) {
 	log.debug(FILENAME + ' Funktion: socket.emit MessageType: ' + messagetype + '  message: ' + JSON.stringify(message));
@@ -112,33 +131,6 @@ exports.emit = function emit(messagetype, message, socketID) {
 };
 
 
-//in Arbeit
-//Einlesen des Schaltzustands und übermittlung bei connect
-function leseSchaltzustand(socketID, IP) {
-	const zustand = {};
-
-	findeApNachIp(IP, socketID, function (benutzer) {
-		const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/verbindungen/liesVerbindungen?arbeitsplatz=' + benutzer + '&aktiveVerbindungen=true';
-		log.debug(FILENAME + 'leseSchaltzustand '+ url);
-		request(url, function (error, response, body) {
-			if (!error && response.statusCode == 200) {
-				body = JSON.parse(body);
-				for (const verbindung of body) {
-					//erstelle Objekt nach Muster 1-H-RFD-WHVVTA-FKEK-1:MHAN01
-					//In Verbindung mit der AP Konfuguration der Geaete kann der Client die Verbindungen wieder schalten
-					zustand[verbindung.funkstelle] = verbindung.span_mhanApNr
-				}
-				log.debug(FILENAME + 'leseSchaltzustand ' + JSON.stringify(zustand));
-				exports.emit('zustandsMessage', zustand, socketID)
-			}
-			else {
-				log.error(FILENAME + ' Funktion: leseSchaltzustand aus REST Service Fehler: ' + error)
-			}
-		})
-	})
-}
-
-
 //Lese Zustandsmeldungen in zustandKomponenten
 //{"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
 //TODO:
@@ -157,34 +149,8 @@ function leseZustand(socketID) {
 	})
 }
 
-function schreibeApConnect(ip, socketId) {
-	//SocketID und Verbindungszeit in DB schreiben
-	const ApInfo = ip;
-	ApInfo.socketID = socketID;
-	ApInfo.connectTime = new Date();
-	ApInfo.aktiv = true;
 
-	//Schreiben in aktiveArbeitsplaetze
-	schreibeSocketInfo(ApInfo, ip);
-}
 
-//schreibe Verbindungsinfo socketID und Zeitstempel in aktiveArbeitsplaetze
-function schreibeSocketInfo(socketInfo, ip) {
-	const schreibeLokal = false; //auf jeden Fall schreiben in Primary Datenbank schreiben
-	socketInfo._id = ip;
-
-	if (socketInfo === 'false') {
-		socketInfo = {
-			$set: {
-				aktiv: false,
-				disconnectTime: new Date()
-			}
-		}
-	}
-	const selector = {'_id': ip};
-	// TODO: lieber separate Datenbank: Bewegungsdaten / Monitoring / Audit von Stammdaten trennen
-	db.schreibeInDb('aktiveArbeitsplaetze', selector, socketInfo, schreibeLokal);
-}
 
 if(cfg.intervall !== 0 ) {
 	//TODO: Gegenseitige Serverüberwachung
@@ -267,3 +233,6 @@ if(cfg.intervall !== 0 ) {
         exports.emit('statusMessage', msg)
     });
 }
+
+
+

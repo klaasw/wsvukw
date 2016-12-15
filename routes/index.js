@@ -21,6 +21,7 @@ router.get('/', function (req, res, next) {
 
 /* GET UKW uebersicht */
 router.get('/overview', function (req, res) {
+	const Funkstellen = rfd.getFunkstellen();
 	if (Funkstellen.length === 0) {
 		log.error('Topologie nicht eingelesen, wird aber jetzt gebraucht, mit Fehler antworten!');
 		res.status(404)        // HTTP status 404: NotFound
@@ -211,15 +212,14 @@ router.get('/ukwTestWue', function (req, res) {
  * TODO wenn die Konfiguration noch nicht eingelesen ist in Funkstellen, dann warten bis verfuegbar, nach Timeout mit Fehler antworten, Fehlerhandling clientseitig
  * */
 router.get('/ukwKonfig', function (req, res) {
-	log.info(FILENAME + ' Funktion: router get /ukwKonfig von IP: ' + req.ip);
-	log.info(FILENAME + ' Funktion: router get /ukwKonfig von IP als Parameter: ' + JSON.stringify(req.query));
+	log.warn(FILENAME + ' Funktion: router get /ukwKonfig von IP: ' + req.ip, + '   IP-Parameter: ' + JSON.stringify(req.query));
 
-	if (Funkstellen.length === 0) {
+	let Funkstellen= rfd.getFunkstellen();
+    if (Funkstellen.length === 0) {
 		log.error('Topologie nicht eingelesen, wird aber jetzt gebraucht, mit Fehler antworten!');
 		res.status(404)        // HTTP status 404: NotFound
 			.send('ukwKonfig konnte nicht geladen werden.');
-	}
-	else {
+	} else {
 		// /ukwKonfig mit Parameter z.B. ukwKonfig?ip=1.1.1.1
 		if (req.query.ip) {
 			if (req.query.ip == '1.1.1.1') {
@@ -236,8 +236,7 @@ router.get('/ukwKonfig', function (req, res) {
 
 				}
 				res.send(Konfig);
-			}
-			else {
+			} else {
                 datenbank.findeApNachIp(req.query.ip, function (benutzer) {
 					if (benutzer) {
 						log.debug(FILENAME + ' Benutzer zu IP  = ' + benutzer + ' ' + req.query.ip);
@@ -303,7 +302,7 @@ router.get('/ukwKonfig', function (req, res) {
 router.get('/liesTopologie', function (req, res) {
 	log.info(FILENAME + ' Topologie neu einlesen.');
 	rfd.leseRfdTopologie(function () {
-		res.send(Funkstellen);
+		res.send(rfd.Funkstellen);
 	});
 });
 
@@ -479,7 +478,7 @@ function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
 		//Alle LotsenAP einlesen
 		//ueber alle Lotsendateien //JA_Lotse1.json usw. gehen und Inhalt in die Konfig schreiben
 
-		var i = 1;
+		let i = 1;
 		let weitereDatei = true;  //solange true bis keine weitere Datei vorliegt
 		while (weitereDatei === true) {
 			try {

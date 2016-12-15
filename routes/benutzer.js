@@ -19,7 +19,7 @@ const FILENAME = __filename.slice(__dirname.length + 1);
 
 router.get('/zeigeWindowsBenutzer/selectip', function (req, res) {
     const arbeitsplaetze = {};
-    var selectip = req.params.selectip;   // req.query.revier
+    let selectip = req.params.selectip;   // req.query.revier
     db.findeElement('windowsBenutzer', {id:req.params.selectip}, function (doc) {
         for (const ap of doc) {
             arbeitsplaetze[ap._id] = ap

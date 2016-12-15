@@ -9,7 +9,7 @@
 const fs = require('fs'); // Zugriff auf das Dateisystem
 const HOSTNAME = require('os').hostname();
 
-var AKTUELLER_SERVER = ''; //globale Variable für aktuellen Server. Einbindung in Konfig zur Darstellung des aktuellen Server via Jade Template layout.jade
+let AKTUELLER_SERVER = ''; //globale Variable für aktuellen Server. Einbindung in Konfig zur Darstellung des aktuellen Server via Jade Template layout.jade
 
 function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
 	// eine existierende Datei in ./config/servers/ geht vor, damit man auf einer Maschine mehrfach mit unterschiedlichen Ports starten kann:
