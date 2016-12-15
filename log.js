@@ -12,7 +12,7 @@ winston.emitErrs = true;
 const log = new winston.Logger({
 	transports: [
 		new winston.transports.File({
-			level: cfg.loglevelFile || 'debug',
+			level: cfg.loglevelFile,
 			timestamp: true,
 			prettyPrint: true,
 			filename: './log/ukwserver.log',
@@ -24,7 +24,7 @@ const log = new winston.Logger({
 			tailable: true
 		}),
 		new winston.transports.Console({
-			level: cfg.loglevelConsole || 'info',
+			level: cfg.loglevelConsole,
 			timestamp: true,
 			prettyPrint: true,
 			handleExceptions: true,

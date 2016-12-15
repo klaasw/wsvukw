@@ -116,11 +116,12 @@ server.on('listening', onListening);
 const socket = require('./socket.js');
 socket.socket(server);
 
-// Setze Intervall fuer Pruefung
-const Intervall = setInterval(function () {
-	ukw.pruefeRfdWS()
-}, cfg.intervall);
-
+if(cfg.intervall !== 0) {
+	// Setze Intervall fuer Pruefung
+    const Intervall = setInterval(function () {
+        ukw.pruefeRfdWS()
+    }, cfg.intervall);
+}
 
 /**
  * Normalize a port into a number, string, or false.

@@ -14,12 +14,10 @@ const JsSIP = require('jssip'); //Javascript SIP Uaser Agent
 const request = require('request'); //Modul zu Abfrage von WebServices
 const xml2js = require('xml2js'); // zum Konvertieren von XML zu JS
 const parser = new xml2js.Parser({explicitRoot: true});// Parserkonfiguration
+
 const log = require('./log.js');
-
 const cfg = require('./cfg.js');
-
-const io = require('./socket.js');
-
+const socket = require('./socket.js');
 const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
 db.verbindeDatenbank();
 
@@ -49,16 +47,16 @@ exports.pruefeRfdWS = function () {
 
 		if (!error && response.statusCode == 200) {
 			log.debug(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK');
-			exports.sendeWebsocketNachrichtStatus({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
-			exports.sendeWebsocketNachrichtServer({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
+			socket.sendeWebsocketNachrichtStatus({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
+            socket.sendeWebsocketNachrichtServer({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
 		}
 		else {
 			log.error(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + error);
-			exports.sendeWebsocketNachrichtStatus({
+            socket.sendeWebsocketNachrichtStatus({
 				dienst: 'RFD',
 				status: {URL: cfg.urlRFDWebservice, Status: 'Error'}
 			});
-			exports.sendeWebsocketNachrichtServer({
+            socket.sendeWebsocketNachrichtServer({
 				dienst: 'RFD',
 				status: {URL: cfg.urlRFDWebservice, Status: 'Error'}
 			});
@@ -67,151 +65,6 @@ exports.pruefeRfdWS = function () {
 };
 
 
-/*Block zur Implementierung der WebService Abfragen an RFD
- * TODO: noch erforderlich? ApID in Client ergaeznen damit schaltzustand zum AP geschrieben werden kann
- *
- *
- *
- */
-exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span_mhanApNr, ApID) {
-	const parameterRfdWebService = {
-		url: cfg.urlRFDWebservice,
-		method: 'POST',
-		headers: {
-			'Content-Type': 'text/xml;charset=UTF-8;',
-			'SOAPAction': 'PLATZHALTER'                      //NOch beachten in WS Aufrufen
-		},
-		body: ''
-	};
-
-	let antwortFuerWebsocket;
-
-
-	if (aktion == 'trennenEinfach') {
-		//Variable fuer RFD Request
-		const msg_TrennenEinfach = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><trennenEinfach xmlns="http://strg.rfd.dma.schnoor.de/"><vonId xmlns="">' + Span_Mhan + '</vonId><nachId xmlns="">' + Fst + '</nachId></trennenEinfach></s:Body></s:Envelope>';
-		//Variable fuer true Rueckmeldung vom RFD
-		antwortFuerWebsocket = {getrennt: {'$': {id: Fst, Ap: Span_Mhan, state: '1'}}};
-		parameterRfdWebService.headers.SOAPAction = 'trennenEinfach';
-		parameterRfdWebService.body = msg_TrennenEinfach
-	}
-
-	if (aktion == 'schaltenEinfach') {
-		//Variable fuer RFD Request
-		const msg_SchaltenEinfach = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><schaltenEinfach xmlns="http://strg.rfd.dma.schnoor.de/"><vonId xmlns="">' + Span_Mhan + '</vonId><nachId xmlns="">' + Fst + '</nachId><duplex xmlns="">true</duplex></schaltenEinfach></s:Body></s:Envelope>';
-		//Variable fuer true Rueckmeldung vom RFD
-		antwortFuerWebsocket = {geschaltet: {'$': {id: Fst, Ap: Span_Mhan, state: '1'}}};
-		parameterRfdWebService.headers.SOAPAction = 'schaltenEinfach';
-		parameterRfdWebService.body = msg_SchaltenEinfach
-	}
-
-	if (aktion == 'setzeKanal') {
-		//Variable fuer RFD Request
-		const msg_setzeKanal = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><setzeKanal xmlns="http://strg.rfd.dma.schnoor.de/"><fstid xmlns="">' + Fst + '</fstid><channel xmlns="">' + Kanal + '</channel></setzeKanal></s:Body></s:Envelope>';
-		//Variable fuer true Rueckmeldung vom RFD
-
-		//Websocket Antwort kann entfallen. Bestaetigung wird als SIP NAchricht vom RFD DM versendet
-		antwortFuerWebsocket = {setzeKanal: {'$': {id: Fst, Ap: Span_Mhan, state: '1'}}};
-		parameterRfdWebService.headers.SOAPAction = 'setzeKanal';
-		parameterRfdWebService.body = msg_setzeKanal
-	}
-
-	if (aktion == 'SetzeAudioPegel') {
-		//Variable fuer RFD Request
-		const msg_setzeAudioPegel = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><SetzeAudioPegel xmlns="http://strg.rfd.dma.schnoor.de/"><apid xmlns="">' + Span_Mhan + '</apid><fstid xmlns="">' + Fst + '</fstid><level xmlns="">' + Kanal + '</level></SetzeAudioPegel></s:Body></s:Envelope>';
-		//Variable fuer true Rueckmeldung vom RFD
-
-		//Variable fuer true Rueckmeldung vom RFD
-		antwortFuerWebsocket = {SetzeAudioPegel: {'$': {id: Fst, Ap: Span_Mhan, state: '1'}}};
-		parameterRfdWebService.headers.SOAPAction = 'SetzeAudioPegel';
-		parameterRfdWebService.body = msg_setzeAudioPegel
-	}
-
-	log.debug('parameterRfdWebService.headers.SOAPAction: ' + parameterRfdWebService.headers.SOAPAction);
-
-	request(parameterRfdWebService, function (error, response, body) {
-		log.debug(FILENAME + ' Funktion: sendeWebServiceNachricht request mit Parameter: ' + JSON.stringify(parameterRfdWebService));
-		if (error) {
-			log.error(FILENAME + ' Funktion: sendeWebServiceNachricht request ' + 'Msg: RFD WebService nicht erreichbar. Aktion: ' + aktion, {
-				uebergabe: parameterRfdWebService,
-				nodeMsg: error
-			});
-
-			exports.sendeWebSocketNachricht('RFD ' + aktion + ' fehlgeschlagen')
-
-		}
-		else {
-			log.debug(FILENAME + ' parsing response');
-			parser.parseString(body, function (err, result) {
-				//log.debug(FILENAME + ' result  ' + JSON.stringify(result));
-				if (result !== undefined && result !== null && typeof result === 'object') {
-					if (result['S:Envelope'] !== undefined) {
-						//log.debug(FILENAME + ' Funktion: sendeWebServiceNachricht response: ' + JSON.stringify(result));
-						//console.log(result['S:Envelope'])
-						//console.log(result['S:Envelope']['S:Body'][0]['ns2:'+aktion+'Response'][0])
-
-						const erfolgreich = result['S:Envelope']['S:Body'][0]['ns2:' + aktion + 'Response'][0]['return'][0];
-						log.debug(FILENAME + ' Funktion: sendeWebServiceNachricht response: ' + erfolgreich);
-						if (erfolgreich === 'true') {
-							exports.sendeWebSocketNachricht(antwortFuerWebsocket);
-
-							if (aktion == 'schaltenEinfach' || aktion == 'trennenEinfach') {
-								schreibeSchaltzustand(Fst, Span_Mhan, aktion, span_mhanApNr, ApID)
-							}
-
-						}
-						else {
-							log.error('RFD ' + aktion + ' fehlgeschlagen');
-							exports.sendeWebSocketNachricht('RFD ' + aktion + ' fehlgeschlagen');
-
-							//TODO: Bei False Verarbeitung muss RFD muss nicht gestört sein. Abfangen
-							//exports.sendeWebsocketNachrichtStatus({
-							//    RfdStatus: {
-							//        URL: cfg.urlRFDWebservice,
-							//        Status: 'Error'
-							//    }
-							//});
-						}
-					}
-					else {
-						// TODO: Client ggf. informieren, dass der letzte Request nicht verarbeitet werden konnte - anders als der healthcheck ist die Ursache aber vielfaeltiger
-						log.error(FILENAME + ' no envelope');
-					}
-				}
-				else {
-					// TODO: Client ggf. informieren, dass der letzte Request nicht verarbeitet werden konnte - anders als der healthcheck ist die Ursache aber vielfaeltiger
-					log.error(FILENAME + ' result undefined or unexpected');
-				}
-			}); // Parser ende
-		}// ELse ende
-	}); // Request ende
-};
-
-
-//Zum Senden von UKW bezogenen Nachrichten
-exports.sendeWebSocketNachricht = function (Nachricht) {
-	log.info(FILENAME + ' Funktion: sendeWebSocketNachricht ' + 'ukwMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht));
-	io.emit('ukwMessage', Nachricht);
-};
-
-//Zum Senden von Status-Meldungen
-exports.sendeWebsocketNachrichtStatus = function (Nachricht) {
-	log.debug(FILENAME + ' Funktion: sendeWebsocketNachrichtStatus ' + 'statusMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht));
-	io.emit('statusMessage', Nachricht);
-};
-
-//Zum Senden von Status-Meldungen
-exports.sendeWebsocketNachrichtServer = function (Nachricht) {
-	log.debug(FILENAME + ' Funktion: sendeWebsocketNachrichtServer ' + 'ServerMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht));
-	io.emit('serverMessage', Nachricht);
-};
-
-//Zum Senden von Status-Meldungen
-exports.sendeWebsocketNachrichtServer = function (Nachricht) {
-    log.debug(FILENAME + ' Funktion: sendeWebsocketNachrichtServer ' + 'ServerMsg: WebSocket Nachricht: ' + JSON.stringify(Nachricht));
-    io.emit('serverMessage', Nachricht);
-};
-
 
 /*
  zum Testen
@@ -219,29 +72,6 @@ exports.sendeWebsocketNachrichtServer = function (Nachricht) {
 //var Intervall=setInterval(function() {sendeWebSocketNachricht()},1000)
 
 
-//schreibe Schaltzzustand in DB
-function schreibeSchaltzustand(fst, Span_Mhan, aktion, span_mhanApNr, ApID) {
-	const schreibeLokal = false; //es wird auf jeden Fall geschrieben
-	const selector = {ApID, 'funkstelle': fst, 'span_mhan': Span_Mhan};
-	let aufgeschaltet = true;
-
-	if (aktion == 'trennenEinfach') {
-		aufgeschaltet = false
-	}
-
-	const schaltZustand = {
-		ApID, // z.B. JA NvD
-		'funkstelle': fst, // z.B. 1-H-RFD-WHVVTA-FKEK-1
-		'span_mhan': Span_Mhan, // z.B. 1-H-RFD-WHVVKZ-SPAN-01
-		span_mhanApNr, // z.B. MHAN05
-		'zustand': {
-			aufgeschaltet, // true - false
-			'letzterWechsel': new Date().toJSON()
-		}
-	};
-
-	db.schreibeInDb('schaltZustaende', selector, schaltZustand, schreibeLokal)
-}
 
 
 //schreibe Zustandsmeldungen in zustandKomponenten
@@ -345,7 +175,7 @@ ua.on('newMessage', function (e) {
 			if ('FSTSTATUS' in result) {
 				result.FSTSTATUS.letzteMeldung = new Date();
 			}
-			exports.sendeWebSocketNachricht(result);
+			rfd.sendeWebSocketNachricht(result);
 			schreibeZustand(result)
 		}
 		else {
