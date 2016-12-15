@@ -1,24 +1,22 @@
-var WSV = window.WSV || {};
-WSV.epgcms = window.WSV.epgcms || {};
-WSV.Utils = window.WSV.Utils || {};
-WSV.Utils.applySort = window.WSV.Utils.applySort || {};
+'use strict';
+
+const WSV = window.WSV || {};
 
 //WSV.ErrorHandler.init();
 
 // =========================== JS Init ================================== //
 $(window).load(function () {
 
-	WSV.Utils.General.init();
+    WSV.Utils.init();
 
-	// =========================== init Projects and Pages ==================================
+    // =========================== init Projects and Pages ==================================
 
-	//iniitialize all pages
+    //iniitialize all pages
 
 
+    // =========================== eof Projects and Pages ====================================
 
-	// =========================== eof Projects and Pages ====================================
-
-	// =========================== general and important things ====================================
+    // =========================== general and important things ====================================
 
 
 }); // eof JS Init

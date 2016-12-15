@@ -136,7 +136,6 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span
 				uebergabe: parameterRfdWebService,
 				nodeMsg: error
 			});
-			//log.info('RFD '+aktion+' fehlgeschlagen')
 
 			exports.sendeWebSocketNachricht('RFD ' + aktion + ' fehlgeschlagen')
 
@@ -147,11 +146,12 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span
 				//log.debug(FILENAME + ' result  ' + JSON.stringify(result));
 				if (result !== undefined && result !== null && typeof result === 'object') {
 					if (result['S:Envelope'] !== undefined) {
-						log.info(FILENAME + ' Funktion: sendeWebServiceNachricht response: ' + JSON.stringify(result));
+						//log.debug(FILENAME + ' Funktion: sendeWebServiceNachricht response: ' + JSON.stringify(result));
 						//console.log(result['S:Envelope'])
 						//console.log(result['S:Envelope']['S:Body'][0]['ns2:'+aktion+'Response'][0])
 
 						const erfolgreich = result['S:Envelope']['S:Body'][0]['ns2:' + aktion + 'Response'][0]['return'][0];
+						log.debug(FILENAME + ' Funktion: sendeWebServiceNachricht response: ' + erfolgreich);
 						if (erfolgreich === 'true') {
 							exports.sendeWebSocketNachricht(antwortFuerWebsocket);
 

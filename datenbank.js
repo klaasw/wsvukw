@@ -2,6 +2,9 @@
 /* Modul zur Herstellung der Verbindung zur Mongo Datenbank
  * In Bearbeitung....
  *
+ * Anpassung 14.12.16: Timeouts auskommentiert, nur in pruefeLokaleVerbindung/
+ * VTR lokale DB auskommentiert -> bei Ausfall nodeJS muesste auch Mongo primary
+ * wechseln.
  * @Author: Klaas Wuellner
  *
  */
@@ -33,12 +36,11 @@ exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 		//})
 	}
 	else {
-		if (verbundenMitPrimary === true && schreibeLokal === true) {
+		//if (verbundenMitPrimary === true && schreibeLokal === true) {
+		//	schreibeInDb2(collection, selector, inhalt);
+		//}
+		//else {
 			schreibeInDb2(collection, selector, inhalt);
-		}
-		else {
-			schreibeInDb2(collection, selector, inhalt);
-		}
 	}
 };
 
@@ -65,7 +67,7 @@ exports.findeElement = function (collection, element, callback) {
 function findeElement2(collection, element, callback) {
 	const tmp = dbVerbindung.collection(collection);
 	let selector = {};
-	log.debug(JSON.stringify(element));
+	log.debug(FILENAME + ' Funktion: findeElement2, element: ' + JSON.stringify(element));
 
 	if (element !== undefined) {
 		selector = element;
@@ -87,7 +89,6 @@ function schreibeInDb2(collection, selector, inhalt) {
 	const tmp = dbVerbindung.collection(collection);
 	tmp.updateOne(selector, inhalt, {upsert: true, w: 1}).then(function (result) {
 		assert.equal(1, result.result.n);
-		console.log('in DB geschrieben');
 		log.debug(FILENAME + ' Funktion: schreibeInDb2 in DB geschrieben');
 	});
 
@@ -96,7 +97,6 @@ function schreibeInDb2(collection, selector, inhalt) {
 	 dbVerbindung.collection(collection).insertOne(element, function(err, r) {
 	 assert.equal(null, err);
 	 assert.equal(1, r.insertedCount);
-	 console.log('in DB geschrieben')
 	 })
 	 */
 }
@@ -104,26 +104,26 @@ function schreibeInDb2(collection, selector, inhalt) {
 
 // Verbindung zur DB aufbauen. Dies wird beim ersten Aufruf von finde oder schreibe aufgerufen
 exports.verbindeDatenbank = function (aktion) {
-	console.log(url);
+	log.debug(url);
 	MongoClient.connect(url, {
-		connectTimeoutMS: 2000,
-		socketTimeoutMS: 2000
+        // Timeout Parameter fuehren in Entwicklungsumgebungen zu neuen Verbindungen
+		// und Toggeln der Topology, Ereignis: topologyDescriptionChanged
+		//connectTimeoutMS: 2000,
+		//socketTimeoutMS: 2000
 	}, function (err, db) {
 
 		if (err) {
-			console.log(err);
+			log.error(err);
 		}
 
-		//console.log(db)
-
 		assert.equal(null, err);
-		console.log(err);
+		log.debug(FILENAME + err);
 		log.info(FILENAME + ' Funktion: verbindeDatenbank Verbindung erfolgreich hergestellt');
 		log.debug(FILENAME + ' Funktion: verbindeDatenbank' + JSON.stringify(db.topology.isMasterDoc));
 		log.debug(db.topology.isMasterDoc.primary);
 
 		dbVerbindung = db;
-		pruefeLokaleVerbindung(dbVerbindung.topology.isMasterDoc.primary);
+		//pruefeLokaleVerbindung(dbVerbindung.topology.isMasterDoc.primary);
 
 		if (err) throw err;
 
@@ -131,7 +131,6 @@ exports.verbindeDatenbank = function (aktion) {
 			aktion();
 		}
 
-		//console.log(db.topology)
 
 		//Ereignislister fuer Topologie Aenderungen im ReplicaSet
 		db.topology.on('serverDescriptionChanged', function (event) {
@@ -178,9 +177,9 @@ exports.verbindeDatenbank = function (aktion) {
 			log.debug(FILENAME + ' Funktion: verbindeDatenbank Listener: received topologyDescriptionChanged');
 			log.debug(FILENAME + ' Funktion: verbindeDatenbank Listener:' + JSON.stringify(event));
 
-			if (event.newDescription.topologyType == 'ReplicaSetWithPrimary') {
-				pruefeLokaleVerbindung(event.newDescription.servers[0].address);
-			}
+			//if (event.newDescription.topologyType == 'ReplicaSetWithPrimary') {
+			//	pruefeLokaleVerbindung(event.newDescription.servers[0].address);
+			//}
 		});
 	});
 };
