@@ -17,12 +17,21 @@ const log = require('../log.js'); // Modul fuer verbessertes Logging
 const FILENAME = __filename.slice(__dirname.length + 1);
 
 
-/* Erster Test */
+router.get('/zeigeWindowsBenutzer/selectip', function (req, res) {
+    const arbeitsplaetze = {};
+    var selectip = req.params.selectip;   // req.query.revier
+    db.findeElement('windowsBenutzer', {id:req.params.selectip}, function (doc) {
+        for (const ap of doc) {
+            arbeitsplaetze[ap._id] = ap
+        }
+        res.send(arbeitsplaetze)
+    })
+});
+
+
 router.get('/zeigeWindowsBenutzer', function (req, res) {
 	const arbeitsplaetze = {};
-
 	db.findeElement('windowsBenutzer', {}, function (doc) {
-
 		for (const ap of doc) {
 			arbeitsplaetze[ap._id] = ap
 		}

@@ -8,9 +8,11 @@
 
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
+const util = require('util');
 
 const cfg = require('./cfg.js');
 const log = require('./log.js');
+const request = require('request'); //Modul zu Abfrage von WebServices
 
 const FILENAME = __filename.slice(__dirname.length + 1);
 
@@ -26,16 +28,11 @@ const url = 'mongodb://' + user_auth + cfg.mongodb.join(',') + '/ukw?readPrefere
 //vor dem Schreiben prüfen ob eine Verbindung besteht:
 exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 	if (dbVerbindung === undefined) {
-		//exports.verbindeDatenbank( function(){
-		// Insert a single document
-		//	schreibeInDb2(collection, selector, inhalt)
-		//})
-	}
-	else {
+        log.error("Datenbank ist noch nicht verbunden!!!");
+	} else {
 		if (verbundenMitPrimary === true && schreibeLokal === true) {
 			schreibeInDb2(collection, selector, inhalt);
-		}
-		else {
+		} else {
 			schreibeInDb2(collection, selector, inhalt);
 		}
 	}
@@ -45,14 +42,8 @@ exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 //finde Dokumente
 exports.findeElement = function (collection, element, callback) {
 	if (dbVerbindung === undefined) {
-		// exports.verbindeDatenbank( function(){
-		// Insert a single document
-		//	findeElement2(collection, element, function(doc){
-		//	    callback(doc)
-		//  })
-		// })
-	}
-	else {
+		log.error("Datenbank ist noch nicht verbunden!!!");
+	} else {
 		findeElement2(collection, element, function (doc) {
 			callback(doc);
 		});
@@ -63,18 +54,23 @@ exports.findeElement = function (collection, element, callback) {
 function findeElement2(collection, element, callback) {
 	const tmp = dbVerbindung.collection(collection);
 	let selector = {};
-	log.debug(FILENAME + ' Funktion: findeElement2, element: ' + JSON.stringify(element));
+	log.debug(FILENAME + ' Funktion: findeElement2, collection: '+ collection + ', element: ' + JSON.stringify(element));
 
 	if (element !== undefined) {
 		selector = element;
 	}
-
-
-	tmp.find(selector).toArray(function (err, docs) {
-		assert.equal(err, null);
-		log.debug(FILENAME + ' Funktion: findeElement2 aus DB gelesen');
-		callback(docs);
-	});
+	if (isNaN(selector)){
+        tmp.find(selector).toArray(function (err, docs) {
+            assert.equal(err, null);
+            log.debug(FILENAME + ' Funktion: findeElement2 aus DB gelesen');
+            callback(docs);
+        });
+	} else {
+        collection.findOne({id:selector}, function(err, doc) {
+            assert.equal(null, err);
+            callback(doc);
+        });
+    }
 }
 
 // tatsächlich in DB schreiben, Ausführung als Upsert
@@ -86,14 +82,6 @@ function schreibeInDb2(collection, selector, inhalt) {
 		assert.equal(1, result.result.n);
 		log.debug(FILENAME + ' Funktion: schreibeInDb2 in DB geschrieben');
 	});
-
-	/*
-	 // Insert a single document
-	 dbVerbindung.collection(collection).insertOne(element, function(err, r) {
-	 assert.equal(null, err);
-	 assert.equal(1, r.insertedCount);
-	 })
-	 */
 }
 
 
@@ -106,15 +94,12 @@ exports.verbindeDatenbank = function (aktion) {
 	}, function (err, db) {
 
 		if (err) {
-			log.error(err);
+            log.error(FILENAME + ' Funktion: verbindeDatenbank. err: '+ util.inspect(err));
 		}
 
 		assert.equal(null, err);
-		log.debug(FILENAME + err);
-		log.info(FILENAME + ' Funktion: verbindeDatenbank Verbindung erfolgreich hergestellt');
-		log.debug(FILENAME + ' Funktion: verbindeDatenbank' + JSON.stringify(db.topology.isMasterDoc));
-		log.debug(db.topology.isMasterDoc.primary);
-
+		log.debug(FILENAME + ' Funktion: verbindeDatenbank. err: '+ util.inspect(err));
+		log.debug(FILENAME + ' Funktion: verbindeDatenbank. Verbindung erfolgreich hergestellt:  topology: '+ db.topology +', primary: '+db.topology.isMasterDoc.primary+', isMasterDoc:' + JSON.stringify(db.topology.isMasterDoc));
 		dbVerbindung = db;
 		pruefeLokaleVerbindung(dbVerbindung.topology.isMasterDoc.primary);
 
@@ -123,9 +108,6 @@ exports.verbindeDatenbank = function (aktion) {
 		if (typeof aktion === 'function') {
 			aktion();
 		}
-
-		log.debug(FILENAME + db.topology);
-
 		//Ereignislister fuer Topologie Aenderungen im ReplicaSet
 		db.topology.on('serverDescriptionChanged', function (event) {
 			log.debug(FILENAME + ' Funktion: verbindeDatenbank Listener: received serverDescriptionChanged');
@@ -177,6 +159,74 @@ exports.verbindeDatenbank = function (aktion) {
 		});
 	});
 };
+
+
+
+exports.findeApNachIp = function (ip, callback) {
+    let Ap = '';
+
+    //IPv6 Anteil aus Anfrage kuerzen
+    const ipv6Ende = ip.lastIndexOf(':');
+    if (ipv6Ende > -1) {
+        ip = ip.slice(ipv6Ende + 1, ip.length);
+    }
+
+    // TODO: Aus DB auslesen, nicht mehr den Umweg über REST nehmen, weil so oft benutzt
+
+
+    //var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
+    log.debug(FILENAME + ' function findeNachIp: ' + util.inspect(ip));
+    // TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
+    const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/benutzer/zeigeWindowsBenutzer';
+    log.debug(FILENAME + ' function findeNachIp ' + url);
+    request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            //log.debug("body: " + body);
+            const alle_Ap = JSON.parse(body);
+            log.debug(FILENAME + ' function findeNachIp: ' + alle_Ap);
+
+            if (alle_Ap.hasOwnProperty(ip)) {
+                Ap = alle_Ap[ip].user;
+                log.debug(FILENAME + ' function findeNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
+	            callback(Ap);
+			} else {
+				log.error(FILENAME + ' function findeNachIp: Benutzer NICHT gefunden zu IP: ' + ip);
+				callback('');
+			}
+		} else {
+			log.error('Fehler. ' + JSON.stringify(error));
+		}
+	});
+};
+
+// Auslesen der Arbeitsplatzkonfigurationen:
+// Welche MHANs mit welchen Kanälen verbunden sind,
+// welche Schaltflächen existieren in welchem Revier und Arbeitsplatz
+// wie heissen die Arbeitsplatzgeräte in Kurzform (MHAN01 statt z.B. "1-H-RFD-WARVKZ-MHAN-11")
+exports.liesAusRESTService = function (configfile, callback) {
+    // require(cfg.configPath + configfile + '.json');
+    log.debug('function liesAusRESTService ' + configfile);
+    // TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
+    const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/lieskonfig?configfile=' + configfile;
+    log.debug(' liesAusRESTService url=' + url);
+    request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            const antwortImBody = JSON.parse(body);
+            log.debug(' liesAusRESTService response: ' + JSON.stringify(antwortImBody));
+            callback(antwortImBody);
+        } else {
+            if (error) {
+                log.error(' liesAusRESTService Fehler: ' + JSON.stringify(error));
+                callback('Fehler');//TODO: hier Fehlerhandling wenn Service nicht erreichbar
+            } else {
+                log.error(' liesAusRESTService Fehler: ' + JSON.stringify(body));
+                //log.error(" liesAusRESTService Fehler: " + JSON.stringify(response));
+                callback(body);
+            }
+        }
+    });
+};
+
 
 //Prueft ob der PRIMARY der Mongo-Datenbank und die Anwendung im selben VTR laufen und
 //setzt die entsprechende Variable

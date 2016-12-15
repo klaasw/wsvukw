@@ -9,7 +9,7 @@
 const fs = require('fs'); // Zugriff auf das Dateisystem
 const HOSTNAME = require('os').hostname();
 
-let AKTUELLER_SERVER = ''; //globale Variable für aktuellen Server. Einbindung in Konfig zur Darstellung des aktuellen Server via Jade Template layout.jade
+var AKTUELLER_SERVER = ''; //globale Variable für aktuellen Server. Einbindung in Konfig zur Darstellung des aktuellen Server via Jade Template layout.jade
 
 function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
 	// eine existierende Datei in ./config/servers/ geht vor, damit man auf einer Maschine mehrfach mit unterschiedlichen Ports starten kann:
@@ -59,12 +59,18 @@ const cfg = {
 	//HTTP Port für die nodeJS Instanz
 	'port': cfgIPs.port,
 	'configPath': 'config/',
-	'intervall': 10000000,
+
+	// 0 = Überprüfung abschalten
+	'intervall': cfgIPs.checkRrdIntervallInSeconds * 1000 || 0,
+
 
 	'alternativeIPs': cfgIPs.alternativeServer,
 	cfgIPs,
 	'aktuellerServer': AKTUELLER_SERVER,
-	'aktuellerHostname': HOSTNAME
+	'aktuellerHostname': HOSTNAME,
+
+    loglevelConsole: cfgIPs.loglevelConsole || 'debug',
+    loglevelFile: cfgIPs.loglevelFile || 'info'
 };
 
 module.exports = cfg;

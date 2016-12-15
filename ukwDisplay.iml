@@ -2,21 +2,15 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/log" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/public/.sass-cache" />
+      <excludeFolder url="file://$MODULE_DIR$/public/_temp" />
+      <excludeFolder url="file://$MODULE_DIR$/public/node_modules" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library name="PHP Runtime" type="php">
-        <CLASSES>
-          <root url="jar://$APPLICATION_PLUGINS_DIR$/php/lib/php.jar!/stubs/standard" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$APPLICATION_PLUGINS_DIR$/php/lib/php.jar!/stubs/standard" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="library" name="pug-DefinitelyTyped" level="application" />
-    <orderEntry type="library" name="winston-DefinitelyTyped" level="application" />
   </component>
 </module>
