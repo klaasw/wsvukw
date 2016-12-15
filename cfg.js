@@ -51,17 +51,17 @@ const cfg = {
 	},
 
 	'mongodb': cfgIPs.mongoDbs,
-	'replicaSet': cfgIPs.replicaSet,
+	'replicaSet': cfgIPs.replicaSet || "dueReplicaSet",
 	'auth': cfgIPs.auth,
-	'auth_user': cfgIPs.auth_user,
+	'auth_user': cfgIPs.auth_user || "ukwserver",
 	'auth_pw': cfgIPs.auth_pw,
 
 	//HTTP Port für die nodeJS Instanz
-	'port': cfgIPs.port,
+	'port': cfgIPs.port || "3000",
 	'configPath': 'config/',
 
 	// 0 = Überprüfung abschalten
-	'intervall': cfgIPs.checkRrdIntervallInSeconds * 1000 || 0,
+	'intervall': cfgIPs.checkRfdIntervallInSeconds * 1000 || 0,
 
 
 	'alternativeIPs': cfgIPs.alternativeServer,
