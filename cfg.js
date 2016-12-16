@@ -11,8 +11,12 @@ const HOSTNAME = require('os').hostname();
 
 let AKTUELLER_SERVER = ''; //globale Variable für aktuellen Server. Einbindung in Konfig zur Darstellung des aktuellen Server via Jade Template layout.jade
 
-function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
-	// eine existierende Datei in ./config/servers/ geht vor, damit man auf einer Maschine mehrfach mit unterschiedlichen Ports starten kann:
+/**
+ * suche in allen Netzwerkadressen nach einer existierende Datei in ./config/servers/ geht vor,
+ * damit man auf einer Maschine mehrfach mit unterschiedlichen Ports starten kann
+ * @returns {JSON}
+ */
+function getIPs() {
 	try {
 		return require('./config/servers/serverIPs.json');
 	}
@@ -34,6 +38,7 @@ function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
 }
 const cfgIPs = getIPs();
 console.log(cfgIPs);
+
 const cfg = {
 	'urlRFDWebservice': 'http://' + cfgIPs.rfdIP + ':8789/I_RFD_DUE_Steuerung',
 

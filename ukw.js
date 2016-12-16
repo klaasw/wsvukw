@@ -20,7 +20,8 @@ const cfg = require('./cfg.js');
 const socket = require('./socket.js');
 
 const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
-db.verbindeDatenbank();
+db.verbindeDatenbank(function (db) {
+});
 
 const FILENAME = __filename.slice(__dirname.length + 1);
 

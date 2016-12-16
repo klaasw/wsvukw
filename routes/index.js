@@ -4,11 +4,14 @@ const express = require('express');
 const router = express.Router();
 const util = require('util');
 const files = require('fs'); // Zugriff auf das Dateisystem
+const tools = require('../tools.js');
 
 const cfg = require('../cfg.js');
 const log = require('../log.js'); // Modul fuer verbessertes Logging
-const datenbank = require('../datenbank.js');
 const rfd = require('../rfd.js');
+
+const db = require('../datenbank.js');
+// db.verbindeDatenbank();
 
 const FILENAME = __filename.slice(__dirname.length + 1);
 
@@ -36,7 +39,7 @@ router.get('/overview', function (req, res) {
 
 /* GET Zuordnung */
 router.get('/zuordnung', function (req, res) {
-    datenbank.findeApNachIp(req.ip, function (benutzer) {
+	db.findeApNachIp(req.ip, function (benutzer) {
 		log.debug('Benutzer: ' + benutzer);
 		if (benutzer) {
 			log.info(FILENAME + ' Funktion router.get /zuordnung Arbeitsplatz gefunden! IP: ' + req.ip);
@@ -83,7 +86,7 @@ router.get('/status', function (req, res) {
 router.get('/ukw', function (req, res) {
 	const clientIP = req.ip;
 	log.debug('Benutzer IP: ' + clientIP);
-    datenbank.findeApNachIp(clientIP, function (benutzer) {
+	db.findeApNachIp(clientIP, function (benutzer) {
 		log.debug('ukw - Ermittelter Benutzer: ' + benutzer);
 		if (benutzer) {
 			log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + req.ip);
@@ -125,7 +128,7 @@ router.get('/ukw', function (req, res) {
 router.get('/ukwTest', function (req, res) {
 	const clientIP = req.ip;
 	log.debug('Benutzer IP: ' + clientIP);
-    datenbank.findeApNachIp(clientIP, function (benutzer) {
+	db.findeApNachIp(clientIP, function (benutzer) {
 		log.debug('ukw - Ermittelter Benutzer: ' + benutzer);
 		if (benutzer) {
 			log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + req.ip);
@@ -168,7 +171,7 @@ router.get('/ukwTest', function (req, res) {
 router.get('/ukwTestWue', function (req, res) {
 	const clientIP = req.ip;
 	log.debug('Benutzer IP: ' + clientIP);
-    datenbank.findeApNachIp(clientIP, function (benutzer) {
+	db.findeApNachIp(clientIP, function (benutzer) {
 		log.debug('ukw - Ermittelter Benutzer: ' + benutzer);
 		if (benutzer) {
 			log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + req.ip);
@@ -212,14 +215,15 @@ router.get('/ukwTestWue', function (req, res) {
  * TODO wenn die Konfiguration noch nicht eingelesen ist in Funkstellen, dann warten bis verfuegbar, nach Timeout mit Fehler antworten, Fehlerhandling clientseitig
  * */
 router.get('/ukwKonfig', function (req, res) {
-	log.warn(FILENAME + ' Funktion: router get /ukwKonfig von IP: ' + req.ip, + '   IP-Parameter: ' + JSON.stringify(req.query));
+	log.warn(FILENAME + ' Funktion: router get /ukwKonfig von IP: ' + req.ip, +'   IP-Parameter: ' + JSON.stringify(req.query));
 
-	let Funkstellen= rfd.getFunkstellen();
-    if (Funkstellen.length === 0) {
+	let Funkstellen = rfd.getFunkstellen();
+	if (Funkstellen.length === 0) {
 		log.error('Topologie nicht eingelesen, wird aber jetzt gebraucht, mit Fehler antworten!');
 		res.status(404)        // HTTP status 404: NotFound
 			.send('ukwKonfig konnte nicht geladen werden.');
-	} else {
+	}
+	else {
 		// /ukwKonfig mit Parameter z.B. ukwKonfig?ip=1.1.1.1
 		if (req.query.ip) {
 			if (req.query.ip == '1.1.1.1') {
@@ -236,8 +240,9 @@ router.get('/ukwKonfig', function (req, res) {
 
 				}
 				res.send(Konfig);
-			} else {
-                datenbank.findeApNachIp(req.query.ip, function (benutzer) {
+			}
+			else {
+				db.findeApNachIp(req.query.ip, function (benutzer) {
 					if (benutzer) {
 						log.debug(FILENAME + ' Benutzer zu IP  = ' + benutzer + ' ' + req.query.ip);
 						//res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
@@ -256,7 +261,7 @@ router.get('/ukwKonfig', function (req, res) {
 		// /ukwKonfig mit Parameter ?zuordnung=lotse
 		if (req.query.zuordnung) {
 			if (req.query.zuordnung == 'lotse') {
-                datenbank.findeApNachIp(req.ip, function (benutzer) {
+				db.findeApNachIp(req.ip, function (benutzer) {
 					if (benutzer) {
 						if (req.query.standard == 'true') {
 							erstelleKonfigFuerLotsenKanal(benutzer, 'true', function (Konfig) {
@@ -275,7 +280,7 @@ router.get('/ukwKonfig', function (req, res) {
 
 		// ukwkonfig ohne parameter
 		else {
-            datenbank.findeApNachIp(req.ip, function (benutzer) {
+			db.findeApNachIp(req.ip, function (benutzer) {
 				if (benutzer) {
 					log.debug(FILENAME + ' Funktion: router get /ukwKonfig ermittelter User: ' + benutzer);
 					//res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
@@ -355,7 +360,7 @@ router.get('/lieskonfig', function (req, res) {
 
 
 rfd.leseRfdTopologie(function () {
-		log.debug("Topologie eingelesen.");
+	log.debug("Topologie eingelesen.");
 });
 
 
@@ -381,8 +386,8 @@ function erstelleKonfigFurAp(Ap, callback) {
 	//1. Funkkstellen fuer Revier einlesen
 	//Dateinamen noch durch Variable ersetzen
 	const revieranteil = rev_ap[0];
-	datenbank.liesAusRESTService(revieranteil, function (response1) {
-		log.debug(FILENAME + ' response1: '+ JSON.stringify(response1));
+	db.liesAusRESTService(revieranteil, function (response1) {
+		log.debug(FILENAME + ' response1: ' + JSON.stringify(response1));
 		if (typeof response1 === 'string' && response1.indexOf('Fehler') > -1) {
 			callback('Fehler', response1);
 		}
@@ -390,7 +395,7 @@ function erstelleKonfigFurAp(Ap, callback) {
 			const fstReihe = response1;
 			//Durch JA ueber Buttons iterieren
 			for (const button in fstReihe) {
-				log.debug(FILENAME + ' Button: '+ button + '  ' + fstReihe[button]);
+				log.debug(FILENAME + ' Button: ' + button + '  ' + fstReihe[button]);
 				//Durch Funkstelln in Buttons iterien
 				for (let t = 0; t < fstReihe[button].length; t++) {
 					//Funkstellendetails schreiben
@@ -403,14 +408,14 @@ function erstelleKonfigFurAp(Ap, callback) {
 				}
 			}
 			//KanalListe sortieren und Doppel entfernen. Hilfsfunktionen siehe weiter unten.
-			Konfig.KanalListe.sort(vergleicheZahlen);
-			Konfig.KanalListe = entferneDoppel(Konfig.KanalListe);
+			Konfig.KanalListe.sort(tools.vergleicheZahlen);
+			Konfig.KanalListe = tools.entferneDoppel(Konfig.KanalListe);
 			Konfig.FunkstellenReihe = fstReihe;
 
 			//2. Geraete fuer Arbeitsplatz einlesen
 			//Dateinamen noch durch Variable ersetzen
 			log.debug(' -- 1');
-            datenbank.liesAusRESTService(rev_ap[0] + '_' + rev_ap[1], function (response2) {
+			db.liesAusRESTService(rev_ap[0] + '_' + rev_ap[1], function (response2) {
 				if (typeof response2 === 'string' && response2.indexOf('Fehler') > -1) {
 					callback('Fehler', response2);
 				}
@@ -424,7 +429,7 @@ function erstelleKonfigFurAp(Ap, callback) {
 
 					//3. MHAN Zuordnung fuer Arbeitsplatz einlesen
 					//Dateinamen noch durch Variable ersetzen
-                    datenbank.liesAusRESTService(rev_ap[0] + '_' + rev_ap[1] + '_mhan_zuordnung', function (response3) {
+					db.liesAusRESTService(rev_ap[0] + '_' + rev_ap[1] + '_mhan_zuordnung', function (response3) {
 						if (typeof response3 === 'string' && response3.indexOf('Fehler') > -1) {
 							callback('Fehler', response3);
 						}
@@ -462,7 +467,7 @@ function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
 	//1. Funkkstellen fuer Revier einlesen
 	//Dateinamen noch durch Variable ersetzen, hier zum Lesen der VTA fuer das Revier
 	const revieranteil = rev_ap[0];
-    datenbank.liesAusRESTService(revieranteil, function (response) {
+	db.liesAusRESTService(revieranteil, function (response) {
 		const fstReihe = response;
 		log.debug(FILENAME + ' Funktion erstelleKonfigFuerLotsenKanal readFile(' + revieranteil + ') gelesene Daten: ' + fstReihe);
 		//Durch JA ueber Buttons iterieren
@@ -498,24 +503,5 @@ function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
 		} //While Ende
 	});
 } //Funktion Ende
-
-
-/* Hilfsfunktionen für Arrays
- *  ggf. noch auslagern?
- *
- */
-// Zahlen vergleichen: Dient als Funktion für Array.sort() da sort nur alphabetisch sortiert
-function vergleicheZahlen(a, b) {
-	return a - b;
-}
-
-// Doppeleinträge aus Array entfernen.
-function entferneDoppel(array) {
-	const einzelArray = array.filter(function (item, position, self) {
-		return self.indexOf(item) == position;
-	});
-	return einzelArray;
-}
-
 
 module.exports = router;

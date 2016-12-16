@@ -6,7 +6,10 @@
 const cfg = require('./cfg.js');
 const log = require('./log.js'); // Modul fuer verbessertes Logging
 const socket = require('./socket.js');
-const datenbank = require('./datenbank.js');
+
+const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
+db.verbindeDatenbank(function (db) {
+});
 
 const request = require('request'); //Modul zu Abfrage von WebServices
 const xml2js = require('xml2js'); // zum Konvertieren von XML zu JS
@@ -15,7 +18,6 @@ const parser = new xml2js.Parser({
 }); // Parserkonfiguration
 
 const FILENAME = __filename.slice(__dirname.length + 1);
-
 
 let Funkstellen = [];
 
@@ -162,7 +164,7 @@ exports.findeFstNachId = function (Id) {
     }
     log.error('Funkstellen ID nicht vorhanden: \'' + Id + '\'');
     return 'frei';
-}
+};
 
 
 /*Block zur Implementierung der WebService Abfragen an RFD
@@ -256,7 +258,7 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span
                         socket.sendeWebSocketNachricht(antwortFuerWebsocket);
 
                         if (aktion == 'schaltenEinfach' || aktion == 'trennenEinfach') {
-                            datenbank.schreibeSchaltzustand(Fst, Span_Mhan, aktion, span_mhanApNr, ApID)
+                            db.schreibeSchaltzustand(Fst, Span_Mhan, aktion, span_mhanApNr, ApID)
                         }
 
                     }

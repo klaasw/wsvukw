@@ -36,7 +36,6 @@ const log = require('./log.js');
 // can be used to integrate morgen access log and winston log entries in one file:
 // app.use(require('morgan')('combined', {stream: logger.stream}));
 
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -55,12 +54,13 @@ const routes = require('./routes/index.js');
 const users = require('./routes/benutzer.js');
 const verbindungen = require('./routes/verbindungen.js');
 
+
 app.use('/', routes);
 app.use('/user', users); //nach Anpassung des Scriptes deutsche Route verwenden
 app.use('/benutzer', users);
 app.use('/verbindungen', verbindungen);
-const ukw = require('./ukw.js');
 
+const ukw = require('./ukw.js');
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -109,7 +109,6 @@ const server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
@@ -117,17 +116,18 @@ server.on('listening', onListening);
 const socket = require('./socket.js');
 socket.socket(server);
 
-if(cfg.intervall !== 0) {
+if (cfg.intervall !== 0) {
 	// Setze Intervall fuer Pruefung
-    const Intervall = setInterval(function () {
-        ukw.pruefeRfdWS()
-    }, cfg.intervall);
+	const Intervall = setInterval(function () {
+		ukw.pruefeRfdWS()
+	}, cfg.intervall);
 }
 
 /**
  * Normalize a port into a number, string, or false.
+ * @param val
+ * @returns {*}
  */
-
 function normalizePort(val) {
 	const port = parseInt(val, 10);
 	if (isNaN(port)) {
@@ -140,7 +140,11 @@ function normalizePort(val) {
 	}
 	return false;
 }
-/*** Event listener for HTTP server "error" event. */
+
+/**
+ * Event listener for HTTP server "error" event.
+ * @param error
+ */
 function onError(error) {
 	if (error.syscall !== 'listen') {
 		throw error;
@@ -162,7 +166,10 @@ function onError(error) {
 			throw error;
 	}
 }
-/*** Event listener for HTTP server "listening" event. */
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
 function onListening() {
 	const addr = server.address();
 	const bind = typeof addr === 'string'
@@ -170,5 +177,3 @@ function onListening() {
 		: 'port ' + addr.port;
 	debug('Listening on ' + bind);
 }
-
-
