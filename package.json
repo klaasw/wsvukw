@@ -12,6 +12,7 @@
     "express": "^4.11.2",
     "file-stream-rotator": "0.0.7",
     "jssip": "^2.0.2",
+    "jssip-node-websocket": "^1.0.0",
     "jstransformer-markdown-it": "^1.0.0",
     "marked": "^0.3.6",
     "mongodb": "^2.2.9",

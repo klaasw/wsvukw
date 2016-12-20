@@ -175,7 +175,7 @@ ua.on('newMessage', function (e) {
 			if ('FSTSTATUS' in result) {
 				result.FSTSTATUS.letzteMeldung = new Date();
 			}
-			rfd.sendeWebSocketNachricht(result);
+			socket.sendeWebSocketNachricht(result);
 			schreibeZustand(result)
 		}
 		else {

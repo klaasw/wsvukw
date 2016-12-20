@@ -7,6 +7,7 @@
  */
 
 const fs = require('fs'); // Zugriff auf das Dateisystem
+const nodeJsSIPsocket = require('jssip-node-websocket'); //JsSIP Node Websocket Modul
 const HOSTNAME = require('os').hostname();
 
 let AKTUELLER_SERVER = ''; //globale Variable für aktuellen Server. Einbindung in Konfig zur Darstellung des aktuellen Server via Jade Template layout.jade
@@ -34,17 +35,20 @@ function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
 }
 const cfgIPs = getIPs();
 console.log(cfgIPs);
+
+const jsSIPsocketDUE =  new nodeJsSIPsocket('ws://' + cfgIPs.sipIP + ':10080');
+const jsSIPsocketMockRFD =  new nodeJsSIPsocket('ws://' + cfgIPs.sipIP + ':10080');
 const cfg = {
 	'urlRFDWebservice': 'http://' + cfgIPs.rfdIP + ':8789/I_RFD_DUE_Steuerung',
 
 	'jsSipConfiguration_DUE': {
-		'ws_servers': 'ws://' + cfgIPs.sipIP + ':10080',
+		'sockets': [jsSIPsocketDUE],
 		'uri': 'sip:due@' + cfgIPs.sipIP + ':5060',
 		// TODO fuer unterschiedliche Passwoerter dev/stage/prod: noch in serverIPs auslagern
 		'password': 'due'
 	},
 	'jsSipConfiguration_mockRFD': {
-		'ws_servers': 'ws://' + cfgIPs.sipIP + ':10080',
+		'sockets': [jsSIPsocketMockRFD],
 		'uri': 'sip:rfd@' + cfgIPs.sipIP + ':5060',
 		// TODO fuer unterschiedliche Passwoerter dev/stage/prod: noch in serverIPs auslagern, unterschiedliche Passwoerter vergeben, mindestens produktiv
 		'password': 'rfd'
@@ -74,4 +78,3 @@ const cfg = {
 };
 
 module.exports = cfg;
-
