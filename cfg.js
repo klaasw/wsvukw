@@ -1,10 +1,12 @@
-'use strict';
-/* Modul zur Gernerierung von Konfigurationsvariablen
+/**
+ * Modul zur Gernerierung von Konfigurationsvariablen
  * Die Parameter werden aus der Datei config/server/IP_des_Servers/serverIPS.json bezogen
  *
  * @Author: Klaas Wuellner
- *
  */
+
+
+'use strict';
 
 const fs = require('fs'); // Zugriff auf das Dateisystem
 const HOSTNAME = require('os').hostname();
@@ -87,13 +89,13 @@ const cfg = {
 	},
 
 	'mongodb': cfgIPs.mongoDbs,
-	'replicaSet': cfgIPs.replicaSet || "dueReplicaSet",
+	'replicaSet': cfgIPs.replicaSet || 'dueReplicaSet',
 	'auth': cfgIPs.auth,
-	'auth_user': cfgIPs.auth_user || "ukwserver",
+	'auth_user': cfgIPs.auth_user || 'ukwserver',
 	'auth_pw': cfgIPs.auth_pw,
 
 	//HTTP Port für die nodeJS Instanz
-	'port': cfgIPs.port || "3000",
+	'port': cfgIPs.port || '3000',
 	'configPath': 'config/',
 
 	// 0 = Überprüfung abschalten
