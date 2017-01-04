@@ -12,6 +12,7 @@
 			'cyborg': 'cyborg.css',
 		},
 		themesheet: '',
+		currentTheme: 'default',
 
 		init: function () {
 
@@ -20,7 +21,7 @@
 			this.themesheet.appendTo('head');
 
 			$('.theme-switcher .switch-theme').on('click', function () {
-				_self.switch($(this).data('theme'))
+				_self.switch($(this))
 			});
 		},
 
@@ -29,15 +30,16 @@
 			return this.path + '/' + this.list[theme];
 		},
 
-		switch: function (theme) {
-			theme = theme || 'default';
-			this.themesheet.attr('href', this.getThemeUrl(theme));
-			this.setAPconfig(theme);
+		switch: function (element) {
+			this.currentTheme = element.data('theme');
+			this.themesheet.attr('href', this.getThemeUrl(this.currentTheme));
+			$('.theme-switcher .switch-theme').parents('li').removeClass('active');
+			element.parent().addClass('active');
+			this.setAPconfig();
 		},
 
 		// TODO: aktuelle Theme-Auswahl in der AP-Config speichern über REST Aufruf
-		setAPconfig: function(theme) {
-			theme = theme || 'default';
+		setAPconfig: function() {
 
 		}
 	}
