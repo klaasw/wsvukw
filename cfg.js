@@ -9,6 +9,7 @@
 const fs = require('fs'); // Zugriff auf das Dateisystem
 const HOSTNAME = require('os').hostname();
 
+// TODO: ungenutzte variable löschen?
 let AKTUELLER_SERVER = ''; //globale Variable für aktuellen Server. Einbindung in Konfig zur Darstellung des aktuellen Server via Jade Template layout.jade
 
 /**
@@ -39,6 +40,36 @@ function getIPs() {
 const cfgIPs = getIPs();
 console.log(cfgIPs);
 
+/**
+ * Globale Serverkonfiguration
+ * @type {{
+ * urlRFDWebservice: string,
+ * jsSipConfiguration_DUE: {
+ *      ws_servers: string,
+ *      uri: string,
+ *      password: string
+ *      },
+ * jsSipConfiguration_mockRFD: {
+ *      ws_servers: string,
+ *      uri: string,
+ *      password: string
+ *      },
+ * mongodb: array,
+ * replicaSet: string,
+ * auth,
+ * auth_user: string,
+ * auth_pw: *,
+ * port: string,
+ * configPath: string,
+ * intervall: number,
+ * alternativeIPs: array,
+ * cfgIPs: JSON,
+ * aktuellerServer: string,
+ * aktuellerHostname: string,
+ * loglevelConsole: string,
+ * loglevelFile: string
+ * }}
+ */
 const cfg = {
 	'urlRFDWebservice': 'http://' + cfgIPs.rfdIP + ':8789/I_RFD_DUE_Steuerung',
 
@@ -67,15 +98,13 @@ const cfg = {
 
 	// 0 = Überprüfung abschalten
 	'intervall': cfgIPs.checkRfdIntervallInSeconds * 1000 || 0,
-
-
 	'alternativeIPs': cfgIPs.alternativeServer,
-	cfgIPs,
 	'aktuellerServer': AKTUELLER_SERVER,
 	'aktuellerHostname': HOSTNAME,
+	cfgIPs,
 
-    loglevelConsole: cfgIPs.loglevelConsole || 'debug',
-    loglevelFile: cfgIPs.loglevelFile || 'info'
+	loglevelConsole: cfgIPs.loglevelConsole || 'debug',
+	loglevelFile: cfgIPs.loglevelFile || 'info'
 };
 
 module.exports = cfg;
