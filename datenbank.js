@@ -117,15 +117,15 @@ exports.verbindeDatenbank = function (aktion) {
 
 /**
  * vor dem Schreiben prüfen ob eine Verbindung besteht
- * @param collection
- * @param selector
- * @param inhalt
- * @param schreibeLokal
+ * @param {string} collection
+ * @param {object} selector
+ * @param {object} inhalt
+ * @param {boolean} schreibeLokal
  */
 //TODO: Prio 2 Verbindung zu unterschiedlichen Datenbanken herstellen. Damit WindowsBenutzer von ukw Datenbank entkoppelt sind
 exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 	if (exports.dbVerbindung === undefined) {
-		log.error("Datenbank ist noch nicht verbunden!!! Schreibversuch schlug fehl. Collection: " + collection + ", selector: " + selector + ", inhalt: " + inhalt);
+		log.error('Datenbank ist noch nicht verbunden!!! Schreibversuch schlug fehl. Collection: ' + collection + ', selector: ' + selector + ', inhalt: ' + inhalt);
 	}
 	else {
 		// TODO: abweichendes handling falls primary nicht verbunden
@@ -140,12 +140,12 @@ exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 
 /**
  * schreibe Verbindungsinfo socketID und Zeitstempel in aktiveArbeitsplaetze
- * @param socketInfo
- * @param ip
+ * @param {object} socketInfo
+ * @param {string} ip
  */
 exports.schreibeSocketInfo = function (socketInfo, ip) {
-	const schreibeLokal = false; //auf jeden Fall schreiben in Primary Datenbank schreiben
-	if (socketInfo === 'false') {
+	const schreibeLokal = false; // auf jeden Fall  in Primary Datenbank schreiben
+	if (typeof socketInfo == 'undefined') {
 		socketInfo = {
 			$set: {
 				aktiv: false,
@@ -161,16 +161,16 @@ exports.schreibeSocketInfo = function (socketInfo, ip) {
 
 /**
  * SocketID und Verbindungszeit in DB schreiben
- * @param ip
- * @param socketID
- * @param getrennt
+ * @param {string} ip
+ * @param {string} socketID
+ * @param {boolean} getrennt
  */
 exports.schreibeApConnect = function (ip, socketID, getrennt) {
 	const ApInfo = {
 		$set: {
-			"_id": ip.replace("::ffff:", ""),
-			"ip": ip,
-			"aktiv": !getrennt
+			'_id': ip.replace('::ffff:', ''),
+			'ip': ip,
+			'aktiv': !getrennt
 		}
 	};
 	if (getrennt) {
@@ -185,13 +185,13 @@ exports.schreibeApConnect = function (ip, socketID, getrennt) {
 
 /**
  * finde Dokumente in DB
- * @param collection
- * @param element
- * @param callback
+ * @param {string} collection
+ * @param {object} element
+ * @param {function} callback
  */
 exports.findeElement = function (collection, element, callback) {
 	if (exports.dbVerbindung === undefined) {
-		log.error("Datenbank ist noch nicht verbunden!!! Leseversuch schlug fehl: Collection: " + collection + ", element: " + element);
+		log.error('Datenbank ist noch nicht verbunden!!! Leseversuch schlug fehl: Collection: ' + collection + ', element: ' + element);
 	}
 	else {
 		findeElement2(collection, element, function (doc) {
@@ -202,8 +202,8 @@ exports.findeElement = function (collection, element, callback) {
 
 /**
  *
- * @param ip
- * @param callback
+ * @param {string} ip
+ * @param {function} callback
  */
 exports.findeApNachIp = function (ip, callback) {
 	// TODO: Aus DB auslesen, nicht mehr den Umweg über REST nehmen, weil so oft benutzt
@@ -219,18 +219,18 @@ exports.findeApNachIp = function (ip, callback) {
 			const alle_Ap = JSON.parse(body);
 			log.debug(FILENAME + ' function findeNachIp: ' + alle_Ap);
 
-			if (alle_Ap.hasOwnProperty(ip.replace("::ffff:", ""))) {
-				Ap = alle_Ap[ip.replace("::ffff:", "")].user;
+			if (alle_Ap.hasOwnProperty(ip.replace('::ffff:', ''))) {
+				Ap = alle_Ap[ip.replace('::ffff:', '')].user;
 				log.debug(FILENAME + ' function findeNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
 				if (typeof callback !== 'function') {
-					log.error("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+					log.error('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
 				}
 				else {
 					callback(Ap);
 				}
 			}
 			else {
-				log.error(FILENAME + ' function findeNachIp: Benutzer NICHT gefunden zu IP: ' + ip.replace("::ffff:", ""));
+				log.error(FILENAME + ' function findeNachIp: Benutzer NICHT gefunden zu IP: ' + ip.replace('::ffff:', ''));
 				callback('');
 			}
 		}
@@ -245,8 +245,8 @@ exports.findeApNachIp = function (ip, callback) {
  * Welche MHANs mit welchen Kanälen verbunden sind,
  * welche Schaltflächen existieren in welchem Revier und Arbeitsplatz
  * wie heissen die Arbeitsplatzgeräte in Kurzform (MHAN01 statt z.B. "1-H-RFD-WARVKZ-MHAN-11")
- * @param configfile
- * @param callback
+ * @param {string} configfile
+ * @param {function} callback
  */
 exports.liesAusRESTService = function (configfile, callback) {
 	// require(cfg.configPath + configfile + '.json');
@@ -276,11 +276,11 @@ exports.liesAusRESTService = function (configfile, callback) {
 
 /**
  * schreibe Schaltzzustand in DB
- * @param fst
- * @param Span_Mhan
- * @param aktion
- * @param span_mhanApNr
- * @param ApID
+ * @param {string} fst
+ * @param {string} Span_Mhan
+ * @param {string} aktion
+ * @param {string} span_mhanApNr
+ * @param {string} ApID
  */
 exports.schreibeSchaltzustand = function (fst, Span_Mhan, aktion, span_mhanApNr, ApID) {
 	const schreibeLokal = false; //es wird auf jeden Fall geschrieben
@@ -307,18 +307,15 @@ exports.schreibeSchaltzustand = function (fst, Span_Mhan, aktion, span_mhanApNr,
 
 /**
  *
- * @param collection
- * @param element
- * @param callback
+ * @param {string} collection
+ * @param {object|int} element
+ * @param {function} callback
  */
 function findeElement2(collection, element, callback) {
 	const tmp = exports.dbVerbindung.collection(collection);
-	let selector = {};
+	const selector = element || {};
 	log.debug(FILENAME + ' Funktion: findeElement2, collection: ' + collection + ', element: ' + JSON.stringify(element));
 
-	if (element !== undefined) {
-		selector = element;
-	}
 	if (isNaN(selector)) {
 		tmp.find(selector).toArray(function (err, docs) {
 			assert.equal(err, null);
@@ -336,9 +333,9 @@ function findeElement2(collection, element, callback) {
 
 /**
  * tatsächlich in DB schreiben, Ausführung als Upsert
- * @param collection
- * @param selector
- * @param inhalt
+ * @param {string} collection
+ * @param {object} selector
+ * @param {object} inhalt
  */
 function schreibeInDb2(collection, selector, inhalt) {
 	log.debug('TEST in DB ' + collection + ' -- ' + selector + ' -- ' + inhalt);
