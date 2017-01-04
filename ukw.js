@@ -35,13 +35,8 @@ const FILENAME = __filename.slice(__dirname.length + 1);
  *
  */
 
-
-
-/*Funktion zur Erreichbarkeit des RFD WebServices
- *
- *
- *
- *
+/**
+ * Funktion zur Erreichbarkeit des RFD WebServices
  */
 exports.pruefeRfdWS = function () {
 	//Pruefung lokaler VTR
@@ -73,11 +68,10 @@ exports.pruefeRfdWS = function () {
 //var Intervall=setInterval(function() {sendeWebSocketNachricht()},1000)
 
 
-
-
-//schreibe Zustandsmeldungen in zustandKomponenten
-//{"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
-//TODO:
+/**
+ * schreibe Zustandsmeldungen in zustandKomponenten
+ * @param {Object} Nachricht - {"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
+ */
 function schreibeZustand(Nachricht) {
 	if (Nachricht.hasOwnProperty('FSTSTATUS')) {
 		const schreibeLokal = true; //es wird nur geschrieben wenn die aktuelle Instanz und Mongo Primary in einem VTR sind
@@ -127,7 +121,12 @@ const ua = new JsSIP.UA(cfg.jsSipConfiguration_DUE);
 ua.start();
 
 
-// Register callbacks to desired message event
+/**
+ * Register callbacks to desired message event
+ * @type {Object} eventHandlers
+ * @type {function} eventHandlers.succeeded
+ * @type {function} eventHandlers.failed
+ */
 const eventHandlers = {
 	succeeded(e) {
 		log.debug('SIP-Nachricht gesendet.')
@@ -191,8 +190,11 @@ const mockRFD = new JsSIP.UA(cfg.jsSipConfiguration_mockRFD);
 mockRFD.start();
 
 // GET-Aufruf fuer SIP-Message: http://10.22.30.1:3000/mockmessage?messageText=%3CFSTSTATUS+id%3D%221-H-RFD-BHVVTA-FKEK-1%22+state%3D%220%22+channel%3D%22-1%22%2F%3E
-
-//SIP Test Aufrufe
+/**
+ * SIP Test Aufrufe
+ * @param {string} text
+ * @param {function} callback
+ */
 exports.sendeSipNachricht = function (text, callback) {
 	const SIPreceiver = cfg.jsSipConfiguration_DUE.uri.replace('sip:', '');
 	log.debug('sendeSipNachricht an ' + SIPreceiver + ' : ' + text);
@@ -208,13 +210,15 @@ exports.sendeSipNachricht = function (text, callback) {
 };
 
 /**
- *
+ * TODO: ungenutzte Funktion löschen?
  */
 exports.anruf = function () {
 	ua.call(cfg.jsSipConfiguration_mockRFD.testReceiverCall)
 };
 
-//SIP User Agent Ereignisse
+/**
+ * SIP User Agent Ereignisse
+ */
 mockRFD.on('connected', function (e) {
 	log.debug(FILENAME + ' Funktion: mockRFD Verbunden mit SIP-Server ' + cfg.jsSipConfiguration_mockRFD.uri)
 });
