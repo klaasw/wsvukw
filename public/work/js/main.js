@@ -7,6 +7,7 @@ $(window).load(function () {
 
 	WSV.Utils.init();
 	WSV.Themes.init();
+	// WSV.Display.init();
 
 });
 // eof JS Init

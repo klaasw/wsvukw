@@ -1,6 +1,5 @@
 script.
 	// TODO: Darstellung des Status von SPAN und MHAN in die GUI einbringen
-	var test = false;
 	var ApID = ''; //zb.JA NvD
 	var SPAN = ''; //zb. 1-H-RFD-WHVVKZ-SPAN-01
 	var MhanZuordnung = {}; //"MHAN01": "1-H-RFD-WHVVTA-FKEK-2", "MHAN02": "1-H-RFD-TETTEN-FKEK-2"
@@ -134,7 +133,7 @@ script.
 	//Variablen zum Arbeitsplatz laden
 	function ladeKonfig() {
 		$.get("ukwKonfig", function (data) { //IP-Adress nur als Platzhalter zum Testen
-			console.log('ukwKonfig data:' + data); //TODO: unwichtige, sicherheitsrelevante Informationen nicht uebermitteln
+			//console.log('ukwKonfig data:' + data); //TODO: unwichtige, sicherheitsrelevante Informationen nicht uebermitteln
 
 			ApFunkstellen = data.Konfigdaten.FunkstellenDetails
 
@@ -143,7 +142,7 @@ script.
 			ArbeitsplatzGeraete = data.Konfigdaten.ArbeitsplatzGeraete
 			ApID = data.Arbeitsplatz
 			IpConfig = data.Konfigdaten.IpConfig
-			console.log('geladeneIPconfig: ' + JSON.stringify(data.Konfigdaten.IpConfig));
+			//console.log('geladeneIPconfig: ' + JSON.stringify(data.Konfigdaten.IpConfig));
 
 
 			socket = io(aktuellerUKWserver);
@@ -154,7 +153,7 @@ script.
 
 
 		}).fail(function () {
-			console.log('ukwKonfig konnte nicht geladen werden - Kanalzuordnung kann nicht angezeigt werden.');
+			//console.log('ukwKonfig konnte nicht geladen werden - Kanalzuordnung kann nicht angezeigt werden.');
 			// TODO Fehlerdetail uebergeben: ukwKonfig konnte nicht geladen werden
 			$('#errorModalDUE').modal('show')
 		});
@@ -164,7 +163,7 @@ script.
 
 	//Mithoerlautsprecher aufschalten
 	function lautsprecherAufschalten(mhan) {
-		console.log(mhan)
+		//console.log(mhan)
 		for (var funkstelle in mhan) {
 			socket.emit('clientMessage', {
 				'FstID': funkstelle,
@@ -182,7 +181,7 @@ script.
 	//Wenn lokaler DUE getrennt dann lokaler RFD auf undefined -- grau
 	function verbindungsPruefung() {
 		socket.on('connect', function () {
-			console.log('check 2------------------------VERBUNDEN', socket.connected);
+			//console.log('check 2------------------------VERBUNDEN', socket.connected);
 			$('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').removeClass("label-danger")
 			$('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').addClass("label-success")
 			$('#buttonAktiv#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').removeClass("label-danger")
@@ -191,7 +190,7 @@ script.
 
 
 		socket.on('disconnect', function () {
-			console.log('check 2-----------------------GETRENNT', socket.connected);
+			//console.log('check 2-----------------------GETRENNT', socket.connected);
 			$('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').removeClass("label-success")
 			$('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').addClass("label-danger")
 			$('#buttonAktiv#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').removeClass("label-success")
@@ -263,16 +262,16 @@ script.
 
 		//eingehende ZustandsMessage für gespeicherte Schaltzustaende
 		socket.on('zustandsMessage', function (msg) {
-			console.log(msg)
+			//console.log(msg)
 			lautsprecherAufschalten(msg)
 		})
 
 		//eingehende Socket Nachrichten vom TYP rfdMessage, Statusmeldungen verarbeitebn
 		socket.on('ukwMessage', function (msg) {
-			console.log("ukwMessage received: " + JSON.stringify(msg));
+			//console.log("ukwMessage received: " + JSON.stringify(msg));
 			var msgKeys = Object.keys(msg) //z.B. RX, FSTSTATUS
 			var msgTyp = msgKeys[0]
-			console.log(msgTyp)
+			//console.log(msgTyp)
 			if (typeof msg === 'object' && ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id)) {
 				//Empfangen aktiv0
 				if ('RX' in msg && msg.RX.$.state === '1') {
@@ -288,7 +287,7 @@ script.
 					}, {
 						type: 'danger'
 					})
-					console.log("RX state 1: " + msg.RX.$.id)
+					//console.log("RX state 1: " + msg.RX.$.id)
 				}
 				//Empfangen deaktiv
 				if ('RX' in msg && msg.RX.$.state === '0') {
@@ -299,14 +298,14 @@ script.
 					$('#' + button + ' [buttonElement="Flaeche"]').removeClass("bg-danger")
 					$('#' + button + ' [buttonElement="Flaeche"] h2').removeClass("text-danger")
 
-					console.log("RX state 0: " + msg.RX.$.id)
+					//console.log("RX state 0: " + msg.RX.$.id)
 				}
 				//Senden aktiv
 				if ('TX' in msg && msg.TX.$.state === '1') {
 					//Pruefen ob SPAN ID in TX Objekt
 					if (msg.TX.$.id.indexOf("SPAN") != -1) {
 						//erstmal nichts machen. ggf in SPAN Element etwas anzeigen
-						console.log("TX state 1 ohne SPAN: " + msg.TX.$.id)
+						//console.log("TX state 1 ohne SPAN: " + msg.TX.$.id)
 					}
 					else {
 						//suche Schaltflaeche zu FunkstellenID
@@ -317,14 +316,14 @@ script.
 						$('#' + button + ' [buttonElement="Flaeche"] h2').addClass("text-success")
 
 
-						console.log("TX state 1 mit SPAN: " + msg.TX.$.id)
+						//console.log("TX state 1 mit SPAN: " + msg.TX.$.id)
 					}
 				}
 				//Senden deaktiv
 				if ('TX' in msg && msg.TX.$.state === '0') {
 					if (msg.TX.$.id.indexOf("SPAN") != -1) {
 						//erstmal nichts machen. ggf in SPAN Element etwas anzeigen
-						console.log("TX state 0 ohne SPAN: " + msg.TX.$.id)
+						//console.log("TX state 0 ohne SPAN: " + msg.TX.$.id)
 					}
 					else {
 						//suche Schaltflaeche zu FunkstellenID
@@ -334,7 +333,7 @@ script.
 						$('#' + button + ' [buttonElement="Flaeche"]').removeClass("bg-success")
 						$('#' + button + ' [buttonElement="Flaeche"] h2').removeClass("text-success")
 
-						console.log("TX state 0 mit SPAN: " + msg.TX.$.id)
+						//console.log("TX state 0 mit SPAN: " + msg.TX.$.id)
 					}
 				}
 
@@ -349,7 +348,7 @@ script.
 					$(standortButton[0]).children().text("OK")
 
 
-					console.log(msg.FSTSTATUS.$.id)
+					//console.log(msg.FSTSTATUS.$.id)
 
 					//Bei Kanalaenderung die Kanalnummer setzen
 					if (msg.FSTSTATUS.$.channel > -1) {
@@ -393,7 +392,7 @@ script.
 					})
 
 
-					console.log(msg.FSTSTATUS.$.id)
+					//console.log(msg.FSTSTATUS.$.id)
 
 				}
 				//Schalten fuer SPrechANlagen und MitHoerANlagen
@@ -434,7 +433,7 @@ script.
 
 							ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true
 							$.notify('Aufgeschaltet: <br>' + ApFunkstellen[msg.geschaltet.$.id].sname)
-							console.log(msg.geschaltet.$.id)
+							//console.log(msg.geschaltet.$.id)
 
 
 						}
@@ -481,12 +480,12 @@ script.
 							ApFunkstellen[msg.getrennt.$.id].aufgeschaltet = false
 
 							$.notify('Getrennt: <br>' + ApFunkstellen[msg.getrennt.$.id].sname)
-							console.log(msg.getrennt.$.id)
+							//console.log(msg.getrennt.$.id)
 
 
 						}
 					} else {
-						console.log("")
+						//console.log("")
 					}
 				}
 
@@ -558,7 +557,7 @@ script.
 			//geklickteMKA=$('#'+button +'> div > div:nth-child(2) > div:nth-child(2) > span').attr('class')
 			//geklickteMKA=$('#'+button +'> div > div:nth-child(2) > div > span').attr('id')
 			geklickteMKA = $('#' + button + ' [buttonElement="anlage1"]').attr('id')
-			console.log("Dropdown von:" + geklickteMKA)
+			//console.log("Dropdown von:" + geklickteMKA)
 
 
 		}
@@ -605,7 +604,7 @@ script.
 				var span = element.id
 				var span_mhanApNr = $('#mithoerenModal .btn-group-vertical .btn-primary').text()
 				schalteKanalID(span, mhan, 'SPAN_MHAN', span_mhanApNr)
-				console.log();
+				//console.log();
 			}
 
 
@@ -642,7 +641,7 @@ script.
 			if (Einzel === true) {
 				$.each(ApFunkstellen, function (key, value) {
 					if (value.aufgeschaltet === true && key != geklickteFstID) {
-						console.log(key, value.aufgeschaltet)
+						//console.log(key, value.aufgeschaltet)
 						trennen(key, geklickteSPANMHAN, geklicktespan_mhanApNr)
 					}
 					//trenne aufgeschaltet
@@ -758,8 +757,8 @@ script.
 		backupApFunkstellen = ApFunkstellen
 		$.each(backupApFunkstellen, function (key, value) {
 			if (AufschalteZustand[key] !== undefined) {
-				console.log("AktuellerStand: key=" + key + "', value='" + JSON.stringify(value.aufgeschaltet) + "'")
-				console.log("neuer    Stand: key=" + JSON.stringify(AufschalteZustand[key].id) + "value=" + JSON.stringify(AufschalteZustand[key].aufgeschaltet))
+				//console.log("AktuellerStand: key=" + key + "', value='" + JSON.stringify(value.aufgeschaltet) + "'")
+				//console.log("neuer    Stand: key=" + JSON.stringify(AufschalteZustand[key].id) + "value=" + JSON.stringify(AufschalteZustand[key].aufgeschaltet))
 
 				if (value !== 'frei') {// Da in FunkstellenDetails frei mitgeschleppt wird
 					if (value.aufgeschaltet == true && AufschalteZustand[key].aufgeschaltet == true) {
@@ -795,7 +794,7 @@ script.
 		else {
 			neuerKanal = $(".spinbox-input").val()
 		}
-		console.log('clientMessage', {'FstID': geklickteMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'})
+		//console.log('clientMessage', {'FstID': geklickteMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'})
 		socket.emit('clientMessage', {'FstID': geklickteMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'})
 		//  $.notify('Setze Kanal: '+ApFunkstellen[geklickteMKA].sname +' auf '+ element.innerText +' ...')
 	}
