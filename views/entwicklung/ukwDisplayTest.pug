@@ -25,7 +25,7 @@ block content
                         div.col-md-2(id=index + 'panel',style="padding-left: 5px;padding-right: 5px;")
                             div.panel.panel-default(
                             buttonElement='Panel',
-                            onclick='schalteKanal(event,this,"SPAN")',
+                            onclick='WSV.Display.schalteKanal(event,this,"SPAN")',
                             style='border-width: 2px;',
                             class=(val[0] == 'frei' ? 'hidden' : '')
                             )
@@ -82,13 +82,13 @@ block content
                                                                     span.label.label-default ??
                                     if gesamteKonfig.FunkstellenDetails[val[0]].MKA
                                         h2.text-right(
-                                        onclick='schalteKanal(event,this,"SPAN")'
+                                        onclick='WSV.Display.schalteKanal(event,this,"SPAN")'
                                         id=index,
                                         style='margin-top: 4px;margin-bottom: 5px;'
                                         buttonElement='kanalNr'
                                         )
                                             span(
-                                            onclick='schalteKanal(event,this,"SPAN")'
+                                            onclick='WSV.Display.schalteKanal(event,this,"SPAN")'
                                             ) #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
                                                 button.btn.btn-default.btn-lg.dropdown-toggle(
                                                 buttonElement='mkaDropdown',
@@ -96,12 +96,12 @@ block content
                                                 data-toggle='modal',
                                                 data-target='#mkaModal',
                                                 style="margin-left:30%;padding-top: 2px;padding-bottom: 2px;height: 32px;margin-top: -5px;",
-                                                onclick='setzeKanalMka(event,this)'
+                                                onclick='WSV.Display.setzeKanalMka(event,this)'
                                                 )
                                                 span.caret
                                     else
                                         h2.text-center(
-                                        onclick='schalteKanal(event,this,"SPAN")',
+                                        onclick='WSV.Display.schalteKanal(event,this,"SPAN")',
                                         id=index
                                         style='margin-top: 4px; margin-bottom: 4px;'
                                         buttonElement='kanalNr'
@@ -112,7 +112,7 @@ block content
                                     div.btn.btn-default(
                                     buttonElement='span'
                                     span='SPAN01'
-                                    onclick='schalteKanal(event,this,"SPAN")'
+                                    onclick='WSV.Display.schalteKanal(event,this,"SPAN")'
                                     id=gesamteKonfig.ArbeitsplatzGeraete.SPAN01
                                     style='width: 100%;border-top-left-radius: 0;border-top-right-radius: 0;border-bottom-width: 0px;border-left-width: 0px;border-right-width: 0px;'
                                     ) SPAN
@@ -148,7 +148,7 @@ block content
 
                                 div.modal-footer
                                     button.btn.btn-default(type='button', data-dismiss='modal') Abbrechen
-                                    button.btn.btn-primary(type='button', data-dismiss='modal', onclick='setzeKanal()') Ändern
+                                    button.btn.btn-primary(type='button', data-dismiss='modal', onclick='WSV.Display.setzeKanal()') Ändern
 
                     // Modalfenster fuer Mithoeren und Zuordnung
                     div#mithoerenModal.modal(aria-labelledby='mithoerenModalLabel')
@@ -202,7 +202,7 @@ block content
 
                                 div.modal-footer
                                     button.btn.btn-default(type='button', data-dismiss='modal') Abbrechen
-                                    button.btn.btn-primary(type='button', data-dismiss='modal', onclick='setzeKanal()') Ändern
+                                    button.btn.btn-primary(type='button', data-dismiss='modal', onclick='WSV.Display.setzeKanal()') Ändern
 
 
                     // errorModal als mixin ausgelagert nach layout.jade
@@ -210,4 +210,4 @@ block content
                     +errorModal('RFD','RFD-Fehler','Verbindung zum RFD-Dienst abgebrochen. Bitte verwenden Sie folgende alternativen Server:')
 
 block append codeTeil2
-    include clientScriptTest
+    //include clientScriptTest

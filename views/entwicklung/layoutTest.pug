@@ -96,15 +96,16 @@ html
 									each val, index in gesamteKonfig.IpConfig.alternativeIPs
 										- server = val[1].split(":")
 										if server[0] == aktiverServer
-											button.btn.btn-primary.dropdown-toggle(
-											id='button' + '#{val[0]}'
+											button.btn.btn-primary.dropdown-toggle.server-toggle(
+											id='button' + val[0]
 											type='button'
 											data-toggle='dropdown'
+											data-label=val[0]
 											aria-haspopup='true'
 											aria-expanded='false'
 											) &nbsp#{val[0]}&nbsp
-												span.label.label-default(id='buttonAktiv' + val[0] + '_DUE') DUE
-												span.label.label-default(id='buttonAktiv' + val[0] + '_RFD') RFD
+												span.label.label-default.due(id='buttonAktiv' + val[0] + '_DUE') DUE
+												span.label.label-default.rfd(id='buttonAktiv' + val[0] + '_RFD') RFD
 												span.caret
 										ul.dropdown-menu
 											each val1, index1 in gesamteKonfig.IpConfig.alternativeIPs

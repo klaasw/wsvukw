@@ -9,3 +9,10 @@ body, html {
     min-height: 100%;
 }
 
+.nav {
+    li {
+        .dropdown-toggle {
+            margin:0 10px;
+        }
+    }
+}

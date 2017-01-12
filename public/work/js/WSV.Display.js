@@ -16,342 +16,19 @@
 		IpConfig:            '',
 		socket:              {},
 		aktuellerUKWserver:  '',
+		defaultServer:       '',
 
 		init: function () {
 
 			this.aktuellerUKWserver = location.protocol + '//' + location.hostname + ':' + location.port;
 			this.socket             = io(this.aktuellerUKWserver);
+			this.setDefaultServer();
 			this.ladeKonfig();
 		},
 
-		/**
-		 *
-		 */
-		ereignisUeberwachung: function () {
-			//Alle eingehenden WebSocket Nachrichten einhaengen TYP 'statusMessage'
-			socket.on('statusMessage', function (msg) {
-				var dienst   = msg.dienst;
-				var status   = msg.status.Status;
-				var url      = msg.status.URL;
-				var urlVtrIp = url.split(".");
-				urlVtrIp     = urlVtrIp[2];
-				var ort      = null;
-
-				for (var i = 0; i < IpConfig.alternativeIPs.length; i++) {
-					var vergleich      = IpConfig.alternativeIPs[i];
-					var vergleichVtrIp = vergleich[1].split(".");
-					vergleichVtrIp     = vergleichVtrIp[2];
-
-
-					if (vergleichVtrIp == urlVtrIp) {
-						ort = vergleich[0]
-					}
-				}
-
-				if (status == 'OK') {
-					$('#button' + ort + '_' + dienst).removeClass("label-danger");
-					$('#button' + ort + '_' + dienst).addClass("label-success");
-					$('#buttonAktiv' + ort + '_' + dienst).removeClass("label-danger");
-					$('#buttonAktiv' + ort + '_' + dienst).addClass("label-success");
-
-					$('#button' + ort + '_' + dienst).closest('button').removeAttr("disabled");
-					$('#button' + ort + '_' + dienst).closest('li').removeClass("disabled")
-				}
-				else if (status == 'Error') {
-					$('#button' + ort + '_' + dienst).removeClass("label-success");
-					$('#button' + ort + '_' + dienst).addClass("label-danger");
-					$('#button' + ort + '_' + dienst).closest('button').attr("disabled", "disabled");
-
-					$('#buttonAktiv' + ort + '_' + dienst).removeClass("label-success");
-					$('#buttonAktiv' + ort + '_' + dienst).addClass("label-danger");
-
-					$('#button' + ort + '_' + dienst).closest('li').addClass("disabled");
-
-
-					//button add attribute disabled="disabled" und auf dem li class="disabled"
-
-					//Alarm und Fenster nur zeigen wenn aktueller Server betroffen ist
-					//audioAlarm.play();
-					//$('#errorModalRFD').modal('show')
-				}
-
-
-			});
-
-			//eingehende ZustandsMessage für gespeicherte Schaltzustaende
-			socket.on('zustandsMessage', function (msg) {
-				//console.log(msg)
-				lautsprecherAufschalten(msg)
-			});
-
-			//eingehende Socket Nachrichten vom TYP rfdMessage, Statusmeldungen verarbeitebn
-			socket.on('ukwMessage', function (msg) {
-				//console.log("ukwMessage received: " + JSON.stringify(msg));
-				var msgKeys = Object.keys(msg); //z.B. RX, FSTSTATUS
-				var msgTyp  = msgKeys[0];
-				//console.log(msgTyp)
-				if (typeof msg === 'object' && ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id)) {
-					//Empfangen aktiv0
-					if ('RX' in msg && msg.RX.$.state === '1') {
-						//suche Schaltflaeche zu FunkstellenID
-						const button = $('#' + msg.RX.$.id).parent().parent().offsetParent().attr('id');
-
-						//Kanalflaeche faerben
-						$('#' + button + ' [buttonElement="Flaeche"]').addClass("bg-danger");
-						$('#' + button + ' [buttonElement="Flaeche"] h2').addClass("text-danger");
-
-						$.notify({
-							message: 'Empfang:<br>' + ApFunkstellen[msg.RX.$.id].sname
-						}, {
-							type: 'danger'
-						});
-						//console.log("RX state 1: " + msg.RX.$.id)
-					}
-					//Empfangen deaktiv
-					if ('RX' in msg && msg.RX.$.state === '0') {
-						//suche Schaltflaeche zu FunkstellenID
-						const button = $('#' + msg.RX.$.id).parent().parent().offsetParent().attr('id');
-
-						//Kanalflaeche entfaerben
-						$('#' + button + ' [buttonElement="Flaeche"]').removeClass("bg-danger");
-						$('#' + button + ' [buttonElement="Flaeche"] h2').removeClass("text-danger");
-
-						//console.log("RX state 0: " + msg.RX.$.id)
-					}
-					//Senden aktiv
-					if ('TX' in msg && msg.TX.$.state === '1') {
-						//Pruefen ob SPAN ID in TX Objekt
-						if (msg.TX.$.id.indexOf("SPAN") != -1) {
-							//erstmal nichts machen. ggf in SPAN Element etwas anzeigen
-							//console.log("TX state 1 ohne SPAN: " + msg.TX.$.id)
-						}
-						else {
-							//suche Schaltflaeche zu FunkstellenID
-							const button = $('#' + msg.TX.$.id).parent().parent().offsetParent().attr('id');
-
-							//Kanalflaeche faerben
-							$('#' + button + ' [buttonElement="Flaeche"]').addClass("bg-success");
-							$('#' + button + ' [buttonElement="Flaeche"] h2').addClass("text-success");
-
-
-							//console.log("TX state 1 mit SPAN: " + msg.TX.$.id)
-						}
-					}
-					//Senden deaktiv
-					if ('TX' in msg && msg.TX.$.state === '0') {
-						if (msg.TX.$.id.indexOf("SPAN") != -1) {
-							//erstmal nichts machen. ggf in SPAN Element etwas anzeigen
-							//console.log("TX state 0 ohne SPAN: " + msg.TX.$.id)
-						}
-						else {
-							//suche Schaltflaeche zu FunkstellenID
-							const button = $('#' + msg.TX.$.id).parent().parent().offsetParent().attr('id');
-
-							//Kanalflaeche entfaerben
-							$('#' + button + ' [buttonElement="Flaeche"]').removeClass("bg-success");
-							$('#' + button + ' [buttonElement="Flaeche"] h2').removeClass("text-success");
-
-							//console.log("TX state 0 mit SPAN: " + msg.TX.$.id)
-						}
-					}
-
-					if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '0') {
-						$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass("label-danger");
-						$('#' + msg.FSTSTATUS.$.id + ' span.label').addClass("label-success");
-						$('#' + msg.FSTSTATUS.$.id + ' span.label').text("OK");
-						$('#' + msg.FSTSTATUS.$.id).attr("fstStatus", "0");
-						const standortButton = $('#' + msg.FSTSTATUS.$.id).parent().prev();
-						$(standortButton[0]).children().addClass("label-success");
-						$(standortButton[0]).children().removeClass("label-danger");
-						$(standortButton[0]).children().text("OK");
-
-
-						//console.log(msg.FSTSTATUS.$.id)
-
-						//Bei Kanalaenderung die Kanalnummer setzen
-						if (msg.FSTSTATUS.$.channel > -1) {
-							const button = $('#' + msg.FSTSTATUS.$.id).parent().parent().offsetParent().attr('id');
-							$('#' + button + ' [buttonElement="kanalNr"] > span').text(msg.FSTSTATUS.$.channel)
-						}
-
-					}
-					// -SEN- darf nicht in der ID vorkommen
-					if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') == -1) {
-						$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass("label-success");
-						$('#' + msg.FSTSTATUS.$.id + ' span.label').addClass("label-danger");
-						$('#' + msg.FSTSTATUS.$.id + ' span.label').text("Error");
-						$('#' + msg.FSTSTATUS.$.id).attr("fstStatus", "1");
-						const standortButton = $('#' + msg.FSTSTATUS.$.id).parent().prev();
-						$(standortButton[0]).children().addClass("label-danger");
-						$(standortButton[0]).children().removeClass("label-success");
-						$(standortButton[0]).children().text("Error");
-
-						//Notify by Störung
-						$.notify({
-							message: 'Störung:<br>' + ApFunkstellen[msg.FSTSTATUS.$.id].sname
-						}, {
-							type: 'danger'
-						});
-						//Funktionen von "getrennt"
-						//suche SChaltflaeche zu FunkstellenID
-						const button = $('#' + msg.FSTSTATUS.$.id).offsetParent().attr('id');
-						//$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
-						$('#' + button + ' > div').removeClass("panel-primary");
-						$('#' + button + ' > div').css("background-color", "");
-
-						$('#' + button + ' > div > div:nth-child(3)').removeClass("bg-primary");
-						ApFunkstellen[msg.FSTSTATUS.$.id].aufgeschaltet = false;
-						$.notify('Getrennt: <br>' + ApFunkstellen[msg.FSTSTATUS.$.id].sname);
-
-						//geschaltetet Zustände an Server übertragen
-						socket.emit('clientMessageSchaltzustand', {
-							'Zustand':      ApFunkstellen,
-							'Arbeitsplatz': ApID
-						});
-
-
-						//console.log(msg.FSTSTATUS.$.id)
-
-					}
-					//Schalten fuer SPrechANlagen und MitHoerANlagen
-					if ('geschaltet' in msg && msg.geschaltet.$.state === '1') {
-						// pruefen ob diese Meldung zu diesem Arbeitsplatz gehoert
-						if (WSV.Utils.hatWert(ArbeitsplatzGeraete, msg.geschaltet.$.Ap)) {
-							//aendern Darstellung fuer MHAN
-							if (msg.geschaltet.$.Ap.indexOf("MHAN") != -1) {
-								//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
-								if (msg.geschaltet.$.Ap.indexOf("MHAN") != -1 && msg.geschaltet.$.id.indexOf("SPAN") != -1) {
-									$('#' + msg.geschaltet.$.id).addClass('btn-primary');
-									$.notify('Aufgeschaltet: <br>' + ApFunkstellen[msg.geschaltet.$.id].sname);
-									//nur MHAN aufschaltungen
-								}
-								else {
-									//suche Schaltflaeche zu FunkstellenID
-									const button = $('#' + msg.geschaltet.$.id).parent().parent().offsetParent().attr('id');
-									$('#' + button + ' [buttonElement="Mhan"]').removeClass('btn-default');
-									$('#' + button + ' [buttonElement="Mhan"]').addClass('btn-primary')
-								}
-
-								const geraet = msg.geschaltet.$.Ap;
-
-								//TODO: fix invalid syntax
-								// ApFunkstellen[msg.geschaltet.$.id].mhan_aufgeschaltet = {
-								// 	[geraet]: true
-								// }
-
-
-							}
-
-							//aendern Darstellung fuer SPAN
-							if (msg.geschaltet.$.Ap.indexOf("SPAN") != -1) {
-								//suche Schaltflaeche zu FunkstellenID
-								const button = $('#' + msg.geschaltet.$.id).parent().parent().offsetParent().attr('id');
-
-								//$('#'+button+' > div > div.panel-heading > span').text( "aufgeschaltet" )
-								$('#' + button + ' > div').addClass("panel-primary");
-								$('#' + button + ' [buttonElement="span"]').addClass("btn-primary");
-
-								ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true;
-								$.notify('Aufgeschaltet: <br>' + ApFunkstellen[msg.geschaltet.$.id].sname);
-								//console.log(msg.geschaltet.$.id)
-
-
-							}
-						}
-					}
-
-					//Trennen fuer SPrechANlagen und MitHoerANlagen
-					if ('getrennt' in msg && msg.getrennt.$.state === '1') {
-
-						if (WSV.Utils.hatWert(ArbeitsplatzGeraete, msg.getrennt.$.Ap)) {
-
-							//Aendern Darstellung fuer MHAN
-							if (msg.getrennt.$.Ap.indexOf("MHAN") != -1) {
-								//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
-								if (msg.getrennt.$.Ap.indexOf("MHAN") != -1 && msg.getrennt.$.id.indexOf("SPAN") != -1) {
-									$('#' + msg.getrennt.$.id).removeClass('btn-primary');
-									$.notify('Getrennt: <br>' + ApFunkstellen[msg.getrennt.$.id].sname);
-									//nur MHAN Aufschaltungen
-								}
-								else {
-									//suche Schaltflaeche zu FunkstellenID
-									const button = $('#' + msg.getrennt.$.id).offsetParent().attr('id');
-									$('#' + button + ' [buttonElement="Mhan_ship"]').css("background-color", "#f5f5f5");
-									$('#' + button + ' [buttonElement="Mhan_ship"]').removeClass("bg-primary")
-								}
-								const geraet = msg.getrennt.$.Ap;
-
-								//TODO: fix invalid syntax
-								// ApFunkstellen[msg.getrennt.$.id].mhan_aufgeschaltet = {
-								// 	[geraet]: false
-								// }
-
-
-							}
-							//Aendern Darstellung fuer SPAN
-							if (msg.getrennt.$.Ap.indexOf("SPAN") != -1) {
-
-								//suche Schaltflaeche zu FunkstellenID
-								const button = $('#' + msg.getrennt.$.id).parent().parent().offsetParent().attr('id');
-								//$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
-
-								$('#' + button + ' > div').removeClass("panel-primary");
-								$('#' + button + ' [buttonElement="span"]').removeClass("btn-primary");
-
-
-								ApFunkstellen[msg.getrennt.$.id].aufgeschaltet = false;
-
-								$.notify('Getrennt: <br>' + ApFunkstellen[msg.getrennt.$.id].sname);
-								//console.log(msg.getrennt.$.id)
-
-
-							}
-						}
-						else {
-							//console.log("")
-						}
-					}
-
-
-				}  // Ende if (typeof msg === 'object')
-				// TODO: pruefen was mit anderen Meldungen vom RFD geschehen soll. Ert
-				else {
-					//msgText = msg.replace("<", "")
-					//msgText = msgText.replace("\>", "")
-
-					//RFD Fehler
-					msgText = JSON.stringify(msg);
-					if (msgText.indexOf('fehlgeschlagen') > -1) {
-						//     //-console.log('RFD Aufruf fehlgeschlagen')
-						//     $('#button
-						// TODO: variable aus backend übertragen
-						// #{gesamteKonfig.IpConfig.alternativeIPs[0][0]}
-						_RFD
-							.removeClass("label-success");
-						//     $('#button
-						// TODO: variable aus backend übertragen
-						// #{gesamteKonfig.IpConfig.alternativeIPs[0][0]}
-						_RFD
-							.addClass("label-danger");
-						//
-						$.notify({
-							message: 'Störung:<br>' + JSON.stringify(msg)
-						}, {
-							type: 'danger'
-						})
-					}
-
-					//else {
-					//     console.log(" sonstige ukwMessage: " + msgText)
-					// }
-					//$.notify('Meldung: '+JSON.stringify(msg))
-
-					//$('#messages').append($('<li>').text(msg));
-					//$('#messages').append($.text(msg));
-				}
-			});
-		}, // Ende EreignisUeberwachung
-
+		setDefaultServer() {
+			this.defaultServer = $('.server-toggle').data('label');
+		},
 		/**
 		 * Variablen zum Arbeitsplatz laden
 		 */
@@ -371,7 +48,7 @@
 
 				console.log('geladeneIPconfig: ' + JSON.stringify(data.Konfigdaten.IpConfig));
 
-				// ereignisUeberwachung();
+				_self.ereignisUeberwachung();
 				_self.verbindungsPruefung();
 				_self.lautsprecherAufschalten(_self.MhanZuordnung);
 
@@ -381,6 +58,329 @@
 				$('#errorModalDUE').modal('show');
 			});
 		},
+
+		/**
+		 *
+		 */
+		ereignisUeberwachung: function () {
+			const _self = this;
+
+			//Alle eingehenden WebSocket Nachrichten einhaengen TYP 'statusMessage'
+			this.socket.on('statusMessage', function (msg) {
+				const dienst = msg.dienst;
+				const status = msg.status.Status;
+				const url    = msg.status.URL;
+				let urlVtrIp = url.split('.');
+				urlVtrIp     = urlVtrIp[2];
+				let ort      = null;
+
+				for (let i = 0; i < _self._IpConfig.alternativeIPs.length; i++) {
+					const vergleich    = _self._IpConfig.alternativeIPs[i];
+					let vergleichVtrIp = vergleich[1].split('.');
+					vergleichVtrIp     = vergleichVtrIp[2];
+
+
+					if (vergleichVtrIp == urlVtrIp) {
+						ort = vergleich[0]
+					}
+				}
+
+				if (status == 'OK') {
+					$('#button' + ort + '_' + dienst).removeClass('label-danger');
+					$('#button' + ort + '_' + dienst).addClass('label-success');
+					$('#buttonAktiv' + ort + '_' + dienst).removeClass('label-danger');
+					$('#buttonAktiv' + ort + '_' + dienst).addClass('label-success');
+
+					$('#button' + ort + '_' + dienst).closest('button').removeAttr('disabled');
+					$('#button' + ort + '_' + dienst).closest('li').removeClass('disabled')
+				}
+				else if (status == 'Error') {
+					$('#button' + ort + '_' + dienst).removeClass('label-success');
+					$('#button' + ort + '_' + dienst).addClass('label-danger');
+					$('#button' + ort + '_' + dienst).closest('button').attr('disabled', 'disabled');
+
+					$('#buttonAktiv' + ort + '_' + dienst).removeClass('label-success');
+					$('#buttonAktiv' + ort + '_' + dienst).addClass('label-danger');
+
+					$('#button' + ort + '_' + dienst).closest('li').addClass('disabled');
+
+
+					//button add attribute disabled="disabled" und auf dem li class="disabled"
+
+					//Alarm und Fenster nur zeigen wenn aktueller Server betroffen ist
+					//audioAlarm.play();
+					//$('#errorModalRFD').modal('show')
+				}
+
+
+			});
+
+			//eingehende ZustandsMessage für gespeicherte Schaltzustaende
+			this.socket.on('zustandsMessage', function (msg) {
+				//console.log(msg)
+				lautsprecherAufschalten(msg)
+			});
+
+			//eingehende Socket Nachrichten vom TYP rfdMessage, Statusmeldungen verarbeitebn
+			this.socket.on('ukwMessage', function (msg) {
+				//console.log("ukwMessage received: " + JSON.stringify(msg));
+				const msgKeys = Object.keys(msg); //z.B. RX, FSTSTATUS
+				const msgTyp  = msgKeys[0];
+				//console.log(msgTyp)
+				if (typeof msg === 'object' && _self.ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id)) {
+					//Empfangen aktiv0
+					if ('RX' in msg && msg.RX.$.state === '1') {
+						//suche Schaltflaeche zu FunkstellenID
+						const button = $('#' + msg.RX.$.id).parent().parent().offsetParent().attr('id');
+
+						//Kanalflaeche faerben
+						$('#' + button + ' [buttonElement="Flaeche"]').addClass('bg-danger');
+						$('#' + button + ' [buttonElement="Flaeche"] h2').addClass('text-danger');
+
+						$.notify({
+							message: 'Empfang:<br>' + _self.ApFunkstellen[msg.RX.$.id].sname
+						}, {
+							type: 'danger'
+						});
+						//console.log("RX state 1: " + msg.RX.$.id)
+					}
+					//Empfangen deaktiv
+					if ('RX' in msg && msg.RX.$.state === '0') {
+						//suche Schaltflaeche zu FunkstellenID
+						const button = $('#' + msg.RX.$.id).parent().parent().offsetParent().attr('id');
+
+						//Kanalflaeche entfaerben
+						$('#' + button + ' [buttonElement="Flaeche"]').removeClass('bg-danger');
+						$('#' + button + ' [buttonElement="Flaeche"] h2').removeClass('text-danger');
+
+						//console.log("RX state 0: " + msg.RX.$.id)
+					}
+					//Senden aktiv
+					if ('TX' in msg && msg.TX.$.state === '1') {
+						//Pruefen ob SPAN ID in TX Objekt
+						if (msg.TX.$.id.indexOf('SPAN') != -1) {
+							//erstmal nichts machen. ggf in SPAN Element etwas anzeigen
+							//console.log("TX state 1 ohne SPAN: " + msg.TX.$.id)
+						}
+						else {
+							//suche Schaltflaeche zu FunkstellenID
+							const button = $('#' + msg.TX.$.id).parent().parent().offsetParent().attr('id');
+
+							//Kanalflaeche faerben
+							$('#' + button + ' [buttonElement="Flaeche"]').addClass('bg-success');
+							$('#' + button + ' [buttonElement="Flaeche"] h2').addClass('text-success');
+
+
+							//console.log("TX state 1 mit SPAN: " + msg.TX.$.id)
+						}
+					}
+					//Senden deaktiv
+					if ('TX' in msg && msg.TX.$.state === '0') {
+						if (msg.TX.$.id.indexOf('SPAN') != -1) {
+							//erstmal nichts machen. ggf in SPAN Element etwas anzeigen
+							//console.log("TX state 0 ohne SPAN: " + msg.TX.$.id)
+						}
+						else {
+							//suche Schaltflaeche zu FunkstellenID
+							const button = $('#' + msg.TX.$.id).parent().parent().offsetParent().attr('id');
+
+							//Kanalflaeche entfaerben
+							$('#' + button + ' [buttonElement="Flaeche"]').removeClass('bg-success');
+							$('#' + button + ' [buttonElement="Flaeche"] h2').removeClass('text-success');
+
+							//console.log("TX state 0 mit SPAN: " + msg.TX.$.id)
+						}
+					}
+
+					if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '0') {
+						$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass('label-danger');
+						$('#' + msg.FSTSTATUS.$.id + ' span.label').addClass('label-success');
+						$('#' + msg.FSTSTATUS.$.id + ' span.label').text('OK');
+						$('#' + msg.FSTSTATUS.$.id).attr('fstStatus', '0');
+						const standortButton = $('#' + msg.FSTSTATUS.$.id).parent().prev();
+						$(standortButton[0]).children().addClass('label-success');
+						$(standortButton[0]).children().removeClass('label-danger');
+						$(standortButton[0]).children().text('OK');
+
+
+						//console.log(msg.FSTSTATUS.$.id)
+
+						//Bei Kanalaenderung die Kanalnummer setzen
+						if (msg.FSTSTATUS.$.channel > -1) {
+							const button = $('#' + msg.FSTSTATUS.$.id).parent().parent().offsetParent().attr('id');
+							$('#' + button + ' [buttonElement="kanalNr"] > span').text(msg.FSTSTATUS.$.channel)
+						}
+
+					}
+					// -SEN- darf nicht in der ID vorkommen
+					if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') == -1) {
+						$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass('label-success');
+						$('#' + msg.FSTSTATUS.$.id + ' span.label').addClass('label-danger');
+						$('#' + msg.FSTSTATUS.$.id + ' span.label').text('Error');
+						$('#' + msg.FSTSTATUS.$.id).attr('fstStatus', '1');
+						const standortButton = $('#' + msg.FSTSTATUS.$.id).parent().prev();
+						$(standortButton[0]).children().addClass('label-danger');
+						$(standortButton[0]).children().removeClass('label-success');
+						$(standortButton[0]).children().text('Error');
+
+						//Notify by Störung
+						$.notify({
+							message: 'Störung:<br>' + _self.ApFunkstellen[msg.FSTSTATUS.$.id].sname
+						}, {
+							type: 'danger'
+						});
+						//Funktionen von "getrennt"
+						//suche SChaltflaeche zu FunkstellenID
+						const button = $('#' + msg.FSTSTATUS.$.id).offsetParent().attr('id');
+						//$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
+						$('#' + button + ' > div').removeClass('panel-primary');
+						$('#' + button + ' > div').css('background-color', '');
+
+						$('#' + button + ' > div > div:nth-child(3)').removeClass('bg-primary');
+						_self.ApFunkstellen[msg.FSTSTATUS.$.id].aufgeschaltet = false;
+						$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.FSTSTATUS.$.id].sname);
+
+						//geschaltetet Zustände an Server übertragen
+						socket.emit('clientMessageSchaltzustand', {
+							'Zustand':      _self.ApFunkstellen,
+							'Arbeitsplatz': _self.ApID
+						});
+
+
+						//console.log(msg.FSTSTATUS.$.id)
+
+					}
+					//Schalten fuer SPrechANlagen und MitHoerANlagen
+					if ('geschaltet' in msg && msg.geschaltet.$.state === '1') {
+						// pruefen ob diese Meldung zu diesem Arbeitsplatz gehoert
+						if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.geschaltet.$.Ap)) {
+							//aendern Darstellung fuer MHAN
+							if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1) {
+								//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
+								if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1 && msg.geschaltet.$.id.indexOf('SPAN') != -1) {
+									$('#' + msg.geschaltet.$.id).addClass('btn-primary');
+									$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
+									//nur MHAN aufschaltungen
+								}
+								else {
+									//suche Schaltflaeche zu FunkstellenID
+									const button = $('#' + msg.geschaltet.$.id).parent().parent().offsetParent().attr('id');
+									$('#' + button + ' [buttonElement="Mhan"]').removeClass('btn-default');
+									$('#' + button + ' [buttonElement="Mhan"]').addClass('btn-primary')
+								}
+
+								const geraet = msg.geschaltet.$.Ap;
+
+								//TODO: fix invalid syntax
+								// _self.ApFunkstellen[msg.geschaltet.$.id].mhan_aufgeschaltet = {
+								// 	[geraet]: true
+								// }
+							}
+
+							//aendern Darstellung fuer SPAN
+							if (msg.geschaltet.$.Ap.indexOf('SPAN') != -1) {
+								//suche Schaltflaeche zu FunkstellenID
+								const button = $('#' + msg.geschaltet.$.id).parent().parent().offsetParent().attr('id');
+
+								//$('#'+button+' > div > div.panel-heading > span').text( "aufgeschaltet" )
+								$('#' + button + ' > div').addClass('panel-primary');
+								$('#' + button + ' [buttonElement="span"]').addClass('btn-primary');
+
+								_self.ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true;
+								$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
+								//console.log(msg.geschaltet.$.id)
+
+
+							}
+						}
+					}
+
+					//Trennen fuer SPrechANlagen und MitHoerANlagen
+					if ('getrennt' in msg && msg.getrennt.$.state === '1') {
+
+						if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.getrennt.$.Ap)) {
+
+							//Aendern Darstellung fuer MHAN
+							if (msg.getrennt.$.Ap.indexOf('MHAN') != -1) {
+								//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
+								if (msg.getrennt.$.Ap.indexOf('MHAN') != -1 && msg.getrennt.$.id.indexOf('SPAN') != -1) {
+									$('#' + msg.getrennt.$.id).removeClass('btn-primary');
+									$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
+									//nur MHAN Aufschaltungen
+								}
+								else {
+									//suche Schaltflaeche zu FunkstellenID
+									const button = $('#' + msg.getrennt.$.id).offsetParent().attr('id');
+									$('#' + button + ' [buttonElement="Mhan_ship"]').css('background-color', '#f5f5f5');
+									$('#' + button + ' [buttonElement="Mhan_ship"]').removeClass('bg-primary')
+								}
+								const geraet = msg.getrennt.$.Ap;
+
+								//TODO: fix invalid syntax
+								// _self.ApFunkstellen[msg.getrennt.$.id].mhan_aufgeschaltet = {
+								// 	[geraet]: false
+								// }
+
+
+							}
+							//Aendern Darstellung fuer SPAN
+							if (msg.getrennt.$.Ap.indexOf('SPAN') != -1) {
+
+								//suche Schaltflaeche zu FunkstellenID
+								const button = $('#' + msg.getrennt.$.id).parent().parent().offsetParent().attr('id');
+								//$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
+
+								$('#' + button + ' > div').removeClass('panel-primary');
+								$('#' + button + ' [buttonElement="span"]').removeClass('btn-primary');
+
+
+								_self.ApFunkstellen[msg.getrennt.$.id].aufgeschaltet = false;
+
+								$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
+								//console.log(msg.getrennt.$.id)
+
+
+							}
+						}
+						else {
+							//console.log("")
+						}
+					}
+
+
+				}  // Ende if (typeof msg === 'object')
+				// TODO: pruefen was mit anderen Meldungen vom RFD geschehen soll. Ert
+				else {
+					//msgText = msg.replace("<", "")
+					//msgText = msgText.replace("\>", "")
+
+					//RFD Fehler
+					const msgText = JSON.stringify(msg);
+
+					if (msgText.indexOf('fehlgeschlagen') > -1) {
+						//     //-console.log('RFD Aufruf fehlgeschlagen')
+						// TODO: variable aus backend übertragen
+						$(_self.defaultServer + '_RFD').removeClass('label-success');
+						// TODO: variable aus backend übertragen
+						$(_self.defaultServer + '_RFD').addClass('label-danger');
+						//
+						$.notify({
+							message: 'Störung:<br>' + JSON.stringify(msg)
+						}, {
+							type: 'danger'
+						})
+					}
+
+					//else {
+					//     console.log(" sonstige ukwMessage: " + msgText)
+					// }
+					//$.notify('Meldung: '+JSON.stringify(msg))
+
+					//$('#messages').append($('<li>').text(msg));
+					//$('#messages').append($.text(msg));
+				}
+			});
+		}, // Ende EreignisUeberwachung
 
 		/**
 		 * Mithoerlautsprecher aufschalten
@@ -408,22 +408,23 @@
 		 * Wenn lokaler DUE getrennt dann lokaler RFD auf undefined -- grau
 		 */
 		verbindungsPruefung: function () {
+			const _self = this;
 			this.socket.on('connect', function () {
 				//console.log('check 2------------------------VERBUNDEN', socket.connected);
 				// TODO: variablen aus backend übertragen
-				$('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').removeClass('label-danger');
-				$('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').addClass('label-success');
-				$('#buttonAktiv#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').removeClass('label-danger');
-				$('#buttonAktiv#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').addClass('label-success');
+				$('#button' + _self.defaultServer + '_DUE').removeClass('label-danger');
+				$('#button' + _self.defaultServer + '_DUE').addClass('label-success');
+				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-danger');
+				$('#buttonAktiv' + _self.defaultServer + '_DUE').addClass('label-success');
 			});
 
 			this.socket.on('disconnect', function () {
 				//console.log('check 2-----------------------GETRENNT', socket.connected);
 				// TODO: variablen aus backend übertragen
-				$('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').removeClass('label-success');
-				$('#button#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').addClass('label-danger');
-				$('#buttonAktiv#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').removeClass('label-success');
-				$('#buttonAktiv#{gesamteKonfig.IpConfig.alternativeIPs[0][0]}_DUE').addClass('label-danger');
+				$('#button' + _self.defaultServer + '_DUE').removeClass('label-success');
+				$('#button' + _self.defaultServer + '_DUE').addClass('label-danger');
+				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-success');
+				$('#buttonAktiv' + _self.defaultServer + '_DUE').addClass('label-danger');
 
 				// TODO: Wiederverbindung versuchen, waehrend dieser Zeit kein Fehler zeigen, sondern erst dann?
 				//Zeige Error Modal Fenster
@@ -478,7 +479,7 @@
 		 * @param geraet
 		 */
 		schalteKanal: function (event, element, geraet) {
-			if (angeklickt(event, element)) {
+			if (this.angeklickt(event, element)) {
 				if (geraet === 'SPAN') {
 					//uebergeordnetes Element finden
 					const button = $(element).offsetParent().attr('id');
@@ -496,7 +497,7 @@
 
 					//nur schalten, wenn Status 0 bzw. ok
 					if (geklickteFstHauptStatus === '0') {
-						schalteKanalID(geklickteFstHaupt, geklickteSPAN, 'SPAN', geklicktespan_mhanApNr)
+						this.schalteKanalID(geklickteFstHaupt, geklickteSPAN, 'SPAN', geklicktespan_mhanApNr)
 					}
 
 					//TODO: versuche Reserveanlage zu schalten
@@ -515,7 +516,7 @@
 					const mhan          = $('#mithoerenModal .btn-primary').attr('id');
 					const span          = element.id;
 					const span_mhanApNr = $('#mithoerenModal .btn-group-vertical .btn-primary').text();
-					schalteKanalID(span, mhan, 'SPAN_MHAN', span_mhanApNr);
+					this.schalteKanalID(span, mhan, 'SPAN_MHAN', span_mhanApNr);
 					//console.log();
 				}
 
@@ -535,7 +536,7 @@
 					const geklickteFstHauptStatus = $('#' + geklickteFstHaupt).attr('fstStatus');
 					const geklickteFstReserStatus = $('#' + geklickteFstReser).attr('fstStatus');
 
-					schalteKanalID(geklickteFstHaupt, geklickteMHAN, 'MHAN');
+					this.schalteKanalID(geklickteFstHaupt, geklickteMHAN, 'MHAN');
 				}
 			}
 		},
@@ -555,7 +556,7 @@
 			if (SPAN === 'SPAN') {
 
 				if (Einzel === true) {
-					$.each(ApFunkstellen, function (key, value) {
+					$.each(this.ApFunkstellen, function (key, value) {
 						if (value.aufgeschaltet === true && key != geklickteFstID) {
 							//console.log(key, value.aufgeschaltet)
 							trennen(key, geklickteSPANMHAN, geklicktespan_mhanApNr)
@@ -564,8 +565,8 @@
 					})
 				}
 				//Gruppenschaltung
-				if (ApFunkstellen[geklickteFstID] != undefined) {
-					if (ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
+				if (this.ApFunkstellen[geklickteFstID] != undefined) {
+					if (this.ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
 						trennen(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
 
 					}
@@ -577,27 +578,27 @@
 			}
 			//SPAN zum Mithoeren aufschalten - trenen
 			if (SPAN === 'SPAN_MHAN') {
-				if (ApFunkstellen.hasOwnProperty(geklickteFstID)) {
-					if (ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
+				if (this.ApFunkstellen.hasOwnProperty(geklickteFstID)) {
+					if (this.ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
 						trennen(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
-						ApFunkstellen[geklickteFstID].aufgeschaltet = false;
+						this.ApFunkstellen[geklickteFstID].aufgeschaltet = false;
 					}
 					else {
 						schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
-						ApFunkstellen[geklickteFstID].aufgeschaltet = true;
+						this.ApFunkstellen[geklickteFstID].aufgeschaltet = true;
 					}
 				}
 				else {
-					ApFunkstellen[geklickteFstID]               = {};
-					ApFunkstellen[geklickteFstID].aufgeschaltet = true;
-					ApFunkstellen[geklickteFstID].sname         = 'Fremd Span';
+					this.ApFunkstellen[geklickteFstID]               = {};
+					this.ApFunkstellen[geklickteFstID].aufgeschaltet = true;
+					this.ApFunkstellen[geklickteFstID].sname         = 'Fremd Span';
 					schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
 				}
 			}
 
 			//MHAN schalten
 			if (SPAN === 'MHAN') {
-				if (ApFunkstellen[geklickteFstID].mhan_aufgeschaltet[geklickteSPANMHAN] == true) {
+				if (this.ApFunkstellen[geklickteFstID].mhan_aufgeschaltet[geklickteSPANMHAN] == true) {
 					trennen(geklickteFstID, geklickteSPANMHAN)
 				}
 				else {
@@ -614,14 +615,15 @@
 		 * @param geklicktespan_mhanApNr
 		 */
 		trennen: function (geklickteID, geklickteSPANMHAN, geklicktespan_mhanApNr) {
+			const _self = this;
 			this.socket.emit('clientMessage', {
 				'FstID':         geklickteID,
-				'ApID':          ApID,
+				'ApID':          _self.ApID,
 				'SPAN':          geklickteSPANMHAN,
 				'aktion':        'trennenEinfach',
 				'span_mhanApNr': geklicktespan_mhanApNr
 			});
-			$.notify('Trenne: <br>' + ApFunkstellen[geklickteID].sname);
+			$.notify('Trenne: <br>' + this.ApFunkstellen[geklickteID].sname);
 		},
 
 		/**
@@ -631,14 +633,15 @@
 		 * @param geklicktespan_mhanApNr
 		 */
 		schalten: function (geklickteID, geklickteSPANMHAN, geklicktespan_mhanApNr) {
+			const _self = this;
 			this.socket.emit('clientMessage', {
 				'FstID':         geklickteID,
-				'ApID':          ApID,
+				'ApID':          _self.ApID,
 				'SPAN':          geklickteSPANMHAN,
 				'aktion':        'schaltenEinfach',
 				'span_mhanApNr': geklicktespan_mhanApNr
 			});
-			$.notify('Schalte: <br>' + ApFunkstellen[geklickteID].sname)
+			$.notify('Schalte: <br>' + this.ApFunkstellen[geklickteID].sname)
 		},
 
 		/**
@@ -655,7 +658,7 @@
 				'aktion': 'SetzeAudioPegel',
 				'Kanal':  level
 			});
-			$.notify('Lautstaerke: ' + ApFunkstellen[funkstelle].sname + ' ...');
+			$.notify('Lautstaerke: ' + this.ApFunkstellen[funkstelle].sname + ' ...');
 
 			const button = $('#' + funkstelle).parent().parent().offsetParent().attr('id');
 			//Lautstärke in HTML Attribut setzen
@@ -670,7 +673,7 @@
 			//Wechsel zu Gruppenschaltung
 			if (Einzel === true) {
 				Einzel       = false;
-				einzelStatus = JSON.stringify(ApFunkstellen); //speichere geschalteten Zustand
+				einzelStatus = JSON.stringify(this.ApFunkstellen); //speichere geschalteten Zustand
 
 				$('#' + buttonID).toggleClass('active');
 				$('#' + buttonID + ' > a').text('Gruppenschaltung');
@@ -678,7 +681,7 @@
 			}
 			else {
 				Einzel        = true;
-				gruppenStatus = JSON.stringify(ApFunkstellen); //speichere geschalteten Zustand
+				gruppenStatus = JSON.stringify(this.ApFunkstellen); //speichere geschalteten Zustand
 				$('#' + buttonID).toggleClass('active');
 				$('#' + buttonID + ' > a').text('Einzelschaltung');
 				zustandWiederherstellen(JSON.parse(einzelStatus)); //lade Einzelzustand
