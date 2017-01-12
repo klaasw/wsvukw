@@ -11,6 +11,6 @@ describe("Prüfe Funktionen app.js", function() {
     it("Erreichbarkeit des Ports", function() {
         var port = app.normalizePort(123)
 
-        expect(port).to.be.true;
+        expect(port).to.be.false;
     });
 });

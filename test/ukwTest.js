@@ -17,14 +17,14 @@ describe("Auswertung/Weiterleitung der SIP Meldungen vom RFD", function() {
     it("sende SIP Nachricht", function() {
         var res = ukw.sendeSipNachricht("OK", function (result, error) {
             if (result == 'OK') {
-                return 'Abgesendet: ';
+                return 'Abgesendet';
             }
             else {
-                return 'Fehler: ';
+                return 'Fehler';
             }
             });
 
-        expect(res).equals('Abgesendet: ');
+        expect(res).equals('Abgesendet');
     });
 
 
