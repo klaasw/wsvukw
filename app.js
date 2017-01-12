@@ -135,8 +135,8 @@ if (cfg.intervall !== 0) {
 
 /**
  * Normalize a port into a number, string, or false.
- * @param {int} val
- * @returns {boolean}
+ * @param {int|string} val
+ * @returns {int|boolean}
  */
 function normalizePort(val) {
 	const port = parseInt(val, 10);

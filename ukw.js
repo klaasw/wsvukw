@@ -46,6 +46,7 @@ exports.pruefeRfdWS = function () {
 			log.debug(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK');
 			socket.sendeWebsocketNachrichtStatus({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
             socket.sendeWebsocketNachrichtServer({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
+            return true;
 		}
 		else {
 			log.error(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + error);
@@ -57,6 +58,7 @@ exports.pruefeRfdWS = function () {
 				dienst: 'RFD',
 				status: {URL: cfg.urlRFDWebservice, Status: 'Error'}
 			});
+            return false;
 		}
 	})
 };

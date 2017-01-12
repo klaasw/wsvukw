@@ -160,9 +160,11 @@ exports.leseSchaltzustand = function (socketID, IP) {
 	})
 };
 
-//Lese Zustandsmeldungen in zustandKomponenten
-//{"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
-//TODO:
+/**
+ * Lese Zustandsmeldungen in zustandKomponenten
+ * {"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
+ * @param {string} socketID
+ */
 function leseZustand(socketID) {
 	const selector = {};
 	db.findeElement('zustandKomponenten', selector, function (doc) {
