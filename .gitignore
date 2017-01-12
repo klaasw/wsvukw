@@ -4,7 +4,5 @@
 /node_modules/*
 /public/node_modules/*
 /public/_temp/*
-/public/stylesheets/dist/*
-/public/javascripts/dist/*
 /.idea/*
 *.iml
