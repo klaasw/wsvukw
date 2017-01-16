@@ -86,8 +86,8 @@ $(window).load(function () {
 				urlVtrIp     = urlVtrIp[2];
 				let ort      = null;
 
-				for (let i = 0; i < _self._IpConfig.alternativeIPs.length; i++) {
-					const vergleich    = _self._IpConfig.alternativeIPs[i];
+				for (let i = 0; i < _self.IpConfig.alternativeIPs.length; i++) {
+					const vergleich    = _self.IpConfig.alternativeIPs[i];
 					let vergleichVtrIp = vergleich[1].split('.');
 					vergleichVtrIp     = vergleichVtrIp[2];
 
@@ -396,7 +396,7 @@ $(window).load(function () {
 		 */
 		lautsprecherAufschalten: function (mhan) {
 
-			console.log(mhan);
+			// console.log(mhan);
 			const _self = this;
 
 			for (const funkstelle in mhan) {
@@ -563,7 +563,7 @@ $(window).load(function () {
 			//SPAN schalten
 			if (SPAN === 'SPAN') {
 
-				if (Einzel === true) {
+				if (this.Einzel === true) {
 					$.each(this.ApFunkstellen, function (key, value) {
 						if (value.aufgeschaltet === true && key != geklickteFstID) {
 							//console.log(key, value.aufgeschaltet)
@@ -679,20 +679,20 @@ $(window).load(function () {
 		 */
 		gruppen: function (buttonID) {
 			//Wechsel zu Gruppenschaltung
-			if (Einzel === true) {
-				Einzel       = false;
-				einzelStatus = JSON.stringify(this.ApFunkstellen); //speichere geschalteten Zustand
+			if (this.Einzel === true) {
+				this.Einzel       = false;
+				this.einzelStatus = JSON.stringify(this.ApFunkstellen); //speichere geschalteten Zustand
 
 				$('#' + buttonID).toggleClass('active');
 				$('#' + buttonID + ' > a').text('Gruppenschaltung');
-				zustandWiederherstellen(JSON.parse(gruppenStatus)); // lade Gruppenzustand
+				zustandWiederherstellen(JSON.parse(this.gruppenStatus)); // lade Gruppenzustand
 			}
 			else {
-				Einzel        = true;
-				gruppenStatus = JSON.stringify(this.ApFunkstellen); //speichere geschalteten Zustand
+				this.Einzel        = true;
+				this.gruppenStatus = JSON.stringify(this.ApFunkstellen); //speichere geschalteten Zustand
 				$('#' + buttonID).toggleClass('active');
 				$('#' + buttonID + ' > a').text('Einzelschaltung');
-				zustandWiederherstellen(JSON.parse(einzelStatus)); //lade Einzelzustand
+				zustandWiederherstellen(JSON.parse(this.einzelStatus)); //lade Einzelzustand
 
 			}
 		},
@@ -704,6 +704,7 @@ $(window).load(function () {
 		zustandWiederherstellen: function (AufschalteZustand) {
 			//Backup, da die Funktionen schalten und trennen mit Rueckmeldung schon in ApFunkstellen schreiben
 			const backupApFunkstellen = this.ApFunkstellen;
+			const _self = this;
 			$.each(backupApFunkstellen, function (key, value) {
 				if (AufschalteZustand[key] !== undefined) {
 					//console.log("AktuellerStand: key=" + key + "', value='" + JSON.stringify(value.aufgeschaltet) + "'")
@@ -715,11 +716,11 @@ $(window).load(function () {
 						}
 						if (value.aufgeschaltet == true && AufschalteZustand[key].aufgeschaltet == false || AufschalteZustand[key].aufgeschaltet == undefined) {
 							//trennen
-							trennen(AufschalteZustand[key].id, SPAN)
+							trennen(AufschalteZustand[key].id, _self.SPAN)
 						}
 						if (value.aufgeschaltet == false && AufschalteZustand[key].aufgeschaltet == true) {
 							//schalten
-							schalten(AufschalteZustand[key].id, SPAN)
+							schalten(AufschalteZustand[key].id, _self.SPAN)
 						}
 						if (value.aufgeschaltet == false && AufschalteZustand[key].aufgeschaltet == false) {
 							//nix
