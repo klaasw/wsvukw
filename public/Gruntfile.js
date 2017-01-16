@@ -78,7 +78,7 @@ module.exports = function (grunt) {
 			},
 			js: {
 				files: ['work/js/**/*.js', 'work/js/main.js'],
-				tasks: ['concat', 'uglify']
+				tasks: ['concat'] // , 'uglify'
 			},
 			comp: {
 				files: ['_temp/*.*'],
@@ -97,6 +97,6 @@ module.exports = function (grunt) {
 
 	grunt.registerTask('default', ['watch']);
 	grunt.registerTask('dist', ['sass:dist', 'concat', 'newer:copy']);
-	grunt.registerTask('dev', ['sass:dev', 'concat', 'uglify', 'newer:copy']);
+	grunt.registerTask('dev', ['sass:dev', 'concat', 'newer:copy']);
 
 };

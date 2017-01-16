@@ -38,7 +38,7 @@ $(window).load(function () {
 			this.ladeKonfig();
 		},
 
-		setDefaultServer() {
+		setDefaultServer: function() {
 			this.defaultServer = $('.server-toggle').data('label');
 		},
 		/**
@@ -90,7 +90,6 @@ $(window).load(function () {
 					const vergleich    = _self._IpConfig.alternativeIPs[i];
 					let vergleichVtrIp = vergleich[1].split('.');
 					vergleichVtrIp     = vergleichVtrIp[2];
-
 
 					if (vergleichVtrIp == urlVtrIp) {
 						ort = vergleich[0]
@@ -284,9 +283,9 @@ $(window).load(function () {
 								const geraet = msg.geschaltet.$.Ap;
 
 								//TODO: fix invalid syntax
-								// _self.ApFunkstellen[msg.geschaltet.$.id].mhan_aufgeschaltet = {
-								// 	[geraet]: true
-								// }
+								_self.ApFunkstellen[msg.geschaltet.$.id].mhan_aufgeschaltet = {
+									'geraet': true
+								}
 							}
 
 							//aendern Darstellung fuer SPAN
@@ -329,9 +328,9 @@ $(window).load(function () {
 								const geraet = msg.getrennt.$.Ap;
 
 								//TODO: fix invalid syntax
-								// _self.ApFunkstellen[msg.getrennt.$.id].mhan_aufgeschaltet = {
-								// 	[geraet]: false
-								// }
+								_self.ApFunkstellen[msg.getrennt.$.id].mhan_aufgeschaltet = {
+									'geraet': false
+								}
 
 
 							}
