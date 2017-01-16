@@ -37,7 +37,7 @@
 			const _self = this;
 
 			$.get('/ukwKonfig', function (data) { //IP-Adress nur als Platzhalter zum Testen
-				console.log(data); //TODO: unwichtige, sicherheitsrelevante Informationen nicht uebermitteln
+				// console.log(data); //TODO: unwichtige, sicherheitsrelevante Informationen nicht uebermitteln
 
 				_self.ApFunkstellen       = data.Konfigdaten.FunkstellenDetails;
 				_self.SPAN                = data.Konfigdaten.ArbeitsplatzGeraete.SPAN01;
@@ -46,7 +46,7 @@
 				_self.ApID                = data.Arbeitsplatz;
 				_self.IpConfig            = data.Konfigdaten.IpConfig;
 
-				console.log('geladeneIPconfig: ' + JSON.stringify(data.Konfigdaten.IpConfig));
+				// console.log('geladeneIPconfig: ' + JSON.stringify(data.Konfigdaten.IpConfig));
 
 				_self.ereignisUeberwachung();
 				_self.verbindungsPruefung();
@@ -133,8 +133,8 @@
 						const button = $('#' + msg.RX.$.id).parent().parent().offsetParent().attr('id');
 
 						//Kanalflaeche faerben
-						$('#' + button + ' [buttonElement="Flaeche"]').addClass('bg-danger');
-						$('#' + button + ' [buttonElement="Flaeche"] h2').addClass('text-danger');
+						$('#' + button + ' .button_flaeche').addClass('bg-danger');
+						$('#' + button + ' .button_flaeche h2').addClass('text-danger');
 
 						$.notify({
 							message: 'Empfang:<br>' + _self.ApFunkstellen[msg.RX.$.id].sname
@@ -149,8 +149,8 @@
 						const button = $('#' + msg.RX.$.id).parent().parent().offsetParent().attr('id');
 
 						//Kanalflaeche entfaerben
-						$('#' + button + ' [buttonElement="Flaeche"]').removeClass('bg-danger');
-						$('#' + button + ' [buttonElement="Flaeche"] h2').removeClass('text-danger');
+						$('#' + button + ' .button_flaeche').removeClass('bg-danger');
+						$('#' + button + ' .button_flaeche h2').removeClass('text-danger');
 
 						//console.log("RX state 0: " + msg.RX.$.id)
 					}
@@ -166,8 +166,8 @@
 							const button = $('#' + msg.TX.$.id).parent().parent().offsetParent().attr('id');
 
 							//Kanalflaeche faerben
-							$('#' + button + ' [buttonElement="Flaeche"]').addClass('bg-success');
-							$('#' + button + ' [buttonElement="Flaeche"] h2').addClass('text-success');
+							$('#' + button + ' .button_flaeche').addClass('bg-success');
+							$('#' + button + ' .button_flaeche h2').addClass('text-success');
 
 
 							//console.log("TX state 1 mit SPAN: " + msg.TX.$.id)
@@ -184,8 +184,8 @@
 							const button = $('#' + msg.TX.$.id).parent().parent().offsetParent().attr('id');
 
 							//Kanalflaeche entfaerben
-							$('#' + button + ' [buttonElement="Flaeche"]').removeClass('bg-success');
-							$('#' + button + ' [buttonElement="Flaeche"] h2').removeClass('text-success');
+							$('#' + button + ' .button_flaeche').removeClass('bg-success');
+							$('#' + button + ' .button_flaeche h2').removeClass('text-success');
 
 							//console.log("TX state 0 mit SPAN: " + msg.TX.$.id)
 						}
@@ -207,7 +207,7 @@
 						//Bei Kanalaenderung die Kanalnummer setzen
 						if (msg.FSTSTATUS.$.channel > -1) {
 							const button = $('#' + msg.FSTSTATUS.$.id).parent().parent().offsetParent().attr('id');
-							$('#' + button + ' [buttonElement="kanalNr"] > span').text(msg.FSTSTATUS.$.channel)
+							$('#' + button + ' .button_kanalNr > span').text(msg.FSTSTATUS.$.channel)
 						}
 
 					}
@@ -264,16 +264,15 @@
 								else {
 									//suche Schaltflaeche zu FunkstellenID
 									const button = $('#' + msg.geschaltet.$.id).parent().parent().offsetParent().attr('id');
-									$('#' + button + ' [buttonElement="Mhan"]').removeClass('btn-default');
-									$('#' + button + ' [buttonElement="Mhan"]').addClass('btn-primary')
+									$('#' + button + ' .button_mhan').removeClass('btn-default');
+									$('#' + button + ' .button_mhan').addClass('btn-primary')
 								}
 
 								const geraet = msg.geschaltet.$.Ap;
 
-								//TODO: fix invalid syntax
 								_self.ApFunkstellen[msg.geschaltet.$.id].mhan_aufgeschaltet = {
-									'geraet': true
-								}
+									[geraet]: true
+								};
 							}
 
 							//aendern Darstellung fuer SPAN
@@ -283,7 +282,7 @@
 
 								//$('#'+button+' > div > div.panel-heading > span').text( "aufgeschaltet" )
 								$('#' + button + ' > div').addClass('panel-primary');
-								$('#' + button + ' [buttonElement="span"]').addClass('btn-primary');
+								$('#' + button + ' .button_span').addClass('btn-primary');
 
 								_self.ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true;
 								$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
@@ -310,16 +309,14 @@
 								else {
 									//suche Schaltflaeche zu FunkstellenID
 									const button = $('#' + msg.getrennt.$.id).offsetParent().attr('id');
-									$('#' + button + ' [buttonElement="Mhan_ship"]').css('background-color', '#f5f5f5');
-									$('#' + button + ' [buttonElement="Mhan_ship"]').removeClass('bg-primary')
+									$('#' + button + ' .button_mhan_ship').css('background-color', '#f5f5f5');
+									$('#' + button + ' .button_mhan_ship').removeClass('bg-primary')
 								}
 								const geraet = msg.getrennt.$.Ap;
 
-								//TODO: fix invalid syntax
 								_self.ApFunkstellen[msg.getrennt.$.id].mhan_aufgeschaltet = {
-									'geraet': false
-								}
-
+									[geraet]: false
+								};
 
 							}
 							//Aendern Darstellung fuer SPAN
@@ -330,7 +327,7 @@
 								//$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
 
 								$('#' + button + ' > div').removeClass('panel-primary');
-								$('#' + button + ' [buttonElement="span"]').removeClass('btn-primary');
+								$('#' + button + ' .button_span').removeClass('btn-primary');
 
 
 								_self.ApFunkstellen[msg.getrennt.$.id].aufgeschaltet = false;
@@ -441,7 +438,7 @@
 		 */
 		angeklickt: function (event, element) {
 			const geklicktesElement       = event.srcElement;
-			const geklicktesButtonElement = $(geklicktesElement).attr('buttonElement');
+			const geklicktesButtonElement = $(geklicktesElement).data('buttonElement');
 
 			if (element == geklicktesElement) {
 				return true;
@@ -465,7 +462,7 @@
 				//Funkstellen ID finden
 				//geklickteMKA=$('#'+button +'> div > div:nth-child(2) > div:nth-child(2) > span').attr('class')
 				//geklickteMKA=$('#'+button +'> div > div:nth-child(2) > div > span').attr('id')
-				geklickteMKA = $('#' + button + ' [buttonElement="anlage1"]').attr('id');
+				geklickteMKA = $('#' + button + ' .button_anlage1').attr('id');
 				//console.log("Dropdown von:" + geklickteMKA)
 			}
 		},
@@ -483,12 +480,12 @@
 					//uebergeordnetes Element finden
 					const button = $(element).offsetParent().attr('id');
 
-					const geklickteFstHaupt = $('#' + button + ' [buttonElement="anlage1"]').attr('id');
-					const geklickteFstReser = $('#' + button + ' [buttonElement="anlage2"]').attr('id');
+					const geklickteFstHaupt = $('#' + button + ' .button_anlage1').attr('id');
+					const geklickteFstReser = $('#' + button + ' .button_anlage2').attr('id');
 
-					const geklickteSPAN = $('#' + button + ' [buttonElement="span"]').attr('id');
+					const geklickteSPAN = $('#' + button + ' .button_span').attr('id');
 
-					const geklicktespan_mhanApNr = $('#' + button + ' [buttonElement="span"]').attr('span');
+					const geklicktespan_mhanApNr = $('#' + button + ' .button_span').attr('span');
 
 					//Status der Funkstellen aus HTML Elementen auslesen
 					const geklickteFstHauptStatus = $('#' + geklickteFstHaupt).attr('fstStatus');
@@ -661,7 +658,7 @@
 
 			const button = $('#' + funkstelle).parent().parent().offsetParent().attr('id');
 			//Lautstärke in HTML Attribut setzen
-			$('#' + button + ' [buttonElement="Mhan"]').attr('data-lautstaerke', level)
+			$('#' + button + ' button_mhan').attr('data-lautstaerke', level)
 		},
 
 		/**
