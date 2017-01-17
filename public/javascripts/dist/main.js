@@ -135,10 +135,10 @@ $(window).load(function () {
 
 			//eingehende Socket Nachrichten vom TYP rfdMessage, Statusmeldungen verarbeitebn
 			this.socket.on('ukwMessage', function (msg) {
-				console.log("ukwMessage received: " + JSON.stringify(msg));
+				// console.log("ukwMessage received: " + JSON.stringify(msg));
 				const msgKeys = Object.keys(msg); //z.B. RX, FSTSTATUS
 				const msgTyp  = msgKeys[0];
-				console.log(msgTyp)
+				// console.log(msgTyp);
 				if (typeof msg === 'object' && _self.ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id)) {
 					//Empfangen aktiv0
 					if ('RX' in msg && msg.RX.$.state === '1') {
@@ -413,7 +413,7 @@ $(window).load(function () {
 		verbindungsPruefung: function () {
 			const _self = this;
 			this.socket.on('connect', function () {
-				console.log('check 2------------------------VERBUNDEN', _self.socket.connected);
+				// console.log('check 2------------------------VERBUNDEN', _self.socket.connected);
 				$('#button' + _self.defaultServer + '_DUE').removeClass('label-danger');
 				$('#button' + _self.defaultServer + '_DUE').addClass('label-success');
 				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-danger');
@@ -421,7 +421,7 @@ $(window).load(function () {
 			});
 
 			this.socket.on('disconnect', function () {
-				console.log('check 2-----------------------GETRENNT', _self.socket.connected);
+				// console.log('check 2-----------------------GETRENNT', _self.socket.connected);
 				$('#button' + _self.defaultServer + '_DUE').removeClass('label-success');
 				$('#button' + _self.defaultServer + '_DUE').addClass('label-danger');
 				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-success');
@@ -490,7 +490,7 @@ $(window).load(function () {
 
 					const geklickteSPAN = $('#' + button + ' .button_span').attr('id');
 
-					const geklicktespan_mhanApNr = $('#' + button + ' .button_span').attr('span');
+					const geklicktespan_mhanApNr = $('#' + button + ' .button_span').data('span');
 
 					//Status der Funkstellen aus HTML Elementen auslesen
 					const geklickteFstHauptStatus = $('#' + geklickteFstHaupt).attr('fstStatus');
@@ -520,10 +520,7 @@ $(window).load(function () {
 					this.schalteKanalID(span, mhan, 'SPAN_MHAN', span_mhanApNr);
 					//console.log();
 				}
-
-
-				//Schalten MHAN
-				else {
+				else { //Schalten MHAN
 					//uebergeordnetes Element
 					const buttonMHAN = $('#' + element.id).offsetParent().attr('id');
 					const buttonFst  = element.offsetParent.id;
@@ -532,6 +529,9 @@ $(window).load(function () {
 					const geklickteFstReser = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(2)').attr('id');
 
 					const geklickteMHAN = ($('#' + buttonMHAN + ' div > div').attr('id'));
+
+					console.log(buttonMHAN);
+					console.log(buttonFst);
 
 					//Status der Funkstellen
 					const geklickteFstHauptStatus = $('#' + geklickteFstHaupt).attr('fstStatus');
@@ -550,7 +550,7 @@ $(window).load(function () {
 		 * @param geklicktespan_mhanApNr
 		 */
 		schalteKanalID: function (geklickteFstID, geklickteSPANMHAN, SPAN, geklicktespan_mhanApNr) {
-			//console.log("Klick: "+geklickteID)
+			// console.log("Klick: " + geklickteFstID);
 			//$.notify('test:'+ApFunkstellen[geklickteID].kurzname);
 			const _self = this;
 
