@@ -10,7 +10,7 @@ const express = require('express');
 const router = express.Router();
 const util = require('util');
 
-const cfg = require('../cfg.js'); //
+const cfg = require('../cfg.js');
 const db = require('../datenbank.js');
 
 const log = require('../log.js'); // Modul fuer verbessertes Logging
@@ -20,7 +20,7 @@ const FILENAME = __filename.slice(__dirname.length + 1);
 router.get('/zeigeWindowsBenutzer/selectip', function (req, res) {
     const arbeitsplaetze = {};
     let selectip = req.params.selectip;   // req.query.revier
-    db.findeElement('windowsBenutzer', {id:req.params.selectip}, function (doc) {
+    db.findeElement('windowsBenutzer', {id: req.params.selectip}, function (doc) {
         for (const ap of doc) {
             arbeitsplaetze[ap._id] = ap
         }
@@ -30,47 +30,47 @@ router.get('/zeigeWindowsBenutzer/selectip', function (req, res) {
 
 
 router.get('/zeigeWindowsBenutzer', function (req, res) {
-	const arbeitsplaetze = {};
-	db.findeElement('windowsBenutzer', {}, function (doc) {
-		for (const ap of doc) {
-			arbeitsplaetze[ap._id] = ap
-		}
-		res.send(arbeitsplaetze)
-	})
+    const arbeitsplaetze = {};
+    db.findeElement('windowsBenutzer', {}, function (doc) {
+        for (const ap of doc) {
+            arbeitsplaetze[ap._id] = ap
+        }
+        res.send(arbeitsplaetze)
+    })
 });
 
 router.put('/schreibeWindowsBenutzer', function (req, res) {
-	log.debug(FILENAME + ' /schreibeWindowsBenutzer Benutzer: ' + JSON.stringify(req.body));
+    log.debug(FILENAME + ' /schreibeWindowsBenutzer Benutzer: ' + JSON.stringify(req.body));
 
-	const schreibeLokal = false; // es wird auf jeden Fall in DB geschrieben
-	const benutzer = req.body;
-	let schreibeParameter = {};
+    const schreibeLokal = false; // es wird auf jeden Fall in DB geschrieben
+    const benutzer = req.body;
+    let schreibeParameter = {};
 
-	if (benutzer.angemeldet === true) {
-		schreibeParameter = {
-			$set: {
-				ip: benutzer.ip,
-				user: benutzer.user.toLowerCase(),
-				loginZeit: new Date(),
-				angemeldet: benutzer.angemeldet
-			}
-		}
-	}
-	if (benutzer.angemeldet === false) {
-		schreibeParameter = {
-			$set: {
-				ip: benutzer.ip,
-				user: benutzer.user.toLowerCase(),
-				logoutZeit: new Date(),
-				angemeldet: benutzer.angemeldet
-			}
-		}
-	}
+    if (benutzer.angemeldet === true) {
+        schreibeParameter = {
+            $set: {
+                ip: benutzer.ip,
+                user: benutzer.user.toLowerCase(),
+                loginZeit: new Date(),
+                angemeldet: benutzer.angemeldet
+            }
+        }
+    }
+    if (benutzer.angemeldet === false) {
+        schreibeParameter = {
+            $set: {
+                ip: benutzer.ip,
+                user: benutzer.user.toLowerCase(),
+                logoutZeit: new Date(),
+                angemeldet: benutzer.angemeldet
+            }
+        }
+    }
 
-	const benutzerId = {'_id': benutzer.ip};
+    const benutzerId = {'_id': benutzer.ip};
 
-	db.schreibeInDb('windowsBenutzer', benutzerId, schreibeParameter, schreibeLokal);
-	res.send({message: 'Benutzer hinzugefuegt oder geaendert'});
+    db.schreibeInDb('windowsBenutzer', benutzerId, schreibeParameter, schreibeLokal);
+    res.send({message: 'Benutzer hinzugefuegt oder geaendert'});
 });
 
 module.exports = router;
