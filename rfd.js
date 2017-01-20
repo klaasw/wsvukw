@@ -19,7 +19,7 @@ const parser = new xml2js.Parser({
 
 const FILENAME = __filename.slice(__dirname.length + 1);
 
-let Funkstellen = [];
+let Funkstellen = {};
 
 exports.getFunkstellen = function () {
     return Funkstellen;
@@ -58,6 +58,7 @@ exports.leseRfdTopologie = function (callback) {
                     const ergebnis1cdata = result['S:Body'][0]['ns2:GetTopologyForRFDResponse'][0]['return'][0];
                     //CDATA Objekt der Response erneut parsen
                     parser.parseString(ergebnis1cdata, function (err, result) {
+
                         //Einzelkanal-Anlagenauslesen und in Funkstellen variable schreiben
                         if (result['FKEK']) { //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
                             const FstEK = result['FKEK'];
@@ -71,8 +72,7 @@ exports.leseRfdTopologie = function (callback) {
                                 delete tmp.ipaddr;
                                 delete tmp.portsip;
                                 delete tmp.portrtp;
-                                Funkstellen.push(tmp);
-
+                                Funkstellen[tmp.id] = tmp;
                             }
                         }
 
@@ -89,7 +89,7 @@ exports.leseRfdTopologie = function (callback) {
                                 delete tmp.ipaddr;
                                 delete tmp.portsip;
                                 delete tmp.portrtp;
-                                Funkstellen.push(tmp);
+	                            Funkstellen[tmp.id] = tmp;
 
                             }
                         }
@@ -107,7 +107,7 @@ exports.leseRfdTopologie = function (callback) {
                                 delete tmp.ipaddr;
                                 delete tmp.portsip;
                                 delete tmp.portrtp;
-                                Funkstellen.push(tmp);
+	                            Funkstellen[tmp.id] = tmp;
 
                             }
                         }
@@ -126,7 +126,7 @@ exports.leseRfdTopologie = function (callback) {
                                 delete tmp.ipaddr;
                                 delete tmp.portsip;
                                 delete tmp.portrtp;
-                                Funkstellen.push(tmp);
+	                            Funkstellen[tmp.id] = tmp;
 
                             }
                         }
@@ -143,26 +143,25 @@ exports.leseRfdTopologie = function (callback) {
         } // Else ende
 
     }); // Request ende
+};
 
-}
 
-
-//TODO: hier vielleicht auch mit hasOwnProperty die Funkstelle schneller finden als drüber iterieren.
-
-// TODO: hier Datenbankzugriff auf ZustandKOmponenten?
+/**
+ * TODO: hier Datenbankzugriff auf ZustandKOmponenten?
+ * @param Id
+ * @returns {string,boolean}
+ */
 exports.findeFstNachId = function (Id) {
     if (Id === undefined || Id === 'frei' || Id === '') {
         return 'frei';
     }
     else {
-        for (let i = 0; i < Funkstellen.length; i++) {
-            if (Funkstellen[i].id == Id) {
-                //log.debug(Funkstellen[i],i)
-                return Funkstellen[i];
-            }
+	    if (Funkstellen.hasOwnProperty(Id)) {
+	        return Funkstellen[Id];
         }
     }
     log.error('Funkstellen ID nicht vorhanden: \'' + Id + '\'');
+
     return 'frei';
 };
 

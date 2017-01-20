@@ -261,43 +261,41 @@ $(window).load(function () {
 					//Schalten fuer SPrechANlagen und MitHoerANlagen
 					if ('geschaltet' in msg && msg.geschaltet.$.state === '1') {
 						// pruefen ob diese Meldung zu diesem Arbeitsplatz gehoert
-						if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.geschaltet.$.Ap)) {
+						if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.geschaltet.$.Ap) && _self.ApFunkstellen[msg.geschaltet.$.id] !== 'frei') {
 
-							if (_self.ApFunkstellen[msg.geschaltet.$.id] !== 'frei') {
-								//aendern Darstellung fuer MHAN
-								if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1) {
-									//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
-									if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1 && msg.geschaltet.$.id.indexOf('SPAN') != -1) {
-										$('#' + msg.geschaltet.$.id).addClass('btn-primary');
-										$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
-										//nur MHAN aufschaltungen
-									}
-									else {
-										//suche Schaltflaeche zu FunkstellenID
-										const button = $('#' + msg.geschaltet.$.id).parent().parent().offsetParent().attr('id');
-										$('#' + button + ' .button_mhan').removeClass('btn-default');
-										$('#' + button + ' .button_mhan').addClass('btn-primary')
-									}
-
-									const geraet = msg.geschaltet.$.Ap;
-
-									_self.ApFunkstellen[msg.geschaltet.$.id].mhan_aufgeschaltet = {
-										[geraet]: true
-									};
+							//aendern Darstellung fuer MHAN
+							if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1) {
+								//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
+								if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1 && msg.geschaltet.$.id.indexOf('SPAN') != -1) {
+									$('#' + msg.geschaltet.$.id).addClass('btn-primary');
+									$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
+									//nur MHAN aufschaltungen
 								}
-								//aendern Darstellung fuer SPAN
-								if (msg.geschaltet.$.Ap.indexOf('SPAN') != -1) {
+								else {
 									//suche Schaltflaeche zu FunkstellenID
 									const button = $('#' + msg.geschaltet.$.id).parent().parent().offsetParent().attr('id');
-
-									//$('#'+button+' > div > div.panel-heading > span').text( "aufgeschaltet" )
-									$('#' + button + ' > div').addClass('panel-primary');
-									$('#' + button + ' .button_span').addClass('btn-primary');
-
-									_self.ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true;
-									$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
-									console.log(msg.geschaltet.$.id)
+									$('#' + button + ' .button_mhan').removeClass('btn-default');
+									$('#' + button + ' .button_mhan').addClass('btn-primary')
 								}
+
+								const geraet = msg.geschaltet.$.Ap;
+
+								_self.ApFunkstellen[msg.geschaltet.$.id].mhan_aufgeschaltet = {
+									[geraet]: true
+								};
+							}
+							//aendern Darstellung fuer SPAN
+							if (msg.geschaltet.$.Ap.indexOf('SPAN') != -1) {
+								//suche Schaltflaeche zu FunkstellenID
+								const button = $('#' + msg.geschaltet.$.id).parent().parent().offsetParent().attr('id');
+
+								//$('#'+button+' > div > div.panel-heading > span').text( "aufgeschaltet" )
+								$('#' + button + ' > div').addClass('panel-primary');
+								$('#' + button + ' .button_span').addClass('btn-primary');
+
+								_self.ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true;
+								$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
+								console.log(msg.geschaltet.$.id)
 							}
 						}
 					}
