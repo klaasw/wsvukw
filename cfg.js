@@ -1,18 +1,25 @@
-'use strict';
-/* Modul zur Gernerierung von Konfigurationsvariablen
+/**
+ * Modul zur Gernerierung von Konfigurationsvariablen
  * Die Parameter werden aus der Datei config/server/IP_des_Servers/serverIPS.json bezogen
  *
  * @Author: Klaas Wuellner
- *
  */
+
+
+'use strict';
 
 const fs = require('fs'); // Zugriff auf das Dateisystem
 const HOSTNAME = require('os').hostname();
 
+// TODO: ungenutzte variable löschen?
 let AKTUELLER_SERVER = ''; //globale Variable für aktuellen Server. Einbindung in Konfig zur Darstellung des aktuellen Server via Jade Template layout.jade
 
-function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
-	// eine existierende Datei in ./config/servers/ geht vor, damit man auf einer Maschine mehrfach mit unterschiedlichen Ports starten kann:
+/**
+ * suche in allen Netzwerkadressen nach einer existierende Datei in ./config/servers/ geht vor,
+ * damit man auf einer Maschine mehrfach mit unterschiedlichen Ports starten kann
+ * @returns {JSON}
+ */
+function getIPs() {
 	try {
 		return require('./config/servers/serverIPs.json');
 	}
@@ -34,6 +41,37 @@ function getIPs() {  // suche in allen Netzwerkadressen nach einer existierenden
 }
 const cfgIPs = getIPs();
 console.log(cfgIPs);
+
+/**
+ * Globale Serverkonfiguration
+ * @type {{
+ * urlRFDWebservice: string,
+ * jsSipConfiguration_DUE: {
+ *      ws_servers: string,
+ *      uri: string,
+ *      password: string
+ *      },
+ * jsSipConfiguration_mockRFD: {
+ *      ws_servers: string,
+ *      uri: string,
+ *      password: string
+ *      },
+ * mongodb: array,
+ * replicaSet: string,
+ * auth,
+ * auth_user: string,
+ * auth_pw: *,
+ * port: string,
+ * configPath: string,
+ * intervall: number,
+ * alternativeIPs: array,
+ * cfgIPs: JSON,
+ * aktuellerServer: string,
+ * aktuellerHostname: string,
+ * loglevelConsole: string,
+ * loglevelFile: string
+ * }}
+ */
 const cfg = {
 	'urlRFDWebservice': 'http://' + cfgIPs.rfdIP + ':8789/I_RFD_DUE_Steuerung',
 
@@ -51,20 +89,24 @@ const cfg = {
 	},
 
 	'mongodb': cfgIPs.mongoDbs,
-	'replicaSet': cfgIPs.replicaSet,
+	'replicaSet': cfgIPs.replicaSet || 'dueReplicaSet',
 	'auth': cfgIPs.auth,
-	'auth_user': cfgIPs.auth_user,
+	'auth_user': cfgIPs.auth_user || 'ukwserver',
 	'auth_pw': cfgIPs.auth_pw,
 
 	//HTTP Port für die nodeJS Instanz
-	'port': cfgIPs.port,
+	'port': cfgIPs.port || '3000',
 	'configPath': 'config/',
-	'intervall': 10000000,
 
+	// 0 = Überprüfung abschalten
+	'intervall': cfgIPs.checkRfdIntervallInSeconds * 1000 || 0,
 	'alternativeIPs': cfgIPs.alternativeServer,
-	cfgIPs,
 	'aktuellerServer': AKTUELLER_SERVER,
-	'aktuellerHostname': HOSTNAME
+	'aktuellerHostname': HOSTNAME,
+	cfgIPs,
+
+	loglevelConsole: cfgIPs.loglevelConsole || 'debug',
+	loglevelFile: cfgIPs.loglevelFile || 'info'
 };
 
 module.exports = cfg;

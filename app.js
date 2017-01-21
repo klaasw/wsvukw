@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const app = express();
 const fs = require('fs');
 const http = require('http');
 
@@ -9,18 +10,25 @@ const favicon = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
-const app = express();
-
 const debug = require('debug')('ukwserver:server');
-
-// logging access log - morgan
 const FileStreamRotator = require('file-stream-rotator');
 
+/**
+ * logging access log
+ * @type {morgan}
+ */
 const morgan = require('morgan');
 const logDirectory = __dirname + '/log';
-// ensure log directory exists
+
+/**
+ * ensure log directory exists
+ */
 fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
-// create a rotating write stream
+
+/**
+ * create a rotating write stream
+ * @type {Stream}
+ */
 const accessLogStream = FileStreamRotator.getStream({
 	date_format: 'YYYYMMDD',
 	filename: logDirectory + '/access-%DATE%.log',
@@ -35,21 +43,20 @@ const log = require('./log.js');
 // can be used to integrate morgen access log and winston log entries in one file:
 // app.use(require('morgan')('combined', {stream: logger.stream}));
 
-
-// view engine setup
+/**
+ * view engine setup
+ */
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// debugger;   // if in debugging mode, set breakpoint here
 const routes = require('./routes/index.js');
 const users = require('./routes/benutzer.js');
 const verbindungen = require('./routes/verbindungen.js');
@@ -58,20 +65,22 @@ app.use('/', routes);
 app.use('/user', users); //nach Anpassung des Scriptes deutsche Route verwenden
 app.use('/benutzer', users);
 app.use('/verbindungen', verbindungen);
+
 const ukw = require('./ukw.js');
 
-
-// catch 404 and forward to error handler
+/**
+ * catch 404 and forward to error handler
+ */
 app.use(function (req, res, next) {
 	const err = new Error('Not Found');
 	err.status = 404;
 	next(err);
 });
 
-// error handlers
-
-// development error handler
-// will print stacktrace
+/**
+ * development error handler
+ * will print stacktrace
+*/
 if (app.get('env') === 'development') {
 	app.use(function (err, req, res, next) {
 		res.status(err.status || 500);
@@ -82,8 +91,10 @@ if (app.get('env') === 'development') {
 	});
 }
 
-// production error handler
-// no stacktraces leaked to user
+/**
+ * production error handler
+ * no stacktraces leaked to user
+ */
 app.use(function (err, req, res, next) {
 	res.status(err.status || 500);
 	log.info('cfg bei error: ' + JSON.stringify(cfg));
@@ -108,7 +119,6 @@ const server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
@@ -116,16 +126,18 @@ server.on('listening', onListening);
 const socket = require('./socket.js');
 socket.socket(server);
 
-// Setze Intervall fuer Pruefung
-const Intervall = setInterval(function () {
-	ukw.pruefeRfdWS()
-}, cfg.intervall);
-
+if (cfg.intervall !== 0) {
+	// Setze Intervall fuer Pruefung
+	const Intervall = setInterval(function () {
+		ukw.pruefeRfdWS()
+	}, cfg.intervall);
+}
 
 /**
  * Normalize a port into a number, string, or false.
+ * @param {int|string} val
+ * @returns {int|boolean}
  */
-
 function normalizePort(val) {
 	const port = parseInt(val, 10);
 	if (isNaN(port)) {
@@ -138,7 +150,11 @@ function normalizePort(val) {
 	}
 	return false;
 }
-/*** Event listener for HTTP server "error" event. */
+
+/**
+ * Event listener for HTTP server "error" event.
+ * @param {object} error
+ */
 function onError(error) {
 	if (error.syscall !== 'listen') {
 		throw error;
@@ -160,7 +176,10 @@ function onError(error) {
 			throw error;
 	}
 }
-/*** Event listener for HTTP server "listening" event. */
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
 function onListening() {
 	const addr = server.address();
 	const bind = typeof addr === 'string'
@@ -169,4 +188,6 @@ function onListening() {
 	debug('Listening on ' + bind);
 }
 
-
+module.exports = {
+	normalizePort
+};

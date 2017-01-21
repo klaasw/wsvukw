@@ -13,10 +13,11 @@
 @import "../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 
 // ============ resets =================== //
-//@import "reset";
+@import "reset";
 
 // ============ layout general =================== //
 @import "layout";
 @import "typo";
+@import "panels";
 
 // ============ helper + utils =================== //

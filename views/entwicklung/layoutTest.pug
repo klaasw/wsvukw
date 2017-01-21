@@ -48,15 +48,15 @@ html
 								) Farbschema
 									span.caret
 
-								ul.dropdown-menu
-									li.theme1
-										a.btn Standard
+								ul.dropdown-menu.theme-switcher
+									li.theme1.active
+										a.switch-theme.btn(data-theme='default') Standard
 									li.theme2
-										a.btn Cyborg
+										a.switch-theme.btn(data-theme='cyborg') Cyborg
 									li.theme3
-										a.btn Darkly
+										a.switch-theme.btn(data-theme='darkly') Darkly
 									li.theme4
-										a.btn Flatly
+										a.switch-theme.btn(data-theme='flatly') Flatly
 
 
 							li.dropdown.btn-group.navbar-btn
@@ -96,15 +96,16 @@ html
 									each val, index in gesamteKonfig.IpConfig.alternativeIPs
 										- server = val[1].split(":")
 										if server[0] == aktiverServer
-											button.btn.btn-primary.dropdown-toggle(
-											id='button' + '#{val[0]}'
+											button.btn.btn-primary.dropdown-toggle.server-toggle(
+											id='button' + val[0]
 											type='button'
 											data-toggle='dropdown'
+											data-label=val[0]
 											aria-haspopup='true'
 											aria-expanded='false'
 											) &nbsp#{val[0]}&nbsp
-												span.label.label-default(id='buttonAktiv' + val[0] + '_DUE') DUE
-												span.label.label-default(id='buttonAktiv' + val[0] + '_RFD') RFD
+												span.label.label-default.due(id='buttonAktiv' + val[0] + '_DUE') DUE
+												span.label.label-default.rfd(id='buttonAktiv' + val[0] + '_RFD') RFD
 												span.caret
 										ul.dropdown-menu
 											each val1, index1 in gesamteKonfig.IpConfig.alternativeIPs
@@ -113,6 +114,3 @@ html
 
 
 		block content
-		block codeTeil2
-			script.
-				console.log("Navigationslayout geladen...")

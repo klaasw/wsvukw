@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/ukwDisplay.iml" filepath="$PROJECT_DIR$/ukwDisplay.iml" />
       <module fileurl="file://$USER_HOME$/work/init/WSV/GIT/ukwDisplay.iml" filepath="$USER_HOME$/work/init/WSV/GIT/ukwDisplay.iml" />
     </modules>
   </component>

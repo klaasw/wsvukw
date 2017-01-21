@@ -3,7 +3,11 @@
 (function (window, document, $) {
 
     WSV.Utils = {
+
+	    audioAlarm: {},
+
         init: function () {
+	        this.audioAlarm = new Audio('burst4.wav');
         },
 
         //Pruefe ob Wert in Objekt vorkommt
