@@ -250,7 +250,8 @@
 					//Schalten fuer SPrechANlagen und MitHoerANlagen
 					if ('geschaltet' in msg && msg.geschaltet.$.state === '1') {
 						// pruefen ob diese Meldung zu diesem Arbeitsplatz gehoert
-						if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.geschaltet.$.Ap)) {
+						if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.geschaltet.$.Ap) && _self.ApFunkstellen[msg.geschaltet.$.id] !== 'frei') {
+
 							//aendern Darstellung fuer MHAN
 							if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1) {
 								//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
@@ -272,7 +273,6 @@
 									[geraet]: true
 								};
 							}
-
 							//aendern Darstellung fuer SPAN
 							if (msg.geschaltet.$.Ap.indexOf('SPAN') != -1) {
 								//suche Schaltflaeche zu FunkstellenID
@@ -285,7 +285,6 @@
 								_self.ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true;
 								$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
 								console.log(msg.geschaltet.$.id)
-
 							}
 						}
 					}

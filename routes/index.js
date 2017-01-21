@@ -60,7 +60,7 @@ router.get('/zuordnung', function (req, res) {
 /* GET UKW Test */
 router.get('/testen', function (req, res) {
 	res.render('testen', {
-		'funkstellen': Funkstellen
+		'funkstellen': rfd.getFunkstellen()
 	});
 });
 
@@ -226,22 +226,23 @@ router.get('/ukwKonfig', function (req, res) {
 	else {
 		// /ukwKonfig mit Parameter z.B. ukwKonfig?ip=1.1.1.1
 		if (req.query.ip) {
-			if (req.query.ip == '1.1.1.1') {
-				const Konfig = {
-					FunkstellenReihe: [],
-					FunkstellenDetails: {},
-					ArbeitsplatzGeraete: {},
-					MhanZuordnung: {},
-					IpConfig: cfg
-				};
-				for (let t = 0; t < Funkstellen.length; t++) {
-					log.debug(Funkstellen[t].id);
-					Konfig.FunkstellenDetails[Funkstellen[t].id] = rfd.findeFstNachId(Funkstellen[t].id); ///ab HIER weiter-------------------------------------------
-
-				}
-				res.send(Konfig);
-			}
-			else {
+			// TODO: testcode entfernen?
+			// if (req.query.ip == '1.1.1.1') {
+			// 	const Konfig = {
+			// 		FunkstellenReihe: [],
+			// 		FunkstellenDetails: {},
+			// 		ArbeitsplatzGeraete: {},
+			// 		MhanZuordnung: {},
+			// 		IpConfig: cfg
+			// 	};
+			// 	for (let t = 0; t < Funkstellen.length; t++) {
+			// 		log.debug(Funkstellen[t].id);
+			// 		Konfig.FunkstellenDetails[Funkstellen[t].id] = rfd.findeFstNachId(Funkstellen[t].id); ///ab HIER weiter-------------------------------------------
+			//
+			// 	}
+			// 	res.send(Konfig);
+			// }
+			// else {
 				db.findeApNachIp(req.query.ip, function (benutzer) {
 					if (benutzer) {
 						log.debug(FILENAME + ' Benutzer zu IP  = ' + benutzer + ' ' + req.query.ip);
@@ -255,7 +256,7 @@ router.get('/ukwKonfig', function (req, res) {
 						res.send('Arbeitsplatz nicht gefunden! IP: ' + req.query.ip);
 					}
 				});
-			}
+			// }
 		}
 
 		// /ukwKonfig mit Parameter ?zuordnung=lotse
@@ -304,12 +305,13 @@ router.get('/ukwKonfig', function (req, res) {
 
 });//Router /ukwKonfig Ende
 
-router.get('/liesTopologie', function (req, res) {
-	log.info(FILENAME + ' Topologie neu einlesen.');
-	rfd.leseRfdTopologie(function () {
-		res.send(rfd.Funkstellen);
-	});
-});
+// TODO: ungenutzen code entfernen?
+// router.get('/liesTopologie', function (req, res) {
+// 	log.info(FILENAME + ' Topologie neu einlesen.');
+// 	rfd.leseRfdTopologie(function () {
+// 		res.send(rfd.Funkstellen);
+// 	});
+// });
 
 router.get('/mockmessage', function (req, res) {
 	//log.debug(FILENAME + ' mockmessage von IP: ' + req.ip + ", message: "+ require('util').inspect( req) );
@@ -363,11 +365,13 @@ rfd.leseRfdTopologie(function () {
 	log.debug("Topologie eingelesen.");
 });
 
-
-// Konfigurationsobjekt fuer den Arbeitsplatz erstellen.
-// Einlesen der Konfig.Dateien
-// TODO: Auslesen aus Datenbank
-// TODO: Fehlermeldung und Errorhandling wenn keine Konfig vorliegt
+/**
+ * Konfigurationsobjekt fuer den Arbeitsplatz erstellen.
+ * Einlesen der Konfig.Dateien
+ * TODO: Fehlermeldung und Errorhandling wenn keine Konfig vorliegt
+ * @param {string} Ap
+ * @param {function} callback
+ */
 function erstelleKonfigFurAp(Ap, callback) {
 
 	//Bilde temporaeres Objekt um Funkstelle als Value hinzuzufuegen
@@ -398,8 +402,10 @@ function erstelleKonfigFurAp(Ap, callback) {
 				log.debug(FILENAME + ' Button: ' + button + '  ' + fstReihe[button]);
 				//Durch Funkstelln in Buttons iterien
 				for (let t = 0; t < fstReihe[button].length; t++) {
+
 					//Funkstellendetails schreiben
 					Konfig.FunkstellenDetails[fstReihe[button][t]] = rfd.findeFstNachId(fstReihe[button][t]);
+
 					//Kanalnummern in Array schreiben. Dient zur dynamischen Befüllung im MKA Dialog
 					const kanalNummer = Konfig.FunkstellenDetails[fstReihe[button][t]].channel;
 					if (kanalNummer !== null) {
@@ -448,8 +454,12 @@ function erstelleKonfigFurAp(Ap, callback) {
 	});
 } //Funktion Ende
 
-//Beschreibung der Funktion erstellen.....
-//
+/**
+ *
+ * @param {string} Ap
+ * @param {boolean} standard
+ * @param {function} callback
+ */
 function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
 	const Konfig = {
 		FunkstellenReihe: [],
@@ -458,7 +468,6 @@ function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
 		MhanZuordnung: {},
 		IpConfig: cfg
 	};
-
 
 	log.debug(FILENAME + ' Funktion erstelleKonfigFuerLotsenKanal erhaltener Arbeitsplatz: ' + Ap);
 	const rev_ap = Ap.split(' ');
