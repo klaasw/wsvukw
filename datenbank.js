@@ -9,7 +9,7 @@
  * wechseln.
  * @Author: Klaas Wuellner
  *
-  */
+ */
 
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
@@ -27,6 +27,12 @@ const user_auth = (cfg.auth ? cfg.auth_user + ':' + cfg.auth_pw + '@' : '');
 const replicaSet = (cfg.replicaSet !== '' ? '&replicaSet=' + cfg.replicaSet : '');
 const url = 'mongodb://' + user_auth + cfg.mongodb.join(',') + '/ukw?readPreference=nearest' + replicaSet;
 
+	if (dbVerbindung === undefined) {
+		}
+//TODO: Prio 2 Verbindung zu unterschiedlichen Datenbanken herstellen. Damit WindowsBenutzer von ukw Datenbank entkoppelt sind
+//vor dem Schreiben prüfen ob eine Verbindung besteht:
+exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
+	//console.log(dbVerbindung)
 /**
  * Callback Funktion zum aufrufen nach Verbindungsaufbau
  * @callback dbCallback
@@ -41,6 +47,8 @@ exports.verbindeDatenbank = function (aktion) {
 	log.debug(url);
 	const _self = this;
 
+
+    }
 	MongoClient.connect(url, {
         // Timeout Parameter fuehren in Entwicklungsumgebungen zu neuen Verbindungen
 		// und Toggeln der Topology, Ereignis: topologyDescriptionChanged
@@ -64,6 +72,7 @@ exports.verbindeDatenbank = function (aktion) {
 		if (typeof aktion === 'function') {
 			aktion(_self);
 		}
+
 		//Ereignislister fuer Topologie Aenderungen im ReplicaSet
 		db.topology.on('serverDescriptionChanged', function (event) {
 			log.debug(FILENAME + ' Funktion: verbindeDatenbank Listener: received serverDescriptionChanged');
@@ -227,18 +236,7 @@ exports.findeApNachIp = function (ip, callback) {
 			const alle_Ap = JSON.parse(body);
 			log.debug(FILENAME + ' function findeNachIp: ' + alle_Ap);
 
-			if (alle_Ap.hasOwnProperty(ip.replace('::ffff:', ''))) {
-				Ap = alle_Ap[ip.replace('::ffff:', '')].user;
-				log.debug(FILENAME + ' function findeNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
-				if (typeof callback !== 'function') {
-					log.error('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-				}
-				else {
-					callback(Ap);
-				}
-			}
-			else {
-				log.error(FILENAME + ' function findeNachIp: Benutzer NICHT gefunden zu IP: ' + ip.replace('::ffff:', ''));
+				log.error(FILENAME + ' function findeNachIp: Benutzer NICHT gefunden zu IP: ' + ip.replace("::ffff:",""));
 				callback('');
 			}
 		}

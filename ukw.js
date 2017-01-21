@@ -18,7 +18,6 @@ const parser = new xml2js.Parser({explicitRoot: true});// Parserkonfiguration
 const log = require('./log.js');
 const cfg = require('./cfg.js');
 const socket = require('./socket.js');
-
 const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
 db.verbindeDatenbank(function (db) {
 });
@@ -177,7 +176,7 @@ ua.on('newMessage', function (e) {
 			if ('FSTSTATUS' in result) {
 				result.FSTSTATUS.letzteMeldung = new Date();
 			}
-			rfd.sendeWebSocketNachricht(result);
+			socket.sendeWebSocketNachricht(result);
 			schreibeZustand(result)
 		}
 		else {
@@ -192,6 +191,7 @@ const mockRFD = new JsSIP.UA(cfg.jsSipConfiguration_mockRFD);
 mockRFD.start();
 
 // GET-Aufruf fuer SIP-Message: http://10.22.30.1:3000/mockmessage?messageText=%3CFSTSTATUS+id%3D%221-H-RFD-BHVVTA-FKEK-1%22+state%3D%220%22+channel%3D%22-1%22%2F%3E
+
 /**
  * SIP Test Aufrufe
  * @param {string} text
