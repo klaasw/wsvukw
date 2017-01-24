@@ -61,7 +61,7 @@ $(window).load(function () {
 				_self.socket = io(_self.aktuellerUKWserver);
 
 				_self.ereignisUeberwachung();
-				_self.verbindungsPruefung();
+                _self.verbindungsPruefung();
 				_self.lautsprecherAufschalten(_self.MhanZuordnung);
 
 			}).fail(function () {
@@ -79,6 +79,10 @@ $(window).load(function () {
 
 			//Alle eingehenden WebSocket Nachrichten einhaengen TYP 'statusMessage'
 			this.socket.on('statusMessage', function (msg) {
+
+				if (msg === null)
+					return;
+
 				const dienst = msg.dienst;
 				const status = msg.status.Status;
 				const url    = msg.status.URL;
@@ -122,8 +126,6 @@ $(window).load(function () {
 					//audioAlarm.play();
 					//$('#errorModalRFD').modal('show')
 				}
-
-
 			});
 
 			//eingehende ZustandsMessage für gespeicherte Schaltzustaende
@@ -427,7 +429,7 @@ $(window).load(function () {
 
 				// TODO: Wiederverbindung versuchen, waehrend dieser Zeit kein Fehler zeigen, sondern erst dann?
 				//Zeige Error Modal Fenster
-				WSV.Utils.audioAlarm.play();
+				// WSV.Utils.audioAlarm.play();
 				$('#errorModalDUE').modal('show');
 			});
 		},

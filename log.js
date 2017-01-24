@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * The logging library used by this module.
