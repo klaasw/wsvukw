@@ -248,9 +248,11 @@ exports.findeApNachIp = function (ip, callback) {
 exports.liesAusRESTService = function (configfile, callback) {
     // require(cfg.configPath + configfile + '.json');
     log.debug('function liesAusRESTService ' + configfile);
+
     // TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
     const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/lieskonfig?configfile=' + configfile;
     log.debug(' liesAusRESTService url=' + url);
+
     request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             const antwortImBody = JSON.parse(body);
@@ -305,7 +307,7 @@ exports.schreibeSchaltzustand = function (fst, Span_Mhan, aktion, span_mhanApNr,
 const datenbank = {
 
     /**
-     *
+     * Dokument aus Datenbank lesen
      * @param {string} collection
      * @param {object|int} element
      * @param {function} callback
@@ -331,7 +333,7 @@ const datenbank = {
     },
 
     /**
-     * tatsächlich in DB schreiben, Ausführung als Upsert
+     * Tatsächlich in DB schreiben, Ausführung als Upsert
      * @param {string} collection
      * @param {object} selector
      * @param {object} inhalt
@@ -349,7 +351,7 @@ const datenbank = {
 
 
     /**
-     *Prueft ob der PRIMARY der Mongo-Datenbank und die Anwendung im selben VTR laufen und setzt die entsprechende Variable
+     * Prueft ob der PRIMARY der Mongo-Datenbank und die Anwendung im selben VTR laufen und setzt die entsprechende Variable
      * @param primaryServer
      */
     pruefeLokaleVerbindung(primaryServer) {

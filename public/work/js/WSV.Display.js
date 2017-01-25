@@ -46,6 +46,7 @@
 				_self.IpConfig            = data.Konfigdaten.IpConfig;
 
 				// console.log('geladeneIPconfig: ' + JSON.stringify(data.Konfigdaten.IpConfig));
+				console.log(data.Konfigdaten.IpConfig);
 
 				_self.socket = io(_self.aktuellerUKWserver);
 

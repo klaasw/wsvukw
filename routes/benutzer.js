@@ -16,18 +16,16 @@ const db = require('../datenbank.js');
 const log = require('../log.js'); // Modul fuer verbessertes Logging
 const FILENAME = __filename.slice(__dirname.length + 1);
 
-
-router.get('/zeigeWindowsBenutzer/selectip', function (req, res) {
+router.get('/zeigeWindowsBenutzer/selectip/:ip', function (req, res) {
     const arbeitsplaetze = {};
-    let selectip = req.params.selectip;   // req.query.revier
-    db.findeElement('windowsBenutzer', {id: req.params.selectip}, function (doc) {
+    let selectip = req.params.ip;
+    db.findeElement('windowsBenutzer', { _id: selectip }, function (doc) {
         for (const ap of doc) {
             arbeitsplaetze[ap._id] = ap
         }
         res.send(arbeitsplaetze)
     })
 });
-
 
 router.get('/zeigeWindowsBenutzer', function (req, res) {
     const arbeitsplaetze = {};
@@ -41,6 +39,41 @@ router.get('/zeigeWindowsBenutzer', function (req, res) {
 
 router.put('/schreibeWindowsBenutzer', function (req, res) {
     log.debug(FILENAME + ' /schreibeWindowsBenutzer Benutzer: ' + JSON.stringify(req.body));
+
+    const schreibeLokal = false; // es wird auf jeden Fall in DB geschrieben
+    const benutzer = req.body;
+    let schreibeParameter = {};
+    log.info(benutzer);
+
+    if (benutzer.angemeldet === true) {
+        schreibeParameter = {
+            $set: {
+                ip: benutzer.ip,
+                user: benutzer.user.toLowerCase(),
+                loginZeit: new Date(),
+                angemeldet: benutzer.angemeldet
+            }
+        }
+    }
+    if (benutzer.angemeldet === false) {
+        schreibeParameter = {
+            $set: {
+                ip: benutzer.ip,
+                user: benutzer.user.toLowerCase(),
+                logoutZeit: new Date(),
+                angemeldet: benutzer.angemeldet
+            }
+        }
+    }
+
+    const benutzerId = {'_id': benutzer.ip};
+
+    // db.schreibeInDb('windowsBenutzer', benutzerId, schreibeParameter, schreibeLokal);
+    res.send({message: 'Benutzer hinzugefuegt oder geaendert'});
+});
+
+router.put('/schreibeTheme', function (req, res) {
+    log.debug(FILENAME + ' /schreibeTheme Benutzer: ' + JSON.stringify(req.body));
 
     const schreibeLokal = false; // es wird auf jeden Fall in DB geschrieben
     const benutzer = req.body;
