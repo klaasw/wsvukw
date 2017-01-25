@@ -23,7 +23,7 @@ mixin errorModal(type,title,errorMessage)
 mixin serverListe(ip, idName)
 	// mixin für die Zustandsanzeige der Server
 	li
-		a(href='http://' + ip)
+		a(href='http://' + ip + '/ukw/')
 			button.btn.btn-default(
 			id='button' + idName
 			) &nbsp#{idName}&nbsp

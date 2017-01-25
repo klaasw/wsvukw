@@ -2,13 +2,7 @@
 /**
  * Modul zur Herstellung der Verbindung zur Mongo Datenbank
  *
-* @Author: Klaas Wuellner && Felix Stolle
-*
- * Anpassung 14.12.16: Timeouts auskommentiert, nur in pruefeLokaleVerbindung/
- * VTR lokale DB auskommentiert -> bei Ausfall nodeJS muesste auch Mongo primary
- * wechseln.
- * @Author: Klaas Wuellner
- *
+ * @Author: Klaas Wuellner && Felix Stolle
  */
 
 const MongoClient = require('mongodb').MongoClient;
@@ -27,12 +21,6 @@ const user_auth = (cfg.auth ? cfg.auth_user + ':' + cfg.auth_pw + '@' : '');
 const replicaSet = (cfg.replicaSet !== '' ? '&replicaSet=' + cfg.replicaSet : '');
 const url = 'mongodb://' + user_auth + cfg.mongodb.join(',') + '/ukw?readPreference=nearest' + replicaSet;
 
-	if (dbVerbindung === undefined) {
-		}
-//TODO: Prio 2 Verbindung zu unterschiedlichen Datenbanken herstellen. Damit WindowsBenutzer von ukw Datenbank entkoppelt sind
-//vor dem Schreiben prüfen ob eine Verbindung besteht:
-exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
-	//console.log(dbVerbindung)
 /**
  * Callback Funktion zum aufrufen nach Verbindungsaufbau
  * @callback dbCallback
@@ -47,13 +35,9 @@ exports.verbindeDatenbank = function (aktion) {
 	log.debug(url);
 	const _self = this;
 
-
-    }
 	MongoClient.connect(url, {
-        // Timeout Parameter fuehren in Entwicklungsumgebungen zu neuen Verbindungen
-		// und Toggeln der Topology, Ereignis: topologyDescriptionChanged
-		//connectTimeoutMS: 2000,
-		//socketTimeoutMS: 2000
+		// connectTimeoutMS: 2000,
+		// socketTimeoutMS: 2000
 	}, function (err, db) {
 
 		if (err) {
@@ -72,7 +56,6 @@ exports.verbindeDatenbank = function (aktion) {
 		if (typeof aktion === 'function') {
 			aktion(_self);
 		}
-
 		//Ereignislister fuer Topologie Aenderungen im ReplicaSet
 		db.topology.on('serverDescriptionChanged', function (event) {
 			log.debug(FILENAME + ' Funktion: verbindeDatenbank Listener: received serverDescriptionChanged');
@@ -118,9 +101,9 @@ exports.verbindeDatenbank = function (aktion) {
 			log.debug(FILENAME + ' Funktion: verbindeDatenbank Listener: received topologyDescriptionChanged');
 			log.debug(FILENAME + ' Funktion: verbindeDatenbank Listener:' + JSON.stringify(event));
 
-			//if (event.newDescription.topologyType == 'ReplicaSetWithPrimary') {
-			//	pruefeLokaleVerbindung(event.newDescription.servers[0].address);
-			//}
+			if (event.newDescription.topologyType == 'ReplicaSetWithPrimary') {
+				pruefeLokaleVerbindung(event.newDescription.servers[0].address);
+			}
 		});
 	});
 };
@@ -226,17 +209,29 @@ exports.findeApNachIp = function (ip, callback) {
 	// TODO: Aus DB auslesen, nicht mehr den Umweg über REST nehmen, weil so oft benutzt
 	//var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
 	let Ap = '';
-	log.debug(FILENAME + ' function findeNachIp: ' + util.inspect(ip));
+	log.debug(FILENAME + ' function findeApNachIp Ip: ' + util.inspect(ip));
 	// TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
-	const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/benutzer/zeigeWindowsBenutzer';
-	log.debug(FILENAME + ' function findeNachIp ' + url);
+	//const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/benutzer/zeigeWindowsBenutzer';
+	const url = 'http://localhost:' + cfg.port + '/benutzer/zeigeWindowsBenutzer';
+	log.debug(FILENAME + ' function findeApNachIp Url: ' + url);
 	request(url, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			//log.debug("body: " + body);
 			const alle_Ap = JSON.parse(body);
-			log.debug(FILENAME + ' function findeNachIp: ' + alle_Ap);
+			log.debug(FILENAME + ' function findeApNachIp: alle_Ap: ' + alle_Ap);
 
-				log.error(FILENAME + ' function findeNachIp: Benutzer NICHT gefunden zu IP: ' + ip.replace("::ffff:",""));
+			if (alle_Ap.hasOwnProperty(ip.replace('::ffff:', ''))) {
+				Ap = alle_Ap[ip.replace('::ffff:', '')].user;
+				log.debug(FILENAME + ' function findeApNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
+				if (typeof callback !== 'function') {
+					log.error('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+				}
+				else {
+					callback(Ap);
+				}
+			}
+			else {
+				log.error(FILENAME + ' function findeApNachIp: Benutzer NICHT gefunden zu IP: ' + ip.replace('::ffff:', ''));
 				callback('');
 			}
 		}
@@ -258,21 +253,21 @@ exports.liesAusRESTService = function (configfile, callback) {
 	// require(cfg.configPath + configfile + '.json');
 	log.debug('function liesAusRESTService ' + configfile);
 	// TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
-	const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/lieskonfig?configfile=' + configfile;
-	log.debug(' liesAusRESTService url=' + url);
+	const url = 'http://localhost:' + cfg.port + '/lieskonfig?configfile=' + configfile;
+	log.debug(FILENAME + ' liesAusRESTService url=' + url);
 	request(url, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			const antwortImBody = JSON.parse(body);
-			log.debug(' liesAusRESTService response: ' + JSON.stringify(antwortImBody));
+			log.debug(FILENAME + ' liesAusRESTService response: ' + JSON.stringify(antwortImBody));
 			callback(antwortImBody);
 		}
 		else {
 			if (error) {
-				log.error(' liesAusRESTService Fehler: ' + JSON.stringify(error));
+				log.error(FILENAME + ' liesAusRESTService Fehler: ' + JSON.stringify(error));
 				callback('Fehler');//TODO: hier Fehlerhandling wenn Service nicht erreichbar
 			}
 			else {
-				log.error(' liesAusRESTService Fehler: ' + JSON.stringify(body));
+				log.error(FILENAME + ' liesAusRESTService Fehler: ' + JSON.stringify(body));
 				//log.error(" liesAusRESTService Fehler: " + JSON.stringify(response));
 				callback(body);
 			}

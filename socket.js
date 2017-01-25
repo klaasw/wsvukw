@@ -26,14 +26,16 @@ exports.socket = function (server) {
 
 	socketServer = io.listen(server);
 	socketServer.on('connect', function (socket) {
-		log.debug(FILENAME + ' Funktion connect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' hergestellt. IP: ' + socket.request.connection.remoteAddress);
+		const ipSocket = (socket.request.connection.remoteAddress === '127.0.0.1') ? socket.request.headers['x-forwarded-for'] : socket.request.connection.remoteAddress
+		log.debug(FILENAME + ' Funktion connect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' hergestellt. IP: ' + ipSocket);
+		log.debug('SOCKETHEADER' + socket.request.headers['x-forwarded-for']);
 		// TODO: Pruefung Berechtigung !
 
 		// nur einmal beim Start: Zeitpunkt der Benutzung in DB schreiben
-		db.schreibeApConnect(socket.conn.remoteAddress, socket.id, true);
+		db.schreibeApConnect(ipSocket, socket.id, true);
 
 		leseZustand(socket.id); //Status der Funkstellen übertragen
-		exports.leseSchaltzustand(socket.id, socket.request.connection.remoteAddress); //letzten Schaltzustandübertragen
+		exports.leseSchaltzustand(socket.id, ipSocket); //letzten Schaltzustandübertragen
 		// Uebertragen der DUE Server Zustaende
 		exports.emit('statusMessage', dueStatusServerA, socket.id);
 		exports.emit('statusMessage', dueStatusServerB, socket.id);
@@ -70,7 +72,7 @@ exports.socket = function (server) {
 
 		// Client hat Verbindung unterbrochen:
 		socket.on('disconnect', function (msg) {
-			let ip = socket.request.connection.remoteAddress;
+			let ip = ipSocket;
 			//IPv6 Anteil aus Anfrage kuerzen
 			const ipv6Ende = ip.lastIndexOf(':');
 			if (ipv6Ende > -1) {
@@ -262,6 +264,3 @@ if (cfg.intervall !== 0) {
 		exports.emit('statusMessage', msg)
 	});
 }
-
-
-

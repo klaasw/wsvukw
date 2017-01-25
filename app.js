@@ -13,6 +13,9 @@ const bodyParser = require('body-parser');
 const debug = require('debug')('ukwserver:server');
 const FileStreamRotator = require('file-stream-rotator');
 
+const env = process.env.NODE_ENV || 'development'; // Linux Umgebungsvariable für die Laufzeit
+                                                   // Umgebung. zu Setzen mit export $NODE_ENV=production
+
 /**
  * logging access log
  * @type {morgan}
@@ -110,6 +113,7 @@ app.use(function (err, req, res, next) {
  */
 const port = normalizePort(process.env.PORT || cfg.port);
 app.set('port', port);
+app.set('trust proxy', 'loopback')
 
 /**
  * Create HTTP server.
@@ -119,7 +123,22 @@ const server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-server.listen(port);
+
+
+// Für Prodoktionsumgebung ist ein vorgeschalteter ProxyServer (z.B. nginx) notwenig,
+// der die Anfrage an den localhost weiterleitet.
+if (env === 'production') {
+  server.listen(port, '127.0.0.1', function(){
+    console.log('Server läuft %s in %s mode', server.address().address, app.settings.env);
+  });
+}
+
+if (env === 'development') {
+  server.listen(port, function(){
+    console.log('Server läuft %s in %s mode', server.address().address, app.settings.env);
+  });
+}
+
 server.on('error', onError);
 server.on('listening', onListening);
 
