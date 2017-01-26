@@ -742,6 +742,10 @@
 				if (typeof data._id != 'undefined') {
 					_self.aktuellerBenutzer = data;
 				}
+				if (typeof data.theme == 'undefined') {
+					data.theme = 'default';
+				}
+				WSV.Themes.switch(data.theme, false);
 			});
 		},
 

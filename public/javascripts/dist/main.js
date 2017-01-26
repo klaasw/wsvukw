@@ -753,6 +753,10 @@ $(window).load(function () {
 				if (typeof data._id != 'undefined') {
 					_self.aktuellerBenutzer = data;
 				}
+				if (typeof data.theme == 'undefined') {
+					data.theme = 'default';
+				}
+				WSV.Themes.switch(data.theme, false);
 			});
 		},
 
@@ -781,7 +785,7 @@ $(window).load(function () {
 			this.themesheet.appendTo('head');
 
 			$('.theme-switcher .switch-theme').on('click', function () {
-				_self.switch($(this))
+				_self.switch($(this).data('theme'), true)
 			});
 		},
 
@@ -790,15 +794,28 @@ $(window).load(function () {
 			return this.path + '/' + this.list[theme];
 		},
 
-		switch: function (element) {
-			this.currentTheme = element.data('theme');
+		/**
+		 * Wechselt das aktuelle Theme im Frontend und speichert die Konfiguration
+		 * @param {string} theme - das zu wechselnde Theme
+		 * @param {boolean} saveConfig - legt fest ob die Konfig gespeichert werden soll
+		 */
+		switch: function (theme, saveConfig) {
+			if (typeof theme == 'undefined' || theme == this.currentTheme)
+				return;
+
+			this.currentTheme = theme;
 			this.themesheet.attr('href', this.getThemeUrl(this.currentTheme));
 			$('.theme-switcher .switch-theme').parents('li').removeClass('active');
-			element.parent().addClass('active');
-			this.setAPconfig();
+			$('.theme-switcher a[data-theme="' + this.currentTheme + '"]').parent().addClass('active');
+			if (saveConfig) {
+				this.saveThemeConfig();
+			}
 		},
 
-		setAPconfig: function () {
+		/**
+		 * Speichert das aktuelle Theme in die Datenbank via REST
+		 */
+		saveThemeConfig: function () {
 
 			const benutzer = WSV.Display.aktuellerBenutzer;
 			benutzer.theme = this.currentTheme;
