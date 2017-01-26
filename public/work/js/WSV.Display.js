@@ -737,9 +737,10 @@
 		},
 
 		ladeBenutzer: function () {
+			const _self = this;
 			$.get('/benutzer/zeigeWindowsBenutzer/selectip', function (data) {
-				if (typeof data.id != 'undefined') {
-					this.aktuellerBenutzer = data;
+				if (typeof data._id != 'undefined') {
+					_self.aktuellerBenutzer = data;
 				}
 			});
 		},
