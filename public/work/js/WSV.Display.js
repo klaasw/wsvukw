@@ -736,6 +736,9 @@
 			//  $.notify('Setze Kanal: '+ApFunkstellen[geklickteMKA].sname +' auf '+ element.innerText +' ...')
 		},
 
+		/**
+		 * Aktuellen Windowsbenutzer aus DB laden via REST
+		 */
 		ladeBenutzer: function () {
 			const _self = this;
 			$.get('/benutzer/zeigeWindowsBenutzer/selectip', function (data) {

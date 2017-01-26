@@ -25,6 +25,11 @@
 			});
 		},
 
+		/**
+		 * Liefert die aktuelle Theme-URL zurück
+		 * @param {string} theme
+		 * @returns {string} - relativer Pfad zum aktuellen Theme
+		 */
 		getThemeUrl: function (theme) {
 			theme = theme || 'default';
 			return this.path + '/' + this.list[theme];
