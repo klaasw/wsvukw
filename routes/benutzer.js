@@ -16,14 +16,10 @@ const db = require('../datenbank.js');
 const log = require('../log.js'); // Modul fuer verbessertes Logging
 const FILENAME = __filename.slice(__dirname.length + 1);
 
-router.get('/zeigeWindowsBenutzer/selectip/:ip', function (req, res) {
-    const arbeitsplaetze = {};
-    let selectip = req.params.ip;
-    db.findeElement('windowsBenutzer', { _id: selectip }, function (doc) {
-        for (const ap of doc) {
-            arbeitsplaetze[ap._id] = ap
-        }
-        res.send(arbeitsplaetze)
+router.get('/zeigeWindowsBenutzer/selectip', function (req, res) {
+    let selectip = req._remoteAddress;
+    db.findeElement('windowsBenutzer', { ip: selectip }, function (doc) {
+	    res.send(doc[0]);
     })
 });
 

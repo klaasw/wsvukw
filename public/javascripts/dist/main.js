@@ -27,22 +27,25 @@ $(window).load(function () {
 		IpConfig:            '',
 		socket:              {},
 		aktuellerUKWserver:  '',
+		aktuellerBenutzer:   {},
 		defaultServer:       '',
 
 		init: function () {
 
 			this.aktuellerUKWserver = location.protocol + '//' + location.hostname + ':' + location.port;
 			this.setDefaultServer();
+			this.ladeBenutzer();
 			this.ladeKonfig();
 		},
 
 		setDefaultServer: function () {
 			this.defaultServer = $('.server-toggle').data('label');
 		},
+
 		/**
 		 * Variablen zum Arbeitsplatz laden
 		 */
-		ladeKonfig:       function () {
+		ladeKonfig: function () {
 
 			const _self = this;
 
@@ -56,13 +59,12 @@ $(window).load(function () {
 				_self.ApID                = data.Arbeitsplatz;
 				_self.IpConfig            = data.Konfigdaten.IpConfig;
 
-				// console.log('geladeneIPconfig: ' + JSON.stringify(data.Konfigdaten.IpConfig));
 				console.log(data.Konfigdaten.IpConfig);
 
 				_self.socket = io(_self.aktuellerUKWserver);
 
 				_self.ereignisUeberwachung();
-                _self.verbindungsPruefung();
+				_self.verbindungsPruefung();
 				_self.lautsprecherAufschalten(_self.MhanZuordnung);
 
 			}).fail(function () {
@@ -215,7 +217,7 @@ $(window).load(function () {
 						$(standortButton[0]).children().text('OK');
 
 
-						console.log(msg.FSTSTATUS.$.id)
+						//console.log(msg.FSTSTATUS.$.id);
 
 						//Bei Kanalaenderung die Kanalnummer setzen
 						if (msg.FSTSTATUS.$.channel > -1) {
@@ -258,7 +260,7 @@ $(window).load(function () {
 							'Arbeitsplatz': _self.ApID
 						});
 
-						console.log(msg.FSTSTATUS.$.id)
+						//console.log(msg.FSTSTATUS.$.id);
 
 					}
 					//Schalten fuer SPrechANlagen und MitHoerANlagen
@@ -298,7 +300,7 @@ $(window).load(function () {
 
 								_self.ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true;
 								$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
-								console.log(msg.geschaltet.$.id)
+								console.log(msg.geschaltet.$.id);
 							}
 						}
 					}
@@ -344,15 +346,12 @@ $(window).load(function () {
 
 								$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
 								//console.log(msg.getrennt.$.id)
-
-
 							}
 						}
 						else {
 							//console.log("")
 						}
 					}
-
 
 				}  // Ende if (typeof msg === 'object')
 				// TODO: pruefen was mit anderen Meldungen vom RFD geschehen soll. Ert
@@ -746,7 +745,15 @@ $(window).load(function () {
 			//console.log('clientMessage', {'FstID': geklickteMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'})
 			this.socket.emit('clientMessage', {'FstID': geklickteMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'});
 			//  $.notify('Setze Kanal: '+ApFunkstellen[geklickteMKA].sname +' auf '+ element.innerText +' ...')
-		}
+		},
+
+		ladeBenutzer: function () {
+			$.get('/benutzer/zeigeWindowsBenutzer/selectip', function (data) {
+				if (typeof data.id != 'undefined') {
+					this.aktuellerBenutzer = data;
+				}
+			});
+		},
 
 	}
 
