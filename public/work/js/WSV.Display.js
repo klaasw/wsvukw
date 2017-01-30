@@ -419,17 +419,15 @@
 		 * @returns {boolean}
 		 */
 		angeklickt: function (event, element) {
-			const geklicktesElement       = event.srcElement;
-			const geklicktesButtonElement = $(geklicktesElement).data('buttonElement');
+			const geklicktesElement = event.srcElement;
 
 			if (element == geklicktesElement) {
 				return true;
 			}
-			if (geklicktesButtonElement == 'atis' || geklicktesButtonElement == 'Flaeche') {
-				return true;
-			}
 
-			return false;
+			const geklicktesButtonElement = $(geklicktesElement).data('buttonElement');
+
+			return (geklicktesButtonElement == 'atis' || geklicktesButtonElement == 'Flaeche');
 		},
 
 		/**
@@ -463,7 +461,7 @@
 					const button = $(element).offsetParent().attr('id');
 
 					const geklickteFstHaupt = $('#' + button + ' .button_anlage1').attr('id');
-					const geklickteFstReser = $('#' + button + ' .button_anlage2').attr('id');
+					const geklickteFstReserve = $('#' + button + ' .button_anlage2').attr('id');
 
 					const geklickteSPAN = $('#' + button + ' .button_span').attr('id');
 
@@ -471,7 +469,7 @@
 
 					//Status der Funkstellen aus HTML Elementen auslesen
 					const geklickteFstHauptStatus = $('#' + geklickteFstHaupt).attr('fstStatus');
-					const geklickteFstReserStatus = $('#' + geklickteFstReser).attr('fstStatus');
+					const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('fstStatus');
 
 					//nur schalten, wenn Status 0 bzw. ok
 					if (geklickteFstHauptStatus === '0') {
@@ -488,9 +486,7 @@
 						//TODO: hier Reserveanlage schalten
 					}
 				}
-
-				//Schalten aus Modal Mithoeren
-				if (geraet === 'SPAN_MHAN') {
+				else if (geraet === 'SPAN_MHAN') { //Schalten aus Modal Mithoeren
 					const mhan          = $('#mithoerenModal .btn-primary').attr('id');
 					const span          = element.id;
 					const span_mhanApNr = $('#mithoerenModal .btn-group-vertical .btn-primary').text();
