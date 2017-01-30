@@ -4,15 +4,15 @@ const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
 db.verbindeDatenbank(function (db) {
 });
 
-const cfg = require('./cfg.js');
-const log = require('./log.js');
-const rfd = require('./rfd.js');
+const cfg     = require('./cfg.js');
+const log     = require('./log.js');
+const rfd     = require('./rfd.js');
 const tools   = require('./tools.js');
 const request = require('request'); //Modul zu Abfrage von WebServices
 
 const FILENAME = __filename.slice(__dirname.length + 1);
 
-const io = require('socket.io');
+const io           = require('socket.io');
 const socketClient = require('socket.io-client');
 
 let socketServer; //Variable um die Sockets ausserhalb der Funktion "on.connect" aufzurufen
@@ -166,7 +166,7 @@ function leseZustand(socketID) {
 		for (let i = 0; i < doc.length; i++) {
 			const zustand = {
 				'FSTSTATUS': {
-					'$': doc[i].status,
+					'$':             doc[i].status,
 					'letzteMeldung': doc[i].letzteMeldung
 				}
 			};
