@@ -460,7 +460,7 @@
 					//uebergeordnetes Element finden
 					const button = $(element).offsetParent().attr('id');
 
-					const geklickteFstHaupt = $('#' + button + ' .button_anlage1').attr('id');
+					const geklickteFstHaupt   = $('#' + button + ' .button_anlage1').attr('id');
 					const geklickteFstReserve = $('#' + button + ' .button_anlage2').attr('id');
 
 					const geklickteSPAN = $('#' + button + ' .button_span').attr('id');
@@ -468,7 +468,7 @@
 					const geklicktespan_mhanApNr = $('#' + button + ' .button_span').data('span');
 
 					//Status der Funkstellen aus HTML Elementen auslesen
-					const geklickteFstHauptStatus = $('#' + geklickteFstHaupt).attr('fstStatus');
+					const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('fstStatus');
 					const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('fstStatus');
 
 					//nur schalten, wenn Status 0 bzw. ok
@@ -498,8 +498,8 @@
 					const buttonMHAN = $('#' + element.id).offsetParent().attr('id');
 					const buttonFst  = element.offsetParent.id;
 
-					const geklickteFstHaupt = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(1)').attr('id');
-					const geklickteFstReser = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(2)').attr('id');
+					const geklickteFstHaupt   = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(1)').attr('id');
+					const geklickteFstReserve = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(2)').attr('id');
 
 					const geklickteMHAN = ($('#' + buttonMHAN + ' div > div').attr('id'));
 
@@ -507,8 +507,8 @@
 					console.log(buttonFst);
 
 					//Status der Funkstellen
-					const geklickteFstHauptStatus = $('#' + geklickteFstHaupt).attr('fstStatus');
-					const geklickteFstReserStatus = $('#' + geklickteFstReser).attr('fstStatus');
+					const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('fstStatus');
+					const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('fstStatus');
 
 					this.schalteKanalID(geklickteFstHaupt, geklickteMHAN, 'MHAN');
 				}
@@ -641,26 +641,28 @@
 		},
 
 		/**
-		 *
-		 * @param buttonID
+		 * Wechselt zwischen Einzel- und Gruppenschaltung
+		 * @param {object} element
 		 */
-		gruppen: function (buttonID) {
-			//Wechsel zu Gruppenschaltung
-			if (this.Einzel === true) {
-				this.Einzel       = false;
+		wechselEinzelGruppen: function (element) {
+
+			$(element).toggleClass('active');
+
+			if (this.Einzel === true) { // Wechsel zu Gruppenschaltung
+				this.Einzel = false;
+
+				// TODO: initialen Status vorher laden
 				this.einzelStatus = JSON.stringify(this.ApFunkstellen); //speichere geschalteten Zustand
-
-				$('#' + buttonID).toggleClass('active');
-				$('#' + buttonID + ' > a').text('Gruppenschaltung');
-				zustandWiederherstellen(JSON.parse(this.gruppenStatus)); // lade Gruppenzustand
+				this.zustandWiederherstellen(JSON.parse(this.gruppenStatus)); // lade Gruppenzustand
+				$('a', element).text('Gruppenschaltung');
 			}
-			else {
-				this.Einzel        = true;
-				this.gruppenStatus = JSON.stringify(this.ApFunkstellen); //speichere geschalteten Zustand
-				$('#' + buttonID).toggleClass('active');
-				$('#' + buttonID + ' > a').text('Einzelschaltung');
-				zustandWiederherstellen(JSON.parse(this.einzelStatus)); //lade Einzelzustand
+			else { // Wechsel zu Einzelschaltung
+				this.Einzel = true;
 
+				// TODO: initialen Status vorher laden
+				this.gruppenStatus = JSON.stringify(this.ApFunkstellen); //speichere geschalteten Zustand
+				this.zustandWiederherstellen(JSON.parse(this.einzelStatus)); //lade Einzelzustand
+				$('a', element).text('Einzelschaltung');
 			}
 		},
 
