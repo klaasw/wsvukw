@@ -208,15 +208,11 @@ $(window).load(function () {
 					}
 
 					if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '0') {
-						$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass('label-danger');
-						$('#' + msg.FSTSTATUS.$.id + ' span.label').addClass('label-success');
-						$('#' + msg.FSTSTATUS.$.id + ' span.label').text('OK');
+						$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass('label-danger').addClass('label-success').text('OK');
 						$('#' + msg.FSTSTATUS.$.id).attr('fstStatus', '0');
-						const standortButton = $('#' + msg.FSTSTATUS.$.id).parent().prev();
-						$(standortButton[0]).children().addClass('label-success');
-						$(standortButton[0]).children().removeClass('label-danger');
-						$(standortButton[0]).children().text('OK');
 
+						const standortButton = $('#' + msg.FSTSTATUS.$.id).parent().prev();
+						$(standortButton[0]).children().addClass('label-success').removeClass('label-danger').text('OK');
 
 						//console.log(msg.FSTSTATUS.$.id);
 
@@ -229,14 +225,10 @@ $(window).load(function () {
 					}
 					// -SEN- darf nicht in der ID vorkommen
 					if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') == -1) {
-						$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass('label-success');
-						$('#' + msg.FSTSTATUS.$.id + ' span.label').addClass('label-danger');
-						$('#' + msg.FSTSTATUS.$.id + ' span.label').text('Error');
+						$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass('label-success').addClass('label-danger').text('Error');
 						$('#' + msg.FSTSTATUS.$.id).attr('fstStatus', '1');
 						const standortButton = $('#' + msg.FSTSTATUS.$.id).parent().prev();
-						$(standortButton[0]).children().addClass('label-danger');
-						$(standortButton[0]).children().removeClass('label-success');
-						$(standortButton[0]).children().text('Error');
+						$(standortButton[0]).children().addClass('label-danger').removeClass('label-success').text('Error');
 
 						//Notify by Störung
 						$.notify({
@@ -248,8 +240,7 @@ $(window).load(function () {
 						//suche SChaltflaeche zu FunkstellenID
 						const button = $('#' + msg.FSTSTATUS.$.id).offsetParent().attr('id');
 						//$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
-						$('#' + button + ' > div').removeClass('panel-primary');
-						$('#' + button + ' > div').css('background-color', '');
+						$('#' + button + ' > div').removeClass('panel-primary').css('background-color', '');
 
 						$('#' + button + ' > div > div:nth-child(3)').removeClass('bg-primary');
 						_self.ApFunkstellen[msg.FSTSTATUS.$.id].aufgeschaltet = false;
@@ -280,8 +271,7 @@ $(window).load(function () {
 								else {
 									//suche Schaltflaeche zu FunkstellenID
 									const button = $('#' + msg.geschaltet.$.id).parent().parent().offsetParent().attr('id');
-									$('#' + button + ' .button_mhan').removeClass('btn-default');
-									$('#' + button + ' .button_mhan').addClass('btn-primary')
+									$('#' + button + ' .button_mhan').removeClass('btn-default').addClass('btn-primary');
 								}
 
 								const geraet = msg.geschaltet.$.Ap;
@@ -322,8 +312,7 @@ $(window).load(function () {
 								else {
 									//suche Schaltflaeche zu FunkstellenID
 									const button = $('#' + msg.getrennt.$.id).offsetParent().attr('id');
-									$('#' + button + ' .button_mhan_ship').css('background-color', '#f5f5f5');
-									$('#' + button + ' .button_mhan_ship').removeClass('bg-primary')
+									$('#' + button + ' .button_mhan_ship').css('background-color', '#f5f5f5').removeClass('bg-primary');
 								}
 								const geraet = msg.getrennt.$.Ap;
 
@@ -365,9 +354,8 @@ $(window).load(function () {
 
 					if (msgText.indexOf('fehlgeschlagen') > -1) {
 						//     //-console.log('RFD Aufruf fehlgeschlagen')
-						$(_self.defaultServer + '_RFD').removeClass('label-success');
-						$(_self.defaultServer + '_RFD').addClass('label-danger');
-						//
+						$(_self.defaultServer + '_RFD').removeClass('label-success').addClass('label-danger');
+
 						$.notify({
 							message: 'Störung:<br>' + JSON.stringify(msg)
 						}, {
@@ -413,20 +401,19 @@ $(window).load(function () {
 		 */
 		verbindungsPruefung: function () {
 			const _self = this;
+
+			const serverButton = $('#button' + _self.defaultServer + '_DUE');
+
 			this.socket.on('connect', function () {
 				// console.log('check 2------------------------VERBUNDEN', _self.socket.connected);
-				$('#button' + _self.defaultServer + '_DUE').removeClass('label-danger');
-				$('#button' + _self.defaultServer + '_DUE').addClass('label-success');
-				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-danger');
-				$('#buttonAktiv' + _self.defaultServer + '_DUE').addClass('label-success');
+				serverButton.removeClass('label-danger').addClass('label-success');
+				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-danger').addClass('label-success');
 			});
 
 			this.socket.on('disconnect', function () {
 				// console.log('check 2-----------------------GETRENNT', _self.socket.connected);
-				$('#button' + _self.defaultServer + '_DUE').removeClass('label-success');
-				$('#button' + _self.defaultServer + '_DUE').addClass('label-danger');
-				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-success');
-				$('#buttonAktiv' + _self.defaultServer + '_DUE').addClass('label-danger');
+				serverButton.removeClass('label-success').addClass('label-danger');
+				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-success').addClass('label-danger');
 
 				// TODO: Wiederverbindung versuchen, waehrend dieser Zeit kein Fehler zeigen, sondern erst dann?
 				//Zeige Error Modal Fenster
