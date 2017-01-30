@@ -72,8 +72,9 @@
 			//Alle eingehenden WebSocket Nachrichten einhaengen TYP 'statusMessage'
 			this.socket.on('statusMessage', function (msg) {
 
-				if (msg === null)
+				if (msg === null) {
 					return;
+				}
 
 				const dienst = msg.dienst;
 				const status = msg.status.Status;
@@ -539,7 +540,7 @@
 		 * @param geklicktespan_mhanApNr
 		 */
 		schalteKanalID: function (geklickteFstID, geklickteSPANMHAN, SPAN, geklicktespan_mhanApNr) {
-			// console.log("Klick: " + geklickteFstID);
+			console.log("Klick: " + geklickteFstID);
 			//$.notify('test:'+ApFunkstellen[geklickteID].kurzname);
 			const _self = this;
 
@@ -744,14 +745,14 @@
 			$.get('/benutzer/zeigeWindowsBenutzer/selectip', function (data) {
 				if (typeof data._id != 'undefined') {
 					_self.aktuellerBenutzer = data;
+
+					if (typeof data.theme == 'undefined') {
+						data.theme = 'default';
+					}
+					WSV.Themes.switch(data.theme, false);
 				}
-				if (typeof data.theme == 'undefined') {
-					data.theme = 'default';
-				}
-				WSV.Themes.switch(data.theme, false);
 			});
 		},
-
 	}
 
 })(window, document, jQuery);

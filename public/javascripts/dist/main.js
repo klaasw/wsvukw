@@ -83,8 +83,9 @@ $(window).load(function () {
 			//Alle eingehenden WebSocket Nachrichten einhaengen TYP 'statusMessage'
 			this.socket.on('statusMessage', function (msg) {
 
-				if (msg === null)
+				if (msg === null) {
 					return;
+				}
 
 				const dienst = msg.dienst;
 				const status = msg.status.Status;
@@ -550,7 +551,7 @@ $(window).load(function () {
 		 * @param geklicktespan_mhanApNr
 		 */
 		schalteKanalID: function (geklickteFstID, geklickteSPANMHAN, SPAN, geklicktespan_mhanApNr) {
-			// console.log("Klick: " + geklickteFstID);
+			console.log("Klick: " + geklickteFstID);
 			//$.notify('test:'+ApFunkstellen[geklickteID].kurzname);
 			const _self = this;
 
@@ -747,19 +748,22 @@ $(window).load(function () {
 			//  $.notify('Setze Kanal: '+ApFunkstellen[geklickteMKA].sname +' auf '+ element.innerText +' ...')
 		},
 
+		/**
+		 * Aktuellen Windowsbenutzer aus DB laden via REST
+		 */
 		ladeBenutzer: function () {
 			const _self = this;
 			$.get('/benutzer/zeigeWindowsBenutzer/selectip', function (data) {
 				if (typeof data._id != 'undefined') {
 					_self.aktuellerBenutzer = data;
+
+					if (typeof data.theme == 'undefined') {
+						data.theme = 'default';
+					}
+					WSV.Themes.switch(data.theme, false);
 				}
-				if (typeof data.theme == 'undefined') {
-					data.theme = 'default';
-				}
-				WSV.Themes.switch(data.theme, false);
 			});
 		},
-
 	}
 
 })(window, document, jQuery);;'use strict';
@@ -789,6 +793,11 @@ $(window).load(function () {
 			});
 		},
 
+		/**
+		 * Liefert die aktuelle Theme-URL zurück
+		 * @param {string} theme
+		 * @returns {string} - relativer Pfad zum aktuellen Theme
+		 */
 		getThemeUrl: function (theme) {
 			theme = theme || 'default';
 			return this.path + '/' + this.list[theme];
