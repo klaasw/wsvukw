@@ -38,6 +38,7 @@ exports.socket = function (server) {
 
 		leseZustand(socket.id); //Status der Funkstellen übertragen
 		exports.leseSchaltzustand(socket.id, remoteAddress); //letzten Schaltzustandübertragen
+
 		// Uebertragen der DUE Server Zustaende
 		exports.emit('statusMessage', dueStatusServerA, socket.id);
 		exports.emit('statusMessage', dueStatusServerB, socket.id);
@@ -146,7 +147,7 @@ exports.leseSchaltzustand = function (socketID, IP) {
 					zustand[verbindung.funkstelle] = verbindung.span_mhanApNr
 				}
 				log.debug(FILENAME + 'leseSchaltzustand ' + JSON.stringify(zustand));
-				// socket.emit('zustandsMessage', zustand, socketID)
+				exports.emit('zustandsMessage', zustand, socketID)
 			}
 			else {
 				log.error(FILENAME + ' Funktion: leseSchaltzustand aus REST Service Fehler: ' + error)

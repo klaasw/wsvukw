@@ -125,7 +125,7 @@
 			//eingehende ZustandsMessage für gespeicherte Schaltzustaende
 			this.socket.on('zustandsMessage', function (msg) {
 				console.log(msg);
-				lautsprecherAufschalten(msg)
+				_self.lautsprecherAufschalten(msg);
 			});
 
 			//eingehende Socket Nachrichten vom TYP rfdMessage, Statusmeldungen verarbeitebn
