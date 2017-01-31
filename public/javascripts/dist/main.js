@@ -29,6 +29,7 @@ $(window).load(function () {
 		aktuellerUKWserver:  '',
 		aktuellerBenutzer:   {},
 		defaultServer:       '',
+		aktuelleMKA:         {},
 
 		init: function () {
 
@@ -442,7 +443,7 @@ $(window).load(function () {
 		},
 
 		/**
-		 * setze Variable geklickteMKA fuer geklickte MKA Funkstellen ID
+		 * setze Variable aktuelleMKA fuer geklickte MKA Funkstellen ID
 		 * @param {object} event
 		 * @param {object} element
 		 */
@@ -451,10 +452,10 @@ $(window).load(function () {
 				//Eltern Element finden
 				const button = $(element).offsetParent().attr('id');
 				//Funkstellen ID finden
-				//geklickteMKA=$('#'+button +'> div > div:nth-child(2) > div:nth-child(2) > span').attr('class')
-				//geklickteMKA=$('#'+button +'> div > div:nth-child(2) > div > span').attr('id')
-				geklickteMKA = $('#' + button + ' .button_anlage1').attr('id');
-				//console.log("Dropdown von:" + geklickteMKA)
+				//this.aktuelleMKA=$('#'+button +'> div > div:nth-child(2) > div:nth-child(2) > span').attr('class')
+				//this.aktuelleMKA=$('#'+button +'> div > div:nth-child(2) > div > span').attr('id')
+				this.aktuelleMKA = $('#' + button + ' .button_anlage1').attr('id');
+				//console.log("Dropdown von:" + this.aktuelleMKA)
 			}
 		},
 
@@ -728,9 +729,9 @@ $(window).load(function () {
 			else {
 				neuerKanal = $('.spinbox-input').val()
 			}
-			//console.log('clientMessage', {'FstID': geklickteMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'})
-			this.socket.emit('clientMessage', {'FstID': geklickteMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'});
-			//  $.notify('Setze Kanal: '+ApFunkstellen[geklickteMKA].sname +' auf '+ element.innerText +' ...')
+			//console.log('clientMessage', {'FstID': this.aktuelleMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'})
+			this.socket.emit('clientMessage', {'FstID': this.aktuelleMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'});
+			//  $.notify('Setze Kanal: '+ApFunkstellen[this.aktuelleMKA].sname +' auf '+ element.innerText +' ...')
 		},
 
 		/**
