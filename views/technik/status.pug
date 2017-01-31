@@ -12,9 +12,11 @@ block append codeTeil2
     script.
         //WebSocket Verbindung herstellen
         var aktuellerUKWserver = location.protocol + '//' + location.hostname + ':'+ location.port;
-        var socket = io(aktuellerUKWserver);
+        //var socket = io(aktuellerUKWserver);
         
         var dataSet = []
+        
+        var dataSetObj = {}
         
         $.getJSON('verbindungen/liesZustand', function (data) {
             
@@ -40,17 +42,13 @@ block append codeTeil2
             erneuereTabelle()
         })
         
-        function ladeDaten() {
-            
-        }
-        
         var table = $('#example').DataTable({
             data: dataSet,
             columns: [
-                   { data: 'id' , title : 'Id'},
-                   { data: 'zeit', title : 'Zeitstempel'},
-                   { data: 'status', title : 'Status'},
-                   { data: 'kanal', title : 'Kanal'}
+                { data: 'zeit', title : 'Zeitstempel'},
+                { data: 'id' , title : 'Id'},
+                { data: 'status', title : 'Status'},
+                { data: 'kanal', title : 'Kanal'}
             ],
             rowCallback: function( row, data, index){
                 if(data.status === 'AUSGEFALLEN'){
@@ -60,7 +58,8 @@ block append codeTeil2
                     $(row).addClass('warning')
                 }
            },
-           lengthMenu: [20, 10, 50] 
+           lengthMenu: [20, 10, 50],
+           order: [0, 'desc']
 
         }); 
         $('#example').addClass('table table-striped table-bordered')
@@ -76,18 +75,63 @@ block append codeTeil2
         //setInterval(erneuereTabelle, 3000);
         
         //Socket Ereignis Verarbeitung
-        socket.on('ukwMessage', function (msg) {
-            if ('FSTSTATUS' in msg) {
-                var idInMsg = msg.FSTSTATUS.$.id;
-                $.each(dataSet, function(key, val) {
-                    if (val.id === idInMsg) {
-                        val.status = msg.FSTSTATUS.$.connectState;
-                        val.zeit = new Date(msg.FSTSTATUS.letzteMeldung).toLocaleString();
-                        val.kanal = msg.FSTSTATUS.$.channel == '-1' || '' ? '-' : msg.FSTSTATUS.$.channel
-                    }
-                })
-                erneuereTabelle();
-            }
-        })
+          //        socket.on('ukwMessage', function (msg) {
+          //            if ('FSTSTATUS' in msg) {
+          //                var idInMsg = msg.FSTSTATUS.$.id;
+          //                var kanal
+          //                if (msg.FSTSTATUS.$.channel) {
+          //                    kanal = msg.FSTSTATUS.$.channel == '-1' ? '-' : msg.FSTSTATUS.$.channel
+          //                } else {
+          //                    kanal = 'keiner'
+          //                }
+          //              dataSetObj[idInMsg] = {
+          //                id: idInMsg,
+          //                status: msg.FSTSTATUS.$.connectState,
+          //                zeit: new Date(msg.FSTSTATUS.letzteMeldung).toLocaleString(),
+          //                kanal: kanal,
+          //              }
+          //              
+          //              dataSet = Object.values(dataSetObj) 
+          //              erneuereTabelle();
+          //
+          //            }//If Socket Ende
+          //            
+          //        })
    
-        
+          //dataSet.indexOf({id: msg.FSTSTATUS.$.id})
+          //                if (dataSet.length > 0) {
+          //                  let index
+          //                  let element
+          //                  let elementGefunden = false  
+          //                  
+          //                  for (index = 0; index < dataSet.length; index++) {
+          //                      element = dataSet[index]
+          //                      if (element.id === idInMsg) {
+          //                          element.status = msg.FSTSTATUS.$.connectState;
+          //                          element.zeit = new Date(msg.FSTSTATUS.letzteMeldung).toLocaleString();
+          //                          element.kanal = msg.FSTSTATUS.$.channel == '-1' || '' ? '-' : msg.FSTSTATUS.$.channel
+          //                          elementGefunden = true
+          //                          break;
+          //                      }
+          //                  }
+          //                  
+          //                  if (elementGefunden === false) {
+          //                    var komponente = {
+          //                      id: msg.FSTSTATUS.$.id,
+          //                      status: msg.FSTSTATUS.$.connectState,
+          //                      zeit: new Date(msg.FSTSTATUS.letzteMeldung).toLocaleString(),
+          //                      kanal: kanal,
+          //                    }
+          //                    dataSet.push(komponente);
+          //                  }
+          //                erneuereTabelle();
+          //            } else {
+          //              var komponente = {
+          //                id: msg.FSTSTATUS.$.id,
+          //                status: msg.FSTSTATUS.$.connectState,
+          //                zeit: new Date(msg.FSTSTATUS.letzteMeldung).toLocaleString(),
+          //                kanal: kanal,
+          //              }
+          //              dataSet.push(komponente);
+          //            }
+          

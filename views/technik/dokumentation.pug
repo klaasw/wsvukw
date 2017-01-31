@@ -6,13 +6,11 @@ block content
             div.col-md-6
                 case datei
                     when 'powershell'
-                        include:markdown POWERSHELL.md
+                        include:markdown-it POWERSHELL.md
                     when 'datenbank'
-                        include:markdown DATENBANK.md
+                        include:markdown-it DATENBANK.md
                     when 'readme'
-                        include:markdown ../../README.md
+                        include:markdown-it ../../README.md
                     default
-                        include:markdown ../../README.md
-script.
-    
-    
+                        include:markdown-it ../../README.md
+    script.

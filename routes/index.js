@@ -77,7 +77,12 @@ router.get('/dokumentation', function (req, res) {
 
 /* GET UKW Status */
 router.get('/status', function (req, res) {
-	res.render('technik/status', {datei: req.query.dokument});
+	const konfig = {
+		IpConfig: cfg
+	}
+	res.render('technik/status', {
+		gesamteKonfig: konfig, 
+		datei: req.query.dokument});
 
 });
 
