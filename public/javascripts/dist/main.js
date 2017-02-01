@@ -21,9 +21,10 @@ $(window).load(function () {
 		MhanZuordnung:       {}, //"MHAN01": "1-H-RFD-WHVVTA-FKEK-2", "MHAN02": "1-H-RFD-TETTEN-FKEK-2"
 		ApFunkstellen:       {},
 		ArbeitsplatzGeraete: {},
-		Einzel:              true,
-		einzelStatus:        '',
-		gruppenStatus:       '',
+		einzel:              true,
+		einzelStatus:        {},
+		gruppenStatus:       {},
+		schaltZaehler:       0,
 		IpConfig:            '',
 		socket:              {},
 		aktuellerUKWserver:  '',
@@ -37,6 +38,120 @@ $(window).load(function () {
 			this.setDefaultServer();
 			this.ladeBenutzer();
 			this.ladeKonfig();
+
+			const _self = this;
+
+			//Eventlistener an #mithoerenModal binden. Dies dient der Steuerung von dynmischen Inhalten basierend auf der geklickten Kanalschaltfläche
+			$('#mithoerenModal').on('shown.bs.modal', function (event) {
+				const mhanButton     = $(event.relatedTarget).attr('id');
+				const fuerFunkstelle = $(event.relatedTarget).data('funkstelle');
+				const lautstaerke    = parseInt($(event.relatedTarget).attr('data-lautstaerke'));
+
+				//Überschrift anpassen
+				$('#mithoerenModal .modal-title').text('Mithören für Kanal: ' + ApFunkstellen[fuerFunkstelle].channel + ', ' + ApFunkstellen[fuerFunkstelle].sname + ', Komp-ID: ' + fuerFunkstelle);
+
+				//angeklickten MHAN hervorheben
+				$('#mithoerenModal #' + mhanButton).addClass('btn-primary');
+
+				//Initialisierung Slider für Lautstärke im Modal #mithoerenModal
+				$('#sliderModal').slider({
+					tooltip: 'always'
+				})
+
+				//Lautstärke im Slider setzen
+				$('#sliderModal').slider('setValue', lautstaerke);
+
+				$('#sliderModal').on('change', function (ev) {
+
+					//$('#' + geklickteID).prev().text(ev.value.newValue)
+					_self.setzeLautstaerke(fuerFunkstelle, mhanButton, ev.value.newValue)
+				}); //Slide Event zu
+
+				//Arbeitsplaetze bzw SPAN zum Mithoeren laden
+				$.getJSON('verbindungen/liesVerbindungen?funkstelle=' + fuerFunkstelle + '&aktiveVerbindungen=true', function (data) {
+
+					const buttonsFuerArbeitsplaetze = [];
+					const buttonOeffnen             = '<button class="btn btn-default" buttonElement="spanApButtonModal" id="';
+					const buttonSchliessen          = '">';
+					const buttonEnde                = '</button>';
+					let button                      = '';
+
+					$.each(data, function (key, val) {
+						// Aus Verbindungen nur SPAN und ApID ungleich eigener AP verarbeiten
+						if (val.span_mhan.indexOf('SPAN') > -1 && val.ApID !== ApID) {
+							//Button Eigenschaften verkettten und in in Array schreiben
+							button = buttonOeffnen + val.span_mhan + buttonSchliessen + val.ApID + buttonEnde;
+							buttonsFuerArbeitsplaetze.push(button);
+						}
+					});
+					$('#mithoerenModal [buttonElement="ap_mithoeren"]').html(buttonsFuerArbeitsplaetze);
+					//"SPAN_MHAN" zur Kennung der Schaltvorgangs
+					$('#mithoerenModal [buttonElement="spanApButtonModal"]').attr('onclick', 'schalteKanal(event, this, "SPAN_MHAN")');
+					$.getJSON('verbindungen/liesVerbindungen?geraet=' + mhanButton, function (data) {
+						$.each(data, function (key, val) {
+							if (val.funkstelle.indexOf('SPAN') > -1 && val.zustand.aufgeschaltet === true) {
+								$('#' + val.funkstelle).addClass('btn-primary')
+							}
+						})
+					});
+				});
+			});
+
+			//Event zum schliessen an mithoerenModal binden
+			$('#mithoerenModal').on('hidden.bs.modal', function (event) {
+				$('#mithoerenModal [buttonElement="mhanButtonModal"]').removeClass('btn-primary');
+				$('#sliderModal').slider('destroy')
+			});
+
+
+			//Initialisierung Slider für Lautstärke im Modal #mithoerenModal
+			$('#sliderModal').slider({
+				tooltip: 'always'
+			});
+
+			//Optionen fuer Notify festlegen
+			$.notifyDefaults({
+				// settings
+				element:         'body',
+				position:        null,
+				type:            'info',
+				allow_dismiss:   true,
+				newest_on_top:   true,
+				showProgressbar: false,
+				placement:       {
+					from:  'top',
+					align: 'right'
+				},
+				offset:          {
+					x: 10,
+					y: 50
+				},
+				spacing:         10,
+				z_index:         1031,
+				delay:           5000,
+				timer:           1000,
+				url_target:      '_blank',
+				mouse_over:      null,
+				animate:         {
+					enter: 'animated fadeInDown',
+					exit:  'animated fadeOutUp'
+				},
+				onShow:          null,
+				onShown:         null,
+				onClose:         null,
+				onClosed:        null,
+				icon_type:       'class',
+				template:        '<div data-notify="container" class="col-xs-11 col-sm-2 alert alert-{0}" style="padding: 5px" role="alert">' +
+				                 '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
+				                 '<span data-notify="icon"></span> ' +
+				                 '<span data-notify="title">{1}</span> ' +
+				                 '<span data-notify="message">{2}</span>' +
+				                 '<div class="progress" data-notify="progressbar">' +
+				                 '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+				                 '</div>' +
+				                 '<a href="{3}" target="{4}" data-notify="url"></a>' +
+				                 '</div>'
+			});
 		},
 
 		setDefaultServer: function () {
@@ -155,7 +270,7 @@ $(window).load(function () {
 					}, {
 						type: 'danger'
 					});
-					console.log("RX state 1: " + msg.RX.$.id)
+					console.log('RX state 1: ' + msg.RX.$.id)
 				}
 				// Empfangen deaktiv
 				if ('RX' in msg && msg.RX.$.state === '0') {
@@ -166,14 +281,14 @@ $(window).load(function () {
 					$('#' + button + ' .button_flaeche').removeClass('bg-danger');
 					$('#' + button + ' .button_flaeche h2').removeClass('text-danger');
 
-					console.log("RX state 0: " + msg.RX.$.id)
+					console.log('RX state 0: ' + msg.RX.$.id)
 				}
 				//Senden aktiv
 				if ('TX' in msg && msg.TX.$.state === '1') {
 					//Pruefen ob SPAN ID in TX Objekt
 					if (msg.TX.$.id.indexOf('SPAN') != -1) {
 						//erstmal nichts machen. ggf in SPAN Element etwas anzeigen
-						console.log("TX state 1 ohne SPAN: " + msg.TX.$.id)
+						console.log('TX state 1 ohne SPAN: ' + msg.TX.$.id)
 					}
 					else {
 						//suche Schaltflaeche zu FunkstellenID
@@ -183,14 +298,14 @@ $(window).load(function () {
 						$('#' + button + ' .button_flaeche').addClass('bg-success');
 						$('#' + button + ' .button_flaeche h2').addClass('text-success');
 
-						console.log("TX state 1 mit SPAN: " + msg.TX.$.id)
+						console.log('TX state 1 mit SPAN: ' + msg.TX.$.id)
 					}
 				}
 				//Senden deaktiv
 				if ('TX' in msg && msg.TX.$.state === '0') {
 					if (msg.TX.$.id.indexOf('SPAN') != -1) {
 						//erstmal nichts machen. ggf in SPAN Element etwas anzeigen
-						console.log("TX state 0 ohne SPAN: " + msg.TX.$.id)
+						console.log('TX state 0 ohne SPAN: ' + msg.TX.$.id)
 					}
 					else {
 						//suche Schaltflaeche zu FunkstellenID
@@ -199,7 +314,7 @@ $(window).load(function () {
 						//Kanalflaeche entfaerben
 						$('#' + button + ' .button_flaeche').removeClass('bg-success');
 						$('#' + button + ' .button_flaeche h2').removeClass('text-success');
-						console.log("TX state 0 mit SPAN: " + msg.TX.$.id)
+						console.log('TX state 0 mit SPAN: ' + msg.TX.$.id)
 					}
 				}
 
@@ -392,26 +507,6 @@ $(window).load(function () {
 		},
 
 		/**
-		 * Mithoerlautsprecher aufschalten
-		 * @param mhan
-		 */
-		lautsprecherAufschalten: function (mhan) {
-
-			// console.log(mhan);
-			const _self = this;
-
-			for (const funkstelle in mhan) {
-				this.socket.emit('clientMessage', {
-					'FstID':         funkstelle,
-					'ApID':          _self.ApID,
-					'SPAN':          _self.ArbeitsplatzGeraete[mhan[funkstelle]],
-					'aktion':        'schaltenEinfach',
-					'span_mhanApNr': mhan[funkstelle]
-				});
-			}
-		},
-
-		/**
 		 * Ereignisse fuer Verbindungsueberwachung
 		 * Dafuer in der Navleiste eine Statusflaeche einbauen
 		 * Wenn lokaler DUE getrennt dann lokaler RFD auf undefined -- grau
@@ -476,7 +571,7 @@ $(window).load(function () {
 		},
 
 		/**
-		 * Kanalschalten
+		 * Kanalschalten über UI-Element
 		 * Pruefe zunaechst ob Element geklickt wurde
 		 * @param event
 		 * @param element
@@ -551,14 +646,14 @@ $(window).load(function () {
 		 * @param geklicktespan_mhanApNr
 		 */
 		schalteKanalID: function (geklickteFstID, geklickteSPANMHAN, SPAN, geklicktespan_mhanApNr) {
-			console.log("Klick: " + geklickteFstID);
+			console.log('Klick: ' + geklickteFstID);
 			//$.notify('test:'+ApFunkstellen[geklickteID].kurzname);
 			const _self = this;
 
 			//SPAN schalten
 			if (SPAN === 'SPAN') {
 
-				if (this.Einzel === true) {
+				if (this.einzel === true) {
 					$.each(this.ApFunkstellen, function (key, value) {
 						if (value.aufgeschaltet === true && key != geklickteFstID) {
 							//console.log(key, value.aufgeschaltet)
@@ -612,7 +707,41 @@ $(window).load(function () {
 		},
 
 		/**
-		 *
+		 * Mithoerlautsprecher aufschalten
+		 * @param mhan
+		 */
+		lautsprecherAufschalten: function (mhan) {
+
+			//console.log(mhan);
+			const _self = this;
+
+			for (const funkstelle in mhan) {
+				this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle]);
+			}
+		},
+
+		/**
+		 * Kanal aufschalten via RFD Socket
+		 * @param {string} FstID
+		 * @param {string} SPAN_MAHN
+		 * @param {string} SPAN_MAHN_ApNr
+		 */
+		schalten: function (FstID, SPAN_MAHN, SPAN_MAHN_ApNr) {
+			const _self = this;
+			this.socket.emit('clientMessage', {
+				'FstID':         FstID,
+				'ApID':          _self.ApID,
+				'SPAN':          SPAN_MAHN,
+				'aktion':        'schaltenEinfach',
+				'span_mhanApNr': SPAN_MAHN_ApNr
+			});
+			$.notify('Schalte: <br>' + this.ApFunkstellen[FstID].sname);
+			console.log('(notify) Schalte: ' + this.ApFunkstellen[FstID].sname);
+			this.schaltZaehler++;
+		},
+
+		/**
+		 * Kanal trennen via RFD Socket
 		 * @param geklickteID
 		 * @param geklickteSPANMHAN
 		 * @param geklicktespan_mhanApNr
@@ -627,43 +756,26 @@ $(window).load(function () {
 				'span_mhanApNr': geklicktespan_mhanApNr
 			});
 			$.notify('Trenne: <br>' + this.ApFunkstellen[geklickteID].sname);
+			this.schaltZaehler++;
 		},
 
 		/**
-		 *
-		 * @param geklickteID
-		 * @param geklickteSPANMHAN
-		 * @param geklicktespan_mhanApNr
+		 * Lautstärke setzen via RFD Socket
+		 * @param {string} FstID
+		 * @param {string} SPAN_MAHN
+		 * @param {string} level
 		 */
-		schalten: function (geklickteID, geklickteSPANMHAN, geklicktespan_mhanApNr) {
-			const _self = this;
-			this.socket.emit('clientMessage', {
-				'FstID':         geklickteID,
-				'ApID':          _self.ApID,
-				'SPAN':          geklickteSPANMHAN,
-				'aktion':        'schaltenEinfach',
-				'span_mhanApNr': geklicktespan_mhanApNr
-			});
-			$.notify('Schalte: <br>' + this.ApFunkstellen[geklickteID].sname)
-		},
-
-		/**
-		 *
-		 * @param geklickteID
-		 * @param level
-		 * @param funkstelle
-		 */
-		setzeLautstaerke: function (geklickteID, level, funkstelle) {
+		setzeLautstaerke: function (FstID, SPAN_MAHN, level) {
 
 			this.socket.emit('clientMessage', {
-				'FstID':  funkstelle,
-				'SPAN':   geklickteID,
+				'FstID':  FstID,
+				'SPAN':   SPAN_MAHN,
 				'aktion': 'SetzeAudioPegel',
 				'Kanal':  level
 			});
-			$.notify('Lautstaerke: ' + this.ApFunkstellen[funkstelle].sname + ' ...');
+			$.notify('Lautstaerke: ' + this.ApFunkstellen[FstID].sname + ' ...');
 
-			const button = $('#' + funkstelle).parent().parent().offsetParent().attr('id');
+			const button = $('#' + FstID).parent().parent().offsetParent().attr('id');
 			//Lautstärke in HTML Attribut setzen
 			$('#' + button + ' button_mhan').attr('data-lautstaerke', level)
 		},
@@ -676,32 +788,35 @@ $(window).load(function () {
 
 			$(element).toggleClass('active');
 
-			if (this.Einzel === true) { // Wechsel zu Gruppenschaltung
-				this.Einzel = false;
+			if (this.einzel === true) { // Wechsel zu Gruppenschaltung
+				this.einzel = false;
 
-				// TODO: initialen Status vorher laden
-				this.einzelStatus = JSON.stringify(this.ApFunkstellen); //speichere geschalteten Zustand
-				this.zustandWiederherstellen(JSON.parse(this.gruppenStatus)); // lade Gruppenzustand
+				this.einzelStatus = this.ApFunkstellen; //speichere geschalteten Zustand
+				this.zustandWiederherstellen(this.gruppenStatus); // lade Gruppenzustand
 				$('a', element).text('Gruppenschaltung');
 			}
 			else { // Wechsel zu Einzelschaltung
-				this.Einzel = true;
+				this.einzel = true;
 
-				// TODO: initialen Status vorher laden
-				this.gruppenStatus = JSON.stringify(this.ApFunkstellen); //speichere geschalteten Zustand
-				this.zustandWiederherstellen(JSON.parse(this.einzelStatus)); //lade Einzelzustand
+				this.gruppenStatus = this.ApFunkstellen; //speichere geschalteten Zustand
+				this.zustandWiederherstellen(this.einzelStatus); //lade Einzelzustand
 				$('a', element).text('Einzelschaltung');
 			}
 		},
 
 		/**
-		 *
-		 * @param AufschalteZustand
+		 * Schaltzustand wiederherstellen nach wechseln von Einzel- zu Gruppenschaltung
+		 * @param {object} AufschalteZustand
 		 */
 		zustandWiederherstellen: function (AufschalteZustand) {
+
+			if (typeof AufschalteZustand != 'object')
+				return false;
+
 			//Backup, da die Funktionen schalten und trennen mit Rueckmeldung schon in ApFunkstellen schreiben
 			const backupApFunkstellen = this.ApFunkstellen;
 			const _self               = this;
+
 			$.each(backupApFunkstellen, function (key, value) {
 				if (AufschalteZustand[key] !== undefined) {
 					//console.log("AktuellerStand: key=" + key + "', value='" + JSON.stringify(value.aufgeschaltet) + "'")
