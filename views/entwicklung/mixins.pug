@@ -33,4 +33,4 @@ mixin serverListe(ip, idName)
 mixin mkaButtonListe(arrayKanalListe)
 	// mixin Mehrkanal-Anlagen eines Reviers zur Anzeige der im Revier vorhandenen Kanäle
 	each val, index in arrayKanalListe
-		button.btn.btn-default.btn-lg(type='button',onclick='setzeKanal(this)',data-dismiss='modal') #{val}
+		button.btn.btn-default.btn-lg(type='button',onclick='WSV.Display.setzeKanal(this)',data-dismiss='modal') #{val}

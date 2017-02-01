@@ -18,6 +18,7 @@
 		aktuellerUKWserver:  '',
 		aktuellerBenutzer:   {},
 		defaultServer:       '',
+		aktuelleMKA:         {},
 
 		init: function () {
 
@@ -65,8 +66,9 @@
 
 		socketStatusMessage: function (msg) {
 
-			if (msg === null)
-				return;
+				if (msg === null) {
+					return;
+				}
 
 			const dienst = msg.dienst;
 			const status = msg.status.Status;
@@ -114,6 +116,11 @@
 			}
 		},
 
+			//eingehende ZustandsMessage für gespeicherte Schaltzustaende
+			this.socket.on('zustandsMessage', function (msg) {
+				console.log(msg);
+				_self.lautsprecherAufschalten(msg);
+			});
 		socketUkwMessage: function (msg) {
 
 			if (msg === null)
@@ -190,16 +197,12 @@
 					}
 				}
 
-				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '0') {
-					$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass('label-danger');
-					$('#' + msg.FSTSTATUS.$.id + ' span.label').addClass('label-success');
-					$('#' + msg.FSTSTATUS.$.id + ' span.label').text('OK');
-					$('#' + msg.FSTSTATUS.$.id).attr('fstStatus', '0');
-					const standortButton = $('#' + msg.FSTSTATUS.$.id).parent().prev();
-					$(standortButton[0]).children().addClass('label-success');
-					$(standortButton[0]).children().removeClass('label-danger');
-					$(standortButton[0]).children().text('OK');
+					if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '0') {
+						$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass('label-danger').addClass('label-success').text('OK');
+						$('#' + msg.FSTSTATUS.$.id).attr('fstStatus', '0');
 
+						const standortButton = $('#' + msg.FSTSTATUS.$.id).parent().prev();
+						$(standortButton[0]).children().addClass('label-success').removeClass('label-danger').text('OK');
 
 					//console.log(msg.FSTSTATUS.$.id);
 
@@ -209,30 +212,25 @@
 						$('#' + button + ' .button_kanalNr > span').text(msg.FSTSTATUS.$.channel)
 					}
 
-				}
-				// -SEN- darf nicht in der ID vorkommen
-				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') == -1) {
-					$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass('label-success');
-					$('#' + msg.FSTSTATUS.$.id + ' span.label').addClass('label-danger');
-					$('#' + msg.FSTSTATUS.$.id + ' span.label').text('Error');
-					$('#' + msg.FSTSTATUS.$.id).attr('fstStatus', '1');
-					const standortButton = $('#' + msg.FSTSTATUS.$.id).parent().prev();
-					$(standortButton[0]).children().addClass('label-danger');
-					$(standortButton[0]).children().removeClass('label-success');
-					$(standortButton[0]).children().text('Error');
+					}
+					// -SEN- darf nicht in der ID vorkommen
+					if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') == -1) {
+						$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass('label-success').addClass('label-danger').text('Error');
+						$('#' + msg.FSTSTATUS.$.id).attr('fstStatus', '1');
+						const standortButton = $('#' + msg.FSTSTATUS.$.id).parent().prev();
+						$(standortButton[0]).children().addClass('label-danger').removeClass('label-success').text('Error');
 
-					//Notify by Störung
-					$.notify({
-						message: 'Störung:<br>' + _self.ApFunkstellen[msg.FSTSTATUS.$.id].sname
-					}, {
-						type: 'danger'
-					});
-					//Funktionen von "getrennt"
-					//suche SChaltflaeche zu FunkstellenID
-					const button = $('#' + msg.FSTSTATUS.$.id).offsetParent().attr('id');
-					//$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
-					$('#' + button + ' > div').removeClass('panel-primary');
-					$('#' + button + ' > div').css('background-color', '');
+						//Notify by Störung
+						$.notify({
+							message: 'Störung:<br>' + _self.ApFunkstellen[msg.FSTSTATUS.$.id].sname
+						}, {
+							type: 'danger'
+						});
+						//Funktionen von "getrennt"
+						//suche SChaltflaeche zu FunkstellenID
+						const button = $('#' + msg.FSTSTATUS.$.id).offsetParent().attr('id');
+						//$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
+						$('#' + button + ' > div').removeClass('panel-primary').css('background-color', '');
 
 					$('#' + button + ' > div > div:nth-child(3)').removeClass('bg-primary');
 					_self.ApFunkstellen[msg.FSTSTATUS.$.id].aufgeschaltet = false;
@@ -252,20 +250,19 @@
 					// pruefen ob diese Meldung zu diesem Arbeitsplatz gehoert
 					if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.geschaltet.$.Ap) && _self.ApFunkstellen[msg.geschaltet.$.id] !== 'frei') {
 
-						//aendern Darstellung fuer MHAN
-						if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1) {
-							//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
-							if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1 && msg.geschaltet.$.id.indexOf('SPAN') != -1) {
-								$('#' + msg.geschaltet.$.id).addClass('btn-primary');
-								$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
-								//nur MHAN aufschaltungen
-							}
-							else {
-								//suche Schaltflaeche zu FunkstellenID
-								const button = $('#' + msg.geschaltet.$.id).parent().parent().offsetParent().attr('id');
-								$('#' + button + ' .button_mhan').removeClass('btn-default');
-								$('#' + button + ' .button_mhan').addClass('btn-primary')
-							}
+							//aendern Darstellung fuer MHAN
+							if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1) {
+								//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
+								if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1 && msg.geschaltet.$.id.indexOf('SPAN') != -1) {
+									$('#' + msg.geschaltet.$.id).addClass('btn-primary');
+									$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
+									//nur MHAN aufschaltungen
+								}
+								else {
+									//suche Schaltflaeche zu FunkstellenID
+									const button = $('#' + msg.geschaltet.$.id).parent().parent().offsetParent().attr('id');
+									$('#' + button + ' .button_mhan').removeClass('btn-default').addClass('btn-primary');
+								}
 
 							const geraet = msg.geschaltet.$.Ap;
 
@@ -294,21 +291,20 @@
 
 					if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.getrennt.$.Ap)) {
 
-						//Aendern Darstellung fuer MHAN
-						if (msg.getrennt.$.Ap.indexOf('MHAN') != -1) {
-							//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
-							if (msg.getrennt.$.Ap.indexOf('MHAN') != -1 && msg.getrennt.$.id.indexOf('SPAN') != -1) {
-								$('#' + msg.getrennt.$.id).removeClass('btn-primary');
-								$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
-								//nur MHAN Aufschaltungen
-							}
-							else {
-								//suche Schaltflaeche zu FunkstellenID
-								const button = $('#' + msg.getrennt.$.id).offsetParent().attr('id');
-								$('#' + button + ' .button_mhan_ship').css('background-color', '#f5f5f5');
-								$('#' + button + ' .button_mhan_ship').removeClass('bg-primary')
-							}
-							const geraet = msg.getrennt.$.Ap;
+							//Aendern Darstellung fuer MHAN
+							if (msg.getrennt.$.Ap.indexOf('MHAN') != -1) {
+								//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
+								if (msg.getrennt.$.Ap.indexOf('MHAN') != -1 && msg.getrennt.$.id.indexOf('SPAN') != -1) {
+									$('#' + msg.getrennt.$.id).removeClass('btn-primary');
+									$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
+									//nur MHAN Aufschaltungen
+								}
+								else {
+									//suche Schaltflaeche zu FunkstellenID
+									const button = $('#' + msg.getrennt.$.id).offsetParent().attr('id');
+									$('#' + button + ' .button_mhan_ship').css('background-color', '#f5f5f5').removeClass('bg-primary');
+								}
+								const geraet = msg.getrennt.$.Ap;
 
 							_self.ApFunkstellen[msg.getrennt.$.id].mhan_aufgeschaltet = {
 								[geraet]: false
@@ -346,17 +342,16 @@
 				//RFD Fehler
 				const msgText = JSON.stringify(msg);
 
-				if (msgText.indexOf('fehlgeschlagen') > -1) {
-					//     //-console.log('RFD Aufruf fehlgeschlagen')
-					$(_self.defaultServer + '_RFD').removeClass('label-success');
-					$(_self.defaultServer + '_RFD').addClass('label-danger');
-					//
-					$.notify({
-						message: 'Störung:<br>' + JSON.stringify(msg)
-					}, {
-						type: 'danger'
-					})
-				}
+					if (msgText.indexOf('fehlgeschlagen') > -1) {
+						//     //-console.log('RFD Aufruf fehlgeschlagen')
+						$(_self.defaultServer + '_RFD').removeClass('label-success').addClass('label-danger');
+
+						$.notify({
+							message: 'Störung:<br>' + JSON.stringify(msg)
+						}, {
+							type: 'danger'
+						})
+					}
 
 				//else {
 				//     console.log(" sonstige ukwMessage: " + msgText)
@@ -417,20 +412,19 @@
 		 */
 		verbindungsPruefung: function () {
 			const _self = this;
+
+			const serverButton = $('#button' + _self.defaultServer + '_DUE');
+
 			this.socket.on('connect', function () {
 				// console.log('check 2------------------------VERBUNDEN', _self.socket.connected);
-				$('#button' + _self.defaultServer + '_DUE').removeClass('label-danger');
-				$('#button' + _self.defaultServer + '_DUE').addClass('label-success');
-				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-danger');
-				$('#buttonAktiv' + _self.defaultServer + '_DUE').addClass('label-success');
+				serverButton.removeClass('label-danger').addClass('label-success');
+				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-danger').addClass('label-success');
 			});
 
 			this.socket.on('disconnect', function () {
 				// console.log('check 2-----------------------GETRENNT', _self.socket.connected);
-				$('#button' + _self.defaultServer + '_DUE').removeClass('label-success');
-				$('#button' + _self.defaultServer + '_DUE').addClass('label-danger');
-				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-success');
-				$('#buttonAktiv' + _self.defaultServer + '_DUE').addClass('label-danger');
+				serverButton.removeClass('label-success').addClass('label-danger');
+				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-success').addClass('label-danger');
 
 				// TODO: Wiederverbindung versuchen, waehrend dieser Zeit kein Fehler zeigen, sondern erst dann?
 				//Zeige Error Modal Fenster
@@ -447,21 +441,19 @@
 		 * @returns {boolean}
 		 */
 		angeklickt: function (event, element) {
-			const geklicktesElement       = event.srcElement;
-			const geklicktesButtonElement = $(geklicktesElement).data('buttonElement');
+			const geklicktesElement = event.srcElement;
 
 			if (element == geklicktesElement) {
 				return true;
 			}
-			if (geklicktesButtonElement == 'atis' || geklicktesButtonElement == 'Flaeche') {
-				return true;
-			}
 
-			return false;
+			const geklicktesButtonElement = $(geklicktesElement).data('buttonElement');
+
+			return (geklicktesButtonElement == 'atis' || geklicktesButtonElement == 'Flaeche');
 		},
 
 		/**
-		 * setze Variable geklickteMKA fuer geklickte MKA Funkstellen ID
+		 * setze Variable aktuelleMKA fuer geklickte MKA Funkstellen ID
 		 * @param {object} event
 		 * @param {object} element
 		 */
@@ -470,10 +462,10 @@
 				//Eltern Element finden
 				const button = $(element).offsetParent().attr('id');
 				//Funkstellen ID finden
-				//geklickteMKA=$('#'+button +'> div > div:nth-child(2) > div:nth-child(2) > span').attr('class')
-				//geklickteMKA=$('#'+button +'> div > div:nth-child(2) > div > span').attr('id')
-				geklickteMKA = $('#' + button + ' .button_anlage1').attr('id');
-				//console.log("Dropdown von:" + geklickteMKA)
+				//this.aktuelleMKA=$('#'+button +'> div > div:nth-child(2) > div:nth-child(2) > span').attr('class')
+				//this.aktuelleMKA=$('#'+button +'> div > div:nth-child(2) > div > span').attr('id')
+				this.aktuelleMKA = $('#' + button + ' .button_anlage1').attr('id');
+				//console.log("Dropdown von:" + this.aktuelleMKA)
 			}
 		},
 
@@ -490,16 +482,16 @@
 					//uebergeordnetes Element finden
 					const button = $(element).offsetParent().attr('id');
 
-					const geklickteFstHaupt = $('#' + button + ' .button_anlage1').attr('id');
-					const geklickteFstReser = $('#' + button + ' .button_anlage2').attr('id');
+					const geklickteFstHaupt   = $('#' + button + ' .button_anlage1').attr('id');
+					const geklickteFstReserve = $('#' + button + ' .button_anlage2').attr('id');
 
 					const geklickteSPAN = $('#' + button + ' .button_span').attr('id');
 
 					const geklicktespan_mhanApNr = $('#' + button + ' .button_span').data('span');
 
 					//Status der Funkstellen aus HTML Elementen auslesen
-					const geklickteFstHauptStatus = $('#' + geklickteFstHaupt).attr('fstStatus');
-					const geklickteFstReserStatus = $('#' + geklickteFstReser).attr('fstStatus');
+					const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('fstStatus');
+					const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('fstStatus');
 
 					//nur schalten, wenn Status 0 bzw. ok
 					if (geklickteFstHauptStatus === '0') {
@@ -516,9 +508,7 @@
 						//TODO: hier Reserveanlage schalten
 					}
 				}
-
-				//Schalten aus Modal Mithoeren
-				if (geraet === 'SPAN_MHAN') {
+				else if (geraet === 'SPAN_MHAN') { //Schalten aus Modal Mithoeren
 					const mhan          = $('#mithoerenModal .btn-primary').attr('id');
 					const span          = element.id;
 					const span_mhanApNr = $('#mithoerenModal .btn-group-vertical .btn-primary').text();
@@ -530,8 +520,8 @@
 					const buttonMHAN = $('#' + element.id).offsetParent().attr('id');
 					const buttonFst  = element.offsetParent.id;
 
-					const geklickteFstHaupt = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(1)').attr('id');
-					const geklickteFstReser = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(2)').attr('id');
+					const geklickteFstHaupt   = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(1)').attr('id');
+					const geklickteFstReserve = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(2)').attr('id');
 
 					const geklickteMHAN = ($('#' + buttonMHAN + ' div > div').attr('id'));
 
@@ -539,8 +529,8 @@
 					console.log(buttonFst);
 
 					//Status der Funkstellen
-					const geklickteFstHauptStatus = $('#' + geklickteFstHaupt).attr('fstStatus');
-					const geklickteFstReserStatus = $('#' + geklickteFstReser).attr('fstStatus');
+					const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('fstStatus');
+					const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('fstStatus');
 
 					this.schalteKanalID(geklickteFstHaupt, geklickteMHAN, 'MHAN');
 				}
@@ -555,7 +545,7 @@
 		 * @param geklicktespan_mhanApNr
 		 */
 		schalteKanalID: function (geklickteFstID, geklickteSPANMHAN, SPAN, geklicktespan_mhanApNr) {
-			// console.log("Klick: " + geklickteFstID);
+			console.log("Klick: " + geklickteFstID);
 			//$.notify('test:'+ApFunkstellen[geklickteID].kurzname);
 			const _self = this;
 
@@ -673,26 +663,28 @@
 		},
 
 		/**
-		 *
-		 * @param buttonID
+		 * Wechselt zwischen Einzel- und Gruppenschaltung
+		 * @param {object} element
 		 */
-		gruppen: function (buttonID) {
-			//Wechsel zu Gruppenschaltung
-			if (this.Einzel === true) {
-				this.Einzel       = false;
+		wechselEinzelGruppen: function (element) {
+
+			$(element).toggleClass('active');
+
+			if (this.Einzel === true) { // Wechsel zu Gruppenschaltung
+				this.Einzel = false;
+
+				// TODO: initialen Status vorher laden
 				this.einzelStatus = JSON.stringify(this.ApFunkstellen); //speichere geschalteten Zustand
-
-				$('#' + buttonID).toggleClass('active');
-				$('#' + buttonID + ' > a').text('Gruppenschaltung');
-				zustandWiederherstellen(JSON.parse(this.gruppenStatus)); // lade Gruppenzustand
+				this.zustandWiederherstellen(JSON.parse(this.gruppenStatus)); // lade Gruppenzustand
+				$('a', element).text('Gruppenschaltung');
 			}
-			else {
-				this.Einzel        = true;
-				this.gruppenStatus = JSON.stringify(this.ApFunkstellen); //speichere geschalteten Zustand
-				$('#' + buttonID).toggleClass('active');
-				$('#' + buttonID + ' > a').text('Einzelschaltung');
-				zustandWiederherstellen(JSON.parse(this.einzelStatus)); //lade Einzelzustand
+			else { // Wechsel zu Einzelschaltung
+				this.Einzel = true;
 
+				// TODO: initialen Status vorher laden
+				this.gruppenStatus = JSON.stringify(this.ApFunkstellen); //speichere geschalteten Zustand
+				this.zustandWiederherstellen(JSON.parse(this.einzelStatus)); //lade Einzelzustand
+				$('a', element).text('Einzelschaltung');
 			}
 		},
 
@@ -747,9 +739,9 @@
 			else {
 				neuerKanal = $('.spinbox-input').val()
 			}
-			//console.log('clientMessage', {'FstID': geklickteMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'})
-			this.socket.emit('clientMessage', {'FstID': geklickteMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'});
-			//  $.notify('Setze Kanal: '+ApFunkstellen[geklickteMKA].sname +' auf '+ element.innerText +' ...')
+			//console.log('clientMessage', {'FstID': this.aktuelleMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'})
+			this.socket.emit('clientMessage', {'FstID': this.aktuelleMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'});
+			//  $.notify('Setze Kanal: '+ApFunkstellen[this.aktuelleMKA].sname +' auf '+ element.innerText +' ...')
 		},
 
 		/**
@@ -760,14 +752,14 @@
 			$.get('/benutzer/zeigeWindowsBenutzer/selectip', function (data) {
 				if (typeof data._id != 'undefined') {
 					_self.aktuellerBenutzer = data;
+
+					if (typeof data.theme == 'undefined') {
+						data.theme = 'default';
+					}
+					WSV.Themes.switch(data.theme, false);
 				}
-				if (typeof data.theme == 'undefined') {
-					data.theme = 'default';
-				}
-				WSV.Themes.switch(data.theme, false);
 			});
 		},
-
 	}
 
 })(window, document, jQuery);
