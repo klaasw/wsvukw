@@ -69,22 +69,33 @@ router.put('/schreibeWindowsBenutzer', function (req, res) {
 	res.send({message: 'Benutzer hinzugefuegt oder geaendert'});
 });
 
-router.post('/schreibeTheme', function (req, res) {
-	log.debug(FILENAME + ' /schreibeTheme Benutzer: ' + JSON.stringify(req.body));
+router.post('/schreibeBenutzer', function (req, res) {
+	log.debug(FILENAME + ' /schreibeBenutzer Benutzer: ' + JSON.stringify(req.body));
 
 	const benutzer = req.body;
 
-
 	if (typeof benutzer._id == 'string') {
+
+		if (typeof benutzer.einzel == 'string') {
+			benutzer.einzel = (benutzer.einzel === 'true');
+		}
+
+		if (typeof benutzer.angemeldet == 'string') {
+			benutzer.angemeldet = (benutzer.angemeldet === 'true');
+		}
+		else {
+			benutzer.angemeldet = true;
+		}
+
 		const benutzerId        = {'_id': benutzer._id};
 		const schreibeParameter = {
 			$set: benutzer
 		};
 		db.schreibeInDb('windowsBenutzer', benutzerId, schreibeParameter, false);
-		res.send({message: 'Theme erfolgreich gespeichert.'});
+		res.send({message: 'Benutzer erfolgreich gespeichert.'});
 	}
 	else {
-		res.status('500').send({error: 'Theme wurde nicht gespeichert.'});
+		res.status('500').send({error: 'Benutzer wurde nicht gespeichert.'});
 	}
 });
 

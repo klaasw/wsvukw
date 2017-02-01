@@ -771,26 +771,27 @@
 
 		/**
 		 * Wechselt zwischen Einzel- und Gruppenschaltung
-		 * @param {object} element
 		 */
-		wechselEinzelGruppen: function (element) {
+		wechselEinzelGruppen: function () {
 
-			$(element).toggleClass('active');
+			$('#statusWechsel').toggleClass('active');
 
 			if (this.einzel === true) { // Wechsel zu Gruppenschaltung
 				this.einzel = false;
 
 				this.einzelStatus = this.ApFunkstellen; //speichere geschalteten Zustand
 				this.zustandWiederherstellen(this.gruppenStatus); // lade Gruppenzustand
-				$('a', element).text('Gruppenschaltung');
+				$('#statusWechsel a').text('Gruppenschaltung');
 			}
 			else { // Wechsel zu Einzelschaltung
 				this.einzel = true;
 
 				this.gruppenStatus = this.ApFunkstellen; //speichere geschalteten Zustand
 				this.zustandWiederherstellen(this.einzelStatus); //lade Einzelzustand
-				$('a', element).text('Einzelschaltung');
+				$('#statusWechsel a').text('Einzelschaltung');
 			}
+
+			this.schreibeBenutzer();
 		},
 
 		/**
@@ -866,10 +867,40 @@
 					if (typeof data.theme == 'undefined') {
 						data.theme = 'default';
 					}
+					if (typeof data.einzel == 'undefined') {
+						data.einzel = _self.einzel;
+					}
+
+					// TODO: initialen Zustand im PUG Template übergeben
+					if (!data.einzel) {
+						_self.wechselEinzelGruppen();
+					}
+
+					// TODO: initialen Zustand im PUG Template übergeben
 					WSV.Themes.switch(data.theme, false);
 				}
 			});
 		},
+
+		/**
+		 * Speichert den aktuellen Benutzer in die Datenbank via REST
+		 */
+		schreibeBenutzer: function () {
+
+			const benutzer = this.aktuellerBenutzer;
+			benutzer.theme = WSV.Themes.currentTheme;
+			benutzer.einzel = this.einzel;
+
+			$.ajax({
+				url:     WSV.Display.aktuellerUKWserver + '/benutzer/schreibeBenutzer',
+				type:    'POST',
+				data:    benutzer,
+				success: function (result) {
+					console.log('ajax post success');
+					console.log(result);
+				}
+			});
+		}
 	}
 
 })(window, document, jQuery);
