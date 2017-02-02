@@ -4,14 +4,15 @@ const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
 db.verbindeDatenbank(function (db) {
 });
 
-const cfg = require('./cfg.js');
-const log = require('./log.js');
-const rfd = require('./rfd.js');
+const cfg     = require('./cfg.js');
+const log     = require('./log.js');
+const rfd     = require('./rfd.js');
+const tools   = require('./tools.js');
 const request = require('request'); //Modul zu Abfrage von WebServices
 
 const FILENAME = __filename.slice(__dirname.length + 1);
 
-const io = require('socket.io');
+const io           = require('socket.io');
 const socketClient = require('socket.io-client');
 
 let socketServer; //Variable um die Sockets ausserhalb der Funktion "on.connect" aufzurufen
@@ -26,14 +27,18 @@ exports.socket = function (server) {
 
 	socketServer = io.listen(server);
 	socketServer.on('connect', function (socket) {
-		log.debug(FILENAME + ' Funktion connect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' hergestellt. IP: ' + socket.request.connection.remoteAddress);
+
+		const remoteAddress = tools.filterIP(socket.conn.remoteAddress);
+
+		log.debug(FILENAME + ' Funktion connect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' hergestellt. IP: ' + remoteAddress);
 		// TODO: Pruefung Berechtigung !
 
 		// nur einmal beim Start: Zeitpunkt der Benutzung in DB schreiben
-		db.schreibeApConnect(socket.conn.remoteAddress, socket.id, true);
+		db.schreibeApConnect(remoteAddress, socket.id, true);
 
 		leseZustand(socket.id); //Status der Funkstellen übertragen
-		exports.leseSchaltzustand(socket.id, socket.request.connection.remoteAddress); //letzten Schaltzustandübertragen
+		exports.leseSchaltzustand(socket.id, remoteAddress); //letzten Schaltzustandübertragen
+
 		// Uebertragen der DUE Server Zustaende
 		exports.emit('statusMessage', dueStatusServerA, socket.id);
 		exports.emit('statusMessage', dueStatusServerB, socket.id);
@@ -70,22 +75,13 @@ exports.socket = function (server) {
 
 		// Client hat Verbindung unterbrochen:
 		socket.on('disconnect', function (msg) {
-			let ip = socket.request.connection.remoteAddress;
-			//IPv6 Anteil aus Anfrage kuerzen
-			const ipv6Ende = ip.lastIndexOf(':');
-			if (ipv6Ende > -1) {
-				ip = ip.slice(ipv6Ende + 1, ip.length);
-			}
+			const remoteAddress = tools.filterIP(socket.conn.remoteAddress);
 
-			log.warn(FILENAME + ' Funktion disconnect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' getrennt. IP: ' + ip);
-			db.schreibeApConnect(ip, socket.id, false);
-
+			log.warn(FILENAME + ' Funktion disconnect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' getrennt. IP: ' + remoteAddress);
+			db.schreibeApConnect(remoteAddress, socket.id, false);
 		});
 
-
 	});
-
-
 };
 
 
@@ -151,7 +147,7 @@ exports.leseSchaltzustand = function (socketID, IP) {
 					zustand[verbindung.funkstelle] = verbindung.span_mhanApNr
 				}
 				log.debug(FILENAME + 'leseSchaltzustand ' + JSON.stringify(zustand));
-				// socket.emit('zustandsMessage', zustand, socketID)
+				exports.emit('zustandsMessage', zustand, socketID)
 			}
 			else {
 				log.error(FILENAME + ' Funktion: leseSchaltzustand aus REST Service Fehler: ' + error)
@@ -171,7 +167,7 @@ function leseZustand(socketID) {
 		for (let i = 0; i < doc.length; i++) {
 			const zustand = {
 				'FSTSTATUS': {
-					'$': doc[i].status,
+					'$':             doc[i].status,
 					'letzteMeldung': doc[i].letzteMeldung
 				}
 			};

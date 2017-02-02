@@ -9,6 +9,7 @@
 const express = require('express');
 const router  = express.Router();
 const util    = require('util');
+const tools   = require('../tools.js');
 
 const cfg = require('../cfg.js');
 const db  = require('../datenbank.js');
@@ -17,8 +18,8 @@ const log      = require('../log.js'); // Modul fuer verbessertes Logging
 const FILENAME = __filename.slice(__dirname.length + 1);
 
 router.get('/zeigeWindowsBenutzer/selectip', function (req, res) {
-	let selectip = req._remoteAddress;
-	db.findeElement('windowsBenutzer', {ip: selectip}, function (doc) {
+	const remoteAddress = tools.filterIP(req._remoteAddress);
+	db.findeElement('windowsBenutzer', {ip: remoteAddress}, function (doc) {
 		res.send(doc[0]);
 	})
 });
@@ -68,22 +69,33 @@ router.put('/schreibeWindowsBenutzer', function (req, res) {
 	res.send({message: 'Benutzer hinzugefuegt oder geaendert'});
 });
 
-router.post('/schreibeTheme', function (req, res) {
-	log.debug(FILENAME + ' /schreibeTheme Benutzer: ' + JSON.stringify(req.body));
+router.post('/schreibeBenutzer', function (req, res) {
+	log.debug(FILENAME + ' /schreibeBenutzer Benutzer: ' + JSON.stringify(req.body));
 
 	const benutzer = req.body;
 
-
 	if (typeof benutzer._id == 'string') {
+
+		if (typeof benutzer.einzel == 'string') {
+			benutzer.einzel = (benutzer.einzel === 'true');
+		}
+
+		if (typeof benutzer.angemeldet == 'string') {
+			benutzer.angemeldet = (benutzer.angemeldet === 'true');
+		}
+		else {
+			benutzer.angemeldet = true;
+		}
+
 		const benutzerId        = {'_id': benutzer._id};
 		const schreibeParameter = {
 			$set: benutzer
 		};
 		db.schreibeInDb('windowsBenutzer', benutzerId, schreibeParameter, false);
-		res.send({message: 'Theme erfolgreich gespeichert.'});
+		res.send({message: 'Benutzer erfolgreich gespeichert.'});
 	}
 	else {
-		res.status('500').send({error: 'Theme wurde nicht gespeichert.'});
+		res.status('500').send({error: 'Benutzer wurde nicht gespeichert.'});
 	}
 });
 

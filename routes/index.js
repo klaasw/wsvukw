@@ -1,10 +1,10 @@
 'use strict';
 
 const express = require('express');
-const router = express.Router();
-const util = require('util');
-const files = require('fs'); // Zugriff auf das Dateisystem
-const tools = require('../tools.js');
+const router  = express.Router();
+const util    = require('util');
+const files   = require('fs'); // Zugriff auf das Dateisystem
+const tools   = require('../tools.js');
 
 const cfg = require('../cfg.js');
 const log = require('../log.js'); // Modul fuer verbessertes Logging
@@ -94,7 +94,7 @@ router.get('/ukw', function (req, res) {
 				if (konfig == 'Fehler') {
 					res.render('error', {
 						message: 'keine Konfiguration zu Arbeitsplatz: ' + benutzer + ' Fehler: ' + errString,
-						error: {
+						error:   {
 							status: 'kein'
 						}
 					});
@@ -116,7 +116,7 @@ router.get('/ukw', function (req, res) {
 		else {
 			res.render('error', {
 				message: 'keine Benutzer konfiguriert zu IP: ' + clientIP,
-				error: {
+				error:   {
 					status: 'kein'
 				}
 			});
@@ -136,7 +136,7 @@ router.get('/ukwTest', function (req, res) {
 				if (konfig == 'Fehler') {
 					res.render('error', {
 						message: 'keine Konfiguration zu Arbeitsplatz: ' + benutzer + ' Fehler: ' + errString,
-						error: {
+						error:   {
 							status: 'kein'
 						}
 					});
@@ -158,7 +158,7 @@ router.get('/ukwTest', function (req, res) {
 		else {
 			res.render('error', {
 				message: 'keine Benutzer konfiguriert zu IP: ' + clientIP,
-				error: {
+				error:   {
 					status: 'kein'
 				}
 			});
@@ -179,7 +179,7 @@ router.get('/ukwTestWue', function (req, res) {
 				if (konfig == 'Fehler') {
 					res.render('error', {
 						message: 'keine Konfiguration zu Arbeitsplatz: ' + benutzer + ' Fehler: ' + errString,
-						error: {
+						error:   {
 							status: 'kein'
 						}
 					});
@@ -201,7 +201,7 @@ router.get('/ukwTestWue', function (req, res) {
 		else {
 			res.render('error', {
 				message: 'keine Benutzer konfiguriert zu IP: ' + clientIP,
-				error: {
+				error:   {
 					status: 'kein'
 				}
 			});
@@ -243,19 +243,19 @@ router.get('/ukwKonfig', function (req, res) {
 			// 	res.send(Konfig);
 			// }
 			// else {
-				db.findeApNachIp(req.query.ip, function (benutzer) {
-					if (benutzer) {
-						log.debug(FILENAME + ' Benutzer zu IP  = ' + benutzer + ' ' + req.query.ip);
-						//res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
-						erstelleKonfigFurAp(benutzer, function (Konfig) {
-							res.send(Konfig);
-						});
-					}
-					else {
-						log.error(FILENAME + ' 1 Benutzer nicht konfiguriert fuer IP ' + req.query.ip);
-						res.send('Arbeitsplatz nicht gefunden! IP: ' + req.query.ip);
-					}
-				});
+			db.findeApNachIp(req.query.ip, function (benutzer) {
+				if (benutzer) {
+					log.debug(FILENAME + ' Benutzer zu IP  = ' + benutzer + ' ' + req.query.ip);
+					//res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
+					erstelleKonfigFurAp(benutzer, function (Konfig) {
+						res.send(Konfig);
+					});
+				}
+				else {
+					log.error(FILENAME + ' 1 Benutzer nicht konfiguriert fuer IP ' + req.query.ip);
+					res.send('Arbeitsplatz nicht gefunden! IP: ' + req.query.ip);
+				}
+			});
 			// }
 		}
 
@@ -289,7 +289,7 @@ router.get('/ukwKonfig', function (req, res) {
 					erstelleKonfigFurAp(benutzer, function (Konfig) {
 						// Test wg Lotse erstelleKonfigFuerLotsenKanal(benutzer, false, function (Konfig) {
 						res.send({
-							'Konfigdaten': Konfig,
+							'Konfigdaten':  Konfig,
 							'Arbeitsplatz': benutzer
 						});
 					});
@@ -376,12 +376,12 @@ function erstelleKonfigFurAp(Ap, callback) {
 
 	//Bilde temporaeres Objekt um Funkstelle als Value hinzuzufuegen
 	const Konfig = {
-		FunkstellenReihe: [],
-		FunkstellenDetails: {},
+		FunkstellenReihe:    [],
+		FunkstellenDetails:  {},
 		ArbeitsplatzGeraete: {},
-		MhanZuordnung: {},
-		IpConfig: cfg,
-		KanalListe: []
+		MhanZuordnung:       {},
+		IpConfig:            cfg,
+		KanalListe:          []
 	};
 
 	log.debug(FILENAME + ' uebergebener Arbeitsplatz: ' + Ap);
@@ -404,18 +404,20 @@ function erstelleKonfigFurAp(Ap, callback) {
 				for (let t = 0; t < fstReihe[button].length; t++) {
 
 					//Funkstellendetails schreiben
-					Konfig.FunkstellenDetails[fstReihe[button][t]] = rfd.findeFstNachId(fstReihe[button][t]);
+					if (fstReihe[button][t] != '') {
+						Konfig.FunkstellenDetails[fstReihe[button][t]] = rfd.findeFstNachId(fstReihe[button][t]);
 
-					//Kanalnummern in Array schreiben. Dient zur dynamischen Befüllung im MKA Dialog
-					const kanalNummer = Konfig.FunkstellenDetails[fstReihe[button][t]].channel;
-					if (kanalNummer !== null) {
-						Konfig.KanalListe.push(kanalNummer);
+						//Kanalnummern in Array schreiben. Dient zur dynamischen Befüllung im MKA Dialog
+						const kanalNummer = Konfig.FunkstellenDetails[fstReihe[button][t]].channel;
+						if (kanalNummer !== null) {
+							Konfig.KanalListe.push(kanalNummer);
+						}
 					}
 				}
 			}
 			//KanalListe sortieren und Doppel entfernen. Hilfsfunktionen siehe weiter unten.
 			Konfig.KanalListe.sort(tools.vergleicheZahlen);
-			Konfig.KanalListe = tools.entferneDoppel(Konfig.KanalListe);
+			Konfig.KanalListe       = tools.entferneDoppel(Konfig.KanalListe);
 			Konfig.FunkstellenReihe = fstReihe;
 
 			//2. Geraete fuer Arbeitsplatz einlesen
@@ -462,15 +464,15 @@ function erstelleKonfigFurAp(Ap, callback) {
  */
 function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
 	const Konfig = {
-		FunkstellenReihe: [],
+		FunkstellenReihe:   [],
 		FunkstellenDetails: {},
-		LotsenAp: {},
-		MhanZuordnung: {},
-		IpConfig: cfg
+		LotsenAp:           {},
+		MhanZuordnung:      {},
+		IpConfig:           cfg
 	};
 
 	log.debug(FILENAME + ' Funktion erstelleKonfigFuerLotsenKanal erhaltener Arbeitsplatz: ' + Ap);
-	const rev_ap = Ap.split(' ');
+	const rev_ap           = Ap.split(' ');
 	const standardbenutzer = standard ? '' : '_benutzer';  // wenn standard == true, dann default Einstellungen laden, wenn false dann _benutzer Einstellungen laden
 
 	//1. Funkkstellen fuer Revier einlesen
@@ -492,12 +494,12 @@ function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
 		//Alle LotsenAP einlesen
 		//ueber alle Lotsendateien //JA_Lotse1.json usw. gehen und Inhalt in die Konfig schreiben
 
-		let i = 1;
+		let i            = 1;
 		let weitereDatei = true;  //solange true bis keine weitere Datei vorliegt
 		while (weitereDatei === true) {
 			try {
 				weitereDatei = files.statSync(cfg.configPath + rev_ap[0] + '_Lotse' + i + '.json').isFile();
-				const tmp = files.readFileSync(cfg.configPath + rev_ap[0] + '_Lotse' + i + standardbenutzer + '.json', 'utf8');
+				const tmp    = files.readFileSync(cfg.configPath + rev_ap[0] + '_Lotse' + i + standardbenutzer + '.json', 'utf8');
 				log.debug(FILENAME + ' Funktion erstelleKonfigFuerLotsenKanal gelesene Daten: ' + util.inspect(tmp));
 				Konfig.LotsenAp[rev_ap[0] + '_Lotse' + i] = JSON.parse(tmp);
 
