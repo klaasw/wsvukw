@@ -3,6 +3,12 @@
  * Modul zur Herstellung der Verbindung zur Mongo Datenbank
  *
  * @Author: Klaas Wuellner && Felix Stolle
+ *
+ * Anpassung 14.12.16: Timeouts auskommentiert, nur in pruefeLokaleVerbindung/
+ * VTR lokale DB auskommentiert -> bei Ausfall nodeJS muesste auch Mongo primary
+ * wechseln.
+ * @Author: Klaas Wuellner
+ *
  */
 
 const MongoClient = require('mongodb').MongoClient;
@@ -204,21 +210,20 @@ exports.findeApNachIp = function (ip, callback) {
 	// TODO: Aus DB auslesen, nicht mehr den Umweg über REST nehmen, weil so oft benutzt
 	//var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
 	let Ap = '';
-	log.debug(FILENAME + ' function findeNachIp: ' + util.inspect(ip));
-
+	log.debug(FILENAME + ' function findeApNachIp Ip: ' + util.inspect(ip));
 	// TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
-	const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/benutzer/zeigeWindowsBenutzer';
-	log.debug(FILENAME + ' function findeNachIp ' + url);
-
+	//const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/benutzer/zeigeWindowsBenutzer';
+	const url = 'http://localhost:' + cfg.port + '/benutzer/zeigeWindowsBenutzer';
+	log.debug(FILENAME + ' function findeApNachIp Url: ' + url);
 	request(url, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			//log.debug("body: " + body);
 			const alle_Ap = JSON.parse(body);
-			log.debug(FILENAME + ' function findeNachIp: ' + alle_Ap);
+			log.debug(FILENAME + ' function findeApNachIp: alle_Ap: ' + alle_Ap);
 
 			if (alle_Ap.hasOwnProperty(ip.replace('::ffff:', ''))) {
 				Ap = alle_Ap[ip.replace('::ffff:', '')].user;
-				log.debug(FILENAME + ' function findeNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
+				log.debug(FILENAME + ' function findeApNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
 				if (typeof callback !== 'function') {
 					log.error('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
 				}
@@ -227,7 +232,7 @@ exports.findeApNachIp = function (ip, callback) {
 				}
 			}
 			else {
-				log.error(FILENAME + ' function findeNachIp: Benutzer NICHT gefunden zu IP: ' + ip.replace('::ffff:', ''));
+				log.error(FILENAME + ' function findeApNachIp: Benutzer NICHT gefunden zu IP: ' + ip.replace('::ffff:', ''));
 				callback('');
 			}
 		}
@@ -250,22 +255,21 @@ exports.liesAusRESTService = function (configfile, callback) {
 	log.debug('function liesAusRESTService ' + configfile);
 
 	// TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
-	const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/lieskonfig?configfile=' + configfile;
-	log.debug(' liesAusRESTService url=' + url);
-
+	const url = 'http://localhost:' + cfg.port + '/lieskonfig?configfile=' + configfile;
+	log.debug(FILENAME + ' liesAusRESTService url=' + url);
 	request(url, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			const antwortImBody = JSON.parse(body);
-			log.debug(' liesAusRESTService response: ' + JSON.stringify(antwortImBody));
+			log.debug(FILENAME + ' liesAusRESTService response: ' + JSON.stringify(antwortImBody));
 			callback(antwortImBody);
 		}
 		else {
 			if (error) {
-				log.error(' liesAusRESTService Fehler: ' + JSON.stringify(error));
+				log.error(FILENAME + ' liesAusRESTService Fehler: ' + JSON.stringify(error));
 				callback('Fehler');//TODO: hier Fehlerhandling wenn Service nicht erreichbar
 			}
 			else {
-				log.error(' liesAusRESTService Fehler: ' + JSON.stringify(body));
+				log.error(FILENAME + ' liesAusRESTService Fehler: ' + JSON.stringify(body));
 				//log.error(" liesAusRESTService Fehler: " + JSON.stringify(response));
 				callback(body);
 			}

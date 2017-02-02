@@ -28,9 +28,10 @@ exports.socket = function (server) {
 	socketServer = io.listen(server);
 	socketServer.on('connect', function (socket) {
 
-		const remoteAddress = tools.filterIP(socket.conn.remoteAddress);
+		const remoteAddress = (tools.filterIP(socket.conn.remoteAddress) === '127.0.0.1') ? socket.request.headers['x-forwarded-for'] : tools.filterIP(socket.conn.remoteAddress);
 
 		log.debug(FILENAME + ' Funktion connect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' hergestellt. IP: ' + remoteAddress);
+		log.debug('SOCKETHEADER' + socket.request.headers['x-forwarded-for']);
 		// TODO: Pruefung Berechtigung !
 
 		// nur einmal beim Start: Zeitpunkt der Benutzung in DB schreiben
@@ -75,7 +76,7 @@ exports.socket = function (server) {
 
 		// Client hat Verbindung unterbrochen:
 		socket.on('disconnect', function (msg) {
-			const remoteAddress = tools.filterIP(socket.conn.remoteAddress);
+			const remoteAddress = (tools.filterIP(socket.conn.remoteAddress) === '127.0.0.1') ? socket.request.headers['x-forwarded-for'] : tools.filterIP(socket.conn.remoteAddress);
 
 			log.warn(FILENAME + ' Funktion disconnect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' getrennt. IP: ' + remoteAddress);
 			db.schreibeApConnect(remoteAddress, socket.id, false);
@@ -180,13 +181,13 @@ function leseZustand(socketID) {
 if (cfg.intervall !== 0) {
 	//TODO: Gegenseitige Serverüberwachung
 	//Funktioniert noch nicht richt. Test mit Namespace oder Rooms
-	const serverA = cfg.alternativeIPs[1]; // z.B. { '0': 'WHV', '1': '10.160.1.64:3000' }
+	const serverA = cfg.alternativeIPs[1]; // z.B. { '0': 'WHV', '1': '10.160.1.64' }
 
 	const serverB = cfg.alternativeIPs[2];
 
 	log.debug(serverA);
 
-	const client_bei_serverA = socketClient.connect('http://' + serverA[1]);
+	const client_bei_serverA = socketClient.connect('http://' + serverA[1] + ':' + cfg.port);
 	client_bei_serverA.on('connect', function () {
 		log.debug('Funktion: Serverueberwachung SOCKET verbunden mit: ' + serverA);
 		exports.emit('statusMessage', {dienst: 'DUE', status: {URL: serverA[1], Status: 'OK'}});
@@ -216,8 +217,7 @@ if (cfg.intervall !== 0) {
 		dueStatusServerA = {dienst: 'DUE', status: {URL: serverA[1], Status: 'Error'}}
 	});
 
-
-	const client_bei_serverB = socketClient.connect('http://' + serverB[1]);
+	const client_bei_serverB = socketClient.connect('http://' + serverB[1] + ':' + cfg.port);
 	client_bei_serverB.on('connect', function () {
 		log.debug('Funktion: Serverueberwachung SOCKET verbunden mit: ' + serverB);
 		exports.emit('statusMessage', {dienst: 'DUE', status: {URL: serverB[1], Status: 'OK'}});
@@ -246,7 +246,6 @@ if (cfg.intervall !== 0) {
 		exports.emit('statusMessage', {dienst: 'DUE', status: {URL: serverB[1], Status: 'Error'}});
 		dueStatusServerB = {dienst: 'DUE', status: {URL: serverB[1], Status: 'Error'}}
 	});
-
 
 	client_bei_serverA.on('serverMessage', function (msg) {
 		log.debug('Status von Server A: ' + JSON.stringify(msg));
