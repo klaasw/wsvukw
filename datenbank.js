@@ -141,7 +141,7 @@ exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 };
 
 /**
- * schreibe Verbindungsinfo socketID und Zeitstempel in aktiveArbeitsplaetze
+ * schreibe Verbindungsinfo socketID und Zeitstempel in windowsBenutzer
  * @param {object} socketInfo
  * @param {string} ip
  */
@@ -150,15 +150,15 @@ exports.schreibeSocketInfo = function (socketInfo, ip) {
 	if (typeof socketInfo == 'undefined') {
 		socketInfo = {
 			$set: {
-				aktiv:          false,
-				disconnectTime: new Date()
+				aktiv:      false,
+				logoutZeit: new Date()
 			}
 		}
 	}
 	socketInfo._id = ip;
 	const selector = {'_id': ip};
 	// TODO: lieber separate Datenbank: Bewegungsdaten / Monitoring / Audit von Stammdaten trennen
-	exports.schreibeInDb('aktiveArbeitsplaetze', selector, socketInfo, schreibeLokal);
+	exports.schreibeInDb('windowsBenutzer', selector, socketInfo, schreibeLokal);
 };
 
 /**
@@ -171,17 +171,16 @@ exports.schreibeApConnect = function (ip, socketID, getrennt) {
 	const ApInfo = {
 		$set: {
 			'_id':   tools.filterIP(ip),
-			'ip':    tools.filterIP(ip),
 			'aktiv': !getrennt
 		}
 	};
 	if (getrennt) {
-		ApInfo.disconnectTime = new Date();
+		ApInfo.logoutZeit = new Date();
 	}
 	else {
-		ApInfo.connectTime = new Date();
+		ApInfo.loginZeit = new Date();
 	}
-	//Schreiben in aktiveArbeitsplaetze
+	//Schreiben in windowsBenutzer
 	exports.schreibeSocketInfo(ApInfo, ip);
 };
 
@@ -209,15 +208,17 @@ exports.findeElement = function (collection, element, callback) {
  */
 exports.findeApNachIp = function (ip, callback) {
 	const ipAddr = tools.filterIP(ip);
-
 	log.debug(FILENAME + ' function findeApNachIp Ip: ' + util.inspect(ipAddr));
 
-	exports.findeElement('windowsBenutzer', {ip: ipAddr}, function (doc) {
-		callback(doc[0].user);
+	exports.findeElement('windowsBenutzer', {_id: ipAddr}, function (doc) {
+		if (typeof doc[0].user == 'string') {
+			callback(doc[0].user);
+		}
+		else {
+			log.error(FILENAME + ' function findeApNachIp: Benutzer NICHT gefunden zu IP: ' + ipAddr);
+			callback('');
+		}
 	});
-
-	// log.error(FILENAME + ' function findeApNachIp: Benutzer NICHT gefunden zu IP: ' + ipAddr);
-	// 			callback('');
 };
 
 /**
