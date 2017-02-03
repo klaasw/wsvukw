@@ -1,8 +1,10 @@
-Feature: Titel User Story
+Feature: Kanalzuordnung - Kanäle für Arbeitsplatz freigeben
 
-  Beschreibung User Story
+  Als NvD möchte ich spezifische Kanäle gezielten Arbeitsplätzen zuweisen können,
+  um kurzzeitig dessen verfügbare Schaltungen zu erweitern.
 
-  Scenario: Titel Testfall
-    Given Gegeben
-    When Aktion
-    Then  Ziel
+  Scenario: Standardzuordnung Mehrkanalanlagen wiederherstellen
+    Given todo
+    When todo
+    Then todo
+

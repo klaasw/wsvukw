@@ -1,8 +1,14 @@
-Feature: Titel User Story
+Feature: Kanalzuordnung - Arbeitsplatz einsehen
 
-  Beschreibung User Story
+  Als NvD möchte ich die Kanäle eines spezifischen Arbeitsplatzes einsehen,
+  um Informationen über dort verfügbare Schaltungen zu erhalten.
 
-  Scenario: Titel Testfall
-    Given Gegeben
-    When Aktion
-    Then  Ziel
+  Scenario: Mehrkanalanlage gültig konfigurieren
+    Given todo
+    When todo
+    Then todo
+
+  Scenario: Mehrkanalanlage ungültig konfigurieren
+    Given todo
+    When todo
+    Then todo
