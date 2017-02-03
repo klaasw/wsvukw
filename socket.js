@@ -6,6 +6,7 @@ const cfg     = require('./cfg.js');
 const log     = require('./log.js');
 const rfd     = require('./rfd.js');
 const tools   = require('./tools.js');
+const util    = require('util');
 const request = require('request'); //Modul zu Abfrage von WebServices
 
 const FILENAME = __filename.slice(__dirname.length + 1);
@@ -127,31 +128,38 @@ exports.emit = function emit(messagetype, message, socketID) {
 
 /**
  * Einlesen des Schaltzustands und übermittlung bei connect
- * @param socketID
- * @param IP
+ * @param {string} socketID
+ * @param {string} ip
  */
-// TODO: ersetzen durch Zugriff auf DB, Collection zustandkomponenten
-exports.leseSchaltzustand = function (socketID, IP) {
+exports.leseSchaltzustand = function (socketID, ip) {
 	const zustand = {};
 
-	db.findeApNachIp(IP, function (benutzer) {
-		const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/verbindungen/liesVerbindungen?arbeitsplatz=' + benutzer + '&aktiveVerbindungen=true';
-		log.debug(FILENAME + 'leseSchaltzustand ' + url);
-		request(url, function (error, response, body) {
-			if (!error && response.statusCode == 200) {
-				body = JSON.parse(body);
-				for (const verbindung of body) {
+	db.findeApNachIp(ip, function (benutzer) {
+
+		if (typeof benutzer != 'string') {
+			return;
+		}
+
+		const selector = {
+			ApID:                    benutzer,
+			'zustand.aufgeschaltet': true
+		};
+
+		db.findeElement('schaltZustaende', selector, function (doc) {
+			if (doc.length > 0) {
+				// doc = JSON.parse(doc);
+				for (const verbindung of doc) {
 					//erstelle Objekt nach Muster 1-H-RFD-WHVVTA-FKEK-1:MHAN01
 					//In Verbindung mit der AP Konfuguration der Geaete kann der Client die Verbindungen wieder schalten
 					zustand[verbindung.funkstelle] = verbindung.span_mhanApNr
 				}
-				log.debug(FILENAME + 'leseSchaltzustand ' + JSON.stringify(zustand));
+				log.debug(FILENAME + 'leseSchaltzustand ' + util.inspect(zustand));
 				exports.emit('zustandsMessage', zustand, socketID)
 			}
 			else {
-				log.error(FILENAME + ' Funktion: leseSchaltzustand aus REST Service Fehler: ' + error)
+				log.error(FILENAME + ' Funktion: leseSchaltzustand aus DB:' + util.inspect(doc))
 			}
-		})
+		});
 	})
 };
 
