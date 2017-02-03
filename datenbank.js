@@ -15,9 +15,9 @@ const MongoClient = require('mongodb').MongoClient;
 const assert      = require('assert');
 const util        = require('util');
 
-const cfg = require('./cfg.js');
-const log = require('./log.js');
-const tools   = require('./tools.js');
+const cfg   = require('./cfg.js');
+const log   = require('./log.js');
+const tools = require('./tools.js');
 
 const request = require('request'); //Modul zu Abfrage von WebServices
 
@@ -203,46 +203,21 @@ exports.findeElement = function (collection, element, callback) {
 };
 
 /**
- *
+ * Spezifischen Windowsbenutzer aus DB lesen
  * @param {string} ip
  * @param {function} callback
  */
 exports.findeApNachIp = function (ip, callback) {
-	// TODO: Aus DB auslesen, nicht mehr den Umweg über REST nehmen, weil so oft benutzt
-	//var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
-	let Ap = '';
 	const ipAddr = tools.filterIP(ip);
 
 	log.debug(FILENAME + ' function findeApNachIp Ip: ' + util.inspect(ipAddr));
-	// TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
-	//const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/benutzer/zeigeWindowsBenutzer';
-	const url = 'http://localhost:' + cfg.port + '/benutzer/zeigeWindowsBenutzer';
-	log.debug(FILENAME + ' function findeApNachIp Url: ' + url);
-	request(url, function (error, response, body) {
-		if (!error && response.statusCode == 200) {
-			//log.debug("body: " + body);
-			const alle_Ap = JSON.parse(body);
-			log.debug(FILENAME + ' function findeApNachIp: alle_Ap: ' + alle_Ap);
 
-			if (alle_Ap.hasOwnProperty(ipAddr)) {
-				Ap = alle_Ap[ipAddr].user;
-				log.debug(FILENAME + ' function findeApNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
-				if (typeof callback !== 'function') {
-					log.error('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-				}
-				else {
-					callback(Ap);
-				}
-			}
-			else {
-				log.error(FILENAME + ' function findeApNachIp: Benutzer NICHT gefunden zu IP: ' + ipAddr);
-				callback('');
-			}
-		}
-		else {
-			log.error('Fehler. ' + JSON.stringify(error));
-		}
+	exports.findeElement('windowsBenutzer', {ip: ipAddr}, function (doc) {
+		callback(doc[0].user);
 	});
+
+	// log.error(FILENAME + ' function findeApNachIp: Benutzer NICHT gefunden zu IP: ' + ipAddr);
+	// 			callback('');
 };
 
 /**
