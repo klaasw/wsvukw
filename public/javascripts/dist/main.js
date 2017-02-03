@@ -22,15 +22,13 @@ $(window).load(function () {
 		ApFunkstellen:       {},
 		ArbeitsplatzGeraete: {},
 		einzel:              true,
-		einzelStatus:        {},
-		gruppenStatus:       {},
-		schaltZaehler:       0,
 		IpConfig:            '',
 		socket:              {},
 		aktuellerUKWserver:  '',
 		aktuellerBenutzer:   {},
 		defaultServer:       '',
 		aktuelleMKA:         {},
+		geschalteteSPAN:     {},
 
 		init: function () {
 
@@ -244,8 +242,9 @@ $(window).load(function () {
 
 		socketUkwMessage: function (msg) {
 
-			if (msg === null)
+			if (msg === null) {
 				return;
+			}
 
 			const msgKeys = Object.keys(msg); //z.B. RX, FSTSTATUS
 			const msgTyp  = msgKeys[0];
@@ -736,27 +735,32 @@ $(window).load(function () {
 				'span_mhanApNr': SPAN_MAHN_ApNr
 			});
 			$.notify('Schalte: <br>' + this.ApFunkstellen[FstID].sname);
-			console.log('(notify) Schalte: ' + this.ApFunkstellen[FstID].sname);
-			this.schaltZaehler++;
+			if (SPAN_MAHN_ApNr.substr(0, 4) === 'SPAN') {
+				this.geschalteteSPAN[SPAN_MAHN] = FstID;
+			}
+			console.log('(notify) schalte: ' + this.ApFunkstellen[FstID].sname);
 		},
 
 		/**
 		 * Kanal trennen via RFD Socket
-		 * @param geklickteID
-		 * @param geklickteSPANMHAN
-		 * @param geklicktespan_mhanApNr
+		 * @param FstID
+		 * @param SPAN_MAHN
+		 * @param SPAN_MAHN_ApNr
 		 */
-		trennen: function (geklickteID, geklickteSPANMHAN, geklicktespan_mhanApNr) {
+		trennen: function (FstID, SPAN_MAHN, SPAN_MAHN_ApNr) {
 			const _self = this;
 			this.socket.emit('clientMessage', {
-				'FstID':         geklickteID,
+				'FstID':         FstID,
 				'ApID':          _self.ApID,
-				'SPAN':          geklickteSPANMHAN,
+				'SPAN':          SPAN_MAHN,
 				'aktion':        'trennenEinfach',
-				'span_mhanApNr': geklicktespan_mhanApNr
+				'span_mhanApNr': SPAN_MAHN_ApNr
 			});
 			$.notify('Trenne: <br>' + this.ApFunkstellen[geklickteID].sname);
-			this.schaltZaehler++;
+			if (SPAN_MAHN_ApNr.substr(0, 4) === 'SPAN') {
+				delete this.geschalteteSPAN[SPAN_MAHN];
+			}
+			console.log('(notify) trenne: ' + this.ApFunkstellen[FstID].sname);
 		},
 
 		/**
@@ -789,17 +793,26 @@ $(window).load(function () {
 
 			if (this.einzel === true) { // Wechsel zu Gruppenschaltung
 				this.einzel = false;
-
-				this.einzelStatus = this.ApFunkstellen; //speichere geschalteten Zustand
-				this.zustandWiederherstellen(this.gruppenStatus); // lade Gruppenzustand
 				$('#statusWechsel a').text('Gruppenschaltung');
+
+				// if (typeof this.aktuellerBenutzer.schaltZustandGruppe == 'undefined') {
+				// 	this.aktuellerBenutzer.schaltZustandGruppe = this.geschalteteSPAN;
+				// }
+				//
+				// this.aktuellerBenutzer.schaltZustandEinzel = this.geschalteteSPAN; //speichere geschalteten Zustand
+				// this.zustandWiederherstellen(this.aktuellerBenutzer.schaltZustandGruppe); // lade Gruppenzustand
 			}
 			else { // Wechsel zu Einzelschaltung
 				this.einzel = true;
-
-				this.gruppenStatus = this.ApFunkstellen; //speichere geschalteten Zustand
-				this.zustandWiederherstellen(this.einzelStatus); //lade Einzelzustand
 				$('#statusWechsel a').text('Einzelschaltung');
+
+				// if (typeof this.aktuellerBenutzer.schaltZustandEinzel == 'undefined') {
+				// 	const key0                                 = Object.keys(this.geschalteteSPAN);
+				// 	this.aktuellerBenutzer.schaltZustandEinzel = {[key0]: this.geschalteteSPAN[key0]};
+				// }
+				//
+				// this.aktuellerBenutzer.schaltZustandGruppe = this.geschalteteSPAN; //speichere geschalteten Zustand
+				// this.zustandWiederherstellen(this.aktuellerBenutzer.schaltZustandEinzel); //lade Einzelzustand
 			}
 
 			this.schreibeBenutzer();
@@ -811,8 +824,9 @@ $(window).load(function () {
 		 */
 		zustandWiederherstellen: function (AufschalteZustand) {
 
-			if (typeof AufschalteZustand != 'object')
+			if (typeof AufschalteZustand != 'object') {
 				return false;
+			}
 
 			//Backup, da die Funktionen schalten und trennen mit Rueckmeldung schon in ApFunkstellen schreiben
 			const backupApFunkstellen = this.ApFunkstellen;
@@ -898,9 +912,16 @@ $(window).load(function () {
 		 */
 		schreibeBenutzer: function () {
 
-			const benutzer = this.aktuellerBenutzer;
-			benutzer.theme = WSV.Themes.currentTheme;
+			const benutzer  = this.aktuellerBenutzer;
+			benutzer.theme  = WSV.Themes.currentTheme;
 			benutzer.einzel = this.einzel;
+
+			if (this.geschalteteSPAN.length == 1) {
+				benutzer.schaltZustandEinzel = JSON.stringify(this.geschalteteSPAN);
+			}
+			else if (this.geschalteteSPAN.length > 1) {
+				benutzer.schaltZustandGruppe = JSON.stringify(this.geschalteteSPAN);
+			}
 
 			$.ajax({
 				url:     WSV.Display.aktuellerUKWserver + '/benutzer/schreibeBenutzer',
