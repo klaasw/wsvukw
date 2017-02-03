@@ -39,21 +39,20 @@ router.get('/overview', function (req, res) {
 
 /* GET Zuordnung */
 router.get('/zuordnung', function (req, res) {
-	db.findeApNachIp(tools.filterIP(req.ip), function (benutzer) {
+	db.findeApNachIp(req.ip, function (benutzer) {
 		log.debug('Benutzer: ' + benutzer);
 		if (benutzer) {
 			log.info(FILENAME + ' Funktion router.get /zuordnung Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
+
 			// TODO: ueberpruefen, ob hier das Richtige uebergeben wird:
 			erstelleKonfigFuerLotsenKanal(benutzer, false, function (konfig) {
 				//Uebergebe Funkstellen ID an Jade Template
 				log.info(FILENAME + ' Funktion router.get /zuordnung Konfig: ' + konfig);
 				res.render('zuordnung', {
-
 					'gesamteKonfig': konfig
-
-				}); //res send ende
-			}); //erstelleKonfigFurAp Ende
-		} //if Ende
+				});
+			});
+		}
 	});
 });
 
@@ -224,25 +223,7 @@ router.get('/ukwKonfig', function (req, res) {
 			.send('ukwKonfig konnte nicht geladen werden.');
 	}
 	else {
-		// /ukwKonfig mit Parameter z.B. ukwKonfig?ip=1.1.1.1
-		if (req.query.ip) {
-			// TODO: testcode entfernen?
-			// if (req.query.ip == '1.1.1.1') {
-			// 	const Konfig = {
-			// 		FunkstellenReihe: [],
-			// 		FunkstellenDetails: {},
-			// 		ArbeitsplatzGeraete: {},
-			// 		MhanZuordnung: {},
-			// 		IpConfig: cfg
-			// 	};
-			// 	for (let t = 0; t < Funkstellen.length; t++) {
-			// 		log.debug(Funkstellen[t].id);
-			// 		Konfig.FunkstellenDetails[Funkstellen[t].id] = rfd.findeFstNachId(Funkstellen[t].id); ///ab HIER weiter-------------------------------------------
-			//
-			// 	}
-			// 	res.send(Konfig);
-			// }
-			// else {
+		if (req.query.ip) { // /ukwKonfig mit Parameter z.B. ukwKonfig?ip=1.1.1.1
 			db.findeApNachIp(req.query.ip, function (benutzer) {
 				if (benutzer) {
 					log.debug(FILENAME + ' Benutzer zu IP  = ' + benutzer + ' ' + req.query.ip);
@@ -262,7 +243,7 @@ router.get('/ukwKonfig', function (req, res) {
 		// /ukwKonfig mit Parameter ?zuordnung=lotse
 		if (req.query.zuordnung) {
 			if (req.query.zuordnung == 'lotse') {
-				db.findeApNachIp(tools.filterIP(req.ip), function (benutzer) {
+				db.findeApNachIp(req.ip, function (benutzer) {
 					if (benutzer) {
 						if (req.query.standard == 'true') {
 							erstelleKonfigFuerLotsenKanal(benutzer, 'true', function (Konfig) {
@@ -278,10 +259,8 @@ router.get('/ukwKonfig', function (req, res) {
 				});
 			}
 		}
-
-		// ukwkonfig ohne parameter
-		else {
-			db.findeApNachIp(tools.filterIP(req.ip), function (benutzer) {
+		else { // ukwkonfig ohne parameter
+			db.findeApNachIp(req.ip, function (benutzer) {
 				if (benutzer) {
 					log.debug(FILENAME + ' Funktion: router get /ukwKonfig ermittelter User: ' + benutzer);
 					//res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
