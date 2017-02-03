@@ -113,7 +113,7 @@ app.use(function (err, req, res, next) {
  */
 const port = normalizePort(process.env.PORT || cfg.port);
 app.set('port', port);
-app.set('trust proxy', 'loopback')
+app.set('trust proxy', 'loopback');
 
 /**
  * Create HTTP server.

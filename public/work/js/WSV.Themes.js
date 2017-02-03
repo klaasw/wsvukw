@@ -4,44 +4,53 @@
 
 	WSV.Themes = {
 
-		path: 'stylesheets/bootstrap',
-		list: {
+		path:         'stylesheets/bootstrap',
+		list:         {
 			'default': 'bootstrap-theme.css',
-			'darkly': 'darkly.css',
-			'flatly': 'flatly.css',
-			'cyborg': 'cyborg.css',
+			'darkly':  'darkly.css',
+			'flatly':  'flatly.css',
+			'cyborg':  'cyborg.css',
 		},
-		themesheet: '',
+		themesheet:   '',
 		currentTheme: 'default',
 
 		init: function () {
 
-			const _self = this;
+			const _self     = this;
 			this.themesheet = $('<link href="' + this.getThemeUrl() + '" rel="stylesheet" />');
 			this.themesheet.appendTo('head');
 
 			$('.theme-switcher .switch-theme').on('click', function () {
-				_self.switch($(this))
+				_self.switch($(this).data('theme'), true)
 			});
 		},
 
-		getThemeUrl: function(theme) {
+		/**
+		 * Liefert die aktuelle Theme-URL zurück
+		 * @param {string} theme
+		 * @returns {string} - relativer Pfad zum aktuellen Theme
+		 */
+		getThemeUrl: function (theme) {
 			theme = theme || 'default';
 			return this.path + '/' + this.list[theme];
 		},
 
-		switch: function (element) {
-			this.currentTheme = element.data('theme');
+		/**
+		 * Wechselt das aktuelle Theme im Frontend und speichert die Konfiguration
+		 * @param {string} theme - das zu wechselnde Theme
+		 * @param {boolean} saveConfig - legt fest ob die Konfig gespeichert werden soll
+		 */
+		switch: function (theme, saveConfig) {
+			if (typeof theme == 'undefined' || theme == this.currentTheme)
+				return;
+
+			this.currentTheme = theme;
 			this.themesheet.attr('href', this.getThemeUrl(this.currentTheme));
 			$('.theme-switcher .switch-theme').parents('li').removeClass('active');
-			element.parent().addClass('active');
-			this.setAPconfig();
-		},
-
-		// TODO: aktuelle Theme-Auswahl in der AP-Config speichern über REST Aufruf
-		setAPconfig: function() {
-
+			$('.theme-switcher a[data-theme="' + this.currentTheme + '"]').parent().addClass('active');
+			if (saveConfig) {
+				WSV.Display.schreibeBenutzer();
+			}
 		}
 	}
-
 })(window, document, jQuery);

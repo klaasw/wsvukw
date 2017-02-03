@@ -10,13 +10,13 @@
 //TODO: in xml2js attrkey: 'attribute' aendern statt $ Zeichen. Dies muss aber in allen Modulen berücksichtigt werden.
 // Uebergangsweise Ersaetzen wo in Datenbank gelesen und geschrieben wird.
 
-const JsSIP = require('jssip'); //Javascript SIP Uaser Agent
+const JsSIP   = require('jssip'); //Javascript SIP Uaser Agent
 const request = require('request'); //Modul zu Abfrage von WebServices
-const xml2js = require('xml2js'); // zum Konvertieren von XML zu JS
-const parser = new xml2js.Parser({explicitRoot: true});// Parserkonfiguration
+const xml2js  = require('xml2js'); // zum Konvertieren von XML zu JS
+const parser  = new xml2js.Parser({explicitRoot: true});// Parserkonfiguration
 
-const log = require('./log.js');
-const cfg = require('./cfg.js');
+const log    = require('./log.js');
+const cfg    = require('./cfg.js');
 const socket = require('./socket.js');
 const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
 db.verbindeDatenbank(function (db) {
@@ -44,20 +44,20 @@ exports.pruefeRfdWS = function () {
 		if (!error && response.statusCode == 200) {
 			log.debug(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK');
 			socket.sendeWebsocketNachrichtStatus({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
-            socket.sendeWebsocketNachrichtServer({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
-            return true;
+			socket.sendeWebsocketNachrichtServer({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
+			return true;
 		}
 		else {
 			log.error(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + error);
-            socket.sendeWebsocketNachrichtStatus({
+			socket.sendeWebsocketNachrichtStatus({
 				dienst: 'RFD',
 				status: {URL: cfg.urlRFDWebservice, Status: 'Error'}
 			});
-            socket.sendeWebsocketNachrichtServer({
+			socket.sendeWebsocketNachrichtServer({
 				dienst: 'RFD',
 				status: {URL: cfg.urlRFDWebservice, Status: 'Error'}
 			});
-            return false;
+			return false;
 		}
 	})
 };
@@ -81,10 +81,10 @@ function schreibeZustand(Nachricht) {
 		//entfernen da dieser sonst den Kanal im DUE wieder mit -1 ueberschreibt
 		if (Nachricht.FSTSTATUS.$.channel == '-1') {
 			zustand = {
-				$set: {
-					letzteMeldung: new Date(),
+				$set:         {
+					letzteMeldung:         new Date(),
 					'status.connectState': Nachricht.FSTSTATUS.$.connectState,
-					'status.state': Nachricht.FSTSTATUS.$.state,
+					'status.state':        Nachricht.FSTSTATUS.$.state,
 				},
 				$setOnInsert: {
 					'status.id': Nachricht.FSTSTATUS.$.id
@@ -93,11 +93,11 @@ function schreibeZustand(Nachricht) {
 		}
 		else {
 			zustand = {
-				$set: {
-					letzteMeldung: new Date(),
+				$set:         {
+					letzteMeldung:         new Date(),
 					'status.connectState': Nachricht.FSTSTATUS.$.connectState,
-					'status.state': Nachricht.FSTSTATUS.$.state,
-					'status.channel': Nachricht.FSTSTATUS.$.channel
+					'status.state':        Nachricht.FSTSTATUS.$.state,
+					'status.channel':      Nachricht.FSTSTATUS.$.channel
 				},
 				$setOnInsert: {
 					'status.id': Nachricht.FSTSTATUS.$.id

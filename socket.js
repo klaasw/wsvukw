@@ -4,14 +4,15 @@ const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
 db.verbindeDatenbank(function (db) {
 });
 
-const cfg = require('./cfg.js');
-const log = require('./log.js');
-const rfd = require('./rfd.js');
+const cfg     = require('./cfg.js');
+const log     = require('./log.js');
+const rfd     = require('./rfd.js');
+const tools   = require('./tools.js');
 const request = require('request'); //Modul zu Abfrage von WebServices
 
 const FILENAME = __filename.slice(__dirname.length + 1);
 
-const io = require('socket.io');
+const io           = require('socket.io');
 const socketClient = require('socket.io-client');
 
 let socketServer; //Variable um die Sockets ausserhalb der Funktion "on.connect" aufzurufen
@@ -26,16 +27,19 @@ exports.socket = function (server) {
 
 	socketServer = io.listen(server);
 	socketServer.on('connect', function (socket) {
-		const ipSocket = (socket.request.connection.remoteAddress === '127.0.0.1') ? socket.request.headers['x-forwarded-for'] : socket.request.connection.remoteAddress
-		log.debug(FILENAME + ' Funktion connect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' hergestellt. IP: ' + ipSocket);
+
+		const remoteAddress = (tools.filterIP(socket.conn.remoteAddress) === '127.0.0.1') ? socket.request.headers['x-forwarded-for'] : tools.filterIP(socket.conn.remoteAddress);
+
+		log.debug(FILENAME + ' Funktion connect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' hergestellt. IP: ' + remoteAddress);
 		log.debug('SOCKETHEADER' + socket.request.headers['x-forwarded-for']);
 		// TODO: Pruefung Berechtigung !
 
 		// nur einmal beim Start: Zeitpunkt der Benutzung in DB schreiben
-		db.schreibeApConnect(ipSocket, socket.id, true);
+		db.schreibeApConnect(remoteAddress, socket.id, true);
 
 		leseZustand(socket.id); //Status der Funkstellen übertragen
-		exports.leseSchaltzustand(socket.id, ipSocket); //letzten Schaltzustandübertragen
+		exports.leseSchaltzustand(socket.id, remoteAddress); //letzten Schaltzustandübertragen
+
 		// Uebertragen der DUE Server Zustaende
 		exports.emit('statusMessage', dueStatusServerA, socket.id);
 		exports.emit('statusMessage', dueStatusServerB, socket.id);
@@ -72,22 +76,13 @@ exports.socket = function (server) {
 
 		// Client hat Verbindung unterbrochen:
 		socket.on('disconnect', function (msg) {
-			let ip = ipSocket;
-			//IPv6 Anteil aus Anfrage kuerzen
-			const ipv6Ende = ip.lastIndexOf(':');
-			if (ipv6Ende > -1) {
-				ip = ip.slice(ipv6Ende + 1, ip.length);
-			}
+			const remoteAddress = (tools.filterIP(socket.conn.remoteAddress) === '127.0.0.1') ? socket.request.headers['x-forwarded-for'] : tools.filterIP(socket.conn.remoteAddress);
 
-			log.warn(FILENAME + ' Funktion disconnect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' getrennt. IP: ' + ip);
-			db.schreibeApConnect(ip, socket.id, false);
-
+			log.warn(FILENAME + ' Funktion disconnect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' getrennt. IP: ' + remoteAddress);
+			db.schreibeApConnect(remoteAddress, socket.id, false);
 		});
 
-
 	});
-
-
 };
 
 
@@ -153,7 +148,7 @@ exports.leseSchaltzustand = function (socketID, IP) {
 					zustand[verbindung.funkstelle] = verbindung.span_mhanApNr
 				}
 				log.debug(FILENAME + 'leseSchaltzustand ' + JSON.stringify(zustand));
-				// socket.emit('zustandsMessage', zustand, socketID)
+				exports.emit('zustandsMessage', zustand, socketID)
 			}
 			else {
 				log.error(FILENAME + ' Funktion: leseSchaltzustand aus REST Service Fehler: ' + error)
@@ -173,7 +168,7 @@ function leseZustand(socketID) {
 		for (let i = 0; i < doc.length; i++) {
 			const zustand = {
 				'FSTSTATUS': {
-					'$': doc[i].status,
+					'$':             doc[i].status,
 					'letzteMeldung': doc[i].letzteMeldung
 				}
 			};
@@ -186,13 +181,13 @@ function leseZustand(socketID) {
 if (cfg.intervall !== 0) {
 	//TODO: Gegenseitige Serverüberwachung
 	//Funktioniert noch nicht richt. Test mit Namespace oder Rooms
-	const serverA = cfg.alternativeIPs[1]; // z.B. { '0': 'WHV', '1': '10.160.1.64:3000' }
+	const serverA = cfg.alternativeIPs[1]; // z.B. { '0': 'WHV', '1': '10.160.1.64' }
 
 	const serverB = cfg.alternativeIPs[2];
 
 	log.debug(serverA);
 
-	const client_bei_serverA = socketClient.connect('http://' + serverA[1]);
+	const client_bei_serverA = socketClient.connect('http://' + serverA[1] + ':' + cfg.port);
 	client_bei_serverA.on('connect', function () {
 		log.debug('Funktion: Serverueberwachung SOCKET verbunden mit: ' + serverA);
 		exports.emit('statusMessage', {dienst: 'DUE', status: {URL: serverA[1], Status: 'OK'}});
@@ -222,8 +217,7 @@ if (cfg.intervall !== 0) {
 		dueStatusServerA = {dienst: 'DUE', status: {URL: serverA[1], Status: 'Error'}}
 	});
 
-
-	const client_bei_serverB = socketClient.connect('http://' + serverB[1]);
+	const client_bei_serverB = socketClient.connect('http://' + serverB[1] + ':' + cfg.port);
 	client_bei_serverB.on('connect', function () {
 		log.debug('Funktion: Serverueberwachung SOCKET verbunden mit: ' + serverB);
 		exports.emit('statusMessage', {dienst: 'DUE', status: {URL: serverB[1], Status: 'OK'}});
@@ -253,7 +247,6 @@ if (cfg.intervall !== 0) {
 		dueStatusServerB = {dienst: 'DUE', status: {URL: serverB[1], Status: 'Error'}}
 	});
 
-
 	client_bei_serverA.on('serverMessage', function (msg) {
 		log.debug('Status von Server A: ' + JSON.stringify(msg));
 		exports.emit('statusMessage', msg)
@@ -264,3 +257,6 @@ if (cfg.intervall !== 0) {
 		exports.emit('statusMessage', msg)
 	});
 }
+
+
+
