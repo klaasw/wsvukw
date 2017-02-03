@@ -17,6 +17,7 @@ const util        = require('util');
 
 const cfg = require('./cfg.js');
 const log = require('./log.js');
+const tools   = require('./tools.js');
 
 const request = require('request'); //Modul zu Abfrage von WebServices
 
@@ -169,8 +170,8 @@ exports.schreibeSocketInfo = function (socketInfo, ip) {
 exports.schreibeApConnect = function (ip, socketID, getrennt) {
 	const ApInfo = {
 		$set: {
-			'_id':   ip.replace('::ffff:', ''),
-			'ip':    ip,
+			'_id':   tools.filterIP(ip),
+			'ip':    tools.filterIP(ip),
 			'aktiv': !getrennt
 		}
 	};
@@ -210,7 +211,9 @@ exports.findeApNachIp = function (ip, callback) {
 	// TODO: Aus DB auslesen, nicht mehr den Umweg über REST nehmen, weil so oft benutzt
 	//var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
 	let Ap = '';
-	log.debug(FILENAME + ' function findeApNachIp Ip: ' + util.inspect(ip));
+	const ipAddr = tools.filterIP(ip);
+
+	log.debug(FILENAME + ' function findeApNachIp Ip: ' + util.inspect(ipAddr));
 	// TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
 	//const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/benutzer/zeigeWindowsBenutzer';
 	const url = 'http://localhost:' + cfg.port + '/benutzer/zeigeWindowsBenutzer';
@@ -221,8 +224,8 @@ exports.findeApNachIp = function (ip, callback) {
 			const alle_Ap = JSON.parse(body);
 			log.debug(FILENAME + ' function findeApNachIp: alle_Ap: ' + alle_Ap);
 
-			if (alle_Ap.hasOwnProperty(ip.replace('::ffff:', ''))) {
-				Ap = alle_Ap[ip.replace('::ffff:', '')].user;
+			if (alle_Ap.hasOwnProperty(ipAddr)) {
+				Ap = alle_Ap[ipAddr].user;
 				log.debug(FILENAME + ' function findeApNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
 				if (typeof callback !== 'function') {
 					log.error('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
@@ -232,7 +235,7 @@ exports.findeApNachIp = function (ip, callback) {
 				}
 			}
 			else {
-				log.error(FILENAME + ' function findeApNachIp: Benutzer NICHT gefunden zu IP: ' + ip.replace('::ffff:', ''));
+				log.error(FILENAME + ' function findeApNachIp: Benutzer NICHT gefunden zu IP: ' + ipAddr);
 				callback('');
 			}
 		}
