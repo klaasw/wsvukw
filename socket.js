@@ -1,8 +1,6 @@
 'use strict';
 
 const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
-db.verbindeDatenbank(function (db) {
-});
 
 const cfg     = require('./cfg.js');
 const log     = require('./log.js');

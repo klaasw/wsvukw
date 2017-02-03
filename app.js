@@ -1,16 +1,16 @@
 'use strict';
 
 const express = require('express');
-const app = express();
-const fs = require('fs');
-const http = require('http');
+const app     = express();
+const fs      = require('fs');
+const http    = require('http');
 
-const path = require('path');
-const favicon = require('serve-favicon');
+const path         = require('path');
+const favicon      = require('serve-favicon');
 const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
+const bodyParser   = require('body-parser');
 
-const debug = require('debug')('ukwserver:server');
+const debug             = require('debug')('ukwserver:server');
 const FileStreamRotator = require('file-stream-rotator');
 
 const env = process.env.NODE_ENV || 'development'; // Linux Umgebungsvariable f체r die Laufzeit
@@ -20,7 +20,7 @@ const env = process.env.NODE_ENV || 'development'; // Linux Umgebungsvariable f�
  * logging access log
  * @type {morgan}
  */
-const morgan = require('morgan');
+const morgan       = require('morgan');
 const logDirectory = __dirname + '/log';
 
 /**
@@ -34,9 +34,9 @@ fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
  */
 const accessLogStream = FileStreamRotator.getStream({
 	date_format: 'YYYYMMDD',
-	filename: logDirectory + '/access-%DATE%.log',
-	frequency: 'daily',
-	verbose: false
+	filename:    logDirectory + '/access-%DATE%.log',
+	frequency:   'daily',
+	verbose:     false
 });
 
 app.use(morgan(':date[iso] :remote-addr :remote-user :method :url, :http-version :status :res[content-length] :response-time', {stream: accessLogStream}));
@@ -60,8 +60,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const routes = require('./routes/index.js');
-const users = require('./routes/benutzer.js');
+const routes       = require('./routes/index.js');
+const users        = require('./routes/benutzer.js');
 const verbindungen = require('./routes/verbindungen.js');
 
 app.use('/', routes);
@@ -75,7 +75,7 @@ const ukw = require('./ukw.js');
  * catch 404 and forward to error handler
  */
 app.use(function (req, res, next) {
-	const err = new Error('Not Found');
+	const err  = new Error('Not Found');
 	err.status = 404;
 	next(err);
 });
@@ -83,13 +83,13 @@ app.use(function (req, res, next) {
 /**
  * development error handler
  * will print stacktrace
-*/
+ */
 if (app.get('env') === 'development') {
 	app.use(function (err, req, res, next) {
 		res.status(err.status || 500);
 		res.render('error', {
 			message: err.message,
-			error: err
+			error:   err
 		});
 	});
 }
@@ -103,7 +103,7 @@ app.use(function (err, req, res, next) {
 	log.info('cfg bei error: ' + JSON.stringify(cfg));
 	res.render('error', {
 		message: err.message,
-		error: {}
+		error:   {}
 	});
 });
 
@@ -125,19 +125,24 @@ const server = http.createServer(app);
  */
 
 
-// F체r Prodoktionsumgebung ist ein vorgeschalteter ProxyServer (z.B. nginx) notwenig,
-// der die Anfrage an den localhost weiterleitet.
-if (env === 'production') {
-  server.listen(port, '127.0.0.1', function(){
-    console.log('Server l채uft %s in %s mode', server.address().address, app.settings.env);
-  });
-}
+const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
+db.verbindeDatenbank(function (db) {
 
-if (env === 'development') {
-  server.listen(port, function(){
-    console.log('Server l채uft %s in %s mode', server.address().address, app.settings.env);
-  });
-}
+	// F체r Prodoktionsumgebung ist ein vorgeschalteter ProxyServer (z.B. nginx) notwenig,
+	// der die Anfrage an den localhost weiterleitet.
+	if (env === 'production') {
+		server.listen(port, '127.0.0.1', function () {
+			console.log('Server l채uft %s in %s mode', server.address().address, app.settings.env);
+		});
+	}
+
+	if (env === 'development') {
+		server.listen(port, function () {
+			console.log('Server l채uft %s in %s mode', server.address().address, app.settings.env);
+		});
+	}
+
+});
 
 server.on('error', onError);
 server.on('listening', onListening);
