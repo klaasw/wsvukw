@@ -3,14 +3,21 @@
  * Modul zur Herstellung der Verbindung zur Mongo Datenbank
  *
  * @Author: Klaas Wuellner && Felix Stolle
+ *
+ * Anpassung 14.12.16: Timeouts auskommentiert, nur in pruefeLokaleVerbindung/
+ * VTR lokale DB auskommentiert -> bei Ausfall nodeJS muesste auch Mongo primary
+ * wechseln.
+ * @Author: Klaas Wuellner
+ *
  */
 
 const MongoClient = require('mongodb').MongoClient;
 const assert      = require('assert');
 const util        = require('util');
 
-const cfg = require('./cfg.js');
-const log = require('./log.js');
+const cfg   = require('./cfg.js');
+const log   = require('./log.js');
+const tools = require('./tools.js');
 
 const request = require('request'); //Modul zu Abfrage von WebServices
 
@@ -120,7 +127,7 @@ exports.verbindeDatenbank = function (aktion) {
 //TODO: Prio 2 Verbindung zu unterschiedlichen Datenbanken herstellen. Damit WindowsBenutzer von ukw Datenbank entkoppelt sind
 exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 	if (exports.dbVerbindung === undefined) {
-		log.error('Datenbank ist noch nicht verbunden!!! Schreibversuch schlug fehl. Collection: ' + collection + ', selector: ' + selector + ', inhalt: ' + inhalt);
+		log.error('Datenbank ist noch nicht verbunden!!! Schreibversuch schlug fehl. Collection: ' + util.inspect(collection) + ', selector: ' + util.inspect(selector) + ', inhalt: ' + util.inspect(inhalt));
 	}
 	else {
 		// TODO: abweichendes handling falls primary nicht verbunden
@@ -134,7 +141,7 @@ exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 };
 
 /**
- * schreibe Verbindungsinfo socketID und Zeitstempel in aktiveArbeitsplaetze
+ * schreibe Verbindungsinfo socketID und Zeitstempel in windowsBenutzer
  * @param {object} socketInfo
  * @param {string} ip
  */
@@ -143,15 +150,15 @@ exports.schreibeSocketInfo = function (socketInfo, ip) {
 	if (typeof socketInfo == 'undefined') {
 		socketInfo = {
 			$set: {
-				aktiv:          false,
-				disconnectTime: new Date()
+				aktiv:      false,
+				logoutZeit: new Date()
 			}
 		}
 	}
-	socketInfo._id = ip;
+	socketInfo.$set._id = ip;
 	const selector = {'_id': ip};
 	// TODO: lieber separate Datenbank: Bewegungsdaten / Monitoring / Audit von Stammdaten trennen
-	exports.schreibeInDb('aktiveArbeitsplaetze', selector, socketInfo, schreibeLokal);
+	exports.schreibeInDb('windowsBenutzer', selector, socketInfo, schreibeLokal);
 };
 
 /**
@@ -163,18 +170,17 @@ exports.schreibeSocketInfo = function (socketInfo, ip) {
 exports.schreibeApConnect = function (ip, socketID, getrennt) {
 	const ApInfo = {
 		$set: {
-			'_id':   ip.replace('::ffff:', ''),
-			'ip':    ip,
+			'_id':   tools.filterIP(ip),
 			'aktiv': !getrennt
 		}
 	};
 	if (getrennt) {
-		ApInfo.disconnectTime = new Date();
+		ApInfo.$set.logoutZeit = new Date();
 	}
 	else {
-		ApInfo.connectTime = new Date();
+		ApInfo.$set.loginZeit = new Date();
 	}
-	//Schreiben in aktiveArbeitsplaetze
+	//Schreiben in windowsBenutzer
 	exports.schreibeSocketInfo(ApInfo, ip);
 };
 
@@ -186,7 +192,7 @@ exports.schreibeApConnect = function (ip, socketID, getrennt) {
  */
 exports.findeElement = function (collection, element, callback) {
 	if (exports.dbVerbindung === undefined) {
-		log.error('Datenbank ist noch nicht verbunden!!! Leseversuch schlug fehl: Collection: ' + collection + ', element: ' + element);
+		log.error('Datenbank ist noch nicht verbunden!!! Leseversuch schlug fehl: Collection: ' + util.inspect(collection) + ', element: ' + util.inspect(element));
 	}
 	else {
 		datenbank.findeElement(collection, element, function (doc) {
@@ -196,43 +202,21 @@ exports.findeElement = function (collection, element, callback) {
 };
 
 /**
- *
+ * Spezifischen Windowsbenutzer aus DB lesen
  * @param {string} ip
  * @param {function} callback
  */
 exports.findeApNachIp = function (ip, callback) {
-	// TODO: Aus DB auslesen, nicht mehr den Umweg über REST nehmen, weil so oft benutzt
-	//var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
-	let Ap = '';
-	log.debug(FILENAME + ' function findeNachIp: ' + util.inspect(ip));
+	const ipAddr = tools.filterIP(ip);
+	log.debug(FILENAME + ' function findeApNachIp Ip: ' + util.inspect(ipAddr));
 
-	// TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
-	const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/benutzer/zeigeWindowsBenutzer';
-	log.debug(FILENAME + ' function findeNachIp ' + url);
-
-	request(url, function (error, response, body) {
-		if (!error && response.statusCode == 200) {
-			//log.debug("body: " + body);
-			const alle_Ap = JSON.parse(body);
-			log.debug(FILENAME + ' function findeNachIp: ' + alle_Ap);
-
-			if (alle_Ap.hasOwnProperty(ip.replace('::ffff:', ''))) {
-				Ap = alle_Ap[ip.replace('::ffff:', '')].user;
-				log.debug(FILENAME + ' function findeNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
-				if (typeof callback !== 'function') {
-					log.error('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-				}
-				else {
-					callback(Ap);
-				}
-			}
-			else {
-				log.error(FILENAME + ' function findeNachIp: Benutzer NICHT gefunden zu IP: ' + ip.replace('::ffff:', ''));
-				callback('');
-			}
+	exports.findeElement('windowsBenutzer', {_id: ipAddr}, function (doc) {
+		if (typeof doc[0].user == 'string') {
+			callback(doc[0].user);
 		}
 		else {
-			log.error('Fehler. ' + JSON.stringify(error));
+			log.error(FILENAME + ' function findeApNachIp: Benutzer NICHT gefunden zu IP: ' + ipAddr);
+			callback('');
 		}
 	});
 };
@@ -250,22 +234,21 @@ exports.liesAusRESTService = function (configfile, callback) {
 	log.debug('function liesAusRESTService ' + configfile);
 
 	// TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
-	const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/lieskonfig?configfile=' + configfile;
-	log.debug(' liesAusRESTService url=' + url);
-
+	const url = 'http://localhost:' + cfg.port + '/lieskonfig?configfile=' + configfile;
+	log.debug(FILENAME + ' liesAusRESTService url=' + url);
 	request(url, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			const antwortImBody = JSON.parse(body);
-			log.debug(' liesAusRESTService response: ' + JSON.stringify(antwortImBody));
+			log.debug(FILENAME + ' liesAusRESTService response: ' + JSON.stringify(antwortImBody));
 			callback(antwortImBody);
 		}
 		else {
 			if (error) {
-				log.error(' liesAusRESTService Fehler: ' + JSON.stringify(error));
+				log.error(FILENAME + ' liesAusRESTService Fehler: ' + JSON.stringify(error));
 				callback('Fehler');//TODO: hier Fehlerhandling wenn Service nicht erreichbar
 			}
 			else {
-				log.error(' liesAusRESTService Fehler: ' + JSON.stringify(body));
+				log.error(FILENAME + ' liesAusRESTService Fehler: ' + JSON.stringify(body));
 				//log.error(" liesAusRESTService Fehler: " + JSON.stringify(response));
 				callback(body);
 			}
@@ -339,7 +322,7 @@ const datenbank = {
 	 * @param {object} inhalt
 	 */
 	schreibeInDb(collection, selector, inhalt) {
-		log.debug('TEST in DB ' + collection + ' -- ' + selector + ' -- ' + inhalt);
+		log.debug(FILENAME + ' Funktion: schreibeInDb ' + util.inspect(collection) + ' -- ' + util.inspect(selector) + ' -- ' + util.inspect(inhalt));
 
 		const db  = exports.dbVerbindung;
 		const tmp = db.collection(collection);

@@ -42,18 +42,17 @@ router.get('/zuordnung', function (req, res) {
 	db.findeApNachIp(req.ip, function (benutzer) {
 		log.debug('Benutzer: ' + benutzer);
 		if (benutzer) {
-			log.info(FILENAME + ' Funktion router.get /zuordnung Arbeitsplatz gefunden! IP: ' + req.ip);
+			log.info(FILENAME + ' Funktion router.get /zuordnung Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
+
 			// TODO: ueberpruefen, ob hier das Richtige uebergeben wird:
 			erstelleKonfigFuerLotsenKanal(benutzer, false, function (konfig) {
 				//Uebergebe Funkstellen ID an Jade Template
 				log.info(FILENAME + ' Funktion router.get /zuordnung Konfig: ' + konfig);
 				res.render('zuordnung', {
-
 					'gesamteKonfig': konfig
-
-				}); //res send ende
-			}); //erstelleKonfigFurAp Ende
-		} //if Ende
+				});
+			});
+		}
 	});
 });
 
@@ -84,12 +83,12 @@ router.get('/status', function (req, res) {
 
 /* GET UKW Display */
 router.get('/ukw', function (req, res) {
-	const clientIP = req.ip;
+	const clientIP = tools.filterIP(req.ip);
 	log.debug('Benutzer IP: ' + clientIP);
 	db.findeApNachIp(clientIP, function (benutzer) {
 		log.debug('ukw - Ermittelter Benutzer: ' + benutzer);
 		if (benutzer) {
-			log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + req.ip);
+			log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
 			erstelleKonfigFurAp(benutzer, function (konfig, errString) {
 				if (konfig == 'Fehler') {
 					res.render('error', {
@@ -100,10 +99,10 @@ router.get('/ukw', function (req, res) {
 					});
 				}
 				else {
-					//Uebergebe Funkstellen ID an Jade Template
-					log.info('ukw - konfigfuerAP: an Jade Template uebergeben');
+					//Uebergebe Funkstellen ID an Pug Template
+					log.info('ukw - konfigfuerAP: an Pug Template uebergeben');
 					//ukwDisplay --> zum Testen eines neuen Layouts
-					res.render('ukwDisplay', {
+					res.render('entwicklung/ukwDisplayTest', {
 						log,  // logging auch im Jade-Template moeglich!
 						'gesamteKonfig': konfig
 
@@ -125,13 +124,13 @@ router.get('/ukw', function (req, res) {
 }); //router Ende
 
 /* GET UKW Display */
-router.get('/ukwTest', function (req, res) {
-	const clientIP = req.ip;
+router.get('/ukwAlt', function (req, res) {
+	const clientIP = tools.filterIP(req.ip);
 	log.debug('Benutzer IP: ' + clientIP);
 	db.findeApNachIp(clientIP, function (benutzer) {
 		log.debug('ukw - Ermittelter Benutzer: ' + benutzer);
 		if (benutzer) {
-			log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + req.ip);
+			log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
 			erstelleKonfigFurAp(benutzer, function (konfig, errString) {
 				if (konfig == 'Fehler') {
 					res.render('error', {
@@ -142,10 +141,10 @@ router.get('/ukwTest', function (req, res) {
 					});
 				}
 				else {
-					//Uebergebe Funkstellen ID an Jade Template
-					log.info('ukw - konfigfuerAP: an Jade Template uebergeben');
+					//Uebergebe Funkstellen ID an Pug Template
+					log.info('ukw - konfigfuerAP: an Pug Template uebergeben');
 					//ukwDisplay --> zum Testen eines neuen Layouts
-					res.render('entwicklung/ukwDisplayTest', {
+					res.render('ukwDisplay', {
 						log,  // logging auch im Jade-Template moeglich!
 						'gesamteKonfig': konfig
 
@@ -169,12 +168,12 @@ router.get('/ukwTest', function (req, res) {
 
 /* GET UKW Display */
 router.get('/ukwTestWue', function (req, res) {
-	const clientIP = req.ip;
+	const clientIP = tools.filterIP(req.ip);
 	log.debug('Benutzer IP: ' + clientIP);
 	db.findeApNachIp(clientIP, function (benutzer) {
 		log.debug('ukw - Ermittelter Benutzer: ' + benutzer);
 		if (benutzer) {
-			log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + req.ip);
+			log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
 			erstelleKonfigFurAp(benutzer, function (konfig, errString) {
 				if (konfig == 'Fehler') {
 					res.render('error', {
@@ -215,7 +214,7 @@ router.get('/ukwTestWue', function (req, res) {
  * TODO wenn die Konfiguration noch nicht eingelesen ist in Funkstellen, dann warten bis verfuegbar, nach Timeout mit Fehler antworten, Fehlerhandling clientseitig
  * */
 router.get('/ukwKonfig', function (req, res) {
-	log.warn(FILENAME + ' Funktion: router get /ukwKonfig von IP: ' + req.ip, +'   IP-Parameter: ' + JSON.stringify(req.query));
+	log.warn(FILENAME + ' Funktion: router get /ukwKonfig von IP: ' + tools.filterIP(req.ip), +'   IP-Parameter: ' + JSON.stringify(req.query));
 
 	let Funkstellen = rfd.getFunkstellen();
 	if (Funkstellen.length === 0) {
@@ -224,25 +223,7 @@ router.get('/ukwKonfig', function (req, res) {
 			.send('ukwKonfig konnte nicht geladen werden.');
 	}
 	else {
-		// /ukwKonfig mit Parameter z.B. ukwKonfig?ip=1.1.1.1
-		if (req.query.ip) {
-			// TODO: testcode entfernen?
-			// if (req.query.ip == '1.1.1.1') {
-			// 	const Konfig = {
-			// 		FunkstellenReihe: [],
-			// 		FunkstellenDetails: {},
-			// 		ArbeitsplatzGeraete: {},
-			// 		MhanZuordnung: {},
-			// 		IpConfig: cfg
-			// 	};
-			// 	for (let t = 0; t < Funkstellen.length; t++) {
-			// 		log.debug(Funkstellen[t].id);
-			// 		Konfig.FunkstellenDetails[Funkstellen[t].id] = rfd.findeFstNachId(Funkstellen[t].id); ///ab HIER weiter-------------------------------------------
-			//
-			// 	}
-			// 	res.send(Konfig);
-			// }
-			// else {
+		if (req.query.ip) { // /ukwKonfig mit Parameter z.B. ukwKonfig?ip=1.1.1.1
 			db.findeApNachIp(req.query.ip, function (benutzer) {
 				if (benutzer) {
 					log.debug(FILENAME + ' Benutzer zu IP  = ' + benutzer + ' ' + req.query.ip);
@@ -278,9 +259,7 @@ router.get('/ukwKonfig', function (req, res) {
 				});
 			}
 		}
-
-		// ukwkonfig ohne parameter
-		else {
+		else { // ukwkonfig ohne parameter
 			db.findeApNachIp(req.ip, function (benutzer) {
 				if (benutzer) {
 					log.debug(FILENAME + ' Funktion: router get /ukwKonfig ermittelter User: ' + benutzer);
@@ -314,7 +293,7 @@ router.get('/ukwKonfig', function (req, res) {
 // });
 
 router.get('/mockmessage', function (req, res) {
-	//log.debug(FILENAME + ' mockmessage von IP: ' + req.ip + ", message: "+ require('util').inspect( req) );
+	//log.debug(FILENAME + ' mockmessage von IP: ' + tools.filterIP(req.ip) + ", message: "+ require('util').inspect( req) );
 	const msgText = req.query.messageText;
 	log.debug(FILENAME + ' mockmessage messageText: ' + msgText);
 	ukw.sendeSipNachricht(msgText, function (result, error) {

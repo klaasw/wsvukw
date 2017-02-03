@@ -45,7 +45,7 @@
 				//Initialisierung Slider für Lautstärke im Modal #mithoerenModal
 				$('#sliderModal').slider({
 					tooltip: 'always'
-				})
+				});
 
 				//Lautstärke im Slider setzen
 				$('#sliderModal').slider('setValue', lautstaerke);
@@ -484,7 +484,7 @@
 				_self.socketStatusMessage(msg);
 			});
 
-			//eingehende ZustandsMessage für gespeicherte Schaltzustaende
+			// eingehende ZustandsMessage für gespeicherte Schaltzustaende
 			this.socket.on('zustandsMessage', function (msg) {
 				_self.lautsprecherAufschalten(msg);
 			});

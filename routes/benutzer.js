@@ -45,7 +45,7 @@ router.put('/schreibeWindowsBenutzer', function (req, res) {
 	if (benutzer.angemeldet === true) {
 		schreibeParameter = {
 			$set: {
-				ip:         benutzer.ip,
+				_id:         benutzer.ip,
 				user:       benutzer.user.toLowerCase(),
 				loginZeit:  new Date(),
 				angemeldet: benutzer.angemeldet
@@ -55,7 +55,7 @@ router.put('/schreibeWindowsBenutzer', function (req, res) {
 	if (benutzer.angemeldet === false) {
 		schreibeParameter = {
 			$set: {
-				ip:         benutzer.ip,
+				_id:         benutzer.ip,
 				user:       benutzer.user.toLowerCase(),
 				logoutZeit: new Date(),
 				angemeldet: benutzer.angemeldet
