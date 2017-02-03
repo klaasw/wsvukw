@@ -321,7 +321,7 @@ const datenbank = {
 	 * @param {object} inhalt
 	 */
 	schreibeInDb(collection, selector, inhalt) {
-		log.debug('TEST in DB ' + collection + ' -- ' + selector + ' -- ' + inhalt);
+		log.debug(FILENAME + ' Funktion: schreibeInDb ' + util.inspect(collection) + ' -- ' + util.inspect(selector) + ' -- ' + util.inspect(inhalt));
 
 		const db  = exports.dbVerbindung;
 		const tmp = db.collection(collection);
