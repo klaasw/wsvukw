@@ -386,11 +386,10 @@
 							$('.button_span', button).addClass('btn-primary');
 
 							_self.ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true;
-							//this.geschalteteSPAN[msg.geschaltet.$.id] = FstID;
+							this.geschalteteSPAN[msg.geschaltet.$.id]              = msg.geschaltet.$.Ap;
 
 							$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
 							console.log('geschaltet: ' + msg.geschaltet.$.id);
-							console.log(msg.geschaltet);
 						}
 					}
 				}
@@ -428,7 +427,7 @@
 
 
 							_self.ApFunkstellen[msg.getrennt.$.id].aufgeschaltet = false;
-							//delete this.geschalteteSPAN[SPAN_MAHN];
+							delete this.geschalteteSPAN[msg.getrennt.$.id];
 
 							$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
 							console.log('trennen: ' + msg.getrennt.$.id)
@@ -712,6 +711,9 @@
 		 * @param {string} SPAN_MAHN_ApNr
 		 */
 		schalten: function (FstID, SPAN_MAHN, SPAN_MAHN_ApNr) {
+
+			SPAN_MAHN_ApNr = SPAN_MAHN_ApNr || 'SPAN01';
+
 			const _self = this;
 			this.socket.emit('clientMessage', {
 				'FstID':         FstID,
@@ -739,7 +741,7 @@
 				'aktion':        'trennenEinfach',
 				'span_mhanApNr': SPAN_MAHN_ApNr
 			});
-			$.notify('Trenne: <br>' + this.ApFunkstellen[geklickteID].sname);
+			$.notify('Trenne: <br>' + this.ApFunkstellen[FstID].sname);
 			//console.log('(notify) trenne: ' + this.ApFunkstellen[FstID].sname);
 		},
 
@@ -775,24 +777,32 @@
 				this.einzel = false;
 				$('#statusWechsel a').text('Gruppenschaltung');
 
-				// if (typeof this.aktuellerBenutzer.schaltZustandGruppe == 'undefined') {
-				// 	this.aktuellerBenutzer.schaltZustandGruppe = this.geschalteteSPAN;
-				// }
-				//
-				// this.aktuellerBenutzer.schaltZustandEinzel = this.geschalteteSPAN; //speichere geschalteten Zustand
-				// this.zustandWiederherstellen(this.aktuellerBenutzer.schaltZustandGruppe); // lade Gruppenzustand
+				//console.log('Wechsel zu Gruppenschaltung');
+				//console.log(this.geschalteteSPAN);
+				//console.log(this.aktuellerBenutzer.schaltZustandGruppe);
+
+				if (typeof this.aktuellerBenutzer.schaltZustandGruppe == 'undefined') {
+					this.aktuellerBenutzer.schaltZustandGruppe = this.geschalteteSPAN;
+				}
+
+				this.aktuellerBenutzer.schaltZustandEinzel = this.geschalteteSPAN; //speichere geschalteten Zustand
+				this.zustandWiederherstellen(this.aktuellerBenutzer.schaltZustandGruppe); // lade Gruppenzustand
 			}
 			else { // Wechsel zu Einzelschaltung
 				this.einzel = true;
 				$('#statusWechsel a').text('Einzelschaltung');
 
-				// if (typeof this.aktuellerBenutzer.schaltZustandEinzel == 'undefined') {
-				// 	const key0                                 = Object.keys(this.geschalteteSPAN);
-				// 	this.aktuellerBenutzer.schaltZustandEinzel = {[key0]: this.geschalteteSPAN[key0]};
-				// }
-				//
-				// this.aktuellerBenutzer.schaltZustandGruppe = this.geschalteteSPAN; //speichere geschalteten Zustand
-				// this.zustandWiederherstellen(this.aktuellerBenutzer.schaltZustandEinzel); //lade Einzelzustand
+				//console.log('Wechsel zu Einzelschaltung');
+				//console.log(this.geschalteteSPAN);
+				//console.log(this.aktuellerBenutzer.schaltZustandEinzel);
+
+				if (typeof this.aktuellerBenutzer.schaltZustandEinzel == 'undefined') {
+					const keyZero                              = Object.keys(this.geschalteteSPAN)[0];
+					this.aktuellerBenutzer.schaltZustandEinzel = {[keyZero]: this.geschalteteSPAN[keyZero]};
+				}
+
+				this.aktuellerBenutzer.schaltZustandGruppe = this.geschalteteSPAN; //speichere geschalteten Zustand
+				this.zustandWiederherstellen(this.aktuellerBenutzer.schaltZustandEinzel); //lade Einzelzustand
 			}
 
 			this.schreibeBenutzer();
@@ -813,29 +823,22 @@
 			const _self               = this;
 
 			$.each(backupApFunkstellen, function (key, value) {
-				if (AufschalteZustand[key] !== undefined) {
-					//console.log("AktuellerStand: key=" + key + "', value='" + JSON.stringify(value.aufgeschaltet) + "'")
-					//console.log("neuer    Stand: key=" + JSON.stringify(AufschalteZustand[key].id) + "value=" + JSON.stringify(AufschalteZustand[key].aufgeschaltet))
+				if (value !== 'frei') { // Da in FunkstellenDetails frei mitgeschleppt wird
 
-					if (value !== 'frei') {// Da in FunkstellenDetails frei mitgeschleppt wird
-						if (value.aufgeschaltet == true && AufschalteZustand[key].aufgeschaltet == true) {
-							//nix
-						}
-						if (value.aufgeschaltet == true && AufschalteZustand[key].aufgeschaltet == false || AufschalteZustand[key].aufgeschaltet == undefined) {
-							//trennen
-							_self.trennen(AufschalteZustand[key].id, _self.SPAN)
-						}
-						if (value.aufgeschaltet == false && AufschalteZustand[key].aufgeschaltet == true) {
-							//schalten
-							_self.schalten(AufschalteZustand[key].id, _self.SPAN)
-						}
-						if (value.aufgeschaltet == false && AufschalteZustand[key].aufgeschaltet == false) {
-							//nix
+					//console.log(key + ': ' + typeof AufschalteZustand[key]);
+
+					if (AufschalteZustand.hasOwnProperty(key)) {
+						console.log('wechsel schalten: ' + key);
+						_self.schalten(key, _self.SPAN)
+					}
+					else if (value.aufgeschaltet == false) { // schalten
+						if (value.aufgeschaltet == true) { // trennen
+							console.log('wechsel trennen: ' + key);
+							_self.trennen(key, _self.SPAN)
 						}
 					}
 				}
 			});
-
 
 			//console.log("Funkstellen ID nicht vorhanden: "+Id)
 		},
