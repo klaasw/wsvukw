@@ -156,7 +156,7 @@ exports.schreibeSocketInfo = function (socketInfo, ip) {
 		}
 	}
 	socketInfo.$set._id = ip;
-	const selector = {'_id': ip};
+	const selector      = {'_id': ip};
 	// TODO: lieber separate Datenbank: Bewegungsdaten / Monitoring / Audit von Stammdaten trennen
 	exports.schreibeInDb('windowsBenutzer', selector, socketInfo, schreibeLokal);
 };
@@ -240,7 +240,9 @@ exports.liesAusRESTService = function (configfile, callback) {
 		if (!error && response.statusCode == 200) {
 			const antwortImBody = JSON.parse(body);
 			log.debug(FILENAME + ' liesAusRESTService response: ' + JSON.stringify(antwortImBody));
-			callback(antwortImBody);
+			if (typeof antwortImBody == 'object') {
+				callback(antwortImBody);
+			}
 		}
 		else {
 			if (error) {
