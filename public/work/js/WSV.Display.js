@@ -346,7 +346,7 @@
 					$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.FSTSTATUS.$.id].sname);
 
 					//geschaltetet Zustände an Server übertragen
-					socket.emit('clientMessageSchaltzustand', {
+					_self.socket.emit('clientMessageSchaltzustand', {
 						'Zustand':      _self.ApFunkstellen,
 						'Arbeitsplatz': _self.ApID
 					});

@@ -17,7 +17,7 @@ const parser  = new xml2js.Parser({
 
 const FILENAME = __filename.slice(__dirname.length + 1);
 
-let Funkstellen = {};
+const Funkstellen = {};
 
 exports.getFunkstellen = function () {
 	return Funkstellen;
@@ -42,7 +42,7 @@ exports.leseRfdTopologie = function (callback) {
 			log.error(FILENAME + ' RFD WebService Topologie nicht erreichbar ' + error);
 			// TODO: Leseversuch wiederholen, muss spaetestens dann existieren, wenn ein Client sich connecten will
 			setTimeout(leseRfdTopologie(function () {
-				log.debug("fertig mit LeseRfdTopologie");
+				log.debug('fertig mit LeseRfdTopologie');
 			}), 1000);
 		}
 		//log.debug(response)

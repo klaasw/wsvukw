@@ -357,7 +357,7 @@ $(window).load(function () {
 					$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.FSTSTATUS.$.id].sname);
 
 					//geschaltetet Zustände an Server übertragen
-					socket.emit('clientMessageSchaltzustand', {
+					_self.socket.emit('clientMessageSchaltzustand', {
 						'Zustand':      _self.ApFunkstellen,
 						'Arbeitsplatz': _self.ApID
 					});
@@ -998,7 +998,7 @@ $(window).load(function () {
 
         //Pruefe ob Wert in Objekt vorkommt
         hatWert: function (obj, value) {
-            for (var id in obj) {
+            for (const id in obj) {
                 if (obj[id] == value) {
                     return true;
                 }

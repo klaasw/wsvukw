@@ -12,7 +12,7 @@
 
         //Pruefe ob Wert in Objekt vorkommt
         hatWert: function (obj, value) {
-            for (var id in obj) {
+            for (const id in obj) {
                 if (obj[id] == value) {
                     return true;
                 }
