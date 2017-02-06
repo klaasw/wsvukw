@@ -34,7 +34,9 @@ exports.socket = function (server) {
 		// nur einmal beim Start: Zeitpunkt der Benutzung in DB schreiben
 		db.schreibeApConnect(ipSocket, socket.id, true);
 
-		leseZustand(socket.id); //Status der Funkstellen übertragen
+		//TODO: Funktion leseZustand kann entfernt werden.
+		// leseZustand(socket.id); //Status der Funkstellen übertragen
+
 		exports.leseSchaltzustand(socket.id, ipSocket); //letzten Schaltzustandübertragen
 		// Uebertragen der DUE Server Zustaende
 		exports.emit('statusMessage', dueStatusServerA, socket.id);
@@ -163,6 +165,8 @@ exports.leseSchaltzustand = function (socketID, IP) {
 };
 
 /**
+ * TODO: Funktion kann entfernt werden. Da jede einzelne Zustandmeldung übertragen wird
+ * Neu: Verwendung von /verbindungen/liesZustand
  * Lese Zustandsmeldungen in zustandKomponenten
  * {"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
  * @param {string} socketID
