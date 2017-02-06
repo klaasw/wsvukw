@@ -153,7 +153,7 @@
 			const _self = this;
 
 			$.get('/ukwKonfig', function (data) { //IP-Adress nur als Platzhalter zum Testen
-				// console.log(data); //TODO: unwichtige, sicherheitsrelevante Informationen nicht uebermitteln
+				// console.log(data);
 
 				_self.ApFunkstellen       = data.Konfigdaten.FunkstellenDetails;
 				_self.SPAN                = data.Konfigdaten.ArbeitsplatzGeraete.SPAN01;
@@ -201,7 +201,7 @@
 				}
 			}
 
-			const button = $('#button' + ort + '_' + dienst);
+			const button      = $('#button' + ort + '_' + dienst);
 			const buttonAktiv = $('#buttonAktiv' + ort + '_' + dienst);
 
 			if (status == 'OK') {
@@ -904,6 +904,13 @@
 			}
 			else if (this.geschalteteSPAN.length > 1) {
 				benutzer.schaltZustandGruppe = JSON.stringify(this.geschalteteSPAN);
+			}
+
+			if (Object.keys(benutzer.schaltZustandEinzel).length && typeof benutzer.schaltZustandEinzel == 'object') {
+				benutzer.schaltZustandEinzel = JSON.stringify(benutzer.schaltZustandEinzel);
+			}
+			if (Object.keys(benutzer.schaltZustandGruppe).length && typeof benutzer.schaltZustandGruppe == 'object') {
+				benutzer.schaltZustandGruppe = JSON.stringify(benutzer.schaltZustandGruppe);
 			}
 
 			$.ajax({
