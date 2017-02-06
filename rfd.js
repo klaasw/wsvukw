@@ -8,8 +8,6 @@ const log    = require('./log.js'); // Modul fuer verbessertes Logging
 const socket = require('./socket.js');
 
 const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
-db.verbindeDatenbank(function (db) {
-});
 
 const request = require('request'); //Modul zu Abfrage von WebServices
 const xml2js  = require('xml2js'); // zum Konvertieren von XML zu JS
@@ -165,12 +163,15 @@ exports.findeFstNachId = function (Id) {
 	return 'frei';
 };
 
-
-/*Block zur Implementierung der WebService Abfragen an RFD
- * TODO: noch erforderlich? ApID in Client ergaeznen damit schaltzustand zum AP geschrieben werden kann
- *
- *
- *
+/**
+ * Block zur Implementierung der WebService Abfragen an RFD
+ * TODO: noch erforderlich? ApID in Client ergaenzen damit Schaltzustand zum AP geschrieben werden kann
+ * @param Fst
+ * @param Span_Mhan
+ * @param aktion
+ * @param Kanal
+ * @param span_mhanApNr
+ * @param ApID
  */
 exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span_mhanApNr, ApID) {
 	const parameterRfdWebService = {
@@ -182,9 +183,7 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span
 		},
 		body:    ''
 	};
-
-	let antwortFuerWebsocket;
-
+	let antwortFuerWebsocket = {};
 
 	if (aktion == 'trennenEinfach') {
 		//Variable fuer RFD Request

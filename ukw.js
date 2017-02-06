@@ -19,8 +19,6 @@ const log    = require('./log.js');
 const cfg    = require('./cfg.js');
 const socket = require('./socket.js');
 const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
-db.verbindeDatenbank(function (db) {
-});
 
 const FILENAME = __filename.slice(__dirname.length + 1);
 

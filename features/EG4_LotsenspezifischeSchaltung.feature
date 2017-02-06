@@ -1,8 +1,9 @@
-Feature: Titel User Story
+Feature: Einzel- und Gruppenschaltung - Lotsenspezifische Schaltung aufschalten
 
-  Beschreibung User Story
+  Als Lotse möchte ich die mir freigegebenen Schaltungen aufschalten,
+  um eine Kommunikation zu starten.
 
-  Scenario: Titel Testfall
-    Given Gegeben
-    When Aktion
-    Then  Ziel
+  Scenario: todo
+    Given todo
+    When todo
+    Then todo

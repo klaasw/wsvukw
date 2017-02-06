@@ -11,15 +11,13 @@
 		ApFunkstellen:       {},
 		ArbeitsplatzGeraete: {},
 		einzel:              true,
-		einzelStatus:        {},
-		gruppenStatus:       {},
-		schaltZaehler:       0,
 		IpConfig:            '',
 		socket:              {},
 		aktuellerUKWserver:  '',
 		aktuellerBenutzer:   {},
 		defaultServer:       '',
 		aktuelleMKA:         {},
+		geschalteteSPAN:     {},
 
 		init: function () {
 
@@ -45,7 +43,7 @@
 				//Initialisierung Slider für Lautstärke im Modal #mithoerenModal
 				$('#sliderModal').slider({
 					tooltip: 'always'
-				})
+				});
 
 				//Lautstärke im Slider setzen
 				$('#sliderModal').slider('setValue', lautstaerke);
@@ -233,8 +231,9 @@
 
 		socketUkwMessage: function (msg) {
 
-			if (msg === null)
+			if (msg === null) {
 				return;
+			}
 
 			const msgKeys = Object.keys(msg); //z.B. RX, FSTSTATUS
 			const msgTyp  = msgKeys[0];
@@ -360,18 +359,18 @@
 					// pruefen ob diese Meldung zu diesem Arbeitsplatz gehoert
 					if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.geschaltet.$.Ap) && _self.ApFunkstellen[msg.geschaltet.$.id] !== 'frei') {
 
+						// suche Schaltflaeche zu FunkstellenID
+						const button = $('#' + msg.geschaltet.$.id).parents('.button_panel');
+
 						//aendern Darstellung fuer MHAN
 						if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1) {
-							//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
+							// aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
 							if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1 && msg.geschaltet.$.id.indexOf('SPAN') != -1) {
 								$('#' + msg.geschaltet.$.id).addClass('btn-primary');
 								$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
-								//nur MHAN aufschaltungen
 							}
-							else {
-								//suche Schaltflaeche zu FunkstellenID
-								const button = $('#' + msg.geschaltet.$.id).parent().parent().offsetParent().attr('id');
-								$('#' + button + ' .button_mhan').removeClass('btn-default').addClass('btn-primary');
+							else { //nur MHAN aufschaltungen
+								$('.button_mhan', button).removeClass('btn-default').addClass('btn-primary');
 							}
 
 							const geraet = msg.geschaltet.$.Ap;
@@ -382,16 +381,15 @@
 						}
 						//aendern Darstellung fuer SPAN
 						if (msg.geschaltet.$.Ap.indexOf('SPAN') != -1) {
-							//suche Schaltflaeche zu FunkstellenID
-							const button = $('#' + msg.geschaltet.$.id).parent().parent().offsetParent().attr('id');
 
-							//$('#'+button+' > div > div.panel-heading > span').text( "aufgeschaltet" )
-							$('#' + button + ' > div').addClass('panel-primary');
-							$('#' + button + ' .button_span').addClass('btn-primary');
+							button.addClass('panel-primary');
+							$('.button_span', button).addClass('btn-primary');
 
 							_self.ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true;
+							this.geschalteteSPAN[msg.geschaltet.$.id]              = msg.geschaltet.$.Ap;
+
 							$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
-							console.log(msg.geschaltet.$.id);
+							console.log('geschaltet: ' + msg.geschaltet.$.id);
 						}
 					}
 				}
@@ -401,18 +399,18 @@
 
 					if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.getrennt.$.Ap)) {
 
+						// suche Schaltflaeche zu FunkstellenID
+						const button = $('#' + msg.getrennt.$.id).parents('.button_panel');
+
 						//Aendern Darstellung fuer MHAN
 						if (msg.getrennt.$.Ap.indexOf('MHAN') != -1) {
 							//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
 							if (msg.getrennt.$.Ap.indexOf('MHAN') != -1 && msg.getrennt.$.id.indexOf('SPAN') != -1) {
 								$('#' + msg.getrennt.$.id).removeClass('btn-primary');
 								$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
-								//nur MHAN Aufschaltungen
 							}
-							else {
-								//suche Schaltflaeche zu FunkstellenID
-								const button = $('#' + msg.getrennt.$.id).offsetParent().attr('id');
-								$('#' + button + ' .button_mhan_ship').css('background-color', '#f5f5f5').removeClass('bg-primary');
+							else { //nur MHAN Aufschaltungen
+								$('.button_mhan', button).css('background-color', '#f5f5f5').removeClass('bg-primary');
 							}
 							const geraet = msg.getrennt.$.Ap;
 
@@ -424,18 +422,15 @@
 						//Aendern Darstellung fuer SPAN
 						if (msg.getrennt.$.Ap.indexOf('SPAN') != -1) {
 
-							//suche Schaltflaeche zu FunkstellenID
-							const button = $('#' + msg.getrennt.$.id).parent().parent().offsetParent().attr('id');
-							//$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
-
-							$('#' + button + ' > div').removeClass('panel-primary');
-							$('#' + button + ' .button_span').removeClass('btn-primary');
+							button.removeClass('panel-primary');
+							$('.button_span', button).removeClass('btn-primary');
 
 
 							_self.ApFunkstellen[msg.getrennt.$.id].aufgeschaltet = false;
+							delete this.geschalteteSPAN[msg.getrennt.$.id];
 
 							$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
-							//console.log(msg.getrennt.$.id)
+							console.log('trennen: ' + msg.getrennt.$.id)
 						}
 					}
 					else {
@@ -484,7 +479,7 @@
 				_self.socketStatusMessage(msg);
 			});
 
-			//eingehende ZustandsMessage für gespeicherte Schaltzustaende
+			// eingehende ZustandsMessage für gespeicherte Schaltzustaende
 			this.socket.on('zustandsMessage', function (msg) {
 				_self.lautsprecherAufschalten(msg);
 			});
@@ -716,6 +711,9 @@
 		 * @param {string} SPAN_MAHN_ApNr
 		 */
 		schalten: function (FstID, SPAN_MAHN, SPAN_MAHN_ApNr) {
+
+			SPAN_MAHN_ApNr = SPAN_MAHN_ApNr || 'SPAN01';
+
 			const _self = this;
 			this.socket.emit('clientMessage', {
 				'FstID':         FstID,
@@ -725,27 +723,26 @@
 				'span_mhanApNr': SPAN_MAHN_ApNr
 			});
 			$.notify('Schalte: <br>' + this.ApFunkstellen[FstID].sname);
-			console.log('(notify) Schalte: ' + this.ApFunkstellen[FstID].sname);
-			this.schaltZaehler++;
+			//console.log('(notify) schalte: ' + this.ApFunkstellen[FstID].sname);
 		},
 
 		/**
 		 * Kanal trennen via RFD Socket
-		 * @param geklickteID
-		 * @param geklickteSPANMHAN
-		 * @param geklicktespan_mhanApNr
+		 * @param FstID
+		 * @param SPAN_MAHN
+		 * @param SPAN_MAHN_ApNr
 		 */
-		trennen: function (geklickteID, geklickteSPANMHAN, geklicktespan_mhanApNr) {
+		trennen: function (FstID, SPAN_MAHN, SPAN_MAHN_ApNr) {
 			const _self = this;
 			this.socket.emit('clientMessage', {
-				'FstID':         geklickteID,
+				'FstID':         FstID,
 				'ApID':          _self.ApID,
-				'SPAN':          geklickteSPANMHAN,
+				'SPAN':          SPAN_MAHN,
 				'aktion':        'trennenEinfach',
-				'span_mhanApNr': geklicktespan_mhanApNr
+				'span_mhanApNr': SPAN_MAHN_ApNr
 			});
-			$.notify('Trenne: <br>' + this.ApFunkstellen[geklickteID].sname);
-			this.schaltZaehler++;
+			$.notify('Trenne: <br>' + this.ApFunkstellen[FstID].sname);
+			//console.log('(notify) trenne: ' + this.ApFunkstellen[FstID].sname);
 		},
 
 		/**
@@ -778,17 +775,34 @@
 
 			if (this.einzel === true) { // Wechsel zu Gruppenschaltung
 				this.einzel = false;
-
-				this.einzelStatus = this.ApFunkstellen; //speichere geschalteten Zustand
-				this.zustandWiederherstellen(this.gruppenStatus); // lade Gruppenzustand
 				$('#statusWechsel a').text('Gruppenschaltung');
+
+				//console.log('Wechsel zu Gruppenschaltung');
+				//console.log(this.geschalteteSPAN);
+				//console.log(this.aktuellerBenutzer.schaltZustandGruppe);
+
+				if (typeof this.aktuellerBenutzer.schaltZustandGruppe == 'undefined') {
+					this.aktuellerBenutzer.schaltZustandGruppe = this.geschalteteSPAN;
+				}
+
+				this.aktuellerBenutzer.schaltZustandEinzel = this.geschalteteSPAN; //speichere geschalteten Zustand
+				this.zustandWiederherstellen(this.aktuellerBenutzer.schaltZustandGruppe); // lade Gruppenzustand
 			}
 			else { // Wechsel zu Einzelschaltung
 				this.einzel = true;
-
-				this.gruppenStatus = this.ApFunkstellen; //speichere geschalteten Zustand
-				this.zustandWiederherstellen(this.einzelStatus); //lade Einzelzustand
 				$('#statusWechsel a').text('Einzelschaltung');
+
+				//console.log('Wechsel zu Einzelschaltung');
+				//console.log(this.geschalteteSPAN);
+				//console.log(this.aktuellerBenutzer.schaltZustandEinzel);
+
+				if (typeof this.aktuellerBenutzer.schaltZustandEinzel == 'undefined') {
+					const keyZero                              = Object.keys(this.geschalteteSPAN)[0];
+					this.aktuellerBenutzer.schaltZustandEinzel = {[keyZero]: this.geschalteteSPAN[keyZero]};
+				}
+
+				this.aktuellerBenutzer.schaltZustandGruppe = this.geschalteteSPAN; //speichere geschalteten Zustand
+				this.zustandWiederherstellen(this.aktuellerBenutzer.schaltZustandEinzel); //lade Einzelzustand
 			}
 
 			this.schreibeBenutzer();
@@ -800,37 +814,31 @@
 		 */
 		zustandWiederherstellen: function (AufschalteZustand) {
 
-			if (typeof AufschalteZustand != 'object')
+			if (typeof AufschalteZustand != 'object') {
 				return false;
+			}
 
 			//Backup, da die Funktionen schalten und trennen mit Rueckmeldung schon in ApFunkstellen schreiben
 			const backupApFunkstellen = this.ApFunkstellen;
 			const _self               = this;
 
 			$.each(backupApFunkstellen, function (key, value) {
-				if (AufschalteZustand[key] !== undefined) {
-					//console.log("AktuellerStand: key=" + key + "', value='" + JSON.stringify(value.aufgeschaltet) + "'")
-					//console.log("neuer    Stand: key=" + JSON.stringify(AufschalteZustand[key].id) + "value=" + JSON.stringify(AufschalteZustand[key].aufgeschaltet))
+				if (value !== 'frei') { // Da in FunkstellenDetails frei mitgeschleppt wird
 
-					if (value !== 'frei') {// Da in FunkstellenDetails frei mitgeschleppt wird
-						if (value.aufgeschaltet == true && AufschalteZustand[key].aufgeschaltet == true) {
-							//nix
-						}
-						if (value.aufgeschaltet == true && AufschalteZustand[key].aufgeschaltet == false || AufschalteZustand[key].aufgeschaltet == undefined) {
-							//trennen
-							_self.trennen(AufschalteZustand[key].id, _self.SPAN)
-						}
-						if (value.aufgeschaltet == false && AufschalteZustand[key].aufgeschaltet == true) {
-							//schalten
-							_self.schalten(AufschalteZustand[key].id, _self.SPAN)
-						}
-						if (value.aufgeschaltet == false && AufschalteZustand[key].aufgeschaltet == false) {
-							//nix
+					//console.log(key + ': ' + typeof AufschalteZustand[key]);
+
+					if (AufschalteZustand.hasOwnProperty(key)) {
+						console.log('wechsel schalten: ' + key);
+						_self.schalten(key, _self.SPAN)
+					}
+					else if (value.aufgeschaltet == false) { // schalten
+						if (value.aufgeschaltet == true) { // trennen
+							console.log('wechsel trennen: ' + key);
+							_self.trennen(key, _self.SPAN)
 						}
 					}
 				}
 			});
-
 
 			//console.log("Funkstellen ID nicht vorhanden: "+Id)
 		},
@@ -887,9 +895,16 @@
 		 */
 		schreibeBenutzer: function () {
 
-			const benutzer = this.aktuellerBenutzer;
-			benutzer.theme = WSV.Themes.currentTheme;
+			const benutzer  = this.aktuellerBenutzer;
+			benutzer.theme  = WSV.Themes.currentTheme;
 			benutzer.einzel = this.einzel;
+
+			if (this.geschalteteSPAN.length == 1) {
+				benutzer.schaltZustandEinzel = JSON.stringify(this.geschalteteSPAN);
+			}
+			else if (this.geschalteteSPAN.length > 1) {
+				benutzer.schaltZustandGruppe = JSON.stringify(this.geschalteteSPAN);
+			}
 
 			$.ajax({
 				url:     WSV.Display.aktuellerUKWserver + '/benutzer/schreibeBenutzer',
