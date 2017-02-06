@@ -264,10 +264,10 @@ router.get('/ukwKonfig', function (req, res) {
 					//res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
 					// TODO: testen, ob hier das richtige passiert
 					erstelleKonfigFurAp(benutzer, function (Konfig) {
-						if (typeof benutzer == 'object') {
-							benutzer = {};
+						if (typeof benutzer != 'string') {
+							benutzer = '';
 						}
-						if (typeof Konfig == 'object') {
+						if (typeof Konfig != 'object') {
 							Konfig = {};
 						}
 
@@ -363,7 +363,9 @@ function erstelleKonfigFurAp(Ap, callback) {
 		FunkstellenDetails:  {},
 		ArbeitsplatzGeraete: {},
 		MhanZuordnung:       {},
-		IpConfig:            cfg,
+		IpConfig: {
+			alternativeIPs: cfg.alternativeIPs
+			},
 		KanalListe:          []
 	};
 
@@ -392,7 +394,7 @@ function erstelleKonfigFurAp(Ap, callback) {
 
 						//Kanalnummern in Array schreiben. Dient zur dynamischen Befüllung im MKA Dialog
 						const kanalNummer = Konfig.FunkstellenDetails[fstReihe[button][t]].channel;
-						if (kanalNummer !== null) {
+						if (kanalNummer != undefined && kanalNummer !== null) {
 							Konfig.KanalListe.push(kanalNummer);
 						}
 					}
