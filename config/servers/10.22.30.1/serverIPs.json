@@ -4,15 +4,15 @@
 
   "httpIP": "10.22.30.1",
   "rfdIP": "10.22.30.1",
-  "sipIP": "10.22.30.100",
+  "sipIP": "10.22.30.101",
 
   "auth": false,
   "auth_pw": "due",
   "mongoDbs": [  "localhost:27017"  ],
   "alternativeServer": [
-    [      "WHV",      "10.22.30.1:3000"    ],
-    [      "LUB",      "10.22.30.1:3000"    ],
-    [      "BRB",      "10.22.30.1:3000"    ]
+    [      "WHV",      "10.22.30.1"    ],
+    [      "LUB",      "10.22.30.1"    ],
+    [      "BRB",      "10.22.30.1"    ]
   ],
   "checkRfdIntervallInSeconds": 120
 }

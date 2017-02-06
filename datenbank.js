@@ -3,23 +3,32 @@
  * Modul zur Herstellung der Verbindung zur Mongo Datenbank
  *
  * @Author: Klaas Wuellner && Felix Stolle
+ *
+ * Anpassung 14.12.16: Timeouts auskommentiert, nur in pruefeLokaleVerbindung/
+ * VTR lokale DB auskommentiert -> bei Ausfall nodeJS muesste auch Mongo primary
+ * wechseln.
+ * @Author: Klaas Wuellner
+ *
  */
 
 const MongoClient = require('mongodb').MongoClient;
-const assert = require('assert');
-const util = require('util');
+const assert      = require('assert');
+const util        = require('util');
 
-const cfg = require('./cfg.js');
-const log = require('./log.js');
+const cfg   = require('./cfg.js');
+const log   = require('./log.js');
+const tools = require('./tools.js');
 
 const request = require('request'); //Modul zu Abfrage von WebServices
 
 const FILENAME = __filename.slice(__dirname.length + 1);
 
 // Connection URL
-const user_auth = (cfg.auth ? cfg.auth_user + ':' + cfg.auth_pw + '@' : '');
+const user_auth  = (cfg.auth ? cfg.auth_user + ':' + cfg.auth_pw + '@' : '');
 const replicaSet = (cfg.replicaSet !== '' ? '&replicaSet=' + cfg.replicaSet : '');
-const url = 'mongodb://' + user_auth + cfg.mongodb.join(',') + '/ukw?readPreference=nearest' + replicaSet;
+const url        = 'mongodb://' + user_auth + cfg.mongodb.join(',') + '/ukw?readPreference=nearest' + replicaSet;
+
+const verbundenMitPrimary = false;
 
 /**
  * Callback Funktion zum aufrufen nach Verbindungsaufbau
@@ -47,7 +56,7 @@ exports.verbindeDatenbank = function (aktion) {
 		assert.equal(null, err);
 		log.debug(FILENAME + ' Funktion: verbindeDatenbank. err: ' + util.inspect(err));
 		log.debug(FILENAME + ' Funktion: verbindeDatenbank. Verbindung erfolgreich hergestellt:  topology: ' + db.topology + ', primary: ' + db.topology.isMasterDoc.primary + ', isMasterDoc:' + JSON.stringify(db.topology.isMasterDoc));
-		pruefeLokaleVerbindung(db.topology.isMasterDoc.primary);
+		datenbank.pruefeLokaleVerbindung(db.topology.isMasterDoc.primary);
 
 		if (err) throw err;
 
@@ -102,18 +111,11 @@ exports.verbindeDatenbank = function (aktion) {
 			log.debug(FILENAME + ' Funktion: verbindeDatenbank Listener:' + JSON.stringify(event));
 
 			if (event.newDescription.topologyType == 'ReplicaSetWithPrimary') {
-				pruefeLokaleVerbindung(event.newDescription.servers[0].address);
+				datenbank.pruefeLokaleVerbindung(event.newDescription.servers[0].address);
 			}
 		});
 	});
 };
-
-// const datenbank = {
-// 	verbundenMitPrimary: false,
-//
-// 	getVerbundenMitPrimary() {
-// 		return this.verbundenMitPrimary;
-// 	},
 
 /**
  * vor dem Schreiben prüfen ob eine Verbindung besteht
@@ -125,21 +127,21 @@ exports.verbindeDatenbank = function (aktion) {
 //TODO: Prio 2 Verbindung zu unterschiedlichen Datenbanken herstellen. Damit WindowsBenutzer von ukw Datenbank entkoppelt sind
 exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 	if (exports.dbVerbindung === undefined) {
-		log.error('Datenbank ist noch nicht verbunden!!! Schreibversuch schlug fehl. Collection: ' + collection + ', selector: ' + selector + ', inhalt: ' + inhalt);
+		log.error('Datenbank ist noch nicht verbunden!!! Schreibversuch schlug fehl. Collection: ' + util.inspect(collection) + ', selector: ' + util.inspect(selector) + ', inhalt: ' + util.inspect(inhalt));
 	}
 	else {
 		// TODO: abweichendes handling falls primary nicht verbunden
-		if (this.verbundenMitPrimary === true && schreibeLokal === true) {
-			schreibeInDb2(collection, selector, inhalt);
+		if (verbundenMitPrimary === true && schreibeLokal === true) {
+			datenbank.schreibeInDb(collection, selector, inhalt);
 		}
 		else {
-			schreibeInDb2(collection, selector, inhalt);
+			datenbank.schreibeInDb(collection, selector, inhalt);
 		}
 	}
 };
 
 /**
- * schreibe Verbindungsinfo socketID und Zeitstempel in aktiveArbeitsplaetze
+ * schreibe Verbindungsinfo socketID und Zeitstempel in windowsBenutzer
  * @param {object} socketInfo
  * @param {string} ip
  */
@@ -148,15 +150,15 @@ exports.schreibeSocketInfo = function (socketInfo, ip) {
 	if (typeof socketInfo == 'undefined') {
 		socketInfo = {
 			$set: {
-				aktiv: false,
-				disconnectTime: new Date()
+				aktiv:      false,
+				logoutZeit: new Date()
 			}
 		}
 	}
-	socketInfo._id = ip;
-	const selector = {'_id': ip};
+	socketInfo.$set._id = ip;
+	const selector      = {'_id': ip};
 	// TODO: lieber separate Datenbank: Bewegungsdaten / Monitoring / Audit von Stammdaten trennen
-	exports.schreibeInDb('aktiveArbeitsplaetze', selector, socketInfo, schreibeLokal);
+	exports.schreibeInDb('windowsBenutzer', selector, socketInfo, schreibeLokal);
 };
 
 /**
@@ -168,18 +170,17 @@ exports.schreibeSocketInfo = function (socketInfo, ip) {
 exports.schreibeApConnect = function (ip, socketID, getrennt) {
 	const ApInfo = {
 		$set: {
-			'_id': ip.replace('::ffff:', ''),
-			'ip': ip,
+			'_id':   tools.filterIP(ip),
 			'aktiv': !getrennt
 		}
 	};
 	if (getrennt) {
-		ApInfo.disconnectTime = new Date();
+		ApInfo.$set.logoutZeit = new Date();
 	}
 	else {
-		ApInfo.connectTime = new Date();
+		ApInfo.$set.loginZeit = new Date();
 	}
-	//Schreiben in aktiveArbeitsplaetze
+	//Schreiben in windowsBenutzer
 	exports.schreibeSocketInfo(ApInfo, ip);
 };
 
@@ -191,52 +192,31 @@ exports.schreibeApConnect = function (ip, socketID, getrennt) {
  */
 exports.findeElement = function (collection, element, callback) {
 	if (exports.dbVerbindung === undefined) {
-		log.error('Datenbank ist noch nicht verbunden!!! Leseversuch schlug fehl: Collection: ' + collection + ', element: ' + element);
+		log.error('Datenbank ist noch nicht verbunden!!! Leseversuch schlug fehl: Collection: ' + util.inspect(collection) + ', element: ' + util.inspect(element));
 	}
 	else {
-		findeElement2(collection, element, function (doc) {
+		datenbank.findeElement(collection, element, function (doc) {
 			callback(doc);
 		});
 	}
 };
 
 /**
- *
+ * Spezifischen Windowsbenutzer aus DB lesen
  * @param {string} ip
  * @param {function} callback
  */
 exports.findeApNachIp = function (ip, callback) {
-	// TODO: Aus DB auslesen, nicht mehr den Umweg über REST nehmen, weil so oft benutzt
-	//var alle_Ap = require(cfg.configPath + '/users/arbeitsplaetze.json');
-	let Ap = '';
-	log.debug(FILENAME + ' function findeApNachIp Ip: ' + util.inspect(ip));
-	// TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
-	//const url = 'http://' + cfg.cfgIPs.httpIP + ':' + cfg.port + '/benutzer/zeigeWindowsBenutzer';
-	const url = 'http://localhost:' + cfg.port + '/benutzer/zeigeWindowsBenutzer';
-	log.debug(FILENAME + ' function findeApNachIp Url: ' + url);
-	request(url, function (error, response, body) {
-		if (!error && response.statusCode == 200) {
-			//log.debug("body: " + body);
-			const alle_Ap = JSON.parse(body);
-			log.debug(FILENAME + ' function findeApNachIp: alle_Ap: ' + alle_Ap);
+	const ipAddr = tools.filterIP(ip);
+	log.debug(FILENAME + ' function findeApNachIp Ip: ' + util.inspect(ipAddr));
 
-			if (alle_Ap.hasOwnProperty(ip.replace('::ffff:', ''))) {
-				Ap = alle_Ap[ip.replace('::ffff:', '')].user;
-				log.debug(FILENAME + ' function findeApNachIp: ermittelter Benutzer: ' + JSON.stringify(Ap));
-				if (typeof callback !== 'function') {
-					log.error('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-				}
-				else {
-					callback(Ap);
-				}
-			}
-			else {
-				log.error(FILENAME + ' function findeApNachIp: Benutzer NICHT gefunden zu IP: ' + ip.replace('::ffff:', ''));
-				callback('');
-			}
+	exports.findeElement('windowsBenutzer', {_id: ipAddr}, function (doc) {
+		if (typeof doc[0].user == 'string') {
+			callback(doc[0].user);
 		}
 		else {
-			log.error('Fehler. ' + JSON.stringify(error));
+			log.error(FILENAME + ' function findeApNachIp: Benutzer NICHT gefunden zu IP: ' + ipAddr);
+			callback('');
 		}
 	});
 };
@@ -252,6 +232,7 @@ exports.findeApNachIp = function (ip, callback) {
 exports.liesAusRESTService = function (configfile, callback) {
 	// require(cfg.configPath + configfile + '.json');
 	log.debug('function liesAusRESTService ' + configfile);
+
 	// TODO: auf Datenbank-Abfrage umstellen: erster Schritt REST-Service nutzen
 	const url = 'http://localhost:' + cfg.port + '/lieskonfig?configfile=' + configfile;
 	log.debug(FILENAME + ' liesAusRESTService url=' + url);
@@ -285,8 +266,8 @@ exports.liesAusRESTService = function (configfile, callback) {
  */
 exports.schreibeSchaltzustand = function (fst, Span_Mhan, aktion, span_mhanApNr, ApID) {
 	const schreibeLokal = false; //es wird auf jeden Fall geschrieben
-	const selector = {ApID, 'funkstelle': fst, 'span_mhan': Span_Mhan};
-	let aufgeschaltet = true;
+	const selector      = {ApID, 'funkstelle': fst, 'span_mhan': Span_Mhan};
+	let aufgeschaltet   = true;
 
 	if (aktion == 'trennenEinfach') {
 		aufgeschaltet = false
@@ -295,9 +276,9 @@ exports.schreibeSchaltzustand = function (fst, Span_Mhan, aktion, span_mhanApNr,
 	const schaltZustand = {
 		ApID, // z.B. JA NvD
 		'funkstelle': fst, // z.B. 1-H-RFD-WHVVTA-FKEK-1
-		'span_mhan': Span_Mhan, // z.B. 1-H-RFD-WHVVKZ-SPAN-01
+		'span_mhan':  Span_Mhan, // z.B. 1-H-RFD-WHVVKZ-SPAN-01
 		span_mhanApNr, // z.B. MHAN05
-		'zustand': {
+		'zustand':    {
 			aufgeschaltet, // true - false
 			'letzterWechsel': new Date().toJSON()
 		}
@@ -306,67 +287,68 @@ exports.schreibeSchaltzustand = function (fst, Span_Mhan, aktion, span_mhanApNr,
 	exports.schreibeInDb('schaltZustaende', selector, schaltZustand, schreibeLokal)
 };
 
-/**
- *
- * @param {string} collection
- * @param {object|int} element
- * @param {function} callback
- */
-function findeElement2(collection, element, callback) {
-	const tmp = exports.dbVerbindung.collection(collection);
-	const selector = element || {};
-	log.debug(FILENAME + ' Funktion: findeElement2, collection: ' + collection + ', element: ' + JSON.stringify(element));
+const datenbank = {
 
-	if (isNaN(selector)) {
-		tmp.find(selector).toArray(function (err, docs) {
-			assert.equal(err, null);
-			log.debug(FILENAME + ' Funktion: findeElement2 aus DB gelesen');
-			callback(docs);
+	/**
+	 * Dokument aus Datenbank lesen
+	 * @param {string} collection
+	 * @param {object|int} element
+	 * @param {function} callback
+	 */
+	findeElement(collection, element, callback) {
+		const tmp      = exports.dbVerbindung.collection(collection);
+		const selector = element || {};
+		log.debug(FILENAME + ' Funktion: findeElement, collection: ' + collection + ', element: ' + JSON.stringify(element));
+
+		if (isNaN(selector)) {
+			tmp.find(selector).toArray(function (err, docs) {
+				assert.equal(err, null);
+				log.debug(FILENAME + ' Funktion: findeElement aus DB gelesen');
+				callback(docs);
+			});
+		}
+		else {
+			collection.findOne({id: selector}, function (err, doc) {
+				assert.equal(null, err);
+				callback(doc);
+			});
+		}
+	},
+
+	/**
+	 * Tatsächlich in DB schreiben, Ausführung als Upsert
+	 * @param {string} collection
+	 * @param {object} selector
+	 * @param {object} inhalt
+	 */
+	schreibeInDb(collection, selector, inhalt) {
+		log.debug(FILENAME + ' Funktion: schreibeInDb ' + util.inspect(collection) + ' -- ' + util.inspect(selector) + ' -- ' + util.inspect(inhalt));
+
+		const db  = exports.dbVerbindung;
+		const tmp = db.collection(collection);
+		tmp.updateOne(selector, inhalt, {upsert: true, w: 1}).then(function (result) {
+			assert.equal(1, result.result.n);
+			log.debug(FILENAME + ' Funktion: schreibeInDb in DB geschrieben');
 		});
+	},
+
+	/**
+	 * Prueft ob der PRIMARY der Mongo-Datenbank und die Anwendung im selben VTR laufen und setzt die entsprechende Variable
+	 * @param primaryServer
+	 */
+	pruefeLokaleVerbindung(primaryServer) {
+		//Hostnamen teilen um Standort zu vergleichen
+		const ukwServer       = cfg.aktuellerHostname.split('-');
+		const primaryDbServer = primaryServer.split('-');
+
+		//nur den Standort in Variable schreiben
+		const ukwServerVTR       = ukwServer[1];
+		const primaryDbServerVTR = primaryDbServer[1];
+
+		//Standortpruefung
+		const primary = (ukwServerVTR == primaryDbServerVTR);
+
+		log.info(FILENAME + ' Funktion: pruefeLokaleVerbindung');
+		log.debug(FILENAME + ' Funktion: pruefeLokaleVerbindung ukwServer=' + ukwServer + ' primaryDbServer=' + primaryDbServer + ' Ergebnis=' + primary);
 	}
-	else {
-		collection.findOne({id: selector}, function (err, doc) {
-			assert.equal(null, err);
-			callback(doc);
-		});
-	}
-}
-
-/**
- * tatsächlich in DB schreiben, Ausführung als Upsert
- * @param {string} collection
- * @param {object} selector
- * @param {object} inhalt
- */
-function schreibeInDb2(collection, selector, inhalt) {
-	log.debug('TEST in DB ' + collection + ' -- ' + selector + ' -- ' + inhalt);
-
-	const db = exports.dbVerbindung;
-	const tmp = db.collection(collection);
-	tmp.updateOne(selector, inhalt, {upsert: true, w: 1}).then(function (result) {
-		assert.equal(1, result.result.n);
-		log.debug(FILENAME + ' Funktion: schreibeInDb2 in DB geschrieben');
-	});
-}
-
-
-/**
- *Prueft ob der PRIMARY der Mongo-Datenbank und die Anwendung im selben VTR laufen und setzt die entsprechende Variable
- * @param primaryServer
- */
-function pruefeLokaleVerbindung(primaryServer) {
-	//Hostnamen teilen um Standort zu vergleichen
-	const ukwServer = cfg.aktuellerHostname.split('-');
-	const primaryDbServer = primaryServer.split('-');
-
-	//nur den Standort in Variable schreiben
-	const ukwServerVTR = ukwServer[1];
-	const primaryDbServerVTR = primaryDbServer[1];
-
-	//Standortpruefung
-	// const primary = datenbank.getVerbundenMitPrimary();
-	const primary = (ukwServerVTR == primaryDbServerVTR);
-
-	log.info(FILENAME + ' Funktion: pruefeLokaleVerbindung');
-	log.debug(FILENAME + ' Funktion: pruefeLokaleVerbindung ukwServer=' + ukwServer + ' primaryDbServer=' + primaryDbServer + ' Ergebnis=' + primary);
-}
+};

@@ -21,7 +21,6 @@ block content
 					div.col-md-2(id=index + 'panel')
 						div.panel.button_panel.panel-default(
 						data-buttonElement='panel',
-						onclick='WSV.Display.schalteKanal(event,this,"SPAN")',
 						class=(val[0] == 'frei' ? 'hidden' : '')
 						)
 							div.button_flaeche(data-buttonElement='flaeche')
@@ -98,7 +97,7 @@ block content
 									) #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
 								p.text-center.button_atis(
 								data-buttonElement='atis'
-								) 9 211 03 6580
+								) keine ATIS-Kennung
 								div.btn.btn-default.button_span.btn-block(
 								data-buttonElement='span'
 								data-span='SPAN01'
