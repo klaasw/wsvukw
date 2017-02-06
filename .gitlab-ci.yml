@@ -4,6 +4,8 @@ stages:
 test_async:
   stage: test
   script:
+   - tar -xf /home/gitlab-runner/nodeModules.tar
+   - tar -xf /home/gitlab-runner/nodeModulesPublic.tar
    - public/grunt dev
    - node ./app.js
    - chimp
