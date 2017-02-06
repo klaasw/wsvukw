@@ -223,7 +223,7 @@ router.get('/ukwKonfig', function (req, res) {
 			.send('ukwKonfig konnte nicht geladen werden.');
 	}
 	else {
-		if (req.query.ip) { // /ukwKonfig mit Parameter z.B. ukwKonfig?ip=1.1.1.1
+		if (typeof req.query.ip == 'string') { // /ukwKonfig mit Parameter z.B. ukwKonfig?ip=1.1.1.1
 			db.findeApNachIp(req.query.ip, function (benutzer) {
 				if (benutzer) {
 					log.debug(FILENAME + ' Benutzer zu IP  = ' + benutzer + ' ' + req.query.ip);
@@ -241,23 +241,21 @@ router.get('/ukwKonfig', function (req, res) {
 		}
 
 		// /ukwKonfig mit Parameter ?zuordnung=lotse
-		if (req.query.zuordnung) {
-			if (req.query.zuordnung == 'lotse') {
-				db.findeApNachIp(req.ip, function (benutzer) {
-					if (benutzer) {
-						if (req.query.standard == 'true') {
-							erstelleKonfigFuerLotsenKanal(benutzer, 'true', function (Konfig) {
-								res.send(Konfig);
-							});
-						}
-						if (req.query.standard == 'false') {
-							erstelleKonfigFuerLotsenKanal(benutzer, 'false', function (Konfig) {
-								res.send(Konfig);
-							});
-						}
+		if (typeof req.query.zuordnung == 'string' && req.query.zuordnung == 'lotse') {
+			db.findeApNachIp(req.ip, function (benutzer) {
+				if (benutzer) {
+					if (req.query.standard == 'true') {
+						erstelleKonfigFuerLotsenKanal(benutzer, 'true', function (Konfig) {
+							res.send(Konfig);
+						});
 					}
-				});
-			}
+					if (req.query.standard == 'false') {
+						erstelleKonfigFuerLotsenKanal(benutzer, 'false', function (Konfig) {
+							res.send(Konfig);
+						});
+					}
+				}
+			});
 		}
 		else { // ukwkonfig ohne parameter
 			db.findeApNachIp(req.ip, function (benutzer) {
@@ -266,7 +264,13 @@ router.get('/ukwKonfig', function (req, res) {
 					//res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
 					// TODO: testen, ob hier das richtige passiert
 					erstelleKonfigFurAp(benutzer, function (Konfig) {
-						// Test wg Lotse erstelleKonfigFuerLotsenKanal(benutzer, false, function (Konfig) {
+						if (typeof benutzer != 'string') {
+							benutzer = '';
+						}
+						if (typeof Konfig != 'object') {
+							Konfig = {};
+						}
+
 						res.send({
 							'Konfigdaten':  Konfig,
 							'Arbeitsplatz': benutzer
@@ -359,7 +363,10 @@ function erstelleKonfigFurAp(Ap, callback) {
 		FunkstellenDetails:  {},
 		ArbeitsplatzGeraete: {},
 		MhanZuordnung:       {},
-		IpConfig:            cfg,
+		IpConfig: {
+			aktuellerServer: cfg.aktuellerServer,
+			alternativeIPs: cfg.alternativeIPs
+			},
 		KanalListe:          []
 	};
 
@@ -388,7 +395,7 @@ function erstelleKonfigFurAp(Ap, callback) {
 
 						//Kanalnummern in Array schreiben. Dient zur dynamischen Befüllung im MKA Dialog
 						const kanalNummer = Konfig.FunkstellenDetails[fstReihe[button][t]].channel;
-						if (kanalNummer !== null) {
+						if (kanalNummer != undefined && kanalNummer !== null) {
 							Konfig.KanalListe.push(kanalNummer);
 						}
 					}
@@ -401,18 +408,17 @@ function erstelleKonfigFurAp(Ap, callback) {
 
 			//2. Geraete fuer Arbeitsplatz einlesen
 			//Dateinamen noch durch Variable ersetzen
-			log.debug(' -- 1');
+			// log.debug(' -- 1');
 			db.liesAusRESTService(rev_ap[0] + '_' + rev_ap[1], function (response2) {
 				if (typeof response2 === 'string' && response2.indexOf('Fehler') > -1) {
 					callback('Fehler', response2);
 				}
 				else {
-					log.debug(' -- 2');
+					// log.debug(' -- 2');
 					Konfig.ArbeitsplatzGeraete = response2;
 					if (response2.hasOwnProperty('Funkstellen')) {
 						Konfig.FunkstellenReihe = response2.Funkstellen;
 					}
-
 
 					//3. MHAN Zuordnung fuer Arbeitsplatz einlesen
 					//Dateinamen noch durch Variable ersetzen
@@ -421,7 +427,7 @@ function erstelleKonfigFurAp(Ap, callback) {
 							callback('Fehler', response3);
 						}
 						else {
-							log.debug(' -- 3');
+							// log.debug(' -- 3');
 							Konfig.MhanZuordnung = response3;
 							//----------------------------------------------------------------------------------------
 							//Hier die Callback fuer die Res.send einbauen, die die Rueckmeldung aus Konfig benoetigt

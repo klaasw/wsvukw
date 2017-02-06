@@ -156,7 +156,7 @@ exports.schreibeSocketInfo = function (socketInfo, ip) {
 		}
 	}
 	socketInfo.$set._id = ip;
-	const selector = {'_id': ip};
+	const selector      = {'_id': ip};
 	// TODO: lieber separate Datenbank: Bewegungsdaten / Monitoring / Audit von Stammdaten trennen
 	exports.schreibeInDb('windowsBenutzer', selector, socketInfo, schreibeLokal);
 };
