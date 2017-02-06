@@ -364,6 +364,7 @@ function erstelleKonfigFurAp(Ap, callback) {
 		ArbeitsplatzGeraete: {},
 		MhanZuordnung:       {},
 		IpConfig: {
+			aktuellerServer: cfg.aktuellerServer,
 			alternativeIPs: cfg.alternativeIPs
 			},
 		KanalListe:          []
