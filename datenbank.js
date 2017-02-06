@@ -240,9 +240,7 @@ exports.liesAusRESTService = function (configfile, callback) {
 		if (!error && response.statusCode == 200) {
 			const antwortImBody = JSON.parse(body);
 			log.debug(FILENAME + ' liesAusRESTService response: ' + JSON.stringify(antwortImBody));
-			if (typeof antwortImBody == 'object') {
-				callback(antwortImBody);
-			}
+			callback(antwortImBody);
 		}
 		else {
 			if (error) {
