@@ -212,27 +212,27 @@ $(window).load(function () {
 				}
 			}
 
-			if (status == 'OK') {
-				$('#button' + ort + '_' + dienst).removeClass('label-danger');
-				$('#button' + ort + '_' + dienst).addClass('label-success');
-				$('#buttonAktiv' + ort + '_' + dienst).removeClass('label-danger');
-				$('#buttonAktiv' + ort + '_' + dienst).addClass('label-success');
+			const button = $('#button' + ort + '_' + dienst);
+			const buttonAktiv = $('#buttonAktiv' + ort + '_' + dienst);
 
-				$('#button' + ort + '_' + dienst).closest('button').removeAttr('disabled');
-				$('#button' + ort + '_' + dienst).closest('li').removeClass('disabled')
+			if (status == 'OK') {
+				button.removeClass('label-danger');
+				button.addClass('label-success');
+				buttonAktiv.removeClass('label-danger');
+				buttonAktiv.addClass('label-success');
+
+				button.closest('button').removeAttr('disabled');
+				button.closest('li').removeClass('disabled')
 			}
 			else if (status == 'Error') {
-				$('#button' + ort + '_' + dienst).removeClass('label-success');
-				$('#button' + ort + '_' + dienst).addClass('label-danger');
-				$('#button' + ort + '_' + dienst).closest('button').attr('disabled', 'disabled');
+				button.removeClass('label-success');
+				button.addClass('label-danger');
+				button.closest('button').attr('disabled', 'disabled');
 
-				$('#buttonAktiv' + ort + '_' + dienst).removeClass('label-success');
-				$('#buttonAktiv' + ort + '_' + dienst).addClass('label-danger');
+				buttonAktiv.removeClass('label-success');
+				buttonAktiv.addClass('label-danger');
 
-				$('#button' + ort + '_' + dienst).closest('li').addClass('disabled');
-
-
-				//button add attribute disabled="disabled" und auf dem li class="disabled"
+				button.closest('li').addClass('disabled');
 
 				//Alarm und Fenster nur zeigen wenn aktueller Server betroffen ist
 				//audioAlarm.play();
