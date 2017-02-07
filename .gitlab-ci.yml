@@ -1,0 +1,9 @@
+stages:
+  - test
+
+test_async:
+  stage: test
+  script:
+   - public/grunt dev
+   - node ./app.js
+   - chimp
