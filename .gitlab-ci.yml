@@ -6,6 +6,8 @@ test_async:
   script:
    - tar -xf /home/gitlab-runner/nodeModules.tar
    - tar -xf /home/gitlab-runner/nodeModulesPublic.tar
-   - public/grunt dev
-   - node ./app.js
-   - chimp
+   - cd public
+   - ./node_modules/.bin/grunt dev
+   - cd ..
+   - pm2 start app.js
+   - ./node_modules/.bin/chimp
