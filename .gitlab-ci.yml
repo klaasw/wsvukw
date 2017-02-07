@@ -4,6 +4,7 @@ stages:
 test_async:
   stage: test
   script:
+   - pm2 delete all
    - tar -xf /home/gitlab-runner/nodeModules.tar
    - tar -xf /home/gitlab-runner/nodeModulesPublic.tar
    - tar -xf /home/gitlab-runner/nodeModulesChimp.tar
