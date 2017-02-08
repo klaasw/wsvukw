@@ -34,7 +34,10 @@ $(window).load(function () {
 
 			this.aktuellerUKWserver = location.protocol + '//' + location.hostname + ':' + location.port;
 			this.setDefaultServer();
-			this.ladeBenutzer();
+
+			$('body').trigger('initDisplay');
+
+			// this.ladeBenutzer();
 			this.ladeKonfig();
 
 			const _self = this;
@@ -889,14 +892,6 @@ $(window).load(function () {
 					if (typeof data.einzel == 'undefined') {
 						data.einzel = _self.einzel;
 					}
-
-					// TODO: initialen Zustand im PUG Template übergeben
-					if (!data.einzel) {
-						_self.wechselEinzelGruppen();
-					}
-
-					// TODO: initialen Zustand im PUG Template übergeben
-					WSV.Themes.switch(data.theme, false);
 				}
 			});
 		},
@@ -954,8 +949,9 @@ $(window).load(function () {
 
 		init: function () {
 
-			const _self     = this;
-			this.themesheet = $('<link href="' + this.getThemeUrl() + '" rel="stylesheet" />');
+			const _self       = this;
+			this.currentTheme = $('.theme-switcher li.active .switch-theme').data('theme');
+			this.themesheet   = $('<link href="' + this.getThemeUrl() + '" rel="stylesheet" />');
 			this.themesheet.appendTo('head');
 
 			$('.theme-switcher .switch-theme').on('click', function () {
@@ -965,12 +961,10 @@ $(window).load(function () {
 
 		/**
 		 * Liefert die aktuelle Theme-URL zurück
-		 * @param {string} theme
 		 * @returns {string} - relativer Pfad zum aktuellen Theme
 		 */
-		getThemeUrl: function (theme) {
-			theme = theme || 'default';
-			return this.path + '/' + this.list[theme];
+		getThemeUrl: function () {
+			return this.path + '/' + this.list[this.currentTheme];
 		},
 
 		/**
@@ -979,11 +973,12 @@ $(window).load(function () {
 		 * @param {boolean} saveConfig - legt fest ob die Konfig gespeichert werden soll
 		 */
 		switch: function (theme, saveConfig) {
-			if (typeof theme == 'undefined' || theme == this.currentTheme)
+			if (typeof theme == 'undefined' || theme == this.currentTheme) {
 				return;
+			}
 
 			this.currentTheme = theme;
-			this.themesheet.attr('href', this.getThemeUrl(this.currentTheme));
+			this.themesheet.attr('href', this.getThemeUrl());
 			$('.theme-switcher .switch-theme').parents('li').removeClass('active');
 			$('.theme-switcher a[data-theme="' + this.currentTheme + '"]').parent().addClass('active');
 			if (saveConfig) {

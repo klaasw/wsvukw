@@ -18,7 +18,9 @@ html
 
 	block codeTeil1
 		script(type='text/javascript').
-			console.log("Lade Navigationslayout")
+			$('body').on('initDisplay', function() {
+				WSV.Display.aktuellerBenutzer = !{stringify(aktuellerBenutzer)};
+			});
 
 	body.fuelux
 		block menu
@@ -33,8 +35,14 @@ html
 						a.navbar-brand(href='/ukw') ukwDisplay
 					.navbar-collapse.collapse
 						ul.nav.navbar-nav
-							li#statusWechsel(onclick='WSV.Display.wechselEinzelGruppen()')
-								a(href='#') Einzelschaltung
+
+							if (aktuellerBenutzer.einzel == true)
+								li#statusWechsel(onclick='WSV.Display.wechselEinzelGruppen()')
+									a(href='#') Einzelschaltung
+							else
+								li.active#statusWechsel(onclick='WSV.Display.wechselEinzelGruppen()')
+									a(href='#') Gruppenschaltung
+
 							li#konf
 								a(href='/zuordnung') RL Kanalzuordnung
 
@@ -49,15 +57,14 @@ html
 									span.caret
 
 								ul.dropdown-menu.theme-switcher
-									li.theme1.active
+									li.theme1(class=aktuellerBenutzer.theme === 'default' ? 'active' : '')
 										a.switch-theme.btn(data-theme='default') Standard
-									li.theme2
+									li.theme2(class=aktuellerBenutzer.theme === 'flatly' ? 'active' : '')
 										a.switch-theme.btn(data-theme='flatly') Flach
-									li.theme3
+									li.theme3(class=aktuellerBenutzer.theme === 'darkly' ? 'active' : '')
 										a.switch-theme.btn(data-theme='darkly') Dunkel / marineblau
-									li.theme4
+									li.theme4(class=aktuellerBenutzer.theme === 'cyborg' ? 'active' : '')
 										a.switch-theme.btn(data-theme='cyborg') Dunkel / hellblau
-
 
 
 							li.dropdown.btn-group.navbar-btn

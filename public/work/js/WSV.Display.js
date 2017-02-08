@@ -23,7 +23,10 @@
 
 			this.aktuellerUKWserver = location.protocol + '//' + location.hostname + ':' + location.port;
 			this.setDefaultServer();
-			this.ladeBenutzer();
+
+			$('body').trigger('initDisplay');
+
+			// this.ladeBenutzer();
 			this.ladeKonfig();
 
 			const _self = this;
@@ -878,14 +881,6 @@
 					if (typeof data.einzel == 'undefined') {
 						data.einzel = _self.einzel;
 					}
-
-					// TODO: initialen Zustand im PUG Template übergeben
-					if (!data.einzel) {
-						_self.wechselEinzelGruppen();
-					}
-
-					// TODO: initialen Zustand im PUG Template übergeben
-					WSV.Themes.switch(data.theme, false);
 				}
 			});
 		},

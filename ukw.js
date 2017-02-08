@@ -18,6 +18,7 @@ const parser  = new xml2js.Parser({explicitRoot: true});// Parserkonfiguration
 const log    = require('./log.js');
 const cfg    = require('./cfg.js');
 const socket = require('./socket.js');
+const tools  = require('./tools.js');
 
 const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
 
@@ -66,6 +67,23 @@ exports.pruefeRfdWS = function () {
  zum Testen
  */
 //var Intervall=setInterval(function() {sendeWebSocketNachricht()},1000)
+
+/**
+ * Lade spezifischen windowsBenutzer aus DB
+ * @param {string} ipAddr
+ * @param {function} callback
+ */
+exports.ladeBenutzer = function (ipAddr, callback) {
+
+	db.findeElement('windowsBenutzer', {ip: tools.filterIP(ipAddr)}, function (doc) {
+		if (doc.length) {
+			callback(doc[0]);
+		}
+		else {
+			callback({error: true, message: 'Fehler! Kein Benutzer zu dieser IP gefunden: ' + remoteAddress});
+		}
+	})
+};
 
 
 /**

@@ -11,7 +11,6 @@ const log = require('../log.js'); // Modul fuer verbessertes Logging
 const rfd = require('../rfd.js');
 
 const db = require('../datenbank.js');
-// db.verbindeDatenbank();
 
 const FILENAME = __filename.slice(__dirname.length + 1);
 
@@ -83,16 +82,20 @@ router.get('/status', function (req, res) {
 
 /* GET UKW Display */
 router.get('/ukw', function (req, res) {
+
 	const clientIP = tools.filterIP(req.ip);
 	log.debug('Benutzer IP: ' + clientIP);
-	db.findeApNachIp(clientIP, function (benutzer) {
-		log.debug('ukw - Ermittelter Benutzer: ' + benutzer);
-		if (benutzer) {
+
+	const benutzer = ukw.ladeBenutzer(req.ip, function(benutzer) {
+
+		if (typeof benutzer.error == 'undefined') {
+
 			log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
-			erstelleKonfigFurAp(benutzer, function (konfig, errString) {
+
+			erstelleKonfigFurAp(benutzer.user, function (konfig, errString) {
 				if (konfig == 'Fehler') {
 					res.render('error', {
-						message: 'keine Konfiguration zu Arbeitsplatz: ' + benutzer + ' Fehler: ' + errString,
+						message: 'keine Konfiguration zu Arbeitsplatz: ' + benutzer.user + ' Fehler: ' + errString,
 						error:   {
 							status: 'kein'
 						}
@@ -102,17 +105,18 @@ router.get('/ukw', function (req, res) {
 					//Uebergebe Funkstellen ID an Pug Template
 					log.info('ukw - konfigfuerAP: an Pug Template uebergeben');
 					//ukwDisplay --> zum Testen eines neuen Layouts
+
 					res.render('entwicklung/ukwDisplayTest', {
+						stringify: require('js-stringify'),
 						log,  // logging auch im Jade-Template moeglich!
-						'gesamteKonfig': konfig
+						'gesamteKonfig': konfig,
+						'aktuellerBenutzer': benutzer
 
 					}); //res send ende
 				}
 			}); //erstelleKonfigFurAp Ende
-		} //if Ende
-
-		//kein Benutzer zu IP gefunden
-		else {
+		}
+		else { //kein Benutzer zu IP gefunden
 			res.render('error', {
 				message: 'keine Benutzer konfiguriert zu IP: ' + clientIP,
 				error:   {

@@ -14,14 +14,15 @@ const tools   = require('../tools.js');
 const cfg = require('../cfg.js');
 const db  = require('../datenbank.js');
 
+const ukw = require('../ukw.js');
+
 const log      = require('../log.js'); // Modul fuer verbessertes Logging
 const FILENAME = __filename.slice(__dirname.length + 1);
 
 router.get('/zeigeWindowsBenutzer/selectip', function (req, res) {
-	const remoteAddress = tools.filterIP(req._remoteAddress);
-	db.findeElement('windowsBenutzer', {ip: remoteAddress}, function (doc) {
-		res.send(doc[0]);
-	})
+	ukw.ladeBenutzer(req._remoteAddress, function (data) {
+		res.send(data);
+	});
 });
 
 router.get('/zeigeWindowsBenutzer', function (req, res) {
@@ -45,7 +46,7 @@ router.put('/schreibeWindowsBenutzer', function (req, res) {
 	if (benutzer.angemeldet === true) {
 		schreibeParameter = {
 			$set: {
-				_id:         benutzer.ip,
+				_id:        benutzer.ip,
 				user:       benutzer.user.toLowerCase(),
 				loginZeit:  new Date(),
 				angemeldet: benutzer.angemeldet
@@ -55,7 +56,7 @@ router.put('/schreibeWindowsBenutzer', function (req, res) {
 	if (benutzer.angemeldet === false) {
 		schreibeParameter = {
 			$set: {
-				_id:         benutzer.ip,
+				_id:        benutzer.ip,
 				user:       benutzer.user.toLowerCase(),
 				logoutZeit: new Date(),
 				angemeldet: benutzer.angemeldet
