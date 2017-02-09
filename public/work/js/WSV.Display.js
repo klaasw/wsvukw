@@ -25,6 +25,7 @@
 			this.setDefaultServer();
 			this.ladeBenutzer();
 			this.ladeKonfig();
+			this.ladeZustand();
 
 			const _self = this;
 
@@ -176,6 +177,48 @@
 				$('#errorModalDUE').modal('show');
 			});
 		},
+
+		/**
+		 * Lade den Zustand aller Komponenten von REST Service
+		 * und verarbeite Antwort
+		 * @return {[type]} [description]
+		 */
+		ladeZustand: function () {
+			$.getJSON('verbindungen/liesZustand', function (data) {
+				$.each(data, function (key, val) {
+					// Meldung OK
+					if ('status' in val && val.status.state === '0') {
+						$('#' + val.status.id + ' span.label').removeClass('label-danger');
+						$('#' + val.status.id + ' span.label').addClass('label-success');
+						$('#' + val.status.id + ' span.label').text('OK');
+						$('#' + val.status.id).attr('fstStatus', '0');
+						const standortButton = $('#' + val.status.id).parent().prev();
+						$(standortButton[0]).children().addClass('label-success');
+						$(standortButton[0]).children().removeClass('label-danger');
+						$(standortButton[0]).children().text('OK');
+					}
+					// Meldung gestört -SEN- darf nicht in der ID vorkommen
+					if ('status' in val && val.status.state === '1' && val.status.id.indexOf('-SEN-') == -1) {
+						$('#' + val.status.id + ' span.label').removeClass('label-success');
+						$('#' + val.status.id + ' span.label').addClass('label-danger');
+						$('#' + val.status.id + ' span.label').text('Error');
+						$('#' + val.status.id).attr('fstStatus', '1');
+						const standortButton = $('#' + val.status.id).parent().prev();
+						$(standortButton[0]).children().addClass('label-danger');
+						$(standortButton[0]).children().removeClass('label-success');
+						$(standortButton[0]).children().text('Error');
+
+						//Notify by Störung
+						$.notify({
+							message: 'Störung:<br>' + _self.ApFunkstellen[val.status.id].sname
+						}, {
+							type: 'danger'
+						});
+					}
+				})
+			})
+		},
+
 
 		socketStatusMessage: function (msg) {
 
