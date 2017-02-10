@@ -35,7 +35,7 @@ $(window).load(function () {
 			this.aktuellerUKWserver = location.protocol + '//' + location.hostname + ':' + location.port;
 			this.setDefaultServer();
 
-			$('body').trigger('initDisplay');
+			$('#logo').trigger('initDisplay');
 
 			// this.ladeBenutzer();
 			this.ladeKonfig();

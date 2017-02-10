@@ -18,8 +18,11 @@ html
 
 	block codeTeil1
 		script(type='text/javascript').
-			$('body').on('initDisplay', function() {
-				WSV.Display.aktuellerBenutzer = !{stringify(aktuellerBenutzer)};
+			$('document').ready(function () {
+				$('#logo').on('initDisplay', function () {
+					console.log('init display');
+					WSV.Display.aktuellerBenutzer = !{stringify(aktuellerBenutzer)};
+				});
 			});
 
 	body.fuelux
@@ -32,7 +35,7 @@ html
 							span.icon-bar
 							span.icon-bar
 							span.icon-bar
-						a.navbar-brand(href='/ukw') ukwDisplay
+						a.navbar-brand#logo(href='javascript:;') ukwDisplay
 					.navbar-collapse.collapse
 						ul.nav.navbar-nav
 
@@ -46,8 +49,8 @@ html
 							li#konf
 								a(href='/zuordnung') RL Kanalzuordnung
 
-							li.dropdown.btn-group
-								a.dropdown-toggle(
+							li.dropdown.btn-group.navbar-btn
+								button.btn.btn-primary.dropdown-toggle(
 								id='buttonThemeSwitcher'
 								type='button'
 								data-toggle='dropdown'
