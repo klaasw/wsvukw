@@ -949,10 +949,10 @@
 				benutzer.schaltZustandGruppe = JSON.stringify(this.geschalteteSPAN);
 			}
 
-			if (Object.keys(benutzer.schaltZustandEinzel).length && typeof benutzer.schaltZustandEinzel == 'object') {
+			if (typeof benutzer.schaltZustandEinzel == 'object' && Object.keys(benutzer.schaltZustandEinzel).length) {
 				benutzer.schaltZustandEinzel = JSON.stringify(benutzer.schaltZustandEinzel);
 			}
-			if (Object.keys(benutzer.schaltZustandGruppe).length && typeof benutzer.schaltZustandGruppe == 'object') {
+			if (typeof benutzer.schaltZustandGruppe == 'object' && Object.keys(benutzer.schaltZustandGruppe).length) {
 				benutzer.schaltZustandGruppe = JSON.stringify(benutzer.schaltZustandGruppe);
 			}
 

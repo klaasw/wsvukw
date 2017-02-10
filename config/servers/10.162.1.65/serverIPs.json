@@ -4,7 +4,7 @@
   "port":	"3000",
   "httpIP": "10.162.1.65",
   "rfdIP":  "10.162.1.96",
-  "sipIP":  "10.160.2.64",
+  "sipIP":  "10.162.1.65",
   "replicaSet": "dueReplicaSet",
   "auth": false,
   "auth_user": "ukwserver",
