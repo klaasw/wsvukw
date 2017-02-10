@@ -1,16 +1,3 @@
 extends layout
 block content
-    div.container-fluid
-        div.content
-            div.col-md-2
-            div.col-md-6
-                case datei
-                    when 'powershell'
-                        include:markdown-it ../../dokumentation/POWERSHELL.md
-                    when 'datenbank'
-                        include:markdown-it ../../dokumentation/DATENBANK.md
-                    when 'readme'
-                        include:markdown-it ../../README.md
-                    default
-                        include:markdown-it ../../README.md
-    script.
+ include:markdown-it ../../dokumentation/README.md

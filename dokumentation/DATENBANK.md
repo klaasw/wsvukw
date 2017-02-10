@@ -8,8 +8,9 @@ Wenn mongodb direct installiert wird (nicht apt-get), dann
 startet der Service mongod nicht.
 
 Dazu muss über systemctl der Service "enabled" werden.
+```
 systemctl enable mongod.service
-
+```
 
 ## Ausfälle (Server oder Netzwerk)
 - Fällt ein Secondary weg bleibt der Primary erhalten.

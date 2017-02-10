@@ -65,11 +65,33 @@ router.get('/testen', function (req, res) {
 
 /* GET UKW Dokumentation */
 router.get('/dokumentation', function (req, res) {
+  const dateien = files.readdirSync('dokumentation')
+  const dateiNamen = []
+	for (const datei of dateien) {
+		const ohneEndung = datei.split('.')
+		dateiNamen.push(ohneEndung[0])
+	}
+
+	let dokPugVorlage = files.readFileSync('views/technik/dokumentation.pug')
+
 	if (req.query.dokument) {
-		res.render('technik/dokumentation', {datei: req.query.dokument});
+		dokPugVorlage = ''+
+		'extends layout\n'+
+		'block content\n'+
+		' include:markdown-it ../../dokumentation/' + req.query.dokument + '.md'
+
+		files.writeFileSync('views/technik/dokumentation.pug', dokPugVorlage)
+		res.render('technik/dokumentation', {datei: req.query.dokument, dateien: dateiNamen});
 	}
 	else {
-		res.render('technik/dokumentation');
+		dokPugVorlage = ''+
+		'extends layout\n'+
+		'block content\n'+
+		' include:markdown-it ../../dokumentation/README.md'
+
+	  console.log(dokPugVorlage)
+		files.writeFileSync('views/technik/dokumentation.pug', dokPugVorlage)
+		res.render('technik/dokumentation', {dateien: dateiNamen});
 	}
 
 });
@@ -80,7 +102,7 @@ router.get('/status', function (req, res) {
 		IpConfig: cfg
 	}
 	res.render('technik/status', {
-		gesamteKonfig: konfig, 
+		gesamteKonfig: konfig,
 		datei: req.query.dokument});
 
 });

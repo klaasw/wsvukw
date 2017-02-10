@@ -20,5 +20,8 @@ Das Tool ist auf dem 10.160.1.42 unter wsa\SW-Verteilung installiert.
 mit den folgenden Befehlen wird die Installtion im Hintergrund ausgeführt.
 ACHTUNG der letzte Befehl führt einen neustart aus. Dies kann mit /norestart verhindert werden.
 
- .\PsExec.exe -s \\10.59.129.131 dotNetFx45_Full_setup.exe /q
- .\PsExec.exe -s \\10.59.129.131 wusa c:\updates\Windows6.1-KB2819745-x86-MultiPkg.msu /passive /quiet
+```
+.\PsExec.exe -s \\10.59.129.131 dotNetFx45_Full_setup.exe /q
+
+.\PsExec.exe -s \\10.59.129.131 wusa c:\updates\Windows6.1-KB2819745-x86-MultiPkg.msu /passive /quiet
+```
