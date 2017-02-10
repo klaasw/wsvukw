@@ -9,6 +9,7 @@ const path         = require('path');
 const favicon      = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const bodyParser   = require('body-parser');
+const tools        = require('./tools.js');
 
 const debug             = require('debug')('ukwserver:server');
 const FileStreamRotator = require('file-stream-rotator');
@@ -111,7 +112,7 @@ app.use(function (err, req, res, next) {
 /**
  * Get port from environment and store in Express.
  */
-const port = normalizePort(process.env.PORT || cfg.port);
+const port = tools.normalizePort(process.env.PORT || cfg.port);
 app.set('port', port);
 app.set('trust proxy', 'loopback');
 
@@ -163,24 +164,6 @@ if (cfg.intervall !== 0) {
 }
 
 /**
- * Normalize a port into a number, string, or false.
- * @param {int|string} val
- * @returns {int|boolean}
- */
-function normalizePort(val) {
-	const port = parseInt(val, 10);
-	if (isNaN(port)) {
-		// named pipe
-		return val;
-	}
-	if (port >= 0) {
-		// port number
-		return port;
-	}
-	return false;
-}
-
-/**
  * Event listener for HTTP server "error" event.
  * @param {object} error
  */
@@ -216,7 +199,3 @@ function onListening() {
 		: 'port ' + addr.port;
 	debug('Listening on ' + bind);
 }
-
-module.exports = {
-	normalizePort
-};
