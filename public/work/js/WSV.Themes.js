@@ -17,11 +17,11 @@
 		init: function () {
 
 			const _self       = this;
-			this.currentTheme = $('.theme-switcher li.active .switch-theme').data('theme');
+			this.currentTheme = $('#theme-switcher li.active .switch-theme').data('theme');
 			this.themesheet   = $('<link href="' + this.getThemeUrl() + '" rel="stylesheet" />');
 			this.themesheet.appendTo('head');
 
-			$('.theme-switcher .switch-theme').on('click', function () {
+			$('#theme-switcher .switch-theme').on('click', function () {
 				_self.switch($(this).data('theme'), true)
 			});
 		},
@@ -46,8 +46,8 @@
 
 			this.currentTheme = theme;
 			this.themesheet.attr('href', this.getThemeUrl());
-			$('.theme-switcher .switch-theme').parents('li').removeClass('active');
-			$('.theme-switcher a[data-theme="' + this.currentTheme + '"]').parent().addClass('active');
+			$('#theme-switcher .switch-theme').parents('li').removeClass('active');
+			$('#theme-switcher a[data-theme="' + this.currentTheme + '"]').parent().addClass('active');
 			if (saveConfig) {
 				WSV.Display.schreibeBenutzer();
 			}

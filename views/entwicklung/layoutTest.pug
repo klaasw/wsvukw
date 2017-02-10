@@ -40,10 +40,10 @@ html
 						ul.nav.navbar-nav
 
 							if (aktuellerBenutzer.einzel == true)
-								li#statusWechsel(onclick='WSV.Display.wechselEinzelGruppen()')
+								li#statusWechsel(onclick='WSV.Display.wechselEinzelGruppen()', data-einzel='true')
 									a(href='#') Einzelschaltung
 							else
-								li.active#statusWechsel(onclick='WSV.Display.wechselEinzelGruppen()')
+								li.active#statusWechsel(onclick='WSV.Display.wechselEinzelGruppen()', data-einzel='false')
 									a(href='#') Gruppenschaltung
 
 							li#konf
@@ -59,7 +59,7 @@ html
 								) Farbschema
 									span.caret
 
-								ul.dropdown-menu.theme-switcher
+								ul.dropdown-menu#theme-switcher
 									li.theme1(class=aktuellerBenutzer.theme === 'default' ? 'active' : '')
 										a.switch-theme.btn(data-theme='default') Standard
 									li.theme2(class=aktuellerBenutzer.theme === 'flatly' ? 'active' : '')
@@ -72,7 +72,7 @@ html
 
 							li.dropdown.btn-group.navbar-btn
 								button.btn.btn-primary.dropdown-toggle(
-								id='buttonAGswitcher'
+								id='buttonAG'
 								type='button'
 								data-toggle='dropdown'
 								aria-haspopup='true'
@@ -80,7 +80,7 @@ html
 								) Arbeitsplatzgeräte
 									span.caret
 
-								ul.dropdown-menu
+								ul.dropdown-menu#AGListe
 									li.span1
 										a.btn SPAN01
 											span.label.label-default.label-success(id='agspan01') OK
@@ -108,17 +108,18 @@ html
 										- server = val[1].split(":")
 										if server[0] == aktiverServer
 											button.btn.btn-primary.dropdown-toggle.server-toggle(
-											id='button' + val[0]
+											class='button' + val[0]
+											id='buttonServerWechsel'
 											type='button'
 											data-toggle='dropdown'
 											data-label=val[0]
 											aria-haspopup='true'
 											aria-expanded='false'
 											) &nbsp#{val[0]}&nbsp
-												span.label.label-default.due(id='buttonAktiv' + val[0] + '_DUE') DUE
-												span.label.label-default.rfd(id='buttonAktiv' + val[0] + '_RFD') RFD
+												span.label.label-default.due(class='buttonAktiv' + val[0] + '_DUE') DUE
+												span.label.label-default.rfd(class='buttonAktiv' + val[0] + '_RFD') RFD
 												span.caret
-										ul.dropdown-menu
+										ul.dropdown-menu#serverListe
 											each val1, index1 in gesamteKonfig.IpConfig.alternativeIPs
 												+serverListe(val1[1], val1[0])
 											- break;

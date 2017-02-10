@@ -32,12 +32,10 @@ $(window).load(function () {
 
 		init: function () {
 
+			$('#logo').trigger('initDisplay');
+			this.einzel = $('#statusWechsel').data('einzel');
 			this.aktuellerUKWserver = location.protocol + '//' + location.hostname + ':' + location.port;
 			this.setDefaultServer();
-
-			$('#logo').trigger('initDisplay');
-
-			// this.ladeBenutzer();
 			this.ladeKonfig();
 
 			const _self = this;
@@ -215,8 +213,8 @@ $(window).load(function () {
 				}
 			}
 
-			const button      = $('#button' + ort + '_' + dienst);
-			const buttonAktiv = $('#buttonAktiv' + ort + '_' + dienst);
+			const button      = $('.button' + ort + '_' + dienst);
+			const buttonAktiv = $('.buttonAktiv' + ort + '_' + dienst);
 
 			if (status == 'OK') {
 				button.removeClass('label-danger');
@@ -512,18 +510,18 @@ $(window).load(function () {
 		verbindungsPruefung: function () {
 			const _self = this;
 
-			const serverButton = $('#button' + _self.defaultServer + '_DUE');
+			const serverButton = $('.button' + _self.defaultServer + '_DUE');
 
 			this.socket.on('connect', function () {
 				// console.log('check 2------------------------VERBUNDEN', _self.socket.connected);
 				serverButton.removeClass('label-danger').addClass('label-success');
-				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-danger').addClass('label-success');
+				$('.buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-danger').addClass('label-success');
 			});
 
 			this.socket.on('disconnect', function () {
 				// console.log('check 2-----------------------GETRENNT', _self.socket.connected);
 				serverButton.removeClass('label-success').addClass('label-danger');
-				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-success').addClass('label-danger');
+				$('.buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-success').addClass('label-danger');
 
 				// TODO: Wiederverbindung versuchen, waehrend dieser Zeit kein Fehler zeigen, sondern erst dann?
 				//Zeige Error Modal Fenster
@@ -924,7 +922,6 @@ $(window).load(function () {
 				type:    'POST',
 				data:    benutzer,
 				success: function (result) {
-					console.log('ajax post success');
 					console.log(result);
 				}
 			});
@@ -950,11 +947,11 @@ $(window).load(function () {
 		init: function () {
 
 			const _self       = this;
-			this.currentTheme = $('.theme-switcher li.active .switch-theme').data('theme');
+			this.currentTheme = $('#theme-switcher li.active .switch-theme').data('theme');
 			this.themesheet   = $('<link href="' + this.getThemeUrl() + '" rel="stylesheet" />');
 			this.themesheet.appendTo('head');
 
-			$('.theme-switcher .switch-theme').on('click', function () {
+			$('#theme-switcher .switch-theme').on('click', function () {
 				_self.switch($(this).data('theme'), true)
 			});
 		},
@@ -979,8 +976,8 @@ $(window).load(function () {
 
 			this.currentTheme = theme;
 			this.themesheet.attr('href', this.getThemeUrl());
-			$('.theme-switcher .switch-theme').parents('li').removeClass('active');
-			$('.theme-switcher a[data-theme="' + this.currentTheme + '"]').parent().addClass('active');
+			$('#theme-switcher .switch-theme').parents('li').removeClass('active');
+			$('#theme-switcher a[data-theme="' + this.currentTheme + '"]').parent().addClass('active');
 			if (saveConfig) {
 				WSV.Display.schreibeBenutzer();
 			}
