@@ -22,7 +22,7 @@
 		init: function () {
 
 			$('#logo').trigger('initDisplay');
-			this.einzel = $('#statusWechsel').data('einzel');
+			this.einzel             = $('#statusWechsel').data('einzel');
 			this.aktuellerUKWserver = location.protocol + '//' + location.hostname + ':' + location.port;
 			this.setDefaultServer();
 			this.ladeKonfig();
@@ -631,7 +631,7 @@
 		 * @param geklicktespan_mhanApNr
 		 */
 		schalteKanalID: function (geklickteFstID, geklickteSPANMHAN, SPAN, geklicktespan_mhanApNr) {
-			console.log('Klick: ' + geklickteFstID);
+			// console.log('Klick: ' + geklickteFstID);
 			//$.notify('test:'+ApFunkstellen[geklickteID].kurzname);
 			const _self = this;
 
@@ -659,8 +659,7 @@
 					}
 				}
 			}
-			//SPAN zum Mithoeren aufschalten - trenen
-			if (SPAN === 'SPAN_MHAN') {
+			if (SPAN === 'SPAN_MHAN') { //SPAN zum Mithoeren aufschalten - trenen
 				if (this.ApFunkstellen.hasOwnProperty(geklickteFstID)) {
 					if (this.ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
 						this.trennen(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
@@ -678,6 +677,8 @@
 					this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
 				}
 			}
+
+			this.schreibeBenutzer();
 
 			//MHAN schalten
 			if (SPAN === 'MHAN') {
@@ -703,6 +704,8 @@
 			for (const funkstelle in mhan) {
 				this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle]);
 			}
+
+			this.schreibeBenutzer();
 		},
 
 		/**
@@ -723,6 +726,16 @@
 				'aktion':        'schaltenEinfach',
 				'span_mhanApNr': SPAN_MAHN_ApNr
 			});
+
+			if (SPAN_MAHN_ApNr.indexOf('SPAN') > -1) {
+				if (this.einzel) {
+					this.aktuellerBenutzer.schaltZustandEinzel = {[FstID]: SPAN_MAHN}
+				}
+				else {
+					this.aktuellerBenutzer.schaltZustandGruppe[FstID] = SPAN_MAHN;
+				}
+			}
+
 			$.notify('Schalte: <br>' + this.ApFunkstellen[FstID].sname);
 			//console.log('(notify) schalte: ' + this.ApFunkstellen[FstID].sname);
 		},
@@ -742,6 +755,16 @@
 				'aktion':        'trennenEinfach',
 				'span_mhanApNr': SPAN_MAHN_ApNr
 			});
+
+			if (SPAN_MAHN_ApNr.indexOf('SPAN') > -1) {
+				if (this.einzel) {
+					this.aktuellerBenutzer.schaltZustandEinzel = {}
+				}
+				else {
+					delete this.aktuellerBenutzer.schaltZustandGruppe[FstID];
+				}
+			}
+
 			$.notify('Trenne: <br>' + this.ApFunkstellen[FstID].sname);
 			//console.log('(notify) trenne: ' + this.ApFunkstellen[FstID].sname);
 		},
@@ -820,7 +843,7 @@
 			}
 
 			//Backup, da die Funktionen schalten und trennen mit Rueckmeldung schon in ApFunkstellen schreiben
-			const backupApFunkstellen = this.ApFunkstellen;
+			const backupApFunkstellen = $.extend(true, {}, this.ApFunkstellen);
 			const _self               = this;
 
 			$.each(backupApFunkstellen, function (key, value) {
@@ -830,13 +853,11 @@
 
 					if (AufschalteZustand.hasOwnProperty(key)) {
 						console.log('wechsel schalten: ' + key);
-						_self.schalten(key, _self.SPAN)
+						_self.schalten(key, _self.SPAN);
 					}
-					else if (value.aufgeschaltet == false) { // schalten
-						if (value.aufgeschaltet == true) { // trennen
-							console.log('wechsel trennen: ' + key);
-							_self.trennen(key, _self.SPAN)
-						}
+					else if (value.aufgeschaltet == true) { // trennen
+						console.log('wechsel trennen: ' + key);
+						_self.trennen(key, _self.SPAN);
 					}
 				}
 			});
@@ -888,7 +909,7 @@
 		 */
 		schreibeBenutzer: function () {
 
-			const benutzer  = this.aktuellerBenutzer;
+			const benutzer  = jQuery.extend(true, {}, this.aktuellerBenutzer);
 			benutzer.theme  = WSV.Themes.currentTheme;
 			benutzer.einzel = this.einzel;
 
