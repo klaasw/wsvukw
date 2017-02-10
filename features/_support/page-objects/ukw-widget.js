@@ -6,11 +6,14 @@ var cfg = require('../../../cfg.js');
 
 var aktuelleSchaltung = "#statusWechsel>a";
 var btnFarbschema = "#buttonThemeSwitcher";
+var btnArbeitsplatzgeraete = "#buttonAGswitcher";
 var stdTheme = ".theme1 .switch-theme.btn";
 var flatTheme = ".theme2 .switch-theme.btn";
 var darklyTheme = ".theme3 .switch-theme.btn";
 var cyborgTheme = ".theme4 .switch-theme.btn";
 var header_el = ".navbar-collapse.collapse";
+var btnArbeitsplatzgeraete = "#buttonAG";
+var listArbeitsplatzgeraete = "#AGListe";
 
 widgets.open = {
     openSite: function(url){
@@ -30,7 +33,10 @@ widgets.header = {
         }
     },
     clickFarbschema: function(){
-        browser.click(btnFarbschema)
+        browser.click(btnFarbschema);
+    },
+    clickArbeitsplatzgeraete: function(){
+        browser.click(btnArbeitsplatzgeraete);
     },
     selectFarbschema: function(color){
         switch(color) {
@@ -51,6 +57,9 @@ widgets.header = {
                 browser.pause(1000);
                 break;
         }
+    },
+    stateArbeitsplatzgerate: function(){
+        return browser.elements(listArbeitsplatzgeraete+" #agspan01").getText();
     }
 };
 

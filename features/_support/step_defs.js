@@ -69,6 +69,9 @@ module.exports = function() {
             case "Farbschema":
                 widgets.header.clickFarbschema();
                 break;
+            case "Arbeitsplatzgeräte":
+                widgets.header.clickArbeitsplatzgeraete();
+                break;
             default:
                 console.log('no match');
         }
@@ -187,6 +190,10 @@ module.exports = function() {
         return 'pending';
     });
 
+    this.When(/^eine Liste mit allen Arbeitsplatzgeräten mit Status wird angezeigt$/, function () {
+        widgets.header.stateArbeitsplatzgerate();
+    });
+
     this.Then(/^ist der Status der Schaltfläche "([^"]*)"$/, function (arg1) {
         // Write code here that turns the phrase above into concrete actions
         return 'pending';
@@ -281,9 +288,12 @@ module.exports = function() {
         return 'pending';
     });
 
-    this.Then(/^sind alle Arbeitsplatzgeräte betriebsbereit$/, function () {
-        // Write code here that turns the phrase above into concrete actions
-        return 'pending';
+    this.Then(/^zeigen alle Geräte den Status "([^"]*)", d.h. sie sind betriebsbereit$/, function (state) {
+        var app_state = widgets.header.stateArbeitsplatzgerate();
+        for (var i in app_state){
+            expect(app_state[i]).toEqual("OK");
+            i++
+        };
     });
 
     this.Then(/^dann sind nicht alle Server betriebsbereit$/, function () {
@@ -313,7 +323,6 @@ module.exports = function() {
         widgets.header.selectFarbschema("Standard");
 
     });
-
 
     this.Then(/^die neue Kanalnummer wird in der Mehrkanalschaltfläche angezeigt$/, function () {
         // Write code here that turns the phrase above into concrete actions
