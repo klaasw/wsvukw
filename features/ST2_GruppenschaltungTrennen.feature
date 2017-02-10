@@ -12,7 +12,7 @@ mit dem Ziel über diesen Sprechweg mit Teilnehmern mehrerer Kanäle zu kommuniz
   #@watch
   Scenario: 16  Aufschalten einer Gruppenschaltung bei einer Mehrkanalanlage
     Given ist der Arbeitsplatz "UKWDisplay/" NvD
-    When ich die Gruppenschaltung aktiviere
+    When ich die "Gruppenschaltung" aktiviere
     And eine Mehrkanalschaltfläche anklicke
     And eine weitere Standardschaltflächen aufschalte
     Then ist der Status aller Schaltflächen "aktiv"

@@ -10,9 +10,8 @@ module.exports = function() {
         widgets.open.openSite(url);
     });
 
-    this.Given(/^Einzelschaltung ist aktiviert$/, function () {
-        // Write code here that turns the phrase above into concrete actions
-        return 'pending';
+    this.Given(/^ "([^"]*)" ist aktiviert$/, function () {
+        widgets.header.setSchaltung(arg1);
     });
 
     this.Given(/^ausgewählt ist die defekte Serveranlage "([^"]*)"$/, function (arg1) {
@@ -31,8 +30,9 @@ module.exports = function() {
     });
 
 
-    this.When(/^ich die Einzelschaltung aktiviere$/, function () {
-        widgets.open.clickOnSchaltfläche(11);
+    this.When(/^ich auf die Standardschaltfläche klicke$/, function () {
+        //widgets.content.clickOnSchaltfläche(11);
+        return 'pending';
     });
 
     this.When(/^einen Kanal auswähle$/, function () {
@@ -60,14 +60,18 @@ module.exports = function() {
         return 'pending';
     });
 
-    this.When(/^ich die Gruppenschaltung aktiviere$/, function () {
-        // Write code here that turns the phrase above into concrete actions
-        return 'pending';
+    this.When(/^ich die "([^"]*)" aktiviere$/, function (arg1) {
+        widgets.header.setSchaltung(arg1);
     });
 
     this.When(/^ich auf den Button "([^"]*)" klicke$/, function (arg1) {
-        // Write code here that turns the phrase above into concrete actions
-        return 'pending';
+        switch(arg1) {
+            case "Farbschema":
+                widgets.header.clickFarbschema();
+                break;
+            default:
+                console.log('no match');
+        }
     });
 
     this.When(/^ich von Einzelschaltung zu Gruppenschaltung und zurück wechsle$/, function () {
@@ -80,14 +84,8 @@ module.exports = function() {
         return 'pending';
     });
 
-    this.When(/^wenn ich auf den Button "([^"]*)" klicke$/, function (arg1) {
-        // Write code here that turns the phrase above into concrete actions
-        return 'pending';
-    });
-
-    this.When(/^ich ein Design auswähle$/, function () {
-        // Write code here that turns the phrase above into concrete actions
-        return 'pending';
+    this.When(/^ich das Design "([^"]*)" auswähle$/, function (arg1) {
+        widgets.header.selectFarbschema(arg1);
     });
 
     this.When(/^ein Gerät den Status "([^"]*)" anzeigt$/, function (arg1) {
@@ -101,7 +99,7 @@ module.exports = function() {
     });
 
     this.When(/^ein Server den Status "([^"]*)" anzeigt$/, function (arg1) {
-        // Write code here that turns the phrase above into concrete actions
+        // Wriggte code here that turns the phrase above into concrete actions
         return 'pending';
     });
 
@@ -239,7 +237,7 @@ module.exports = function() {
         return 'pending';
     });
 
-    this.Then(/^kann ich eine Schaltfläche aktivieren$/, function () {
+    this.Then(/^ist die Schaltfläche "([^"]*)" aktiviert$/, function (arg1) {
         // Write code here that turns the phrase above into concrete actions
         return 'pending';
     });
@@ -288,11 +286,6 @@ module.exports = function() {
         return 'pending';
     });
 
-    this.Then(/^ändern die Schaltflächen ihre Farbe$/, function () {
-        // Write code here that turns the phrase above into concrete actions
-        return 'pending';
-    });
-
     this.Then(/^dann sind nicht alle Server betriebsbereit$/, function () {
         // Write code here that turns the phrase above into concrete actions
         return 'pending';
@@ -313,10 +306,14 @@ module.exports = function() {
         return 'pending';
     });
 
-    this.Then(/^ändert der Header seine Farbe$/, function () {
-        // Write code here that turns the phrase above into concrete actions
-        return 'pending';
+    this.Then(/^ändert sich die Farbe der Navigationsleiste in "([^"]*)"$/, function (color) {
+        var newColor = widgets.content.getHeaderHexColor();
+        expect(newColor).toEqual(color);
+        widgets.header.clickFarbschema();
+        widgets.header.selectFarbschema("Standard");
+
     });
+
 
     this.Then(/^die neue Kanalnummer wird in der Mehrkanalschaltfläche angezeigt$/, function () {
         // Write code here that turns the phrase above into concrete actions
@@ -342,7 +339,4 @@ module.exports = function() {
         // Write code here that turns the phrase above into concrete actions
         return 'pending';
     });
-
-
-
 }
