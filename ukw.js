@@ -70,17 +70,23 @@ exports.pruefeRfdWS = function () {
 
 /**
  * Lade spezifischen windowsBenutzer aus DB
- * @param {string} ipAddr
+ * @param {string} ipAddr - IP Adresse des Nutzers
+ * @param {object} res - nodejs app resource
  * @param {function} callback
  */
-exports.ladeBenutzer = function (ipAddr, callback) {
+exports.ladeBenutzer = function (ipAddr, res, callback) {
 
 	db.findeElement('windowsBenutzer', {ip: tools.filterIP(ipAddr)}, function (doc) {
 		if (doc.length) {
 			callback(doc[0]);
 		}
 		else {
-			callback({error: true, message: 'Fehler! Kein Benutzer zu dieser IP gefunden: ' + remoteAddress});
+			res.render('error', {
+				message: 'Fehler! Kein Benutzer zu dieser IP gefunden: ' + tools.filterIP(ipAddr),
+				error:   {
+					status: 'kein'
+				}
+			});
 		}
 	})
 };

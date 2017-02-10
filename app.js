@@ -124,6 +124,7 @@ const server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
+server.on('error', onError);
 
 const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
 db.verbindeDatenbank(function (db) {
@@ -139,12 +140,16 @@ db.verbindeDatenbank(function (db) {
 	if (env === 'development') {
 		server.listen(port, function () {
 			console.log('Server läuft %s in %s mode', server.address().address, app.settings.env);
+
+			// if (db.error) {
+			// 	throw new Error(db);
+			// }
+
 		});
 	}
 
 });
 
-server.on('error', onError);
 server.on('listening', onListening);
 
 const socket = require('./socket.js');

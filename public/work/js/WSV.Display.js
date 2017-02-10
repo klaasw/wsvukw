@@ -163,7 +163,7 @@
 				_self.ApID                = data.Arbeitsplatz;
 				_self.IpConfig            = data.Konfigdaten.IpConfig;
 
-				console.log(data.Konfigdaten.IpConfig);
+				// console.log(data.Konfigdaten.IpConfig);
 
 				_self.socket = io(_self.aktuellerUKWserver);
 
@@ -677,8 +677,6 @@
 					this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
 				}
 			}
-
-			this.schreibeBenutzer();
 
 			//MHAN schalten
 			if (SPAN === 'MHAN') {

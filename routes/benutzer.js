@@ -20,7 +20,7 @@ const log      = require('../log.js'); // Modul fuer verbessertes Logging
 const FILENAME = __filename.slice(__dirname.length + 1);
 
 router.get('/zeigeWindowsBenutzer/selectip', function (req, res) {
-	ukw.ladeBenutzer(req._remoteAddress, function (data) {
+	ukw.ladeBenutzer(req._remoteAddress, res, function (data) {
 		res.send(data);
 	});
 });

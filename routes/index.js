@@ -86,7 +86,7 @@ router.get('/ukw', function (req, res) {
 	const clientIP = tools.filterIP(req.ip);
 	log.debug('Benutzer IP: ' + clientIP);
 
-	const benutzer = ukw.ladeBenutzer(req.ip, function(benutzer) {
+	ukw.ladeBenutzer(req.ip, res, function(benutzer) {
 
 		if (typeof benutzer.error == 'undefined') {
 
@@ -115,14 +115,6 @@ router.get('/ukw', function (req, res) {
 					}); //res send ende
 				}
 			}); //erstelleKonfigFurAp Ende
-		}
-		else { //kein Benutzer zu IP gefunden
-			res.render('error', {
-				message: 'keine Benutzer konfiguriert zu IP: ' + clientIP,
-				error:   {
-					status: 'kein'
-				}
-			});
 		}
 	});
 }); //router Ende
