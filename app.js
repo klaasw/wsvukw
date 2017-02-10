@@ -9,6 +9,7 @@ const path         = require('path');
 const favicon      = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const bodyParser   = require('body-parser');
+const tools        = require('./tools.js');
 
 const debug             = require('debug')('ukwserver:server');
 const FileStreamRotator = require('file-stream-rotator');
@@ -111,7 +112,7 @@ app.use(function (err, req, res, next) {
 /**
  * Get port from environment and store in Express.
  */
-const port = normalizePort(process.env.PORT || cfg.port);
+const port = tools.normalizePort(process.env.PORT || cfg.port);
 app.set('port', port);
 app.set('trust proxy', 'loopback');
 
@@ -124,6 +125,7 @@ const server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
+server.on('error', onError);
 
 const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
 db.verbindeDatenbank(function (db) {
@@ -139,12 +141,16 @@ db.verbindeDatenbank(function (db) {
 	if (env === 'development') {
 		server.listen(port, function () {
 			console.log('Server läuft %s in %s mode', server.address().address, app.settings.env);
+
+			// if (db.error) {
+			// 	throw new Error(db);
+			// }
+
 		});
 	}
 
 });
 
-server.on('error', onError);
 server.on('listening', onListening);
 
 const socket = require('./socket.js');
@@ -155,24 +161,6 @@ if (cfg.intervall !== 0) {
 	const Intervall = setInterval(function () {
 		ukw.pruefeRfdWS()
 	}, cfg.intervall);
-}
-
-/**
- * Normalize a port into a number, string, or false.
- * @param {int|string} val
- * @returns {int|boolean}
- */
-function normalizePort(val) {
-	const port = parseInt(val, 10);
-	if (isNaN(port)) {
-		// named pipe
-		return val;
-	}
-	if (port >= 0) {
-		// port number
-		return port;
-	}
-	return false;
 }
 
 /**
@@ -211,7 +199,3 @@ function onListening() {
 		: 'port ' + addr.port;
 	debug('Listening on ' + bind);
 }
-
-module.exports = {
-	normalizePort
-};

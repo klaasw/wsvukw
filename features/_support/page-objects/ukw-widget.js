@@ -3,13 +3,17 @@
  */
 
 var cfg = require('../../../cfg.js');
-var root = '.content ';
 
-var selectors = {
-    sf11 : root + '#Button11panel',
-    sf12 : root + '#Button12panel',
-    sf13 : root + '#Button13panel'
-};
+var aktuelleSchaltung = "#statusWechsel>a";
+var btnFarbschema = "#buttonThemeSwitcher";
+var btnArbeitsplatzgeraete = "#buttonAGswitcher";
+var stdTheme = ".theme1 .switch-theme.btn";
+var flatTheme = ".theme2 .switch-theme.btn";
+var darklyTheme = ".theme3 .switch-theme.btn";
+var cyborgTheme = ".theme4 .switch-theme.btn";
+var header_el = ".navbar-collapse.collapse";
+var btnArbeitsplatzgeraete = "#buttonAG";
+var listArbeitsplatzgeraete = "#AGListe";
 
 widgets.open = {
     openSite: function(url){
@@ -17,18 +21,55 @@ widgets.open = {
         var port = cfg.port;
         var openUrl = "http://" + ip + ":" + port + url.replace("UKWDisplay", "");
         browser.url(openUrl);
-    },
-    clickOnSchaltfläche: function(sf_number){
-        var sfClick = selectors.root + "#Button" + sf_number + "panel";
-        console.log("#######################"+sfClick);
-        browser.click(sfClick);
     }
 };
 
-widgets.schaltflächen = {
-    clickOnSchaltfläche: function(sf_number){
-        var sfClick = selectors.root + "#Button" + sf_number + "panel";
-        console.log("#######################"+sfClick);
-        browser.click(sfClick);
+widgets.header = {
+    clickDisplaysperre: function(){},
+
+    setSchaltung: function(mode){
+        if(mode =! browser.element(aktuelleSchaltung).getText()){
+            browser.click(aktuelleSchaltung);
+        }
+    },
+    clickFarbschema: function(){
+        browser.click(btnFarbschema);
+    },
+    clickArbeitsplatzgeraete: function(){
+        browser.click(btnArbeitsplatzgeraete);
+    },
+    selectFarbschema: function(color){
+        switch(color) {
+            case "Standard":
+                browser.click(stdTheme);
+                browser.pause(1000);
+                break;
+            case "Flach":
+                browser.click(flatTheme);
+                browser.pause(1000);
+                break;
+            case "Dunkel / marineblau":
+                browser.click(darklyTheme);
+                browser.pause(1000);
+                break;
+            case "Dunkel / hellblau":
+                browser.click(cyborgTheme);
+                browser.pause(1000);
+                break;
+        }
+    },
+    stateArbeitsplatzgerate: function(){
+        return browser.elements(listArbeitsplatzgeraete+" #agspan01").getText();
     }
-}
+};
+
+widgets.content = {
+    clickOnSchaltfläche: function(sf_number){
+        var sf = ".content #Button" + sf_number + "panel";
+        browser.click(sf);
+    },
+    getHeaderHexColor: function(){
+        var color = browser.element(header_el).getCssProperty('color');
+        return color["parsed"].hex;
+    }
+};

@@ -21,9 +21,10 @@
 
 		init: function () {
 
+			$('#logo').trigger('initDisplay');
+			this.einzel             = $('#statusWechsel').data('einzel');
 			this.aktuellerUKWserver = location.protocol + '//' + location.hostname + ':' + location.port;
 			this.setDefaultServer();
-			this.ladeBenutzer();
 			this.ladeKonfig();
 			this.ladeZustand();
 
@@ -163,7 +164,7 @@
 				_self.ApID                = data.Arbeitsplatz;
 				_self.IpConfig            = data.Konfigdaten.IpConfig;
 
-				console.log(data.Konfigdaten.IpConfig);
+				// console.log(data.Konfigdaten.IpConfig);
 
 				_self.socket = io(_self.aktuellerUKWserver);
 
@@ -244,8 +245,8 @@
 				}
 			}
 
-			const button      = $('#button' + ort + '_' + dienst);
-			const buttonAktiv = $('#buttonAktiv' + ort + '_' + dienst);
+			const button      = $('.button' + ort + '_' + dienst);
+			const buttonAktiv = $('.buttonAktiv' + ort + '_' + dienst);
 
 			if (status == 'OK') {
 				button.removeClass('label-danger');
@@ -389,7 +390,7 @@
 					$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.FSTSTATUS.$.id].sname);
 
 					//geschaltetet Zustände an Server übertragen
-					socket.emit('clientMessageSchaltzustand', {
+					_self.socket.emit('clientMessageSchaltzustand', {
 						'Zustand':      _self.ApFunkstellen,
 						'Arbeitsplatz': _self.ApID
 					});
@@ -541,18 +542,18 @@
 		verbindungsPruefung: function () {
 			const _self = this;
 
-			const serverButton = $('#button' + _self.defaultServer + '_DUE');
+			const serverButton = $('.button' + _self.defaultServer + '_DUE');
 
 			this.socket.on('connect', function () {
 				// console.log('check 2------------------------VERBUNDEN', _self.socket.connected);
 				serverButton.removeClass('label-danger').addClass('label-success');
-				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-danger').addClass('label-success');
+				$('.buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-danger').addClass('label-success');
 			});
 
 			this.socket.on('disconnect', function () {
 				// console.log('check 2-----------------------GETRENNT', _self.socket.connected);
 				serverButton.removeClass('label-success').addClass('label-danger');
-				$('#buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-success').addClass('label-danger');
+				$('.buttonAktiv' + _self.defaultServer + '_DUE').removeClass('label-success').addClass('label-danger');
 
 				// TODO: Wiederverbindung versuchen, waehrend dieser Zeit kein Fehler zeigen, sondern erst dann?
 				//Zeige Error Modal Fenster
@@ -673,7 +674,7 @@
 		 * @param geklicktespan_mhanApNr
 		 */
 		schalteKanalID: function (geklickteFstID, geklickteSPANMHAN, SPAN, geklicktespan_mhanApNr) {
-			console.log('Klick: ' + geklickteFstID);
+			// console.log('Klick: ' + geklickteFstID);
 			//$.notify('test:'+ApFunkstellen[geklickteID].kurzname);
 			const _self = this;
 
@@ -701,8 +702,7 @@
 					}
 				}
 			}
-			//SPAN zum Mithoeren aufschalten - trenen
-			if (SPAN === 'SPAN_MHAN') {
+			if (SPAN === 'SPAN_MHAN') { //SPAN zum Mithoeren aufschalten - trenen
 				if (this.ApFunkstellen.hasOwnProperty(geklickteFstID)) {
 					if (this.ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
 						this.trennen(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
@@ -745,6 +745,8 @@
 			for (const funkstelle in mhan) {
 				this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle]);
 			}
+
+			this.schreibeBenutzer();
 		},
 
 		/**
@@ -765,6 +767,16 @@
 				'aktion':        'schaltenEinfach',
 				'span_mhanApNr': SPAN_MAHN_ApNr
 			});
+
+			if (SPAN_MAHN_ApNr.indexOf('SPAN') > -1) {
+				if (this.einzel) {
+					this.aktuellerBenutzer.schaltZustandEinzel = {[FstID]: SPAN_MAHN}
+				}
+				else {
+					this.aktuellerBenutzer.schaltZustandGruppe[FstID] = SPAN_MAHN;
+				}
+			}
+
 			$.notify('Schalte: <br>' + this.ApFunkstellen[FstID].sname);
 			//console.log('(notify) schalte: ' + this.ApFunkstellen[FstID].sname);
 		},
@@ -784,6 +796,16 @@
 				'aktion':        'trennenEinfach',
 				'span_mhanApNr': SPAN_MAHN_ApNr
 			});
+
+			if (SPAN_MAHN_ApNr.indexOf('SPAN') > -1) {
+				if (this.einzel) {
+					this.aktuellerBenutzer.schaltZustandEinzel = {}
+				}
+				else {
+					delete this.aktuellerBenutzer.schaltZustandGruppe[FstID];
+				}
+			}
+
 			$.notify('Trenne: <br>' + this.ApFunkstellen[FstID].sname);
 			//console.log('(notify) trenne: ' + this.ApFunkstellen[FstID].sname);
 		},
@@ -862,7 +884,7 @@
 			}
 
 			//Backup, da die Funktionen schalten und trennen mit Rueckmeldung schon in ApFunkstellen schreiben
-			const backupApFunkstellen = this.ApFunkstellen;
+			const backupApFunkstellen = $.extend(true, {}, this.ApFunkstellen);
 			const _self               = this;
 
 			$.each(backupApFunkstellen, function (key, value) {
@@ -872,13 +894,11 @@
 
 					if (AufschalteZustand.hasOwnProperty(key)) {
 						console.log('wechsel schalten: ' + key);
-						_self.schalten(key, _self.SPAN)
+						_self.schalten(key, _self.SPAN);
 					}
-					else if (value.aufgeschaltet == false) { // schalten
-						if (value.aufgeschaltet == true) { // trennen
-							console.log('wechsel trennen: ' + key);
-							_self.trennen(key, _self.SPAN)
-						}
+					else if (value.aufgeschaltet == true) { // trennen
+						console.log('wechsel trennen: ' + key);
+						_self.trennen(key, _self.SPAN);
 					}
 				}
 			});
@@ -921,14 +941,6 @@
 					if (typeof data.einzel == 'undefined') {
 						data.einzel = _self.einzel;
 					}
-
-					// TODO: initialen Zustand im PUG Template übergeben
-					if (!data.einzel) {
-						_self.wechselEinzelGruppen();
-					}
-
-					// TODO: initialen Zustand im PUG Template übergeben
-					WSV.Themes.switch(data.theme, false);
 				}
 			});
 		},
@@ -938,7 +950,7 @@
 		 */
 		schreibeBenutzer: function () {
 
-			const benutzer  = this.aktuellerBenutzer;
+			const benutzer  = jQuery.extend(true, {}, this.aktuellerBenutzer);
 			benutzer.theme  = WSV.Themes.currentTheme;
 			benutzer.einzel = this.einzel;
 
@@ -961,7 +973,6 @@
 				type:    'POST',
 				data:    benutzer,
 				success: function (result) {
-					console.log('ajax post success');
 					console.log(result);
 				}
 			});

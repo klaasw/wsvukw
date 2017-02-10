@@ -50,21 +50,22 @@ exports.verbindeDatenbank = function (aktion) {
 	}, function (err, db) {
 
 		if (err) {
-			log.error(FILENAME + ' Funktion: verbindeDatenbank. err: ' + util.inspect(err));
+			// log.error(FILENAME + ' Funktion: verbindeDatenbank. err: ' + util.inspect(err));
+			err.error = true;
+			aktion(err);
+			return;
 		}
 
-		assert.equal(null, err);
+		// assert.equal(null, err);
+
 		log.debug(FILENAME + ' Funktion: verbindeDatenbank. err: ' + util.inspect(err));
 		log.debug(FILENAME + ' Funktion: verbindeDatenbank. Verbindung erfolgreich hergestellt:  topology: ' + db.topology + ', primary: ' + db.topology.isMasterDoc.primary + ', isMasterDoc:' + JSON.stringify(db.topology.isMasterDoc));
 		datenbank.pruefeLokaleVerbindung(db.topology.isMasterDoc.primary);
 
-		if (err) throw err;
+		// if (err) throw err;
 
 		exports.dbVerbindung = db;
 
-		if (typeof aktion === 'function') {
-			aktion(_self);
-		}
 		//Ereignislister fuer Topologie Aenderungen im ReplicaSet
 		db.topology.on('serverDescriptionChanged', function (event) {
 			log.debug(FILENAME + ' Funktion: verbindeDatenbank Listener: received serverDescriptionChanged');
@@ -114,6 +115,10 @@ exports.verbindeDatenbank = function (aktion) {
 				datenbank.pruefeLokaleVerbindung(event.newDescription.servers[0].address);
 			}
 		});
+
+		if (typeof aktion === 'function') {
+			aktion(_self);
+		}
 	});
 };
 
@@ -193,6 +198,7 @@ exports.schreibeApConnect = function (ip, socketID, getrennt) {
 exports.findeElement = function (collection, element, callback) {
 	if (exports.dbVerbindung === undefined) {
 		log.error('Datenbank ist noch nicht verbunden!!! Leseversuch schlug fehl: Collection: ' + util.inspect(collection) + ', element: ' + util.inspect(element));
+		callback({});
 	}
 	else {
 		datenbank.findeElement(collection, element, function (doc) {

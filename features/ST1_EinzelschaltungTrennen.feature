@@ -5,7 +5,7 @@ Feature: Schalten/Trennen von Sprechwegen - Fester Sprechweg Einzelschaltung
   #@watch
   Scenario: 13 Fester Sprechweg für Einzelschaltung aufschalten
     Given ist der Arbeitsplatz "UKWDisplay/" NvD
-    When ich die Einzelschaltung aktiviere
+    When ich auf die Standardschaltfläche klicke
     And ich eine inaktive Standardschaltfläche anklicke
     Then ist der Status der Schaltfläche "aktiv"
   #@watch
@@ -17,7 +17,7 @@ Feature: Schalten/Trennen von Sprechwegen - Fester Sprechweg Einzelschaltung
   #@watch
   Scenario: 15 Aufschalten einer Einzelschaltung bei einer Mehrkanalanlage
     Given ist der Arbeitsplatz "UKWDisplay/" NvD
-    When ich die Einzelschaltung aktiviere
+    When ich auf die Standardschaltfläche klicke
     And ich eine Mehrkanalschaltfläche anklicke
     And ich einen Kanal auswähle
     Then ist der Status aller Schaltflächen "aktiv"

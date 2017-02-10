@@ -85,7 +85,7 @@ rules:
   block-scoped-var: 0         # treat var statements as if they were block scoped (off by default)
   complexity: 0               # specify the maximum cyclomatic complexity allowed in a program (off by default)
   consistent-return: 0        # require return statements to either always or never specify values
-  curly: 0                    # specify curly brace conventions for all control statements
+  curly: 1                    # specify curly brace conventions for all control statements
   default-case: 0             # require default case in switch statements (off by default)
   dot-notation: 0             # encourages use of dot notation whenever possible
   dot-location: 0             # enforces consistent newlines before or after dots (off by default)
@@ -156,8 +156,8 @@ rules:
   ########## Node.js ##########
 
   handle-callback-err: 0      # enforces error handling in callbacks (off by default) (on by default in the node environment)
-  no-mixed-requires: 0        # disallow mixing regular variable and require declarations (off by default) (on by default in the node environment)
-  no-new-require: 0           # disallow use of new operator with the require function (off by default) (on by default in the node environment)
+  no-mixed-requires: 1        # disallow mixing regular variable and require declarations (off by default) (on by default in the node environment)
+  no-new-require: 1           # disallow use of new operator with the require function (off by default) (on by default in the node environment)
   no-path-concat: 0           # disallow string concatenation with __dirname and __filename (off by default) (on by default in the node environment)
   no-process-exit: 0          # disallow process.exit() (on by default in the node environment)
   no-restricted-modules: 0    # restrict usage of specified node modules (off by default)
@@ -171,12 +171,12 @@ rules:
   camelcase: 0                      # require camel case names
   comma-spacing: 1                  # enforce spacing before and after comma
   comma-style: 1                    # enforce one true comma style (off by default)
-  computed-property-spacing: 0      # require or disallow padding inside computed properties (off by default)
-  consistent-this: [1, "_self"]    # enforces consistent naming when capturing the current execution context (off by default)
+  computed-property-spacing: 1      # require or disallow padding inside computed properties (off by default)
+  consistent-this: [1, "_self"]     # enforces consistent naming when capturing the current execution context (off by default)
   eol-last: 0                       # enforce newline at the end of file, with no multiple empty lines
   func-names: 0                     # require function expressions to have a name (off by default)
   func-style: 0                     # enforces use of function declarations or expressions (off by default)
-  indent: 0                         # this option sets a specific tab width for your code (off by default)
+  indent: ["warn", "tab", {SwitchCase: 1}] #this option sets a specific tab width for your code (off by default)
   key-spacing: 0                    # enforces spacing between keys and values in object literal properties
   lines-around-comment: 0           # enforces empty lines around comments (off by default)
   linebreak-style: 0                # disallow mixed 'LF' and 'CRLF' as linebreaks (off by default)
