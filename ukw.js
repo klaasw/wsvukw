@@ -18,7 +18,7 @@ const parser  = new xml2js.Parser({explicitRoot: true});// Parserkonfiguration
 const log    = require('./log.js');
 const cfg    = require('./cfg.js');
 const socket = require('./socket.js');
-const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
+const db     = require('./datenbank.js')
 
 const FILENAME = __filename.slice(__dirname.length + 1);
 
@@ -34,27 +34,31 @@ const FILENAME = __filename.slice(__dirname.length + 1);
 
 /**
  * Funktion zur Erreichbarkeit des RFD WebServices
+ * Das Ergebnis wird einmal als
+ * - statusMessage an Clients (Browser) und
+ * - serverMessage an Clients (andere DUE Server)
+ * versendet. @link socket.js:starteDueServerUberwachung
  */
 exports.pruefeRfdWS = function () {
-	//Pruefung lokaler VTR
+	// Pruefung lokaler VTR
 	request(cfg.urlRFDWebservice, {timeout: 2000}, function (error, response, body) {
 
 		if (!error && response.statusCode == 200) {
 			log.debug(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK');
+			// An Clients
 			socket.sendeWebsocketNachrichtStatus({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
+			// An Server
 			socket.sendeWebsocketNachrichtServer({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
+			db.schreibeZustand({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}})
 			return true;
 		}
 		else {
 			log.error(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + error);
-			socket.sendeWebsocketNachrichtStatus({
-				dienst: 'RFD',
-				status: {URL: cfg.urlRFDWebservice, Status: 'Error'}
-			});
-			socket.sendeWebsocketNachrichtServer({
-				dienst: 'RFD',
-				status: {URL: cfg.urlRFDWebservice, Status: 'Error'}
-			});
+			// An Clients
+			socket.sendeWebsocketNachrichtStatus({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'Error'}});
+			// An Server
+			socket.sendeWebsocketNachrichtServer({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'Error'}});
+			db.schreibeZustand({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'Error', StatusMsg: error}})
 			return false;
 		}
 	})
@@ -65,53 +69,6 @@ exports.pruefeRfdWS = function () {
  zum Testen
  */
 //var Intervall=setInterval(function() {sendeWebSocketNachricht()},1000)
-
-
-/**
- * schreibe Zustandsmeldungen in zustandKomponenten
- * @param {Object} Nachricht - {"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
- */
-function schreibeZustand(Nachricht) {
-	if (Nachricht.hasOwnProperty('FSTSTATUS')) {
-		const schreibeLokal = true; //es wird nur geschrieben wenn die aktuelle Instanz und Mongo Primary in einem VTR sind
-		let zustand;
-
-		//entfernen da dieser sonst den Kanal im DUE wieder mit -1 ueberschreibt
-		if (Nachricht.FSTSTATUS.$.channel == '-1') {
-			zustand = {
-				$set:         {
-					letzteMeldung:         new Date(),
-					'status.connectState': Nachricht.FSTSTATUS.$.connectState,
-					'status.state':        Nachricht.FSTSTATUS.$.state,
-				},
-				$setOnInsert: {
-					'status.id': Nachricht.FSTSTATUS.$.id
-				}
-			}
-		}
-		else {
-			zustand = {
-				$set:         {
-					letzteMeldung:         new Date(),
-					'status.connectState': Nachricht.FSTSTATUS.$.connectState,
-					'status.state':        Nachricht.FSTSTATUS.$.state,
-					'status.channel':      Nachricht.FSTSTATUS.$.channel
-				},
-				$setOnInsert: {
-					'status.id': Nachricht.FSTSTATUS.$.id
-				}
-			}
-		}
-
-		//console.log(Nachricht.FSTSTATUS.$.id)
-		const selector = {'_id': Nachricht.FSTSTATUS.$.id};
-
-		db.schreibeInDb('zustandKomponenten', selector, zustand, schreibeLokal);
-	}
-	else {
-		//nichts machen
-	}
-}
 
 
 // Erstelle SIP User-Agent var ua. Hier mit Konfiguration DUE als Empfänger für die Statusnachrichten vom RFD
@@ -142,6 +99,7 @@ const options = {
 //SIP User Agent Ereignisse
 ua.on('connected', function (e) {
 	log.debug(FILENAME + ' Funktion: connected mit SIP-Server: ' + cfg.jsSipConfiguration_DUE.uri)
+	db.schreibeZustand({dienst: 'SIP-Server', status: {URL: cfg.jsSipConfiguration_DUE.uri, Status: 'WARN', StatusMsg: 'nur connected'}})
 });
 
 ua.on('connecting', function (e) {
@@ -150,17 +108,26 @@ ua.on('connecting', function (e) {
 
 ua.on('registered', function (e) {
 	log.debug(FILENAME + ' Funktion: registered auf SIP-Server ' + cfg.jsSipConfiguration_DUE.uri);
+	db.schreibeZustand({dienst: 'SIP-Server', status: {URL: cfg.jsSipConfiguration_DUE.uri,
+	                                                       Status: 'OK',
+																												 StatusMsg: 'connected und registriert'}})
 	// sendeNachricht('Bin jetzt Registriert');
 	// anruf();
 });
 
 ua.on('registrationFailed', function (e) {
 	log.error(FILENAME + ' Funktion: registrationFailed auf SIP-Server ' + cfg.jsSipConfiguration_DUE.uri)
+	db.schreibeZustand({dienst: 'SIP-Server', status: {URL: cfg.jsSipConfiguration_DUE.uri,
+																												 Status: 'Error',
+																												 StatusMsg: 'registrationFailed'}})
 });
 
 
 ua.on('disconnected', function (e) {
 	log.debug(FILENAME + ' Funktion: Getrennt vom SIP-Server ' + cfg.jsSipConfiguration_DUE.uri)
+	db.schreibeZustand({dienst: 'SIP-Server', status: {URL: cfg.jsSipConfiguration_DUE.uri,
+																												 Status: 'Error',
+																												 StatusMsg: 'disconnected'}})
 });
 
 ua.on('newMessage', function (e) {
@@ -175,7 +142,7 @@ ua.on('newMessage', function (e) {
 				result.FSTSTATUS.letzteMeldung = new Date();
 			}
 			socket.sendeWebSocketNachricht(result);
-			schreibeZustand(result)
+			db.schreibeZustand(result)
 		}
 		else {
 			log.error(FILENAME + ' Funktion: newMessage keine XML in SIP Nachricht Error=' + err + ' Nachricht=' + e.message.request.body)

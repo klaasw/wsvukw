@@ -4,6 +4,7 @@
   "port":	"3000",
   "httpIP": "10.162.1.65",
   "rfdIP":  "10.162.1.96",
+  "checkRfdIntervallInSeconds": 3,
   "sipIP":  "10.162.1.65",
   "replicaSet": "dueReplicaSet",
   "auth": false,
@@ -16,15 +17,15 @@
   ],
   "alternativeServer":  [
     [
-      "BRB",
+      "1-H-DUE-BRBVTR-UKW-1",
       "10.162.1.65"
     ],
     [
-      "WHV",
+      "1-H-DUE-WHVVTR-UKW-1",
       "10.162.2.64"
     ],
     [
-      "LUB",
+      "1-H-DUE-LUBVTR-UKW-1",
       "10.162.3.66"
     ]
   ]
