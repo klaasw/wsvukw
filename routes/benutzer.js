@@ -88,8 +88,13 @@ router.post('/schreibeBenutzer', function (req, res) {
 			benutzer.angemeldet = true;
 		}
 
-		benutzer.schaltZustandEinzel = JSON.parse(benutzer.schaltZustandEinzel);
-		benutzer.schaltZustandGruppe = JSON.parse(benutzer.schaltZustandGruppe);
+		if (typeof benutzer.schaltZustandEinzel == 'string') {
+			benutzer.schaltZustandEinzel = JSON.parse(benutzer.schaltZustandEinzel);
+		}
+
+		if (typeof benutzer.schaltZustandGruppe == 'string') {
+			benutzer.schaltZustandGruppe = JSON.parse(benutzer.schaltZustandGruppe);
+		}
 
 		const benutzerId        = {'_id': benutzer._id};
 		const schreibeParameter = {
