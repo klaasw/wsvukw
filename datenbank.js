@@ -266,13 +266,14 @@ exports.liesAusRESTService = function (configfile, callback) {
 
 /**
  * schreibe Schaltzzustand in DB
+ * @param {string} ipAddr
  * @param {string} fst
  * @param {string} Span_Mhan
  * @param {string} aktion
  * @param {string} span_mhanApNr
  * @param {string} ApID
  */
-exports.schreibeSchaltzustand = function (fst, Span_Mhan, aktion, span_mhanApNr, ApID) {
+exports.schreibeSchaltzustand = function (ipAddr, fst, Span_Mhan, aktion, span_mhanApNr, ApID) {
 	const schreibeLokal = false; //es wird auf jeden Fall geschrieben
 	const selector      = {ApID, 'funkstelle': fst, 'span_mhan': Span_Mhan};
 	let aufgeschaltet   = true;
@@ -292,7 +293,42 @@ exports.schreibeSchaltzustand = function (fst, Span_Mhan, aktion, span_mhanApNr,
 		}
 	};
 
-	exports.schreibeInDb('schaltZustaende', selector, schaltZustand, schreibeLokal)
+	exports.schreibeInDb('schaltZustaende', selector, schaltZustand, schreibeLokal);
+
+	exports.ladeBenutzer(ipAddr, {}, function (data) {
+		if (typeof data.id != 'undefined') {
+			if (data.einzel) {
+
+			}
+			else {
+
+			}
+			// db.schreibeInDb('windowsBenutzer', benutzerId, data, false);
+		}
+	});
+};
+
+/**
+ * Lade spezifischen windowsBenutzer aus DB
+ * @param {string} ipAddr - IP Adresse des Nutzers
+ * @param {object} res - nodejs app resource
+ * @param {function} callback
+ */
+exports.ladeBenutzer = function (ipAddr, res, callback) {
+
+	exports.findeElement('windowsBenutzer', {ip: tools.filterIP(ipAddr)}, function (doc) {
+		if (doc.length) {
+			callback(doc[0]);
+		}
+		else if (typeof res == 'object') {
+			res.render('error', {
+				message: 'Fehler! Kein Benutzer zu dieser IP gefunden: ' + tools.filterIP(ipAddr),
+				error:   {
+					status: 'kein'
+				}
+			});
+		}
+	})
 };
 
 const datenbank = {

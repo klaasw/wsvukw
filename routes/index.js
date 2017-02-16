@@ -86,7 +86,7 @@ router.get('/ukw', function (req, res) {
 	const clientIP = tools.filterIP(req.ip);
 	log.debug('Benutzer IP: ' + clientIP);
 
-	ukw.ladeBenutzer(req.ip, res, function (benutzer) {
+	db.ladeBenutzer(req.ip, res, function (benutzer) {
 
 		if (typeof benutzer.error == 'undefined') {
 

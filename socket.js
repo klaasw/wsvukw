@@ -54,13 +54,15 @@ exports.socket = function (server) {
 		socket.on('chat message', function (msg) {
 			//io.emit('chat message', msg);
 			log.debug('chat message: ' + JSON.stringify(msg));
-			rfd.sendeWebServiceNachricht(msg.FstID, msg.SPAN, msg.aktion, msg.Kanal);//Zum Testen eine Schleife als SIP Nachricht, die wieder als Web Nachricht zurueckgesendet wird
+			const remoteAddress = (tools.filterIP(socket.conn.remoteAddress) === '127.0.0.1') ? socket.request.headers['x-forwarded-for'] : tools.filterIP(socket.conn.remoteAddress);
+			rfd.sendeWebServiceNachricht(remoteAddress, msg.FstID, msg.SPAN, msg.aktion, msg.Kanal);//Zum Testen eine Schleife als SIP Nachricht, die wieder als Web Nachricht zurueckgesendet wird
 		});
 
 		//'Standardnachrichten für Weiterleitung an RFD schalten,trennen, MKA'
 		socket.on('clientMessage', function (msg) {
 			log.debug(FILENAME + ' Funktion: empfangeWebNachricht ' + 'clientMessage: WebSocket Nachricht: ' + JSON.stringify(msg));
-			rfd.sendeWebServiceNachricht(msg.FstID, msg.SPAN, msg.aktion, msg.Kanal, msg.span_mhanApNr, msg.ApID);//Sende WebServiceNachricht an RFD
+			const remoteAddress = (tools.filterIP(socket.conn.remoteAddress) === '127.0.0.1') ? socket.request.headers['x-forwarded-for'] : tools.filterIP(socket.conn.remoteAddress);
+			rfd.sendeWebServiceNachricht(remoteAddress, msg.FstID, msg.SPAN, msg.aktion, msg.Kanal, msg.span_mhanApNr, msg.ApID); //Sende WebServiceNachricht an RFD
 		});
 
 		//Speichern der Kanal Lotsenzuordnung

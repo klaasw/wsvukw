@@ -20,7 +20,7 @@ const log      = require('../log.js'); // Modul fuer verbessertes Logging
 const FILENAME = __filename.slice(__dirname.length + 1);
 
 router.get('/zeigeWindowsBenutzer/selectip', function (req, res) {
-	ukw.ladeBenutzer(req._remoteAddress, res, function (data) {
+	db.ladeBenutzer(req._remoteAddress, res, function (data) {
 		res.send(data);
 	});
 });
@@ -100,6 +100,7 @@ router.post('/schreibeBenutzer', function (req, res) {
 		const schreibeParameter = {
 			$set: benutzer
 		};
+
 		db.schreibeInDb('windowsBenutzer', benutzerId, schreibeParameter, false);
 		res.send({message: 'Benutzer erfolgreich gespeichert.'});
 	}

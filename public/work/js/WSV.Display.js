@@ -705,7 +705,7 @@
 				this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle]);
 			}
 
-			this.schreibeBenutzer();
+			// this.schreibeBenutzer();
 		},
 
 		/**
