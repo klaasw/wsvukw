@@ -29,6 +29,8 @@ $(window).load(function () {
 		defaultServer:       '',
 		aktuelleMKA:         {},
 		geschalteteSPAN:     {},
+		countDown:           0,
+		cdInterval:          {},
 
 		init: function () {
 
@@ -947,6 +949,31 @@ $(window).load(function () {
 					console.log(result);
 				}
 			});
+		},
+
+		showDisplaySperreModal: function () {
+
+			$('#displaySperreModal').modal({
+				backdrop: 'static',
+				keyboard: 'false'
+			});
+
+			const _self     = this;
+			this.countDown  = parseInt(this.IpConfig.displaySperreTimeout * 1000);
+			this.cdInterval = setInterval(function () {
+				_self.displaySperreCountdown(_self)
+			}, 1000);
+		},
+
+		displaySperreCountdown: function (obj) {
+			obj.countDown -= 1000;
+			if (obj.countDown <= 0) {
+				clearInterval(obj.cdInterval);
+				$('#displaySperreModal').modal('hide');
+			}
+
+			$('#displaySperreModal .modal-dialog h1').text(parseInt(obj.countDown / 1000));
+
 		}
 	}
 

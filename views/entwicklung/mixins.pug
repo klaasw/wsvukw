@@ -20,6 +20,12 @@ mixin errorModal(type,title,errorMessage)
 							a(href='http://' + val[1]) #{val[0]}
 							| &nbsp;
 
+mixin countdownModal(timeout)
+	div.modal.fade#displaySperreModal(role='dialog', tabindex='-1')
+		div.modal-dialog
+			h1.
+				#{timeout}
+
 mixin serverListe(ip, idName)
 	// mixin für die Zustandsanzeige der Server
 	li

@@ -186,6 +186,7 @@ exports.schreibeApConnect = function (ip, socketID, getrennt) {
 	else {
 		ApInfo.$set.loginZeit = new Date();
 	}
+
 	//Schreiben in windowsBenutzer
 	exports.schreibeSocketInfo(ApInfo, ip);
 };
