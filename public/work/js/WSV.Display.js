@@ -745,6 +745,9 @@
 		 * @param SPAN_MAHN_ApNr
 		 */
 		trennen: function (FstID, SPAN_MAHN, SPAN_MAHN_ApNr) {
+
+			SPAN_MAHN_ApNr = SPAN_MAHN_ApNr || 'SPAN01';
+
 			const _self = this;
 			this.socket.emit('clientMessage', {
 				'FstID':         FstID,
