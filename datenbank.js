@@ -175,8 +175,9 @@ exports.schreibeSocketInfo = function (socketInfo, ip) {
 exports.schreibeApConnect = function (ip, socketID, getrennt) {
 	const ApInfo = {
 		$set: {
-			'_id':   tools.filterIP(ip),
-			'aktiv': !getrennt
+			'_id':      tools.filterIP(ip),
+			'socketID': socketID,
+			'aktiv':    !getrennt
 		}
 	};
 	if (getrennt) {
