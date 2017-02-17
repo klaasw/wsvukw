@@ -298,7 +298,12 @@ exports.schreibeSchaltzustand = function (ipAddr, fst, Span_Mhan, aktion, span_m
 	exports.ladeBenutzer(ipAddr, {}, function (data) {
 		if (typeof data.id != 'undefined') {
 			if (data.einzel) {
-				data.schaltZustandEinzel = {[fst]: Span_Mhan};
+				if (aufgeschaltet) {
+					data.schaltZustandEinzel = {[fst]: Span_Mhan};
+				}
+				else {
+					delete data.schaltZustandEinzel;
+				}
 			}
 			else {
 				if (aufgeschaltet) {
