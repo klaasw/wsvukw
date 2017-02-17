@@ -29,7 +29,26 @@ const tools = {
 		return array.filter(function (item, position, self) {
 			return self.indexOf(item) == position;
 		});
+	},
+
+	/**
+	 * Normalize a port into a number, string, or false.
+	 * @param {int|string} val
+	 * @returns {int|boolean}
+	 */
+	normalizePort(val) {
+		const port = parseInt(val, 10);
+		if (isNaN(port)) {
+			// named pipe
+			return val;
+		}
+		if (port >= 0) {
+			// port number
+			return port;
+		}
+		return false;
 	}
+
 };
 
 module.exports = tools;

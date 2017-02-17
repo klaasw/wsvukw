@@ -70,6 +70,29 @@ exports.pruefeRfdWS = function () {
  */
 //var Intervall=setInterval(function() {sendeWebSocketNachricht()},1000)
 
+/**
+ * Lade spezifischen windowsBenutzer aus DB
+ * @param {string} ipAddr - IP Adresse des Nutzers
+ * @param {object} res - nodejs app resource
+ * @param {function} callback
+ */
+exports.ladeBenutzer = function (ipAddr, res, callback) {
+
+	db.findeElement('windowsBenutzer', {ip: tools.filterIP(ipAddr)}, function (doc) {
+		if (doc.length) {
+			callback(doc[0]);
+		}
+		else {
+			res.render('error', {
+				message: 'Fehler! Kein Benutzer zu dieser IP gefunden: ' + tools.filterIP(ipAddr),
+				error:   {
+					status: 'kein'
+				}
+			});
+		}
+	})
+};
+
 
 // Erstelle SIP User-Agent var ua. Hier mit Konfiguration DUE als Empfänger für die Statusnachrichten vom RFD
 //Die Übernahme aus der cfg funktioniert in der Produktivumgebung nicht. Callback?
