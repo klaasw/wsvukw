@@ -298,12 +298,17 @@ exports.schreibeSchaltzustand = function (ipAddr, fst, Span_Mhan, aktion, span_m
 	exports.ladeBenutzer(ipAddr, {}, function (data) {
 		if (typeof data.id != 'undefined') {
 			if (data.einzel) {
-
+				data.schaltZustandEinzel = {[fst]: Span_Mhan};
 			}
 			else {
-
+				if (aufgeschaltet) {
+					data.schaltZustandGruppe[fst] = Span_Mhan;
+				}
+				else {
+					delete data.schaltZustandGruppe[fst];
+				}
 			}
-			// db.schreibeInDb('windowsBenutzer', benutzerId, data, false);
+			db.schreibeInDb('windowsBenutzer', benutzerId, data, false);
 		}
 	});
 };

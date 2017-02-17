@@ -740,7 +740,7 @@ $(window).load(function () {
 
 			if (SPAN_MAHN_ApNr.indexOf('SPAN') > -1) {
 				if (this.einzel) {
-					this.aktuellerBenutzer.schaltZustandEinzel = {[FstID]: SPAN_MAHN}
+					this.aktuellerBenutzer.schaltZustandEinzel = {[FstID]: SPAN_MAHN};
 				}
 				else {
 					this.aktuellerBenutzer.schaltZustandGruppe[FstID] = SPAN_MAHN;
