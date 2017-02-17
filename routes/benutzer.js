@@ -65,7 +65,7 @@ router.put('/schreibeWindowsBenutzer', function (req, res) {
 
 	const benutzerId = {'_id': benutzer.ip};
 
-	// db.schreibeInDb('windowsBenutzer', benutzerId, schreibeParameter, schreibeLokal);
+	db.schreibeInDb('windowsBenutzer', benutzerId, schreibeParameter, schreibeLokal);
 	res.send({message: 'Benutzer hinzugefuegt oder geaendert'});
 });
 

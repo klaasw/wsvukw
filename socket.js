@@ -32,12 +32,9 @@ exports.socket = function (server) {
 		log.debug('SOCKETHEADER' + socket.request.headers['x-forwarded-for']);
 		// TODO: Pruefung Berechtigung !
 
-		// nur einmal beim Start: Zeitpunkt der Benutzung in DB schreiben
-		db.schreibeApConnect(remoteAddress, socket.id, true);
-
 		//TODO: Funktion leseZustand kann entfernt werden.
 		// leseZustand(socket.id); //Status der Funkstellen übertragen
-		exports.leseSchaltzustand(socket.id, remoteAddress); //letzten Schaltzustandübertragen
+		funktionNachVerbindungsaufbau(socket.id, remoteAddress); //letzten Schaltzustandübertragen
 
 		// Uebertragen der DUE Server Zustaende
 		exports.emit('statusMessage', dueStatusServerA, socket.id);
@@ -78,7 +75,14 @@ exports.socket = function (server) {
 			const remoteAddress = (tools.filterIP(socket.conn.remoteAddress) === '127.0.0.1') ? socket.request.headers['x-forwarded-for'] : tools.filterIP(socket.conn.remoteAddress);
 
 			log.warn(FILENAME + ' Funktion disconnect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' getrennt. IP: ' + remoteAddress);
-			db.schreibeApConnect(remoteAddress, socket.id, false);
+
+			// Benutzer ermitteln und Trennung in Datenbank schreiben
+			db.findeApNachIp(remoteAddress, function (benutzer) {
+				if (typeof benutzer != 'string') {
+					return;
+				}
+				db.schreibeApConnect(remoteAddress, socket.id, benutzer, cfg.alternativeIPs[0][0], false);
+			});
 		});
 
 	});
@@ -128,10 +132,11 @@ exports.emit = function emit(messagetype, message, socketID) {
 
 /**
  * Einlesen des Schaltzustands und übermittlung bei connect
+ * und eintragen der Socket Verbindungsparameter
  * @param {string} socketID
  * @param {string} ip
  */
-exports.leseSchaltzustand = function (socketID, ip) {
+function funktionNachVerbindungsaufbau (socketID, ip) {
 	const zustand = {};
 
 	db.findeApNachIp(ip, function (benutzer) {
@@ -145,6 +150,7 @@ exports.leseSchaltzustand = function (socketID, ip) {
 			'zustand.aufgeschaltet': true
 		};
 
+		// Schaltzustaender finden und an socketID uebertreagen
 		db.findeElement('schaltZustaende', selector, function (doc) {
 			if (doc.length > 0) {
 				// doc = JSON.parse(doc);
@@ -160,6 +166,9 @@ exports.leseSchaltzustand = function (socketID, ip) {
 				log.error(FILENAME + ' Funktion: leseSchaltzustand aus DB:' + util.inspect(doc))
 			}
 		});
+
+		// Verbindungsdaten in Datenbank schreiben
+		db.schreibeApConnect(ip, socketID, benutzer, cfg.alternativeIPs[0][0], true);
 	})
 };
 

@@ -169,23 +169,40 @@ exports.schreibeSocketInfo = function (socketInfo, ip) {
  * SocketID und Verbindungszeit in DB schreiben
  * @param {string} ip
  * @param {string} socketID
- * @param {boolean} getrennt
+ * @param {string} benutzer
+ * @param {string} server
+ * @param {boolean} verbunden
  */
-exports.schreibeApConnect = function (ip, socketID, getrennt) {
-	const ApInfo = {
-		$set: {
-			'_id':   tools.filterIP(ip),
-			'aktiv': !getrennt
+exports.schreibeApConnect = function (ip, socketID, benutzer, server, verbunden) {
+	const serverKey = server + '.neuVerbindungen'
+	let ApInfo = {};
+	if (verbunden) {
+		ApInfo = {
+			$set: {
+				server: server,
+				verbunden: verbunden,
+				verbundenSeit: new Date(),
+				benutzer:      benutzer,
+				socketID:      socketID,
+			},
+			$inc: {
+				neuVerbindungen: 1
+			}
 		}
-	};
-	if (getrennt) {
-		ApInfo.$set.logoutZeit = new Date();
 	}
+
 	else {
-		ApInfo.$set.loginZeit = new Date();
+		ApInfo = {
+			$set: {
+				verbunden: verbunden,
+				letzteTrennung: new Date(),
+				socketID: null
+			}
+		}
 	}
-	//Schreiben in windowsBenutzer
-	exports.schreibeSocketInfo(ApInfo, ip);
+	const selector      = {'_id': ip};
+	//Schreiben in aktiveArbeitsplaetze
+	exports.schreibeInDb('aktiveArbeitsplaetze', selector, ApInfo);
 };
 
 /**
