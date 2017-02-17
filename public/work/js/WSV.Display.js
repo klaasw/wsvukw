@@ -325,6 +325,7 @@
 					}
 
 				}
+
 				// -SEN- darf nicht in der ID vorkommen
 				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') == -1) {
 					$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass('label-success').addClass('label-danger').text('Error');
@@ -357,23 +358,22 @@
 					//console.log(msg.FSTSTATUS.$.id);
 
 				}
+
 				//Schalten fuer SPrechANlagen und MitHoerANlagen
 				if ('geschaltet' in msg && msg.geschaltet.$.state === '1') {
 					// pruefen ob diese Meldung zu diesem Arbeitsplatz gehoert
 					if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.geschaltet.$.Ap) && _self.ApFunkstellen[msg.geschaltet.$.id] !== 'frei') {
 
-						// suche Schaltflaeche zu FunkstellenID
-						const button = $('#' + msg.geschaltet.$.id).parents('.button_panel');
-
 						//aendern Darstellung fuer MHAN
 						if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1) {
 							// aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
 							if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1 && msg.geschaltet.$.id.indexOf('SPAN') != -1) {
+								// _self.schaltenVisuell(msg.geschaltet.$.id, 'SPAN', true);
 								$('#' + msg.geschaltet.$.id).addClass('btn-primary');
 								$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
 							}
 							else { //nur MHAN aufschaltungen
-								$('.button_mhan', button).removeClass('btn-default').addClass('btn-primary');
+								_self.schaltenVisuell(msg.geschaltet.$.id, 'mhan', true);
 							}
 
 							const geraet = msg.geschaltet.$.Ap;
@@ -385,9 +385,7 @@
 						//aendern Darstellung fuer SPAN
 						if (msg.geschaltet.$.Ap.indexOf('SPAN') != -1) {
 
-							button.addClass('panel-primary');
-							$('.button_span', button).addClass('btn-primary');
-
+							_self.schaltenVisuell(msg.geschaltet.$.id, 'span', true);
 							_self.ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true;
 							this.geschalteteSPAN[msg.geschaltet.$.id]              = msg.geschaltet.$.Ap;
 
@@ -402,9 +400,6 @@
 
 					if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.getrennt.$.Ap)) {
 
-						// suche Schaltflaeche zu FunkstellenID
-						const button = $('#' + msg.getrennt.$.id).parents('.button_panel');
-
 						//Aendern Darstellung fuer MHAN
 						if (msg.getrennt.$.Ap.indexOf('MHAN') != -1) {
 							//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
@@ -413,7 +408,8 @@
 								$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
 							}
 							else { //nur MHAN Aufschaltungen
-								$('.button_mhan', button).css('background-color', '#f5f5f5').removeClass('bg-primary');
+								// $('.button_mhan', button).css('background-color', '#f5f5f5').removeClass('bg-primary');
+								_self.schaltenVisuell(msg.getrennt.$.id, 'mhan', false);
 							}
 							const geraet = msg.getrennt.$.Ap;
 
@@ -425,10 +421,7 @@
 						//Aendern Darstellung fuer SPAN
 						if (msg.getrennt.$.Ap.indexOf('SPAN') != -1) {
 
-							button.removeClass('panel-primary');
-							$('.button_span', button).removeClass('btn-primary');
-
-
+							_self.schaltenVisuell(msg.getrennt.$.id, 'span', false);
 							_self.ApFunkstellen[msg.getrennt.$.id].aufgeschaltet = false;
 							delete this.geschalteteSPAN[msg.getrennt.$.id];
 
@@ -693,6 +686,27 @@
 		},
 
 		/**
+		 * Schaltzustand visuell darstellen
+		 * @param {string} FstID
+		 * @param {string} SPAN oder MHAN
+		 * @param {boolean} enabled
+		 */
+		schaltenVisuell: function (FstID, SPANMHAN, enabled) {
+
+			// suche Schaltflaeche zu FunkstellenID
+			const button = $('#' + FstID).parents('.button_panel');
+			SPANMHAN     = SPANMHAN.toLowerCase();
+
+			if (enabled) {
+				button.addClass('panel-primary');
+				$('.button_' + SPANMHAN, button).removeClass('btn-default').addClass('btn-primary');
+			}
+			else {
+				$('.button_' + SPANMHAN, button).removeClass('btn-primary').addClass('btn-default');
+			}
+		},
+
+		/**
 		 * Mithoerlautsprecher aufschalten
 		 * @param mhan
 		 */
@@ -702,7 +716,7 @@
 			const _self = this;
 
 			for (const funkstelle in mhan) {
-				this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle]);
+				this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle], false);
 			}
 
 			// this.schreibeBenutzer();
@@ -713,19 +727,26 @@
 		 * @param {string} FstID
 		 * @param {string} SPAN_MAHN
 		 * @param {string} SPAN_MAHN_ApNr
+		 * @param {boolean} inDbSpeichern - legt fest ob der Schaltzustand richtig gespeichert oder nur angezeigt werden soll
 		 */
-		schalten: function (FstID, SPAN_MAHN, SPAN_MAHN_ApNr) {
+		schalten: function (FstID, SPAN_MAHN, SPAN_MAHN_ApNr, inDbSpeichern) {
 
 			SPAN_MAHN_ApNr = SPAN_MAHN_ApNr || 'SPAN01';
+			inDbSpeichern  = inDbSpeichern || true;
+			const _self    = this;
 
-			const _self = this;
-			this.socket.emit('clientMessage', {
-				'FstID':         FstID,
-				'ApID':          _self.ApID,
-				'SPAN':          SPAN_MAHN,
-				'aktion':        'schaltenEinfach',
-				'span_mhanApNr': SPAN_MAHN_ApNr
-			});
+			if (inDbSpeichern) {
+				this.socket.emit('clientMessage', {
+					'FstID':         FstID,
+					'ApID':          _self.ApID,
+					'SPAN':          SPAN_MAHN,
+					'aktion':        'schaltenEinfach',
+					'span_mhanApNr': SPAN_MAHN_ApNr
+				});
+			}
+			else {
+
+			}
 
 			if (SPAN_MAHN_ApNr.indexOf('SPAN') > -1) {
 				if (this.einzel) {
