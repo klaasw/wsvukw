@@ -313,7 +313,13 @@ exports.schreibeSchaltzustand = function (ipAddr, fst, Span_Mhan, aktion, span_m
 					delete data.schaltZustandGruppe[fst];
 				}
 			}
-			db.schreibeInDb('windowsBenutzer', benutzerId, data, false);
+
+			const benutzerId        = {'_id': data._id};
+			const schreibeParameter = {
+				$set: data
+			};
+
+			exports.schreibeInDb('windowsBenutzer', benutzerId, schreibeParameter, false);
 		}
 	});
 };
