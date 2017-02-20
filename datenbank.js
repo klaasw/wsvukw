@@ -274,6 +274,12 @@ exports.liesAusRESTService = function (configfile, callback) {
  * @param {string} ApID
  */
 exports.schreibeSchaltzustand = function (ipAddr, fst, Span_Mhan, aktion, span_mhanApNr, ApID) {
+
+	// nur SPAN in tabelle speichern, ansonsten funktion direkt verlassen
+	if (span_mhanApNr.indexOf('SPAN') == -1) {
+		return false;
+	}
+
 	const schreibeLokal = false; //es wird auf jeden Fall geschrieben
 	const selector      = {ApID, 'funkstelle': fst, 'span_mhan': Span_Mhan};
 	let aufgeschaltet   = true;
@@ -322,6 +328,8 @@ exports.schreibeSchaltzustand = function (ipAddr, fst, Span_Mhan, aktion, span_m
 			exports.schreibeInDb('windowsBenutzer', benutzerId, schreibeParameter, false);
 		}
 	});
+
+	return true;
 };
 
 /**
