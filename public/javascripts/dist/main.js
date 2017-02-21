@@ -830,41 +830,44 @@ $(window).load(function () {
 		 */
 		wechselEinzelGruppen: function () {
 
-			$('#statusWechsel').toggleClass('active');
+			const _self = this;
 
-			if (this.einzel === true) { // Wechsel zu Gruppenschaltung
-				this.einzel = false;
-				$('#statusWechsel a').text('Gruppenschaltung');
+			this.schreibeBenutzer(function () {
 
-				//console.log('Wechsel zu Gruppenschaltung');
-				//console.log(this.geschalteteSPAN);
-				//console.log(this.aktuellerBenutzer.schaltZustandGruppe);
+				$('#statusWechsel').toggleClass('active');
 
-				if (typeof this.aktuellerBenutzer.schaltZustandGruppe == 'undefined') {
-					this.aktuellerBenutzer.schaltZustandGruppe = this.geschalteteSPAN;
+				if (_self.einzel === true) { // Wechsel zu Gruppenschaltung
+					_self.einzel = false;
+					$('#statusWechsel a').text('Gruppenschaltung');
+
+					//console.log('Wechsel zu Gruppenschaltung');
+					//console.log(_self.geschalteteSPAN);
+					//console.log(_self.aktuellerBenutzer.schaltZustandGruppe);
+
+					if (typeof _self.aktuellerBenutzer.schaltZustandGruppe == 'undefined') {
+						_self.aktuellerBenutzer.schaltZustandGruppe = _self.geschalteteSPAN;
+					}
+
+					_self.aktuellerBenutzer.schaltZustandEinzel = _self.geschalteteSPAN; //speichere geschalteten Zustand
+					_self.zustandWiederherstellen(_self.aktuellerBenutzer.schaltZustandGruppe); // lade Gruppenzustand
 				}
+				else { // Wechsel zu Einzelschaltung
+					_self.einzel = true;
+					$('#statusWechsel a').text('Einzelschaltung');
 
-				this.aktuellerBenutzer.schaltZustandEinzel = this.geschalteteSPAN; //speichere geschalteten Zustand
-				this.zustandWiederherstellen(this.aktuellerBenutzer.schaltZustandGruppe); // lade Gruppenzustand
-			}
-			else { // Wechsel zu Einzelschaltung
-				this.einzel = true;
-				$('#statusWechsel a').text('Einzelschaltung');
+					//console.log('Wechsel zu Einzelschaltung');
+					//console.log(_self.geschalteteSPAN);
+					//console.log(_self.aktuellerBenutzer.schaltZustandEinzel);
 
-				//console.log('Wechsel zu Einzelschaltung');
-				//console.log(this.geschalteteSPAN);
-				//console.log(this.aktuellerBenutzer.schaltZustandEinzel);
+					if (typeof _self.aktuellerBenutzer.schaltZustandEinzel == 'undefined') {
+						const keyZero                              = Object.keys(_self.geschalteteSPAN)[0];
+						_self.aktuellerBenutzer.schaltZustandEinzel = {[keyZero]: _self.geschalteteSPAN[keyZero]};
+					}
 
-				if (typeof this.aktuellerBenutzer.schaltZustandEinzel == 'undefined') {
-					const keyZero                              = Object.keys(this.geschalteteSPAN)[0];
-					this.aktuellerBenutzer.schaltZustandEinzel = {[keyZero]: this.geschalteteSPAN[keyZero]};
+					_self.aktuellerBenutzer.schaltZustandGruppe = _self.geschalteteSPAN; //speichere geschalteten Zustand
+					_self.zustandWiederherstellen(_self.aktuellerBenutzer.schaltZustandEinzel); //lade Einzelzustand
 				}
-
-				this.aktuellerBenutzer.schaltZustandGruppe = this.geschalteteSPAN; //speichere geschalteten Zustand
-				this.zustandWiederherstellen(this.aktuellerBenutzer.schaltZustandEinzel); //lade Einzelzustand
-			}
-
-			this.schreibeBenutzer();
+			});
 		},
 
 		/**
@@ -941,8 +944,9 @@ $(window).load(function () {
 
 		/**
 		 * Speichert den aktuellen Benutzer in die Datenbank via REST
+		 * @param {function} callback
 		 */
-		schreibeBenutzer: function () {
+		schreibeBenutzer: function (callback) {
 
 			const benutzer  = jQuery.extend(true, {}, this.aktuellerBenutzer);
 			benutzer.theme  = WSV.Themes.currentTheme;
@@ -967,7 +971,10 @@ $(window).load(function () {
 				type:    'POST',
 				data:    benutzer,
 				success: function (result) {
-					console.log(result);
+					if (typeof callback == 'function') {
+						callback();
+						console.log(result);
+					}
 				}
 			});
 		},
