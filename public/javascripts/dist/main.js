@@ -253,7 +253,7 @@ $(window).load(function () {
 			const msgTyp  = msgKeys[0];
 			const _self   = this;
 
-			// console.log("ukwMessage received: " + JSON.stringify(msg));
+			console.log("ukwMessage received: " + JSON.stringify(msg));
 			// console.log(msgTyp);
 
 			if (typeof msg === 'object' && _self.ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id)) {
@@ -665,7 +665,7 @@ $(window).load(function () {
 					}
 				}
 			}
-			if (SPAN === 'SPAN_MHAN') { //SPAN zum Mithoeren aufschalten - trenen
+			if (SPAN === 'SPAN_MHAN') { //SPAN zum Mithoeren aufschalten - trennen
 				if (this.ApFunkstellen.hasOwnProperty(geklickteFstID)) {
 					if (this.ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
 						this.trennen(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
@@ -759,15 +759,6 @@ $(window).load(function () {
 
 			}
 
-			if (SPAN_MAHN_ApNr.indexOf('SPAN') > -1) {
-				if (this.einzel) {
-					this.aktuellerBenutzer.schaltZustandEinzel = {[FstID]: SPAN_MAHN};
-				}
-				else {
-					this.aktuellerBenutzer.schaltZustandGruppe[FstID] = SPAN_MAHN;
-				}
-			}
-
 			$.notify('Schalte: <br>' + this.ApFunkstellen[FstID].sname);
 			//console.log('(notify) schalte: ' + this.ApFunkstellen[FstID].sname);
 		},
@@ -790,15 +781,6 @@ $(window).load(function () {
 				'aktion':        'trennenEinfach',
 				'span_mhanApNr': SPAN_MAHN_ApNr
 			});
-
-			if (SPAN_MAHN_ApNr.indexOf('SPAN') > -1) {
-				if (this.einzel) {
-					this.aktuellerBenutzer.schaltZustandEinzel = {}
-				}
-				else {
-					delete this.aktuellerBenutzer.schaltZustandGruppe[FstID];
-				}
-			}
 
 			$.notify('Trenne: <br>' + this.ApFunkstellen[FstID].sname);
 			//console.log('(notify) trenne: ' + this.ApFunkstellen[FstID].sname);
