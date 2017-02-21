@@ -821,17 +821,18 @@
 
 			const _self = this;
 
-			this.schreibeBenutzer(function () {
 
-				$('#statusWechsel').toggleClass('active');
+			$('#statusWechsel').toggleClass('active');
 
-				if (_self.einzel === true) { // Wechsel zu Gruppenschaltung
-					_self.einzel = false;
-					$('#statusWechsel a').text('Gruppenschaltung');
+			if (_self.einzel === true) { // Wechsel zu Gruppenschaltung
+				_self.einzel = false;
+				$('#statusWechsel a').text('Gruppenschaltung');
 
-					//console.log('Wechsel zu Gruppenschaltung');
-					//console.log(_self.geschalteteSPAN);
-					//console.log(_self.aktuellerBenutzer.schaltZustandGruppe);
+				//console.log('Wechsel zu Gruppenschaltung');
+				//console.log(_self.geschalteteSPAN);
+				//console.log(_self.aktuellerBenutzer.schaltZustandGruppe);
+
+				this.schreibeBenutzer(function () {
 
 					if (typeof _self.aktuellerBenutzer.schaltZustandGruppe == 'undefined') {
 						_self.aktuellerBenutzer.schaltZustandGruppe = _self.geschalteteSPAN;
@@ -839,24 +840,27 @@
 
 					_self.aktuellerBenutzer.schaltZustandEinzel = _self.geschalteteSPAN; //speichere geschalteten Zustand
 					_self.zustandWiederherstellen(_self.aktuellerBenutzer.schaltZustandGruppe); // lade Gruppenzustand
-				}
-				else { // Wechsel zu Einzelschaltung
-					_self.einzel = true;
-					$('#statusWechsel a').text('Einzelschaltung');
+				});
+			}
+			else { // Wechsel zu Einzelschaltung
+				_self.einzel = true;
+				$('#statusWechsel a').text('Einzelschaltung');
 
-					//console.log('Wechsel zu Einzelschaltung');
-					//console.log(_self.geschalteteSPAN);
-					//console.log(_self.aktuellerBenutzer.schaltZustandEinzel);
+				//console.log('Wechsel zu Einzelschaltung');
+				//console.log(_self.geschalteteSPAN);
+				//console.log(_self.aktuellerBenutzer.schaltZustandEinzel);
+
+				this.schreibeBenutzer(function () {
 
 					if (typeof _self.aktuellerBenutzer.schaltZustandEinzel == 'undefined') {
-						const keyZero                              = Object.keys(_self.geschalteteSPAN)[0];
+						const keyZero                               = Object.keys(_self.geschalteteSPAN)[0];
 						_self.aktuellerBenutzer.schaltZustandEinzel = {[keyZero]: _self.geschalteteSPAN[keyZero]};
 					}
 
 					_self.aktuellerBenutzer.schaltZustandGruppe = _self.geschalteteSPAN; //speichere geschalteten Zustand
 					_self.zustandWiederherstellen(_self.aktuellerBenutzer.schaltZustandEinzel); //lade Einzelzustand
-				}
-			});
+				});
+			}
 		},
 
 		/**
