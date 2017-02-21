@@ -894,10 +894,12 @@ $(window).load(function () {
 					//console.log(key + ': ' + typeof AufschalteZustand[key]);
 
 					if (AufschalteZustand.hasOwnProperty(key)) {
-						console.log('wechsel schalten: ' + key);
-						_self.schalten(key, _self.SPAN);
+						if (value.aufgeschaltet === false) {
+							console.log('wechsel schalten: ' + key);
+							_self.schalten(key, _self.SPAN);
+						}
 					}
-					else if (value.aufgeschaltet == true) { // trennen
+					else if (value.aufgeschaltet === true) { // trennen
 						console.log('wechsel trennen: ' + key);
 						_self.trennen(key, _self.SPAN);
 					}
