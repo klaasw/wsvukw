@@ -134,8 +134,8 @@ exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 	if (exports.dbVerbindung === undefined) {
 		log.error(FILENAME + ' schreibeInDb Datenbank ist noch nicht verbunden!!! Schreibversuch schlug fehl. Collection: ' + util.inspect(collection) + ', selector: ' + util.inspect(selector) + ', inhalt: ' + util.inspect(inhalt));
 		log.error(FILENAME + ' schreibeInDb Versuche erneut in 3s');
-		setTimeout(function(){
-			exports.schreibeInDb(collection, selector, inhalt, schreibeLokal);
+		setTimeout(function () {
+			datenbank.schreibeInDb(collection, selector, inhalt, schreibeLokal);
 		}, 3000)
 	}
 	else {
@@ -150,24 +150,25 @@ exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 };
 
 /**
- * schreibe Verbindungsinfo socketID und Zeitstempel in windowsBenutzer
- * @param {object} socketInfo
- * @param {string} ip
+ * Generische funktion um in aktiveArbeitsplaetze zu schreiben
+ * @param {string} id - benutzer id == ip
+ * @param updateData - key:value welche aktualisiert werden sollen
  */
-exports.schreibeSocketInfo = function (socketInfo, ip) {
-	const schreibeLokal = false; // auf jeden Fall  in Primary Datenbank schreiben
-	if (typeof socketInfo == 'undefined') {
-		socketInfo = {
-			$set: {
-				aktiv:      false,
-				logoutZeit: new Date()
-			}
+exports.schreibeAktiveArbeitsplaetze = function (id, updateData) {
+
+	let ApInfo = {};
+	id         = tools.filterIP(id);
+
+	ApInfo = {
+		$set: {
+			letzteTrennung: new Date(),
+			socketID:       null
 		}
-	}
-	socketInfo.$set._id = ip;
-	const selector      = {'_id': ip};
-	// TODO: lieber separate Datenbank: Bewegungsdaten / Monitoring / Audit von Stammdaten trennen
-	exports.schreibeInDb('windowsBenutzer', selector, socketInfo, schreibeLokal);
+	};
+
+
+	const selector = {'_id': id};
+	// exports.schreibeInDb('aktiveArbeitsplaetze', selector, ApInfo);
 };
 
 /**
@@ -179,13 +180,15 @@ exports.schreibeSocketInfo = function (socketInfo, ip) {
  * @param {boolean} verbunden
  */
 exports.schreibeApConnect = function (ip, socketID, benutzer, server, verbunden) {
-	const serverKey = server + '.neuVerbindungen'
-	let ApInfo = {};
+
+	const serverKey = server + '.neuVerbindungen';
+	let ApInfo      = {};
+
 	if (verbunden) {
 		ApInfo = {
 			$set: {
-				server: server,
-				verbunden: verbunden,
+				server:        server,
+				verbunden:     verbunden,
 				verbundenSeit: new Date(),
 				benutzer:      benutzer,
 				socketID:      socketID,
@@ -199,18 +202,15 @@ exports.schreibeApConnect = function (ip, socketID, benutzer, server, verbunden)
 	else {
 		ApInfo = {
 			$set: {
-				verbunden: verbunden,
+				verbunden:      verbunden,
 				letzteTrennung: new Date(),
-				socketID: null
+				socketID:       null
 			}
 		}
 	}
-	const selector      = {'_id': ip};
+	const selector = {'_id': ip};
 	//Schreiben in aktiveArbeitsplaetze
 	exports.schreibeInDb('aktiveArbeitsplaetze', selector, ApInfo);
-
-	//Schreiben in windowsBenutzer
-	// exports.schreibeSocketInfo(ApInfo, ip);
 };
 
 /**
@@ -379,7 +379,7 @@ exports.ladeBenutzer = function (ipAddr, res, callback) {
  * schreibe Zustandsmeldungen von RFD Komponenten und Server(Module) in zustandKomponenten
  * @param {Object} Nachricht - {"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
  */
-exports.schreibeZustand = function(Nachricht) {
+exports.schreibeZustand = function (Nachricht) {
 	const schreibeLokal = true; // es wird nur geschrieben wenn die aktuelle Instanz und Mongo Primary in einem VTR sind
 	// TODO: Pruefen ob in Wirksystem wirklich notwendig.
 	// Dies wuerde da Umschaltverhalten kompliziert machen.
@@ -421,28 +421,28 @@ exports.schreibeZustand = function(Nachricht) {
 
 	if (Nachricht.hasOwnProperty('dienst')) {
 		zustand = {
-			$set:{
+			$set: {
 				[Nachricht.dienst]: {
-					letzteMeldung:  new Date(),
-					status:{
-						url:          Nachricht.status.URL,
-						state:        Nachricht.status.Status,
-						msg:          Nachricht.status.StatusMsg ? Nachricht.status.StatusMsg : 'keine'
+					letzteMeldung: new Date(),
+					status:        {
+						url:   Nachricht.status.URL,
+						state: Nachricht.status.Status,
+						msg:   Nachricht.status.StatusMsg ? Nachricht.status.StatusMsg : 'keine'
 					},
 				},
 			},
-		}
+		};
 
 		if (Nachricht.dienst === 'DUE') {
-			const dueName = Nachricht.dienst + '.' +Nachricht.server;
-			zustand = {
-				$set:{
+			const dueName = Nachricht.dienst + '.' + Nachricht.server;
+			zustand       = {
+				$set: {
 					[dueName]: {
-						letzteMeldung:  new Date(),
-						status:{
-							url:          Nachricht.status.URL,
-							state:        Nachricht.status.Status,
-							msg:          Nachricht.status.StatusMsg ? Nachricht.status.StatusMsg : 'keine'
+						letzteMeldung: new Date(),
+						status:        {
+							url:   Nachricht.status.URL,
+							state: Nachricht.status.Status,
+							msg:   Nachricht.status.StatusMsg ? Nachricht.status.StatusMsg : 'keine'
 						},
 					},
 				},
