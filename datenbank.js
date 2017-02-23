@@ -179,19 +179,23 @@ exports.schreibeSocketInfo = function (socketInfo, ip) {
  * @param {boolean} verbunden
  */
 exports.schreibeApConnect = function (ip, socketID, benutzer, server, verbunden) {
-	const serverKey = server + '.neuVerbindungen'
+	const strNeuVerbindungen = server + '.neuVerbindungen'
+	const strVerbunden = server + '.verbunden'
+	const strVerbundenSeit = server + '.verbundenSeit'
+	const strLetzteTrennung = server + '.letzteTrennung'
+	const strSocketID = server + '.socketID'
+
 	let ApInfo = {};
 	if (verbunden) {
 		ApInfo = {
 			$set: {
-				server: server,
-				verbunden: verbunden,
-				verbundenSeit: new Date(),
-				benutzer:      benutzer,
-				socketID:      socketID,
+				'benutzer':         benutzer,
+				[strVerbunden]:     verbunden,
+				[strVerbundenSeit]: new Date(),
+				[strSocketID]:      socketID,
 			},
 			$inc: {
-				neuVerbindungen: 1
+				[strNeuVerbindungen]: 1
 			}
 		}
 	}
@@ -199,9 +203,9 @@ exports.schreibeApConnect = function (ip, socketID, benutzer, server, verbunden)
 	else {
 		ApInfo = {
 			$set: {
-				verbunden: verbunden,
-				letzteTrennung: new Date(),
-				socketID: null
+				[strVerbunden]: verbunden,
+				[strLetzteTrennung]: new Date(),
+				[strSocketID]: null
 			}
 		}
 	}
