@@ -815,12 +815,6 @@
 				//console.log(_self.aktuellerBenutzer.schaltZustandGruppe);
 
 				this.schreibeBenutzer(function () {
-
-					if (typeof _self.aktuellerBenutzer.schaltZustandGruppe == 'undefined') {
-						_self.aktuellerBenutzer.schaltZustandGruppe = _self.geschalteteSPAN;
-					}
-
-					_self.aktuellerBenutzer.schaltZustandEinzel = _self.geschalteteSPAN; //speichere geschalteten Zustand
 					_self.zustandWiederherstellen(_self.aktuellerBenutzer.schaltZustandGruppe); // lade Gruppenzustand
 				});
 			}
@@ -833,13 +827,6 @@
 				//console.log(_self.aktuellerBenutzer.schaltZustandEinzel);
 
 				this.schreibeBenutzer(function () {
-
-					if (typeof _self.aktuellerBenutzer.schaltZustandEinzel == 'undefined') {
-						const keyZero                               = Object.keys(_self.geschalteteSPAN)[0];
-						_self.aktuellerBenutzer.schaltZustandEinzel = {[keyZero]: _self.geschalteteSPAN[keyZero]};
-					}
-
-					_self.aktuellerBenutzer.schaltZustandGruppe = _self.geschalteteSPAN; //speichere geschalteten Zustand
 					_self.zustandWiederherstellen(_self.aktuellerBenutzer.schaltZustandEinzel); //lade Einzelzustand
 				});
 			}
