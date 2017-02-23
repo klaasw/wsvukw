@@ -20,15 +20,21 @@ mixin errorModal(type,title,errorMessage)
 							a(href='http://' + val[1]) #{val[0]}
 							| &nbsp;
 
+mixin countdownModal(timeout)
+	div.modal.fade#displaySperreModal(role='dialog', tabindex='-1')
+		div.modal-dialog
+			h1.
+				#{timeout}
+
 mixin serverListe(ip, idName)
 	// mixin für die Zustandsanzeige der Server
 	li
 		a(href='http://' + ip + '/ukw/')
 			button.btn.btn-default(
-			id='button' + idName
+			class='button' + idName
 			) &nbsp#{idName}&nbsp
-				span.label.label-default(id='button' + idName + '_DUE') DUE
-				span.label.label-default(id='button' + idName + '_RFD') RFD
+				span.label.label-default(class='button' + idName + '_DUE') DUE
+				span.label.label-default(class='button' + idName + '_RFD') RFD
 
 mixin mkaButtonListe(arrayKanalListe)
 	// mixin Mehrkanal-Anlagen eines Reviers zur Anzeige der im Revier vorhandenen Kanäle

@@ -166,14 +166,15 @@ exports.findeFstNachId = function (Id) {
 /**
  * Block zur Implementierung der WebService Abfragen an RFD
  * TODO: noch erforderlich? ApID in Client ergaenzen damit Schaltzustand zum AP geschrieben werden kann
- * @param Fst
- * @param Span_Mhan
- * @param aktion
- * @param Kanal
- * @param span_mhanApNr
- * @param ApID
+ * @param {string} ipAddr
+ * @param {string} Fst
+ * @param {string} Span_Mhan
+ * @param {string} aktion
+ * @param {string} Kanal
+ * @param {string} span_mhanApNr
+ * @param {string} ApID
  */
-exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span_mhanApNr, ApID) {
+exports.sendeWebServiceNachricht = function (ipAddr, Fst, Span_Mhan, aktion, Kanal, span_mhanApNr, ApID) {
 	const parameterRfdWebService = {
 		url:     cfg.urlRFDWebservice,
 		method:  'POST',
@@ -183,7 +184,7 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span
 		},
 		body:    ''
 	};
-	let antwortFuerWebsocket = {};
+	let antwortFuerWebsocket     = {};
 
 	if (aktion == 'trennenEinfach') {
 		//Variable fuer RFD Request
@@ -235,7 +236,7 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span
 				nodeMsg:   error
 			});
 
-			socket.sendeWebSocketNachricht('RFD ' + aktion + ' fehlgeschlagen')
+			socket.sendeWebSocketNachricht('RFD ' + aktion + ' fehlgeschlagen');
 
 		}
 		else {
@@ -258,9 +259,8 @@ exports.sendeWebServiceNachricht = function (Fst, Span_Mhan, aktion, Kanal, span
 						socket.sendeWebSocketNachricht(antwortFuerWebsocket);
 
 						if (aktion == 'schaltenEinfach' || aktion == 'trennenEinfach') {
-							db.schreibeSchaltzustand(Fst, Span_Mhan, aktion, span_mhanApNr, ApID)
+							db.schreibeSchaltzustand(ipAddr, Fst, Span_Mhan, aktion, span_mhanApNr, ApID)
 						}
-
 					}
 					else {
 						log.error('RFD ' + aktion + ' fehlgeschlagen');

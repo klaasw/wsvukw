@@ -29,6 +29,8 @@ $(window).load(function () {
 		defaultServer:       '',
 		aktuelleMKA:         {},
 		geschalteteSPAN:     {},
+		countDown:           0,
+		cdInterval:          {},
 
 		init: function () {
 
@@ -294,7 +296,7 @@ $(window).load(function () {
 			const msgTyp  = msgKeys[0];
 			const _self   = this;
 
-			// console.log("ukwMessage received: " + JSON.stringify(msg));
+			console.log("ukwMessage received: " + JSON.stringify(msg));
 			// console.log(msgTyp);
 
 			if (typeof msg === 'object' && _self.ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id)) {
@@ -377,6 +379,7 @@ $(window).load(function () {
 					}
 
 				}
+
 				// -SEN- darf nicht in der ID vorkommen
 				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') == -1) {
 					$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass('label-success').addClass('label-danger').text('Error');
@@ -409,23 +412,22 @@ $(window).load(function () {
 					//console.log(msg.FSTSTATUS.$.id);
 
 				}
+
 				//Schalten fuer SPrechANlagen und MitHoerANlagen
 				if ('geschaltet' in msg && msg.geschaltet.$.state === '1') {
 					// pruefen ob diese Meldung zu diesem Arbeitsplatz gehoert
 					if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.geschaltet.$.Ap) && _self.ApFunkstellen[msg.geschaltet.$.id] !== 'frei') {
 
-						// suche Schaltflaeche zu FunkstellenID
-						const button = $('#' + msg.geschaltet.$.id).parents('.button_panel');
-
 						//aendern Darstellung fuer MHAN
 						if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1) {
 							// aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
 							if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1 && msg.geschaltet.$.id.indexOf('SPAN') != -1) {
+								// _self.schaltenVisuell(msg.geschaltet.$.id, 'SPAN', true);
 								$('#' + msg.geschaltet.$.id).addClass('btn-primary');
 								$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
 							}
 							else { //nur MHAN aufschaltungen
-								$('.button_mhan', button).removeClass('btn-default').addClass('btn-primary');
+								_self.schaltenVisuell(msg.geschaltet.$.id, 'mhan', true);
 							}
 
 							const geraet = msg.geschaltet.$.Ap;
@@ -437,9 +439,7 @@ $(window).load(function () {
 						//aendern Darstellung fuer SPAN
 						if (msg.geschaltet.$.Ap.indexOf('SPAN') != -1) {
 
-							button.addClass('panel-primary');
-							$('.button_span', button).addClass('btn-primary');
-
+							_self.schaltenVisuell(msg.geschaltet.$.id, 'span', true);
 							_self.ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true;
 							this.geschalteteSPAN[msg.geschaltet.$.id]              = msg.geschaltet.$.Ap;
 
@@ -454,9 +454,6 @@ $(window).load(function () {
 
 					if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.getrennt.$.Ap)) {
 
-						// suche Schaltflaeche zu FunkstellenID
-						const button = $('#' + msg.getrennt.$.id).parents('.button_panel');
-
 						//Aendern Darstellung fuer MHAN
 						if (msg.getrennt.$.Ap.indexOf('MHAN') != -1) {
 							//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
@@ -465,7 +462,8 @@ $(window).load(function () {
 								$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
 							}
 							else { //nur MHAN Aufschaltungen
-								$('.button_mhan', button).css('background-color', '#f5f5f5').removeClass('bg-primary');
+								// $('.button_mhan', button).css('background-color', '#f5f5f5').removeClass('bg-primary');
+								_self.schaltenVisuell(msg.getrennt.$.id, 'mhan', false);
 							}
 							const geraet = msg.getrennt.$.Ap;
 
@@ -477,10 +475,7 @@ $(window).load(function () {
 						//Aendern Darstellung fuer SPAN
 						if (msg.getrennt.$.Ap.indexOf('SPAN') != -1) {
 
-							button.removeClass('panel-primary');
-							$('.button_span', button).removeClass('btn-primary');
-
-
+							_self.schaltenVisuell(msg.getrennt.$.id, 'span', false);
 							_self.ApFunkstellen[msg.getrennt.$.id].aufgeschaltet = false;
 							delete this.geschalteteSPAN[msg.getrennt.$.id];
 
@@ -713,7 +708,7 @@ $(window).load(function () {
 					}
 				}
 			}
-			if (SPAN === 'SPAN_MHAN') { //SPAN zum Mithoeren aufschalten - trenen
+			if (SPAN === 'SPAN_MHAN') { //SPAN zum Mithoeren aufschalten - trennen
 				if (this.ApFunkstellen.hasOwnProperty(geklickteFstID)) {
 					if (this.ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
 						this.trennen(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
@@ -745,6 +740,27 @@ $(window).load(function () {
 		},
 
 		/**
+		 * Schaltzustand visuell darstellen
+		 * @param {string} FstID
+		 * @param {string} SPAN oder MHAN
+		 * @param {boolean} enabled
+		 */
+		schaltenVisuell: function (FstID, SPANMHAN, enabled) {
+
+			// suche Schaltflaeche zu FunkstellenID
+			const button = $('#' + FstID).parents('.button_panel');
+			SPANMHAN     = SPANMHAN.toLowerCase();
+
+			if (enabled) {
+				button.addClass('panel-primary');
+				$('.button_' + SPANMHAN, button).removeClass('btn-default').addClass('btn-primary');
+			}
+			else {
+				$('.button_' + SPANMHAN, button).removeClass('btn-primary').addClass('btn-default');
+			}
+		},
+
+		/**
 		 * Mithoerlautsprecher aufschalten
 		 * @param mhan
 		 */
@@ -754,10 +770,10 @@ $(window).load(function () {
 			const _self = this;
 
 			for (const funkstelle in mhan) {
-				this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle]);
+				this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle], false);
 			}
 
-			this.schreibeBenutzer();
+			// this.schreibeBenutzer();
 		},
 
 		/**
@@ -765,27 +781,25 @@ $(window).load(function () {
 		 * @param {string} FstID
 		 * @param {string} SPAN_MAHN
 		 * @param {string} SPAN_MAHN_ApNr
+		 * @param {boolean} inDbSpeichern - legt fest ob der Schaltzustand richtig gespeichert oder nur angezeigt werden soll
 		 */
-		schalten: function (FstID, SPAN_MAHN, SPAN_MAHN_ApNr) {
+		schalten: function (FstID, SPAN_MAHN, SPAN_MAHN_ApNr, inDbSpeichern) {
 
 			SPAN_MAHN_ApNr = SPAN_MAHN_ApNr || 'SPAN01';
+			inDbSpeichern  = inDbSpeichern || true;
+			const _self    = this;
 
-			const _self = this;
-			this.socket.emit('clientMessage', {
-				'FstID':         FstID,
-				'ApID':          _self.ApID,
-				'SPAN':          SPAN_MAHN,
-				'aktion':        'schaltenEinfach',
-				'span_mhanApNr': SPAN_MAHN_ApNr
-			});
+			if (inDbSpeichern) {
+				this.socket.emit('clientMessage', {
+					'FstID':         FstID,
+					'ApID':          _self.ApID,
+					'SPAN':          SPAN_MAHN,
+					'aktion':        'schaltenEinfach',
+					'span_mhanApNr': SPAN_MAHN_ApNr
+				});
+			}
+			else {
 
-			if (SPAN_MAHN_ApNr.indexOf('SPAN') > -1) {
-				if (this.einzel) {
-					this.aktuellerBenutzer.schaltZustandEinzel = {[FstID]: SPAN_MAHN}
-				}
-				else {
-					this.aktuellerBenutzer.schaltZustandGruppe[FstID] = SPAN_MAHN;
-				}
 			}
 
 			$.notify('Schalte: <br>' + this.ApFunkstellen[FstID].sname);
@@ -799,6 +813,9 @@ $(window).load(function () {
 		 * @param SPAN_MAHN_ApNr
 		 */
 		trennen: function (FstID, SPAN_MAHN, SPAN_MAHN_ApNr) {
+
+			SPAN_MAHN_ApNr = SPAN_MAHN_ApNr || 'SPAN01';
+
 			const _self = this;
 			this.socket.emit('clientMessage', {
 				'FstID':         FstID,
@@ -807,15 +824,6 @@ $(window).load(function () {
 				'aktion':        'trennenEinfach',
 				'span_mhanApNr': SPAN_MAHN_ApNr
 			});
-
-			if (SPAN_MAHN_ApNr.indexOf('SPAN') > -1) {
-				if (this.einzel) {
-					this.aktuellerBenutzer.schaltZustandEinzel = {}
-				}
-				else {
-					delete this.aktuellerBenutzer.schaltZustandGruppe[FstID];
-				}
-			}
 
 			$.notify('Trenne: <br>' + this.ApFunkstellen[FstID].sname);
 			//console.log('(notify) trenne: ' + this.ApFunkstellen[FstID].sname);
@@ -847,41 +855,35 @@ $(window).load(function () {
 		 */
 		wechselEinzelGruppen: function () {
 
+			const _self = this;
+
+
 			$('#statusWechsel').toggleClass('active');
 
-			if (this.einzel === true) { // Wechsel zu Gruppenschaltung
-				this.einzel = false;
+			if (_self.einzel === true) { // Wechsel zu Gruppenschaltung
+				_self.einzel = false;
 				$('#statusWechsel a').text('Gruppenschaltung');
 
 				//console.log('Wechsel zu Gruppenschaltung');
-				//console.log(this.geschalteteSPAN);
-				//console.log(this.aktuellerBenutzer.schaltZustandGruppe);
+				//console.log(_self.geschalteteSPAN);
+				//console.log(_self.aktuellerBenutzer.schaltZustandGruppe);
 
-				if (typeof this.aktuellerBenutzer.schaltZustandGruppe == 'undefined') {
-					this.aktuellerBenutzer.schaltZustandGruppe = this.geschalteteSPAN;
-				}
-
-				this.aktuellerBenutzer.schaltZustandEinzel = this.geschalteteSPAN; //speichere geschalteten Zustand
-				this.zustandWiederherstellen(this.aktuellerBenutzer.schaltZustandGruppe); // lade Gruppenzustand
+				this.schreibeBenutzer(function () {
+					_self.zustandWiederherstellen(_self.aktuellerBenutzer.schaltZustandGruppe); // lade Gruppenzustand
+				});
 			}
 			else { // Wechsel zu Einzelschaltung
-				this.einzel = true;
+				_self.einzel = true;
 				$('#statusWechsel a').text('Einzelschaltung');
 
 				//console.log('Wechsel zu Einzelschaltung');
-				//console.log(this.geschalteteSPAN);
-				//console.log(this.aktuellerBenutzer.schaltZustandEinzel);
+				//console.log(_self.geschalteteSPAN);
+				//console.log(_self.aktuellerBenutzer.schaltZustandEinzel);
 
-				if (typeof this.aktuellerBenutzer.schaltZustandEinzel == 'undefined') {
-					const keyZero                              = Object.keys(this.geschalteteSPAN)[0];
-					this.aktuellerBenutzer.schaltZustandEinzel = {[keyZero]: this.geschalteteSPAN[keyZero]};
-				}
-
-				this.aktuellerBenutzer.schaltZustandGruppe = this.geschalteteSPAN; //speichere geschalteten Zustand
-				this.zustandWiederherstellen(this.aktuellerBenutzer.schaltZustandEinzel); //lade Einzelzustand
+				this.schreibeBenutzer(function () {
+					_self.zustandWiederherstellen(_self.aktuellerBenutzer.schaltZustandEinzel); //lade Einzelzustand
+				});
 			}
-
-			this.schreibeBenutzer();
 		},
 
 		/**
@@ -904,10 +906,12 @@ $(window).load(function () {
 					//console.log(key + ': ' + typeof AufschalteZustand[key]);
 
 					if (AufschalteZustand.hasOwnProperty(key)) {
-						console.log('wechsel schalten: ' + key);
-						_self.schalten(key, _self.SPAN);
+						if (value.aufgeschaltet === false) {
+							console.log('wechsel schalten: ' + key);
+							_self.schalten(key, _self.SPAN);
+						}
 					}
-					else if (value.aufgeschaltet == true) { // trennen
+					else if (value.aufgeschaltet === true) { // trennen
 						console.log('wechsel trennen: ' + key);
 						_self.trennen(key, _self.SPAN);
 					}
@@ -958,8 +962,9 @@ $(window).load(function () {
 
 		/**
 		 * Speichert den aktuellen Benutzer in die Datenbank via REST
+		 * @param {function} callback
 		 */
-		schreibeBenutzer: function () {
+		schreibeBenutzer: function (callback) {
 
 			const benutzer  = jQuery.extend(true, {}, this.aktuellerBenutzer);
 			benutzer.theme  = WSV.Themes.currentTheme;
@@ -984,9 +989,37 @@ $(window).load(function () {
 				type:    'POST',
 				data:    benutzer,
 				success: function (result) {
-					console.log(result);
+					if (typeof callback == 'function') {
+						callback();
+						console.log(result);
+					}
 				}
 			});
+		},
+
+		showDisplaySperreModal: function () {
+
+			$('#displaySperreModal').modal({
+				backdrop: 'static',
+				keyboard: 'false'
+			});
+
+			const _self     = this;
+			this.countDown  = parseInt(this.IpConfig.displaySperreTimeout * 1000);
+			this.cdInterval = setInterval(function () {
+				_self.displaySperreCountdown(_self)
+			}, 1000);
+		},
+
+		displaySperreCountdown: function (obj) {
+			obj.countDown -= 1000;
+			if (obj.countDown <= 0) {
+				clearInterval(obj.cdInterval);
+				$('#displaySperreModal').modal('hide');
+			}
+
+			$('#displaySperreModal .modal-dialog h1').text(parseInt(obj.countDown / 1000));
+
 		}
 	}
 

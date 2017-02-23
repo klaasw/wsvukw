@@ -72,27 +72,50 @@ exports.pruefeRfdWS = function () {
 //var Intervall=setInterval(function() {sendeWebSocketNachricht()},1000)
 
 /**
- * Lade spezifischen windowsBenutzer aus DB
- * @param {string} ipAddr - IP Adresse des Nutzers
- * @param {object} res - nodejs app resource
- * @param {function} callback
+ * schreibe Zustandsmeldungen in zustandKomponenten
+ * @param {Object} Nachricht - {"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
  */
-exports.ladeBenutzer = function (ipAddr, res, callback) {
+function schreibeZustand(Nachricht) {
+	if (Nachricht.hasOwnProperty('FSTSTATUS')) {
+		const schreibeLokal = true; //es wird nur geschrieben wenn die aktuelle Instanz und Mongo Primary in einem VTR sind
+		let zustand;
 
-	db.findeElement('windowsBenutzer', {ip: tools.filterIP(ipAddr)}, function (doc) {
-		if (doc.length) {
-			callback(doc[0]);
+		//entfernen da dieser sonst den Kanal im DUE wieder mit -1 ueberschreibt
+		if (Nachricht.FSTSTATUS.$.channel == '-1') {
+			zustand = {
+				$set:         {
+					letzteMeldung:         new Date(),
+					'status.connectState': Nachricht.FSTSTATUS.$.connectState,
+					'status.state':        Nachricht.FSTSTATUS.$.state,
+				},
+				$setOnInsert: {
+					'status.id': Nachricht.FSTSTATUS.$.id
+				}
+			}
 		}
 		else {
-			res.render('error', {
-				message: 'Fehler! Kein Benutzer zu dieser IP gefunden: ' + tools.filterIP(ipAddr),
-				error:   {
-					status: 'kein'
+			zustand = {
+				$set:         {
+					letzteMeldung:         new Date(),
+					'status.connectState': Nachricht.FSTSTATUS.$.connectState,
+					'status.state':        Nachricht.FSTSTATUS.$.state,
+					'status.channel':      Nachricht.FSTSTATUS.$.channel
+				},
+				$setOnInsert: {
+					'status.id': Nachricht.FSTSTATUS.$.id
 				}
-			});
+			}
 		}
-	})
-};
+
+		//console.log(Nachricht.FSTSTATUS.$.id)
+		const selector = {'_id': Nachricht.FSTSTATUS.$.id};
+
+		db.schreibeInDb('zustandKomponenten', selector, zustand, schreibeLokal);
+	}
+	else {
+		//nichts machen
+	}
+}
 
 
 // Erstelle SIP User-Agent var ua. Hier mit Konfiguration DUE als Empfänger für die Statusnachrichten vom RFD

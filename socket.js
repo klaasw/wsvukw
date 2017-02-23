@@ -32,8 +32,6 @@ exports.socket = function (server) {
 		log.debug('SOCKETHEADER' + socket.request.headers['x-forwarded-for']);
 		// TODO: Pruefung Berechtigung !
 
-		//TODO: Funktion leseZustand kann entfernt werden.
-		// leseZustand(socket.id); //Status der Funkstellen übertragen
 		funktionNachVerbindungsaufbau(socket.id, remoteAddress); //letzten Schaltzustandübertragen
 
 		// Uebertragen der DUE Server Zustaende
@@ -51,13 +49,15 @@ exports.socket = function (server) {
 		socket.on('chat message', function (msg) {
 			//io.emit('chat message', msg);
 			log.debug('chat message: ' + JSON.stringify(msg));
-			rfd.sendeWebServiceNachricht(msg.FstID, msg.SPAN, msg.aktion, msg.Kanal);//Zum Testen eine Schleife als SIP Nachricht, die wieder als Web Nachricht zurueckgesendet wird
+			const remoteAddress = (tools.filterIP(socket.conn.remoteAddress) === '127.0.0.1') ? socket.request.headers['x-forwarded-for'] : tools.filterIP(socket.conn.remoteAddress);
+			rfd.sendeWebServiceNachricht(remoteAddress, msg.FstID, msg.SPAN, msg.aktion, msg.Kanal);//Zum Testen eine Schleife als SIP Nachricht, die wieder als Web Nachricht zurueckgesendet wird
 		});
 
 		//'Standardnachrichten für Weiterleitung an RFD schalten,trennen, MKA'
 		socket.on('clientMessage', function (msg) {
 			log.debug(FILENAME + ' Funktion: empfangeWebNachricht ' + 'clientMessage: WebSocket Nachricht: ' + JSON.stringify(msg));
-			rfd.sendeWebServiceNachricht(msg.FstID, msg.SPAN, msg.aktion, msg.Kanal, msg.span_mhanApNr, msg.ApID);//Sende WebServiceNachricht an RFD
+			const remoteAddress = (tools.filterIP(socket.conn.remoteAddress) === '127.0.0.1') ? socket.request.headers['x-forwarded-for'] : tools.filterIP(socket.conn.remoteAddress);
+			rfd.sendeWebServiceNachricht(remoteAddress, msg.FstID, msg.SPAN, msg.aktion, msg.Kanal, msg.span_mhanApNr, msg.ApID); //Sende WebServiceNachricht an RFD
 		});
 
 		//Speichern der Kanal Lotsenzuordnung
@@ -136,7 +136,7 @@ exports.emit = function emit(messagetype, message, socketID) {
  * @param {string} socketID
  * @param {string} ip
  */
-function funktionNachVerbindungsaufbau (socketID, ip) {
+function funktionNachVerbindungsaufbau(socketID, ip) {
 	const zustand = {};
 
 	db.findeApNachIp(ip, function (benutzer) {
@@ -173,28 +173,6 @@ function funktionNachVerbindungsaufbau (socketID, ip) {
 };
 
 /**
- * TODO: Funktion kann entfernt werden. Da jede einzelne Zustandmeldung übertragen wird
- * Neu: Verwendung von /verbindungen/liesZustand
- * Lese Zustandsmeldungen in zustandKomponenten
- * {"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
- * @param {string} socketID
- */
-function leseZustand(socketID) {
-	const selector = {};
-	db.findeElement('zustandKomponenten', selector, function (doc) {
-		for (let i = 0; i < doc.length; i++) {
-			const zustand = {
-				'FSTSTATUS': {
-					'$':             doc[i].status,
-					'letzteMeldung': doc[i].letzteMeldung
-				}
-			};
-			exports.emit('ukwMessage', zustand, socketID)
-		}
-	})
-}
-
-/**
  * Ueberwachung der jeweils anderen DUE Server. Dazu wird zu jedem anderen Server
  * eine WebSocket Vwerbindung aufgebaut. Und dieser Server ist dann ein Client fuer
  * anderen. Uber diesen Weg erhaelt dieser Server auch die Erreichbarkeit des RFD im
@@ -206,9 +184,9 @@ function starteDueServerUberwachung() {
 	const serverB = cfg.alternativeIPs[2];
 
 	log.info(FILENAME + ' ...starte Pruefung DUE Server Erreichbarkeit fuer Server: '
-	+ serverA);
+		+ serverA);
 	log.info(FILENAME + ' ...starte Pruefung DUE Server Erreichbarkeit fuer Server: '
-	+ serverB);
+		+ serverB);
 
 	// Server A
 	const client_bei_serverA = socketClient.connect('http://' + serverA[1] + ':' + cfg.port);
@@ -224,7 +202,11 @@ function starteDueServerUberwachung() {
 	client_bei_serverA.on('connect_error', function (err) {
 		log.error('Funktion: Serverueberwachung SOCKET connect_error zu: ' + serverA + ' ErrorMsg: ' + JSON.stringify(err));
 		exports.emit('statusMessage', {dienst: 'DUE', status: {URL: serverA[1], Status: 'Error'}});
-		dueStatusServerA = {dienst: 'DUE', server: serverA[0], status: {URL: serverA[1], Status: 'Error', StatusMsg: err}}
+		dueStatusServerA = {
+			dienst: 'DUE',
+			server: serverA[0],
+			status: {URL: serverA[1], Status: 'Error', StatusMsg: err}
+		}
 		db.schreibeZustand(dueStatusServerA)
 	});
 
@@ -239,7 +221,11 @@ function starteDueServerUberwachung() {
 		log.debug('Funktion: Serverueberwachung SOCKET getrennt von: ' + serverA);
 		log.error('Funktion: Serverueberwachung SOCKET getrennt von: ' + serverA + ' ErrorMsg: ' + JSON.stringify(err));
 		exports.emit('statusMessage', {dienst: 'DUE', status: {URL: serverA[1], Status: 'Error'}});
-		dueStatusServerA = {dienst: 'DUE', server: serverA[0], status: {URL: serverA[1], Status: 'Error', StatusMsg: err}}
+		dueStatusServerA = {
+			dienst: 'DUE',
+			server: serverA[0],
+			status: {URL: serverA[1], Status: 'Error', StatusMsg: err}
+		}
 		db.schreibeZustand(dueStatusServerA)
 	});
 
@@ -250,7 +236,11 @@ function starteDueServerUberwachung() {
 	client_bei_serverA.on('reconnect_error', function (err) {
 		log.error('Funktion: Serverueberwachung SOCKET reconnect_error zu: ' + serverA + ' ErrorMsg: ' + JSON.stringify(err));
 		exports.emit('statusMessage', {dienst: 'DUE', status: {URL: serverA[1], Status: 'Error'}});
-		dueStatusServerA = {dienst: 'DUE', server: serverA[0], status: {URL: serverA[1], Status: 'Error', StatusMsg: err}}
+		dueStatusServerA = {
+			dienst: 'DUE',
+			server: serverA[0],
+			status: {URL: serverA[1], Status: 'Error', StatusMsg: err}
+		}
 		db.schreibeZustand(dueStatusServerA)
 	});
 
@@ -268,7 +258,11 @@ function starteDueServerUberwachung() {
 	client_bei_serverB.on('connect_error', function (err) {
 		log.error('Funktion: Serverueberwachung SOCKET connect_error zu: ' + serverB + ' ErrorMsg: ' + JSON.stringify(err));
 		exports.emit('statusMessage', {dienst: 'DUE', status: {URL: serverB[1], Status: 'Error'}});
-		dueStatusServerB = {dienst: 'DUE', server: serverB[0], status: {URL: serverB[1], Status: 'Error', StatusMsg: err}}
+		dueStatusServerB = {
+			dienst: 'DUE',
+			server: serverB[0],
+			status: {URL: serverB[1], Status: 'Error', StatusMsg: err}
+		}
 		db.schreibeZustand(dueStatusServerB)
 	});
 
@@ -283,7 +277,11 @@ function starteDueServerUberwachung() {
 		log.debug('Funktion: Serverueberwachung SOCKET getrennt von: ' + serverB);
 		log.error('Funktion: Serverueberwachung SOCKET getrennt von: ' + serverB + ' ErrorMsg: ' + JSON.stringify(err));
 		exports.emit('statusMessage', {dienst: 'DUE', status: {URL: serverB[1], Status: 'Error'}});
-		dueStatusServerB = {dienst: 'DUE', server: serverB[0], status: {URL: serverB[1], Status: 'Error', StatusMsg: err}}
+		dueStatusServerB = {
+			dienst: 'DUE',
+			server: serverB[0],
+			status: {URL: serverB[1], Status: 'Error', StatusMsg: err}
+		}
 		db.schreibeZustand(dueStatusServerB)
 	});
 
@@ -294,7 +292,11 @@ function starteDueServerUberwachung() {
 	client_bei_serverB.on('reconnect_error', function (err) {
 		log.error('Funktion: Serverueberwachung SOCKET reconnect_error zu: ' + serverB + ' ErrorMsg: ' + JSON.stringify(err));
 		exports.emit('statusMessage', {dienst: 'DUE', status: {URL: serverB[1], Status: 'Error'}});
-		dueStatusServerB = {dienst: 'DUE', server: serverB[0], status: {URL: serverB[1], Status: 'Error', StatusMsg: err}}
+		dueStatusServerB = {
+			dienst: 'DUE',
+			server: serverB[0],
+			status: {URL: serverB[1], Status: 'Error', StatusMsg: err}
+		}
 		db.schreibeZustand(dueStatusServerB)
 	});
 

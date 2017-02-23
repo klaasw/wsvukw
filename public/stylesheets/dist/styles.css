@@ -7587,4 +7587,27 @@ h4 {
   width: 250px;
 }
 
+#displaySperreModal {
+  text-align: center;
+  padding: 0 !important;
+}
+#displaySperreModal:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -4px;
+}
+#displaySperreModal .modal-dialog {
+  width: auto;
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
+#displaySperreModal h1 {
+  display: inline-block;
+  color: #FFFFFF;
+  font-size: 800%;
+}
+
 /*# sourceMappingURL=styles.css.map */

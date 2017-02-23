@@ -110,7 +110,9 @@ const cfg = {
 	cfgIPs,
 
 	loglevelConsole: cfgIPs.loglevelConsole || 'debug',
-	loglevelFile: cfgIPs.loglevelFile || 'info'
+	loglevelFile: cfgIPs.loglevelFile || 'info',
+
+	displaySperreTimeout: 10, // Dauer der Displaysperre in Sekunden
 };
 
 module.exports = cfg;

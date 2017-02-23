@@ -150,24 +150,25 @@ exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 };
 
 /**
- * schreibe Verbindungsinfo socketID und Zeitstempel in windowsBenutzer
- * @param {object} socketInfo
- * @param {string} ip
+ * Generische funktion um in aktiveArbeitsplaetze zu schreiben
+ * @param {string} id - benutzer id == ip
+ * @param updateData - key:value welche aktualisiert werden sollen
  */
-exports.schreibeSocketInfo = function (socketInfo, ip) {
-	const schreibeLokal = false; // auf jeden Fall  in Primary Datenbank schreiben
-	if (typeof socketInfo == 'undefined') {
-		socketInfo = {
-			$set: {
-				aktiv:      false,
-				logoutZeit: new Date()
-			}
+exports.schreibeAktiveArbeitsplaetze = function (id, updateData) {
+
+	let ApInfo = {};
+	id         = tools.filterIP(id);
+
+	ApInfo = {
+		$set: {
+			letzteTrennung: new Date(),
+			socketID:       null
 		}
-	}
-	socketInfo.$set._id = ip;
-	const selector      = {'_id': ip};
-	// TODO: lieber separate Datenbank: Bewegungsdaten / Monitoring / Audit von Stammdaten trennen
-	exports.schreibeInDb('windowsBenutzer', selector, socketInfo, schreibeLokal);
+	};
+
+
+	const selector = {'_id': id};
+	// exports.schreibeInDb('aktiveArbeitsplaetze', selector, ApInfo);
 };
 
 /**
@@ -289,13 +290,15 @@ exports.liesAusRESTService = function (configfile, callback) {
 
 /**
  * schreibe Schaltzzustand in DB
+ * @param {string} ipAddr
  * @param {string} fst
  * @param {string} Span_Mhan
  * @param {string} aktion
  * @param {string} span_mhanApNr
  * @param {string} ApID
  */
-exports.schreibeSchaltzustand = function (fst, Span_Mhan, aktion, span_mhanApNr, ApID) {
+exports.schreibeSchaltzustand = function (ipAddr, fst, Span_Mhan, aktion, span_mhanApNr, ApID) {
+
 	const schreibeLokal = false; //es wird auf jeden Fall geschrieben
 	const selector      = {ApID, 'funkstelle': fst, 'span_mhan': Span_Mhan};
 	let aufgeschaltet   = true;
@@ -315,7 +318,146 @@ exports.schreibeSchaltzustand = function (fst, Span_Mhan, aktion, span_mhanApNr,
 		}
 	};
 
-	exports.schreibeInDb('schaltZustaende', selector, schaltZustand, schreibeLokal)
+	exports.schreibeInDb('schaltZustaende', selector, schaltZustand, schreibeLokal);
+
+	// nur SPAN in Benutzerconfig speichern
+	if (span_mhanApNr.indexOf('SPAN') == -1) {
+		return;
+	}
+
+	exports.ladeBenutzer(ipAddr, {}, function (data) {
+		if (typeof data._id != 'undefined') {
+			if (data.einzel) {
+				if (aufgeschaltet) {
+					data.schaltZustandEinzel = {[fst]: Span_Mhan};
+				}
+				else {
+					delete data.schaltZustandEinzel;
+				}
+			}
+			else {
+				if (aufgeschaltet) {
+					data.schaltZustandGruppe[fst] = Span_Mhan;
+				}
+				else {
+					delete data.schaltZustandGruppe[fst];
+				}
+			}
+
+			const benutzerId        = {'_id': data._id};
+			const schreibeParameter = {
+				$set: data
+			};
+
+			exports.schreibeInDb('windowsBenutzer', benutzerId, schreibeParameter, false);
+		}
+	});
+};
+
+/**
+ * Lade spezifischen windowsBenutzer aus DB
+ * @param {string} ipAddr - IP Adresse des Nutzers
+ * @param {object} res - nodejs app resource
+ * @param {function} callback
+ */
+exports.ladeBenutzer = function (ipAddr, res, callback) {
+
+	exports.findeElement('windowsBenutzer', {ip: tools.filterIP(ipAddr)}, function (doc) {
+		if (doc.length) {
+			callback(doc[0]);
+		}
+		else if (typeof res == 'object') {
+			res.render('error', {
+				message: 'Fehler! Kein Benutzer zu dieser IP gefunden: ' + tools.filterIP(ipAddr),
+				error:   {
+					status: 'kein'
+				}
+			});
+		}
+	})
+};
+
+/**
+ * schreibe Zustandsmeldungen von RFD Komponenten und Server(Module) in zustandKomponenten
+ * @param {Object} Nachricht - {"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
+ */
+exports.schreibeZustand = function (Nachricht) {
+	const schreibeLokal = true; // es wird nur geschrieben wenn die aktuelle Instanz und Mongo Primary in einem VTR sind
+	// TODO: Pruefen ob in Wirksystem wirklich notwendig.
+	// Dies wuerde da Umschaltverhalten kompliziert machen.
+	let zustand;
+
+	if (Nachricht.hasOwnProperty('FSTSTATUS')) {
+		//entfernen da dieser sonst den Kanal im DUE wieder mit -1 ueberschreibt
+		if (Nachricht.FSTSTATUS.$.channel == '-1') {
+			zustand = {
+				$set:         {
+					letzteMeldung:         new Date(),
+					'status.connectState': Nachricht.FSTSTATUS.$.connectState,
+					'status.state':        Nachricht.FSTSTATUS.$.state,
+				},
+				$setOnInsert: {
+					'status.id': Nachricht.FSTSTATUS.$.id
+				}
+			}
+		}
+		else {
+			zustand = {
+				$set:         {
+					letzteMeldung:         new Date(),
+					'status.connectState': Nachricht.FSTSTATUS.$.connectState,
+					'status.state':        Nachricht.FSTSTATUS.$.state,
+					'status.channel':      Nachricht.FSTSTATUS.$.channel
+				},
+				$setOnInsert: {
+					'status.id': Nachricht.FSTSTATUS.$.id
+				}
+			}
+		}
+
+		//console.log(Nachricht.FSTSTATUS.$.id)
+		const selector = {'_id': Nachricht.FSTSTATUS.$.id};
+
+		exports.schreibeInDb('zustandKomponenten', selector, zustand, schreibeLokal);
+	}
+
+	if (Nachricht.hasOwnProperty('dienst')) {
+		zustand = {
+			$set: {
+				[Nachricht.dienst]: {
+					letzteMeldung: new Date(),
+					status:        {
+						url:   Nachricht.status.URL,
+						state: Nachricht.status.Status,
+						msg:   Nachricht.status.StatusMsg ? Nachricht.status.StatusMsg : 'keine'
+					},
+				},
+			},
+		};
+
+		if (Nachricht.dienst === 'DUE') {
+			const dueName = Nachricht.dienst + '.' + Nachricht.server;
+			zustand       = {
+				$set: {
+					[dueName]: {
+						letzteMeldung: new Date(),
+						status:        {
+							url:   Nachricht.status.URL,
+							state: Nachricht.status.Status,
+							msg:   Nachricht.status.StatusMsg ? Nachricht.status.StatusMsg : 'keine'
+						},
+					},
+				},
+			}
+		}
+
+		const selector = {'_id': cfg.alternativeIPs[0][0]};
+
+		exports.schreibeInDb('zustandKomponenten', selector, zustand, schreibeLokal);
+	}
+	else {
+		//nichts machen
+	}
 };
 
 /**

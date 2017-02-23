@@ -35,7 +35,8 @@ html
 							span.icon-bar
 							span.icon-bar
 							span.icon-bar
-						a.navbar-brand#logo(href='javascript:;') ukwDisplay
+						a.navbar-brand#logo(
+							href='javascript:WSV.Display.showDisplaySperreModal();') ukwDisplay
 					.navbar-collapse.collapse
 						ul.nav.navbar-nav
 
@@ -124,5 +125,5 @@ html
 												+serverListe(val1[1], val1[0])
 											- break;
 
-
+		+countdownModal(gesamteKonfig.IpConfig.displaySperreTimeout)
 		block content

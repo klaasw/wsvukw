@@ -113,7 +113,7 @@ router.get('/ukw', function (req, res) {
 	const clientIP = tools.filterIP(req.ip);
 	log.debug('Benutzer IP: ' + clientIP);
 
-	ukw.ladeBenutzer(req.ip, res, function(benutzer) {
+	db.ladeBenutzer(req.ip, res, function (benutzer) {
 
 		if (typeof benutzer.error == 'undefined') {
 
@@ -134,9 +134,9 @@ router.get('/ukw', function (req, res) {
 					//ukwDisplay --> zum Testen eines neuen Layouts
 
 					res.render('entwicklung/ukwDisplayTest', {
-						stringify: require('js-stringify'),
+						stringify:           require('js-stringify'),
 						log,  // logging auch im Jade-Template moeglich!
-						'gesamteKonfig': konfig,
+						'gesamteKonfig':     konfig,
 						'aktuellerBenutzer': benutzer
 
 					}); //res send ende
@@ -386,11 +386,13 @@ function erstelleKonfigFurAp(Ap, callback) {
 		FunkstellenDetails:  {},
 		ArbeitsplatzGeraete: {},
 		MhanZuordnung:       {},
-		IpConfig: {
-			aktuellerServer: cfg.aktuellerServer,
-			alternativeIPs: cfg.alternativeIPs
-			},
-		KanalListe:          []
+		IpConfig:            {
+			aktuellerServer:      cfg.aktuellerServer,
+			alternativeIPs:       cfg.alternativeIPs,
+			displaySperreTimeout: cfg.displaySperreTimeout
+		},
+
+		KanalListe: []
 	};
 
 	log.debug(FILENAME + ' uebergebener Arbeitsplatz: ' + Ap);
