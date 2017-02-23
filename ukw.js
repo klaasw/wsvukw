@@ -36,27 +36,31 @@ const FILENAME = __filename.slice(__dirname.length + 1);
 
 /**
  * Funktion zur Erreichbarkeit des RFD WebServices
+ * Das Ergebnis wird einmal als
+ * - statusMessage an Clients (Browser) und
+ * - serverMessage an Clients (andere DUE Server)
+ * versendet. @link socket.js:starteDueServerUberwachung
  */
 exports.pruefeRfdWS = function () {
-	//Pruefung lokaler VTR
+	// Pruefung lokaler VTR
 	request(cfg.urlRFDWebservice, {timeout: 2000}, function (error, response, body) {
 
 		if (!error && response.statusCode == 200) {
 			log.debug(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK');
+			// An Clients
 			socket.sendeWebsocketNachrichtStatus({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
+			// An Server
 			socket.sendeWebsocketNachrichtServer({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
+			db.schreibeZustand({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}})
 			return true;
 		}
 		else {
 			log.error(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + error);
-			socket.sendeWebsocketNachrichtStatus({
-				dienst: 'RFD',
-				status: {URL: cfg.urlRFDWebservice, Status: 'Error'}
-			});
-			socket.sendeWebsocketNachrichtServer({
-				dienst: 'RFD',
-				status: {URL: cfg.urlRFDWebservice, Status: 'Error'}
-			});
+			// An Clients
+			socket.sendeWebsocketNachrichtStatus({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'Error'}});
+			// An Server
+			socket.sendeWebsocketNachrichtServer({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'Error'}});
+			db.schreibeZustand({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'Error', StatusMsg: error}})
 			return false;
 		}
 	})
@@ -143,6 +147,7 @@ const options = {
 //SIP User Agent Ereignisse
 ua.on('connected', function (e) {
 	log.debug(FILENAME + ' Funktion: connected mit SIP-Server: ' + cfg.jsSipConfiguration_DUE.uri)
+	db.schreibeZustand({dienst: 'SIP-Server', status: {URL: cfg.jsSipConfiguration_DUE.uri, Status: 'WARN', StatusMsg: 'nur connected'}})
 });
 
 ua.on('connecting', function (e) {
@@ -151,17 +156,26 @@ ua.on('connecting', function (e) {
 
 ua.on('registered', function (e) {
 	log.debug(FILENAME + ' Funktion: registered auf SIP-Server ' + cfg.jsSipConfiguration_DUE.uri);
+	db.schreibeZustand({dienst: 'SIP-Server', status: {URL: cfg.jsSipConfiguration_DUE.uri,
+	                                                       Status: 'OK',
+																												 StatusMsg: 'connected und registriert'}})
 	// sendeNachricht('Bin jetzt Registriert');
 	// anruf();
 });
 
 ua.on('registrationFailed', function (e) {
 	log.error(FILENAME + ' Funktion: registrationFailed auf SIP-Server ' + cfg.jsSipConfiguration_DUE.uri)
+	db.schreibeZustand({dienst: 'SIP-Server', status: {URL: cfg.jsSipConfiguration_DUE.uri,
+																												 Status: 'Error',
+																												 StatusMsg: 'registrationFailed'}})
 });
 
 
 ua.on('disconnected', function (e) {
 	log.debug(FILENAME + ' Funktion: Getrennt vom SIP-Server ' + cfg.jsSipConfiguration_DUE.uri)
+	db.schreibeZustand({dienst: 'SIP-Server', status: {URL: cfg.jsSipConfiguration_DUE.uri,
+																												 Status: 'Error',
+																												 StatusMsg: 'disconnected'}})
 });
 
 ua.on('newMessage', function (e) {
@@ -175,8 +189,8 @@ ua.on('newMessage', function (e) {
 			if ('FSTSTATUS' in result) {
 				result.FSTSTATUS.letzteMeldung = new Date();
 			}
-			rfd.sendeWebSocketNachricht(result);
-			schreibeZustand(result)
+			socket.sendeWebSocketNachricht(result);
+			db.schreibeZustand(result)
 		}
 		else {
 			log.error(FILENAME + ' Funktion: newMessage keine XML in SIP Nachricht Error=' + err + ' Nachricht=' + e.message.request.body)
@@ -190,6 +204,7 @@ const mockRFD = new JsSIP.UA(cfg.jsSipConfiguration_mockRFD);
 mockRFD.start();
 
 // GET-Aufruf fuer SIP-Message: http://10.22.30.1:3000/mockmessage?messageText=%3CFSTSTATUS+id%3D%221-H-RFD-BHVVTA-FKEK-1%22+state%3D%220%22+channel%3D%22-1%22%2F%3E
+
 /**
  * SIP Test Aufrufe
  * @param {string} text

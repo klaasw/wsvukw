@@ -180,21 +180,23 @@ exports.schreibeAktiveArbeitsplaetze = function (id, updateData) {
  * @param {boolean} verbunden
  */
 exports.schreibeApConnect = function (ip, socketID, benutzer, server, verbunden) {
+	const strNeuVerbindungen = server + '.neuVerbindungen'
+	const strVerbunden = server + '.verbunden'
+	const strVerbundenSeit = server + '.verbundenSeit'
+	const strLetzteTrennung = server + '.letzteTrennung'
+	const strSocketID = server + '.socketID'
 
-	const serverKey = server + '.neuVerbindungen';
-	let ApInfo      = {};
-
+	let ApInfo = {};
 	if (verbunden) {
 		ApInfo = {
 			$set: {
-				server:        server,
-				verbunden:     verbunden,
-				verbundenSeit: new Date(),
-				benutzer:      benutzer,
-				socketID:      socketID,
+				'benutzer':         benutzer,
+				[strVerbunden]:     verbunden,
+				[strVerbundenSeit]: new Date(),
+				[strSocketID]:      socketID,
 			},
 			$inc: {
-				neuVerbindungen: 1
+				[strNeuVerbindungen]: 1
 			}
 		}
 	}
@@ -202,9 +204,9 @@ exports.schreibeApConnect = function (ip, socketID, benutzer, server, verbunden)
 	else {
 		ApInfo = {
 			$set: {
-				verbunden:      verbunden,
-				letzteTrennung: new Date(),
-				socketID:       null
+				[strVerbunden]: verbunden,
+				[strLetzteTrennung]: new Date(),
+				[strSocketID]: null
 			}
 		}
 	}
@@ -370,7 +372,7 @@ exports.schreibeSchaltzustand = function (ipAddr, fst, Span_Mhan, aktion, span_m
  * schreibe Zustandsmeldungen von RFD Komponenten und Server(Module) in zustandKomponenten
  * @param {Object} Nachricht - {"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
  */
-exports.schreibeZustand = function (Nachricht) {
+exports.schreibeZustand = function(Nachricht) {
 	const schreibeLokal = true; // es wird nur geschrieben wenn die aktuelle Instanz und Mongo Primary in einem VTR sind
 	// TODO: Pruefen ob in Wirksystem wirklich notwendig.
 	// Dies wuerde da Umschaltverhalten kompliziert machen.
