@@ -253,10 +253,10 @@ $(window).load(function () {
 			const msgTyp  = msgKeys[0];
 			const _self   = this;
 
-			// console.log("ukwMessage received: " + JSON.stringify(msg));
+			console.log("ukwMessage received: " + JSON.stringify(msg));
 			// console.log(msgTyp);
 
-			if (typeof msg === 'object' && _self.ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id)) {
+			if (typeof msg == 'object' && typeof msg[msgTyp].$ != 'undefined' && _self.ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id)) {
 
 				// Empfangen aktiv0
 				if ('RX' in msg && msg.RX.$.state === '1') {

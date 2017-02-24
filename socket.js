@@ -67,7 +67,7 @@ exports.socket = function (server) {
 			// TODO: Funktion erstellen und in DB auslagern
 			//Speichern
 			// for (const LotsenAp in msg.LotsenApBenutzer) {
-				// speichereLotsenZuordnung(LotsenAp, JSON.stringify(msg.LotsenApBenutzer[LotsenAp]))
+			// speichereLotsenZuordnung(LotsenAp, JSON.stringify(msg.LotsenApBenutzer[LotsenAp]))
 			// }
 		});
 
@@ -148,7 +148,7 @@ function leseZustand(socketID) {
 					'letzteMeldung': doc[i].letzteMeldung
 				}
 			};
-			exports.emit('ukwMessage', zustand, socketID)
+			exports.emit('ukwMessage', zustand, socketID);
 		}
 	})
 }
