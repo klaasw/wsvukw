@@ -242,7 +242,7 @@
 			const msgTyp  = msgKeys[0];
 			const _self   = this;
 
-			console.log("ukwMessage received: " + JSON.stringify(msg));
+			// console.log("ukwMessage received: " + JSON.stringify(msg));
 			// console.log(msgTyp);
 
 			if (typeof msg === 'object' && _self.ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id)) {

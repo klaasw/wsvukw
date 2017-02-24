@@ -64,10 +64,11 @@ exports.socket = function (server) {
 		socket.on('clientMessageSpeichern', function (msg) {
 			log.info(FILENAME + ' Funktion: empfangeWebNachricht ' + 'clientMessageSpeichern: WebSocket Nachricht: ' + JSON.stringify(msg));
 
+			// TODO: Funktion erstellen und in DB auslagern
 			//Speichern
-			for (const LotsenAp in msg.LotsenApBenutzer) {
-				ukw.speichereLotsenZuordnung(LotsenAp, JSON.stringify(msg.LotsenApBenutzer[LotsenAp]))
-			}
+			// for (const LotsenAp in msg.LotsenApBenutzer) {
+				// speichereLotsenZuordnung(LotsenAp, JSON.stringify(msg.LotsenApBenutzer[LotsenAp]))
+			// }
 		});
 
 		// Client hat Verbindung unterbrochen:
@@ -170,7 +171,7 @@ function funktionNachVerbindungsaufbau(socketID, ip) {
 		// Verbindungsdaten in Datenbank schreiben
 		db.schreibeApConnect(ip, socketID, benutzer, cfg.alternativeIPs[0][0], true);
 	})
-};
+}
 
 /**
  * Ueberwachung der jeweils anderen DUE Server. Dazu wird zu jedem anderen Server
@@ -195,7 +196,7 @@ function starteDueServerUberwachung() {
 	client_bei_serverA.on('connect', function () {
 		log.info('Funktion: Serverueberwachung SOCKET verbunden mit: ' + serverA);
 		exports.emit('statusMessage', {dienst: 'DUE', status: {URL: serverA[1], Status: 'OK'}});
-		dueStatusServerA = {dienst: 'DUE', server: serverA[0], status: {URL: serverA[1], Status: 'OK'}}
+		dueStatusServerA = {dienst: 'DUE', server: serverA[0], status: {URL: serverA[1], Status: 'OK'}};
 		db.schreibeZustand(dueStatusServerA)
 	});
 
@@ -206,14 +207,14 @@ function starteDueServerUberwachung() {
 			dienst: 'DUE',
 			server: serverA[0],
 			status: {URL: serverA[1], Status: 'Error', StatusMsg: err}
-		}
+		};
 		db.schreibeZustand(dueStatusServerA)
 	});
 
 	client_bei_serverA.on('disconnect', function () {
 		log.error('Funktion: Serverueberwachung SOCKET getrennt von: ' + serverA);
 		exports.emit('statusMessage', {dienst: 'DUE', status: {URL: serverA[1], Status: 'Error'}});
-		dueStatusServerA = {dienst: 'DUE', server: serverA[0], status: {URL: serverA[1], Status: 'Error'}}
+		dueStatusServerA = {dienst: 'DUE', server: serverA[0], status: {URL: serverA[1], Status: 'Error'}};
 		db.schreibeZustand(dueStatusServerA)
 	});
 
@@ -225,7 +226,7 @@ function starteDueServerUberwachung() {
 			dienst: 'DUE',
 			server: serverA[0],
 			status: {URL: serverA[1], Status: 'Error', StatusMsg: err}
-		}
+		};
 		db.schreibeZustand(dueStatusServerA)
 	});
 
@@ -240,7 +241,7 @@ function starteDueServerUberwachung() {
 			dienst: 'DUE',
 			server: serverA[0],
 			status: {URL: serverA[1], Status: 'Error', StatusMsg: err}
-		}
+		};
 		db.schreibeZustand(dueStatusServerA)
 	});
 
@@ -251,7 +252,7 @@ function starteDueServerUberwachung() {
 	client_bei_serverB.on('connect', function () {
 		log.info('Funktion: Serverueberwachung SOCKET verbunden mit: ' + serverB);
 		exports.emit('statusMessage', {dienst: 'DUE', status: {URL: serverB[1], Status: 'OK'}});
-		dueStatusServerB = {dienst: 'DUE', server: serverB[0], status: {URL: serverB[1], Status: 'OK'}}
+		dueStatusServerB = {dienst: 'DUE', server: serverB[0], status: {URL: serverB[1], Status: 'OK'}};
 		db.schreibeZustand(dueStatusServerB)
 	});
 
@@ -262,14 +263,14 @@ function starteDueServerUberwachung() {
 			dienst: 'DUE',
 			server: serverB[0],
 			status: {URL: serverB[1], Status: 'Error', StatusMsg: err}
-		}
+		};
 		db.schreibeZustand(dueStatusServerB)
 	});
 
 	client_bei_serverB.on('disconnect', function () {
 		log.error('Funktion: Serverueberwachung SOCKET getrennt von: ' + serverB);
 		exports.emit('statusMessage', {dienst: 'DUE', status: {URL: serverB[1], Status: 'Error'}});
-		dueStatusServerB = {dienst: 'DUE', server: serverB[0], status: {URL: serverB[1], Status: 'Error'}}
+		dueStatusServerB = {dienst: 'DUE', server: serverB[0], status: {URL: serverB[1], Status: 'Error'}};
 		db.schreibeZustand(dueStatusServerB)
 	});
 
@@ -281,7 +282,7 @@ function starteDueServerUberwachung() {
 			dienst: 'DUE',
 			server: serverB[0],
 			status: {URL: serverB[1], Status: 'Error', StatusMsg: err}
-		}
+		};
 		db.schreibeZustand(dueStatusServerB)
 	});
 
@@ -296,7 +297,7 @@ function starteDueServerUberwachung() {
 			dienst: 'DUE',
 			server: serverB[0],
 			status: {URL: serverB[1], Status: 'Error', StatusMsg: err}
-		}
+		};
 		db.schreibeZustand(dueStatusServerB)
 	});
 
