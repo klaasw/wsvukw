@@ -232,23 +232,35 @@ exports.findeElement = function (collection, element, callback) {
 };
 
 /**
- * Spezifischen Windowsbenutzer aus DB lesen
- * @param {string} ip
+ * Lade spezifischen windowsBenutzer aus DB
+ * @param {string} ipAddr - IP Adresse des Nutzers
+ * @param {object} res - nodejs app resource
  * @param {function} callback
  */
-exports.findeApNachIp = function (ip, callback) {
-	const ipAddr = tools.filterIP(ip);
-	log.debug(FILENAME + ' function findeApNachIp Ip: ' + util.inspect(ipAddr));
+exports.ladeBenutzer = function (ipAddr, res, callback) {
 
-	exports.findeElement('windowsBenutzer', {_id: ipAddr}, function (doc) {
-		if (typeof doc[0].user == 'string') {
-			callback(doc[0].user);
+	exports.findeElement('windowsBenutzer', {ip: tools.filterIP(ipAddr)}, function (doc) {
+		if (doc.length) {
+			if (typeof callback == 'function') {
+				callback(doc[0]);
+			}
+		}
+		else if (typeof res == 'object') {
+			log.error(FILENAME + ' function findeApNachIp: Benutzer NICHT gefunden zu IP: ' + ipAddr);
+			res.render('error', {
+				message: 'Fehler! Kein Benutzer zu dieser IP gefunden: ' + tools.filterIP(ipAddr),
+				error:   {
+					status: 'kein'
+				}
+			});
 		}
 		else {
 			log.error(FILENAME + ' function findeApNachIp: Benutzer NICHT gefunden zu IP: ' + ipAddr);
-			callback('');
+			if (typeof callback == 'function') {
+				callback({});
+			}
 		}
-	});
+	})
 };
 
 /**
@@ -323,56 +335,35 @@ exports.schreibeSchaltzustand = function (ipAddr, fst, Span_Mhan, aktion, span_m
 		return;
 	}
 
-	exports.ladeBenutzer(ipAddr, {}, function (data) {
-		if (typeof data._id != 'undefined') {
-			if (data.einzel) {
+	exports.ladeBenutzer(ipAddr, {}, function (benutzer) {
+
+		if (typeof benutzer._id != 'undefined') {
+
+			if (benutzer.einzel) {
 				if (aufgeschaltet) {
-					data.schaltZustandEinzel = {[fst]: Span_Mhan};
+					benutzer.schaltZustandEinzel = {[fst]: Span_Mhan};
 				}
 				else {
-					delete data.schaltZustandEinzel;
+					delete benutzer.schaltZustandEinzel;
 				}
 			}
 			else {
 				if (aufgeschaltet) {
-					data.schaltZustandGruppe[fst] = Span_Mhan;
+					benutzer.schaltZustandGruppe[fst] = Span_Mhan;
 				}
 				else {
-					delete data.schaltZustandGruppe[fst];
+					delete benutzer.schaltZustandGruppe[fst];
 				}
 			}
 
-			const benutzerId        = {'_id': data._id};
+			const benutzerId        = {'_id': benutzer._id};
 			const schreibeParameter = {
-				$set: data
+				$set: benutzer
 			};
 
 			exports.schreibeInDb('windowsBenutzer', benutzerId, schreibeParameter, false);
 		}
 	});
-};
-
-/**
- * Lade spezifischen windowsBenutzer aus DB
- * @param {string} ipAddr - IP Adresse des Nutzers
- * @param {object} res - nodejs app resource
- * @param {function} callback
- */
-exports.ladeBenutzer = function (ipAddr, res, callback) {
-
-	exports.findeElement('windowsBenutzer', {ip: tools.filterIP(ipAddr)}, function (doc) {
-		if (doc.length) {
-			callback(doc[0]);
-		}
-		else if (typeof res == 'object') {
-			res.render('error', {
-				message: 'Fehler! Kein Benutzer zu dieser IP gefunden: ' + tools.filterIP(ipAddr),
-				error:   {
-					status: 'kein'
-				}
-			});
-		}
-	})
 };
 
 /**

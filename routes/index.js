@@ -38,20 +38,18 @@ router.get('/overview', function (req, res) {
 
 /* GET Zuordnung */
 router.get('/zuordnung', function (req, res) {
-	db.findeApNachIp(req.ip, function (benutzer) {
+	db.ladeBenutzer(req.ip, res, function (benutzer) {
 		log.debug('Benutzer: ' + benutzer);
-		if (benutzer) {
-			log.info(FILENAME + ' Funktion router.get /zuordnung Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
+		log.info(FILENAME + ' Funktion router.get /zuordnung Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
 
-			// TODO: ueberpruefen, ob hier das Richtige uebergeben wird:
-			erstelleKonfigFuerLotsenKanal(benutzer, false, function (konfig) {
-				//Uebergebe Funkstellen ID an Jade Template
-				log.info(FILENAME + ' Funktion router.get /zuordnung Konfig: ' + konfig);
-				res.render('zuordnung', {
-					'gesamteKonfig': konfig
-				});
+		// TODO: ueberpruefen, ob hier das Richtige uebergeben wird:
+		erstelleKonfigFuerLotsenKanal(benutzer.user, false, function (konfig) {
+			//Uebergebe Funkstellen ID an Jade Template
+			log.info(FILENAME + ' Funktion router.get /zuordnung Konfig: ' + konfig);
+			res.render('zuordnung', {
+				'gesamteKonfig': konfig
 			});
-		}
+		});
 	});
 });
 
@@ -88,119 +86,99 @@ router.get('/ukw', function (req, res) {
 
 	db.ladeBenutzer(req.ip, res, function (benutzer) {
 
-		if (typeof benutzer.error == 'undefined') {
+		log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
 
-			log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
+		erstelleKonfigFurAp(benutzer.user, function (konfig, errString) {
+			if (konfig == 'Fehler') {
+				res.render('error', {
+					message: 'keine Konfiguration zu Arbeitsplatz: ' + benutzer.user + ' Fehler: ' + errString,
+					error:   {
+						status: 'kein'
+					}
+				});
+			}
+			else {
+				//Uebergebe Funkstellen ID an Pug Template
+				log.info('ukw - konfigfuerAP: an Pug Template uebergeben');
+				//ukwDisplay --> zum Testen eines neuen Layouts
 
-			erstelleKonfigFurAp(benutzer.user, function (konfig, errString) {
-				if (konfig == 'Fehler') {
-					res.render('error', {
-						message: 'keine Konfiguration zu Arbeitsplatz: ' + benutzer.user + ' Fehler: ' + errString,
-						error:   {
-							status: 'kein'
-						}
-					});
-				}
-				else {
-					//Uebergebe Funkstellen ID an Pug Template
-					log.info('ukw - konfigfuerAP: an Pug Template uebergeben');
-					//ukwDisplay --> zum Testen eines neuen Layouts
+				res.render('entwicklung/ukwDisplayTest', {
+					stringify:           require('js-stringify'),
+					log,  // logging auch im Jade-Template moeglich!
+					'gesamteKonfig':     konfig,
+					'aktuellerBenutzer': benutzer
 
-					res.render('entwicklung/ukwDisplayTest', {
-						stringify:           require('js-stringify'),
-						log,  // logging auch im Jade-Template moeglich!
-						'gesamteKonfig':     konfig,
-						'aktuellerBenutzer': benutzer
-
-					}); //res send ende
-				}
-			}); //erstelleKonfigFurAp Ende
-		}
+				}); //res send ende
+			}
+		}); //erstelleKonfigFurAp Ende
 	});
 }); //router Ende
 
 /* GET UKW Display */
 router.get('/ukwAlt', function (req, res) {
+
 	const clientIP = tools.filterIP(req.ip);
 	log.debug('Benutzer IP: ' + clientIP);
-	db.findeApNachIp(clientIP, function (benutzer) {
+
+	db.ladeBenutzer(clientIP, res, function (benutzer) {
+
 		log.debug('ukw - Ermittelter Benutzer: ' + benutzer);
-		if (benutzer) {
-			log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
-			erstelleKonfigFurAp(benutzer, function (konfig, errString) {
-				if (konfig == 'Fehler') {
-					res.render('error', {
-						message: 'keine Konfiguration zu Arbeitsplatz: ' + benutzer + ' Fehler: ' + errString,
-						error:   {
-							status: 'kein'
-						}
-					});
-				}
-				else {
-					//Uebergebe Funkstellen ID an Pug Template
-					log.info('ukw - konfigfuerAP: an Pug Template uebergeben');
-					//ukwDisplay --> zum Testen eines neuen Layouts
-					res.render('ukwDisplay', {
-						log,  // logging auch im Jade-Template moeglich!
-						'gesamteKonfig': konfig
 
-					}); //res send ende
-				}
-			}); //erstelleKonfigFurAp Ende
-		} //if Ende
 
-		//kein Benutzer zu IP gefunden
-		else {
-			res.render('error', {
-				message: 'keine Benutzer konfiguriert zu IP: ' + clientIP,
-				error:   {
-					status: 'kein'
-				}
-			});
-		}
+		log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
+		erstelleKonfigFurAp(benutzer, function (konfig, errString) {
+			if (konfig == 'Fehler') {
+				res.render('error', {
+					message: 'keine Konfiguration zu Arbeitsplatz: ' + benutzer.user + ' Fehler: ' + errString,
+					error:   {
+						status: 'kein'
+					}
+				});
+			}
+			else {
+				//Uebergebe Funkstellen ID an Pug Template
+				log.info('ukw - konfigfuerAP: an Pug Template uebergeben');
+				//ukwDisplay --> zum Testen eines neuen Layouts
+				res.render('ukwDisplay', {
+					log,  // logging auch im Jade-Template moeglich!
+					'gesamteKonfig': konfig
+
+				}); //res send ende
+			}
+		}); //erstelleKonfigFurAp Ende
 	});
 }); //router Ende
 
 
 /* GET UKW Display */
 router.get('/ukwTestWue', function (req, res) {
+
 	const clientIP = tools.filterIP(req.ip);
 	log.debug('Benutzer IP: ' + clientIP);
-	db.findeApNachIp(clientIP, function (benutzer) {
+
+	db.ladeBenutzer(clientIP, res, function (benutzer) {
 		log.debug('ukw - Ermittelter Benutzer: ' + benutzer);
-		if (benutzer) {
-			log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
-			erstelleKonfigFurAp(benutzer, function (konfig, errString) {
-				if (konfig == 'Fehler') {
-					res.render('error', {
-						message: 'keine Konfiguration zu Arbeitsplatz: ' + benutzer + ' Fehler: ' + errString,
-						error:   {
-							status: 'kein'
-						}
-					});
-				}
-				else {
-					//Uebergebe Funkstellen ID an Jade Template
-					log.info('ukw - konfigfuerAP: an Jade Template uebergeben');
-					//ukwDisplay --> zum Testen eines neuen Layouts
-					res.render('entwicklung_wuellner/ukwDisplayTest', {
-						log,  // logging auch im Jade-Template moeglich!
-						'gesamteKonfig': konfig
+		log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
+		erstelleKonfigFurAp(benutzer.user, function (konfig, errString) {
+			if (konfig == 'Fehler') {
+				res.render('error', {
+					message: 'keine Konfiguration zu Arbeitsplatz: ' + benutzer.user + ' Fehler: ' + errString,
+					error:   {
+						status: 'kein'
+					}
+				});
+			}
+			else {
+				//Uebergebe Funkstellen ID an Jade Template
+				log.info('ukw - konfigfuerAP: an Jade Template uebergeben');
+				//ukwDisplay --> zum Testen eines neuen Layouts
+				res.render('entwicklung_wuellner/ukwDisplayTest', {
+					log,  // logging auch im Jade-Template moeglich!
+					'gesamteKonfig': konfig
 
-					}); //res send ende
-				}
-			}); //erstelleKonfigFurAp Ende
-		} //if Ende
-
-		//kein Benutzer zu IP gefunden
-		else {
-			res.render('error', {
-				message: 'keine Benutzer konfiguriert zu IP: ' + clientIP,
-				error:   {
-					status: 'kein'
-				}
-			});
-		}
+				}); //res send ende
+			}
+		}); //erstelleKonfigFurAp Ende
 	});
 }); //router Ende
 
@@ -220,64 +198,44 @@ router.get('/ukwKonfig', function (req, res) {
 	}
 	else {
 		if (typeof req.query.ip == 'string') { // /ukwKonfig mit Parameter z.B. ukwKonfig?ip=1.1.1.1
-			db.findeApNachIp(req.query.ip, function (benutzer) {
-				if (benutzer) {
-					log.debug(FILENAME + ' Benutzer zu IP  = ' + benutzer + ' ' + req.query.ip);
-					//res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
-					erstelleKonfigFurAp(benutzer, function (Konfig) {
-						res.send(Konfig);
-					});
-				}
-				else {
-					log.error(FILENAME + ' 1 Benutzer nicht konfiguriert fuer IP ' + req.query.ip);
-					res.send('Arbeitsplatz nicht gefunden! IP: ' + req.query.ip);
-				}
+			db.ladeBenutzer(req.query.ip, res, function (benutzer) {
+				log.debug(FILENAME + ' Benutzer zu IP  = ' + benutzer.user + ' ' + req.query.ip);
+				erstelleKonfigFurAp(benutzer.user, function (Konfig) {
+					res.send(Konfig);
+				});
 			});
 			// }
 		}
 
 		// /ukwKonfig mit Parameter ?zuordnung=lotse
 		if (typeof req.query.zuordnung == 'string' && req.query.zuordnung == 'lotse') {
-			db.findeApNachIp(req.ip, function (benutzer) {
-				if (benutzer) {
-					if (req.query.standard == 'true') {
-						erstelleKonfigFuerLotsenKanal(benutzer, 'true', function (Konfig) {
-							res.send(Konfig);
-						});
-					}
-					if (req.query.standard == 'false') {
-						erstelleKonfigFuerLotsenKanal(benutzer, 'false', function (Konfig) {
-							res.send(Konfig);
-						});
-					}
+			db.ladeBenutzer(req.ip, res, function (benutzer) {
+				if (req.query.standard == 'true') {
+					erstelleKonfigFuerLotsenKanal(benutzer.user, 'true', function (Konfig) {
+						res.send(Konfig);
+					});
+				}
+				if (req.query.standard == 'false') {
+					erstelleKonfigFuerLotsenKanal(benutzer.user, 'false', function (Konfig) {
+						res.send(Konfig);
+					});
 				}
 			});
 		}
 		else { // ukwkonfig ohne parameter
-			db.findeApNachIp(req.ip, function (benutzer) {
-				if (benutzer) {
-					log.debug(FILENAME + ' Funktion: router get /ukwKonfig ermittelter User: ' + benutzer);
-					//res.send('Benutzer zu IP  = '+benutzer+' '+req.query.ip)
-					// TODO: testen, ob hier das richtige passiert
-					erstelleKonfigFurAp(benutzer, function (Konfig) {
-						if (typeof benutzer != 'string') {
-							benutzer = '';
-						}
-						if (typeof Konfig != 'object') {
-							Konfig = {};
-						}
+			db.ladeBenutzer(req.ip, res, function (benutzer) {
+				log.debug(FILENAME + ' Funktion: router get /ukwKonfig ermittelter User: ' + benutzer.user);
+				// TODO: testen, ob hier das richtige passiert
+				erstelleKonfigFurAp(benutzer.user, function (Konfig) {
+					if (typeof Konfig != 'object') {
+						Konfig = {};
+					}
 
-						res.send({
-							'Konfigdaten':  Konfig,
-							'Arbeitsplatz': benutzer
-						});
+					res.send({
+						'Konfigdaten':  Konfig,
+						'Arbeitsplatz': benutzer.user
 					});
-
-				}
-				else {
-					log.error(FILENAME + ' 2 Benutzer nicht konfiguriert fuer IP ' + req.query.ip);
-					res.send('Arbeitsplatz nicht gefunden! IP: ' + req.query.ip);
-				}
+				});
 			});
 		}
 	} // if(Funkstellen.length==0)

@@ -20,8 +20,8 @@ const log      = require('../log.js'); // Modul fuer verbessertes Logging
 const FILENAME = __filename.slice(__dirname.length + 1);
 
 router.get('/zeigeWindowsBenutzer/selectip', function (req, res) {
-	db.ladeBenutzer(req._remoteAddress, res, function (data) {
-		res.send(data);
+	db.ladeBenutzer(req._remoteAddress, res, function (benutzer) {
+		res.send(benutzer);
 	});
 });
 

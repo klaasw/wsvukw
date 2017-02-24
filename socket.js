@@ -78,11 +78,11 @@ exports.socket = function (server) {
 			log.warn(FILENAME + ' Funktion disconnect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' getrennt. IP: ' + remoteAddress);
 
 			// Benutzer ermitteln und Trennung in Datenbank schreiben
-			db.findeApNachIp(remoteAddress, function (benutzer) {
-				if (typeof benutzer != 'string') {
+			db.ladeBenutzer(remoteAddress, {}, function (benutzer) {
+				if (typeof benutzer.user != 'string') {
 					return;
 				}
-				db.schreibeApConnect(remoteAddress, socket.id, benutzer, cfg.alternativeIPs[0][0], false);
+				db.schreibeApConnect(remoteAddress, socket.id, benutzer.user, cfg.alternativeIPs[0][0], false);
 			});
 		});
 
@@ -140,14 +140,14 @@ exports.emit = function emit(messagetype, message, socketID) {
 function funktionNachVerbindungsaufbau(socketID, ip) {
 	const zustand = {};
 
-	db.findeApNachIp(ip, function (benutzer) {
+	db.ladeBenutzer(ip, {}, function (benutzer) {
 
-		if (typeof benutzer != 'string') {
+		if (typeof benutzer.user != 'string') {
 			return;
 		}
 
 		const selector = {
-			ApID:                    benutzer,
+			ApID:                    benutzer.user,
 			'zustand.aufgeschaltet': true
 		};
 
@@ -169,7 +169,7 @@ function funktionNachVerbindungsaufbau(socketID, ip) {
 		});
 
 		// Verbindungsdaten in Datenbank schreiben
-		db.schreibeApConnect(ip, socketID, benutzer, cfg.alternativeIPs[0][0], true);
+		db.schreibeApConnect(ip, socketID, benutzer.user, cfg.alternativeIPs[0][0], true);
 	})
 }
 
