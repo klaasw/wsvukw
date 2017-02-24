@@ -132,6 +132,28 @@ exports.emit = function emit(messagetype, message, socketID) {
 };
 
 /**
+ * TODO: Funktion kann entfernt werden. Da jede einzelne Zustandmeldung übertragen wird
+ * Neu: Verwendung von /verbindungen/liesZustand
+ * Lese Zustandsmeldungen in zustandKomponenten
+ * {"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
+ * @param {string} socketID
+ */
+function leseZustand(socketID) {
+	const selector = {};
+	db.findeElement('zustandKomponenten', selector, function (doc) {
+		for (let i = 0; i < doc.length; i++) {
+			const zustand = {
+				'FSTSTATUS': {
+					'$':             doc[i].status,
+					'letzteMeldung': doc[i].letzteMeldung
+				}
+			};
+			exports.emit('ukwMessage', zustand, socketID)
+		}
+	})
+}
+
+/**
  * Einlesen des Schaltzustands und übermittlung bei connect
  * und eintragen der Socket Verbindungsparameter
  * @param {string} socketID
@@ -170,6 +192,7 @@ function funktionNachVerbindungsaufbau(socketID, ip) {
 
 		// Verbindungsdaten in Datenbank schreiben
 		db.schreibeApConnect(ip, socketID, benutzer.user, cfg.alternativeIPs[0][0], true);
+		leseZustand();
 	})
 }
 
