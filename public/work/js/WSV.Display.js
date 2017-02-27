@@ -184,44 +184,52 @@
 		/**
 		 * Lade den Zustand aller Komponenten von REST Service
 		 * und verarbeite Antwort
-		 * @return {[type]} [description]
 		 */
 		ladeZustand: function () {
-			$.getJSON('verbindungen/liesZustand', function (data) {
+			const _self = this;
+			$.getJSON('/verbindungen/liesZustand', function (data) {
 				$.each(data, function (key, val) {
 					// Meldung OK
 					if ('status' in val && val.status.state === '0') {
-						$('#' + val.status.id + ' span.label').removeClass('label-danger');
-						$('#' + val.status.id + ' span.label').addClass('label-success');
-						$('#' + val.status.id + ' span.label').text('OK');
-						$('#' + val.status.id).attr('fstStatus', '0');
-						const standortButton = $('#' + val.status.id).parent().prev();
-						$(standortButton[0]).children().addClass('label-success');
-						$(standortButton[0]).children().removeClass('label-danger');
-						$(standortButton[0]).children().text('OK');
+						_self.funkstellenZustandSetzen(val.status.id, 'OK');
 					}
 					// Meldung gestört -SEN- darf nicht in der ID vorkommen
 					if ('status' in val && val.status.state === '1' && val.status.id.indexOf('-SEN-') == -1) {
-						$('#' + val.status.id + ' span.label').removeClass('label-success');
-						$('#' + val.status.id + ' span.label').addClass('label-danger');
-						$('#' + val.status.id + ' span.label').text('Error');
-						$('#' + val.status.id).attr('fstStatus', '1');
-						const standortButton = $('#' + val.status.id).parent().prev();
-						$(standortButton[0]).children().addClass('label-danger');
-						$(standortButton[0]).children().removeClass('label-success');
-						$(standortButton[0]).children().text('Error');
-
-						//Notify by Störung
-						$.notify({
-							message: 'Störung:<br>' + _self.ApFunkstellen[val.status.id].sname
-						}, {
-							type: 'danger'
-						});
+						_self.funkstellenZustandSetzen(val.status.id, 'Error');
 					}
 				})
 			})
 		},
 
+		funkstellenZustandSetzen: function (FstID, Zustand) {
+
+			const Funkstelle     = $('#' + FstID);
+			const standortButton = Funkstelle.parents('.button_standort[data-aktiv="' + FstID + '"]');
+
+			if (!Funkstelle.length || !standortButton.length) {
+				return;
+			}
+
+			switch (Zustand) {
+				case 'OK':
+					Funkstelle.attr('fstStatus', '0');
+					$('span.label', Funkstelle).removeClass('label-danger').addClass('label-success').text('OK');
+					$('span.label', standortButton).removeClass('label-danger').addClass('label-success').text('OK');
+					break;
+				case 'Error':
+					Funkstelle.attr('fstStatus', '1');
+					$('span.label', Funkstelle).removeClass('label-success').addClass('label-danger').text('Fehler');
+					$('span.label', standortButton).removeClass('label-success').addClass('label-danger').text('Fehler');
+
+					//Notify by Störung
+					$.notify({
+						message: 'Störung:<br>' + _self.ApFunkstellen[val.status.id].sname
+					}, {
+						type: 'danger'
+					});
+					break;
+			}
+		},
 
 		socketStatusMessage: function (msg) {
 
@@ -285,7 +293,7 @@
 			const msgTyp  = msgKeys[0];
 			const _self   = this;
 
-			console.log("ukwMessage received: " + JSON.stringify(msg));
+			// console.log("ukwMessage received: " + JSON.stringify(msg));
 			// console.log(msgTyp);
 
 			if (typeof msg == 'object' && typeof msg[msgTyp].$ != 'undefined' && _self.ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id)) {
@@ -433,7 +441,7 @@
 							this.geschalteteSPAN[msg.geschaltet.$.id]              = msg.geschaltet.$.Ap;
 
 							$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
-							console.log('geschaltet: ' + msg.geschaltet.$.id);
+							// console.log('geschaltet: ' + msg.geschaltet.$.id);
 						}
 					}
 				}
