@@ -618,8 +618,7 @@
 						this.schalteKanalID(geklickteFstHaupt, geklickteSPAN, 'SPAN', geklicktespan_mhanApNr)
 					}
 
-					//TODO: versuche Reserveanlage zu schalten
-					else {
+					else { //TODO: versuche Reserveanlage zu schalten
 						$.notify({
 							message: 'Hauptanlage gestört'
 						}, {

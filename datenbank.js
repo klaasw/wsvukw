@@ -134,7 +134,7 @@ exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 	if (exports.dbVerbindung === undefined) {
 		log.error(FILENAME + ' schreibeInDb Datenbank ist noch nicht verbunden!!! Schreibversuch schlug fehl. Collection: ' + util.inspect(collection) + ', selector: ' + util.inspect(selector) + ', inhalt: ' + util.inspect(inhalt));
 		log.error(FILENAME + ' schreibeInDb Versuche erneut in 3s');
-		setTimeout(function(){
+		setTimeout(function () {
 			exports.schreibeInDb(collection, selector, inhalt, schreibeLokal);
 		}, 3000)
 	}
@@ -150,6 +150,38 @@ exports.schreibeInDb = function (collection, selector, inhalt, schreibeLokal) {
 };
 
 /**
+ * Lade Arbeitsplatzkonfiguration aus DB
+ * @param {string} ipAddr - IP Adresse des Nutzers
+ * @param {object} res - nodejs app resource
+ * @param {function} callback
+ */
+exports.ladeAktiveArbeitsplaetze = function (ipAddr, res, callback) {
+
+	exports.findeElement('AktiveArbeitsplaetze', {_id: tools.filterIP(ipAddr)}, function (doc) {
+		if (doc.length) {
+			if (typeof callback == 'function') {
+				callback(doc[0]);
+			}
+		}
+		else if (typeof res == 'object') {
+			log.error(FILENAME + ' function ladeAktiveArbeitsplaetze: AP NICHT gefunden zu IP: ' + ipAddr);
+			res.render('error', {
+				message: 'Fehler! Kein AP zu dieser IP gefunden: ' + tools.filterIP(ipAddr),
+				error:   {
+					status: 'kein'
+				}
+			});
+		}
+		else {
+			log.error(FILENAME + ' function ladeAktiveArbeitsplaetze: AP NICHT gefunden zu IP: ' + ipAddr);
+			if (typeof callback == 'function') {
+				callback({});
+			}
+		}
+	})
+};
+
+/**
  * Generische funktion um in aktiveArbeitsplaetze zu schreiben
  * @param {string} id - benutzer id == ip
  * @param updateData - key:value welche aktualisiert werden sollen
@@ -159,16 +191,15 @@ exports.schreibeAktiveArbeitsplaetze = function (id, updateData) {
 	let ApInfo = {};
 	id         = tools.filterIP(id);
 
-	ApInfo = {
-		$set: {
-			letzteTrennung: new Date(),
-			socketID:       null
+	exports.ladeAktiveArbeitsplaetze(id, {}, function (ApData) {
+
+		ApInfo = {
+			$set: Object.assign({}, ApData, updateData)
 		}
-	};
 
-
-	const selector = {'_id': id};
-	// exports.schreibeInDb('aktiveArbeitsplaetze', selector, ApInfo);
+		const selector = {'_id': id};
+		// exports.schreibeInDb('aktiveArbeitsplaetze', selector, ApInfo);
+	});
 };
 
 /**
@@ -180,11 +211,11 @@ exports.schreibeAktiveArbeitsplaetze = function (id, updateData) {
  * @param {boolean} verbunden
  */
 exports.schreibeApConnect = function (ip, socketID, benutzer, server, verbunden) {
-	const strNeuVerbindungen = server + '.neuVerbindungen'
-	const strVerbunden = server + '.verbunden'
-	const strVerbundenSeit = server + '.verbundenSeit'
-	const strLetzteTrennung = server + '.letzteTrennung'
-	const strSocketID = server + '.socketID'
+	const strNeuVerbindungen = server + '.neuVerbindungen';
+	const strVerbunden       = server + '.verbunden';
+	const strVerbundenSeit   = server + '.verbundenSeit';
+	const strLetzteTrennung  = server + '.letzteTrennung';
+	const strSocketID        = server + '.socketID';
 
 	let ApInfo = {};
 	if (verbunden) {
@@ -204,15 +235,15 @@ exports.schreibeApConnect = function (ip, socketID, benutzer, server, verbunden)
 	else {
 		ApInfo = {
 			$set: {
-				[strVerbunden]: verbunden,
+				[strVerbunden]:      verbunden,
 				[strLetzteTrennung]: new Date(),
-				[strSocketID]: null
+				[strSocketID]:       null
 			}
 		}
 	}
-	const selector      = {'_id': ip};
+	const selector = {'_id': ip};
 	//Schreiben in aktiveArbeitsplaetze
-	exports.schreibeInDb('aktiveArbeitsplaetze', selector, ApInfo);
+	exports.schreibeInDb('aktiveArbeitsplaetze', selector, ApInfo, false);
 };
 
 /**
@@ -234,6 +265,27 @@ exports.findeElement = function (collection, element, callback) {
 };
 
 /**
+ * Generische funktion um in windowsBenutzer zu schreiben
+ * @param {string} id - benutzer id == ip
+ * @param updateData - key:value welche aktualisiert werden sollen
+ */
+exports.schreibeBenutzer = function (id, updateData) {
+
+	let ApInfo = {};
+	id         = tools.filterIP(id);
+
+	exports.ladeBenutzer(id, {}, function (ApData) {
+
+		ApInfo = {
+			$set: Object.assign({}, ApData, updateData)
+		};
+
+		const selector = {'_id': id};
+		exports.schreibeInDb('windowsBenutzer', selector, ApInfo, false);
+	});
+};
+
+/**
  * Lade spezifischen windowsBenutzer aus DB
  * @param {string} ipAddr - IP Adresse des Nutzers
  * @param {object} res - nodejs app resource
@@ -241,14 +293,14 @@ exports.findeElement = function (collection, element, callback) {
  */
 exports.ladeBenutzer = function (ipAddr, res, callback) {
 
-	exports.findeElement('windowsBenutzer', {ip: tools.filterIP(ipAddr)}, function (doc) {
+	exports.findeElement('windowsBenutzer', {_id: tools.filterIP(ipAddr)}, function (doc) {
 		if (doc.length) {
 			if (typeof callback == 'function') {
 				callback(doc[0]);
 			}
 		}
 		else if (typeof res == 'object') {
-			log.error(FILENAME + ' function findeApNachIp: Benutzer NICHT gefunden zu IP: ' + ipAddr);
+			log.error(FILENAME + ' function ladeBenutzer: Benutzer NICHT gefunden zu IP: ' + ipAddr);
 			res.render('error', {
 				message: 'Fehler! Kein Benutzer zu dieser IP gefunden: ' + tools.filterIP(ipAddr),
 				error:   {
@@ -257,7 +309,7 @@ exports.ladeBenutzer = function (ipAddr, res, callback) {
 			});
 		}
 		else {
-			log.error(FILENAME + ' function findeApNachIp: Benutzer NICHT gefunden zu IP: ' + ipAddr);
+			log.error(FILENAME + ' function ladeBenutzer: Benutzer NICHT gefunden zu IP: ' + ipAddr);
 			if (typeof callback == 'function') {
 				callback({});
 			}
@@ -372,7 +424,7 @@ exports.schreibeSchaltzustand = function (ipAddr, fst, Span_Mhan, aktion, span_m
  * schreibe Zustandsmeldungen von RFD Komponenten und Server(Module) in zustandKomponenten
  * @param {Object} Nachricht - {"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
  */
-exports.schreibeZustand = function(Nachricht) {
+exports.schreibeZustand = function (Nachricht) {
 	const schreibeLokal = true; // es wird nur geschrieben wenn die aktuelle Instanz und Mongo Primary in einem VTR sind
 	// TODO: Pruefen ob in Wirksystem wirklich notwendig.
 	// Dies wuerde da Umschaltverhalten kompliziert machen.
@@ -455,10 +507,10 @@ exports.schreibeZustand = function(Nachricht) {
  * schreibe Zustandsmeldungen von RFD Komponenten und Server(Module) in zustandKomponenten
  * @param {Object} Nachricht - {"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
  */
-exports.schreibeZustand = function(Nachricht) {
+exports.schreibeZustand = function (Nachricht) {
 	const schreibeLokal = true; // es wird nur geschrieben wenn die aktuelle Instanz und Mongo Primary in einem VTR sind
-															// TODO: Pruefen ob in Wirksystem wirklich notwendig.
-															// Dies wuerde da Umschaltverhalten kompliziert machen.
+	// TODO: Pruefen ob in Wirksystem wirklich notwendig.
+	// Dies wuerde da Umschaltverhalten kompliziert machen.
 	let zustand;
 
 	if (Nachricht.hasOwnProperty('FSTSTATUS')) {
@@ -497,29 +549,29 @@ exports.schreibeZustand = function(Nachricht) {
 
 	if (Nachricht.hasOwnProperty('dienst')) {
 		zustand = {
-			$set:{
+			$set: {
 				[Nachricht.dienst]: {
-					letzteMeldung:  new Date(),
-					status:{
-						url:          Nachricht.status.URL,
-						state:        Nachricht.status.Status,
-						msg:          Nachricht.status.StatusMsg ? Nachricht.status.StatusMsg : 'keine'
+					letzteMeldung: new Date(),
+					status:        {
+						url:   Nachricht.status.URL,
+						state: Nachricht.status.Status,
+						msg:   Nachricht.status.StatusMsg ? Nachricht.status.StatusMsg : 'keine'
 					},
 				},
 			},
 		}
 
 		if (Nachricht.dienst === 'DUE') {
-			const dueName = Nachricht.dienst + '.' +Nachricht.server;
-			zustand = {
-				$set:{
+			const dueName = Nachricht.dienst + '.' + Nachricht.server;
+			zustand       = {
+				$set: {
 					[dueName]: {
-							letzteMeldung:  new Date(),
-							status:{
-								url:          Nachricht.status.URL,
-								state:        Nachricht.status.Status,
-								msg:          Nachricht.status.StatusMsg ? Nachricht.status.StatusMsg : 'keine'
-							},
+						letzteMeldung: new Date(),
+						status:        {
+							url:   Nachricht.status.URL,
+							state: Nachricht.status.Status,
+							msg:   Nachricht.status.StatusMsg ? Nachricht.status.StatusMsg : 'keine'
+						},
 					},
 				},
 			}
