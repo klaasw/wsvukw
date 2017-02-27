@@ -204,7 +204,8 @@
 		funkstellenZustandSetzen: function (FstID, Zustand) {
 
 			const Funkstelle     = $('#' + FstID);
-			const standortButton = Funkstelle.parents('.button_standort[data-aktiv="' + FstID + '"]');
+			const standortButton = Funkstelle.parents('.button_flaeche').find('.button_standort');
+			const _self          = this;
 
 			if (!Funkstelle.length || !standortButton.length) {
 				return;
@@ -223,7 +224,7 @@
 
 					//Notify by Störung
 					$.notify({
-						message: 'Störung:<br>' + _self.ApFunkstellen[val.status.id].sname
+						message: 'Störung:<br>' + _self.ApFunkstellen[FstID].sname
 					}, {
 						type: 'danger'
 					});
@@ -361,8 +362,8 @@
 				}
 
 				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '0') {
-					//console.log(msg.FSTSTATUS.$.id);
-					this.funkstellenZustandSetzen(msg.FSTSTATUS.$.id, 'OK');
+					// console.log(msg.FSTSTATUS.$.id);
+					_self.funkstellenZustandSetzen(msg.FSTSTATUS.$.id, 'OK');
 
 					//Bei Kanalaenderung die Kanalnummer setzen
 					if (msg.FSTSTATUS.$.channel > -1) {
@@ -374,8 +375,8 @@
 
 				// -SEN- darf nicht in der ID vorkommen
 				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') == -1) {
-
-					this.funkstellenZustandSetzen(msg.FSTSTATUS.$.id, 'Error');
+					//console.log(msg.FSTSTATUS.$.id);
+					_self.funkstellenZustandSetzen(msg.FSTSTATUS.$.id, 'Error');
 
 					//Funktionen von "getrennt"
 					//suche SChaltflaeche zu FunkstellenID
