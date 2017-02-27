@@ -267,21 +267,28 @@ exports.findeElement = function (collection, element, callback) {
 /**
  * Generische funktion um in windowsBenutzer zu schreiben
  * @param {string} id - benutzer id == ip
- * @param updateData - key:value welche aktualisiert werden sollen
+ * @param {object} updateData - key:value welche aktualisiert werden sollen
+ * @param {function} callback - funktion
  */
-exports.schreibeBenutzer = function (id, updateData) {
+exports.schreibeBenutzer = function (id, updateData, callback) {
 
-	let ApInfo = {};
+	let dbObj = {};
 	id         = tools.filterIP(id);
 
 	exports.ladeBenutzer(id, {}, function (ApData) {
 
-		ApInfo = {
-			$set: Object.assign({}, ApData, updateData)
+		const benutzerNeu = Object.assign({}, ApData, updateData);
+
+		dbObj = {
+			$set: benutzerNeu
 		};
 
 		const selector = {'_id': id};
-		exports.schreibeInDb('windowsBenutzer', selector, ApInfo, false);
+		exports.schreibeInDb('windowsBenutzer', selector, dbObj, false);
+
+		if (typeof callback == 'function') {
+			callback(benutzerNeu);
+		}
 	});
 };
 

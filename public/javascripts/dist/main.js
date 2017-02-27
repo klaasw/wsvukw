@@ -986,8 +986,8 @@ $(window).load(function () {
 				success: function (result) {
 					if (typeof callback == 'function') {
 						callback();
-						console.log(result);
 					}
+					console.log(result);
 				}
 			});
 		},

@@ -96,13 +96,13 @@ router.post('/schreibeBenutzer', function (req, res) {
 			benutzer.schaltZustandGruppe = JSON.parse(benutzer.schaltZustandGruppe);
 		}
 
-		const benutzerId        = {'_id': benutzer._id};
-		const schreibeParameter = {
-			$set: benutzer
-		};
-
-		db.schreibeInDb('windowsBenutzer', benutzerId, schreibeParameter, false);
-		res.send({message: 'Benutzer erfolgreich gespeichert.'});
+		db.schreibeBenutzer(benutzer._id, benutzer, function (data) {
+			res.send(
+				{
+					message: 'Benutzer erfolgreich gespeichert.',
+					data
+				});
+		});
 	}
 	else {
 		res.status('500').send({error: 'Benutzer wurde nicht gespeichert.'});
