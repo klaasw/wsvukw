@@ -1,0 +1,15 @@
+stages:
+  - test
+
+test_async:
+  stage: test
+  script:
+   - pm2 delete all
+   - tar -xf /home/gitlab-runner/nodeModules.tar
+   - tar -xf /home/gitlab-runner/nodeModulesPublic.tar
+   - tar -xf /home/gitlab-runner/nodeModulesChimp.tar
+   - cd public
+   - ./node_modules/.bin/grunt dev
+   - cd ..
+   - pm2 start app.js
+   - ./node_modules/.bin/chimp

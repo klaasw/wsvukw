@@ -16,4 +16,3 @@ Feature: Einzel- und Gruppenschaltung - Sprechweg Gruppenschaltung aufschalten
     And eine Standardschaltfläche aktiviere
     Then sind "2" Schaltflächen aktiv
     And die neue Kanalnummer wird in der Mehrkanalschaltfläche angezeigt
-

@@ -32,6 +32,3 @@ Feature: Einzel- und Gruppenschaltung - Sprechweg Einzelschaltung aufschalten
     Given ist der Arbeitsplatz "UKWDisplay/" NvD
     When eine Kommunikation über eine Gleichwellenanlage stattfindet
     Then zeigt dies der Button Gleichwellenanlage in der Schlatfläche an
-
-
-

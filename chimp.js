@@ -2,8 +2,8 @@
 
 module.exports = {
 	// in current chimp version, selenium installation and use works out of the box, so port and host are obsolte:
-	//port: 4444,
-	//host: "10.22.30.1",
+	port: 4444,
+	host: '10.161.9.142',
 
 
 	browser: 'chrome',

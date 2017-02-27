@@ -14,8 +14,16 @@ const tools        = require('./tools.js');
 const debug             = require('debug')('ukwserver:server');
 const FileStreamRotator = require('file-stream-rotator');
 
+// Einbindung eigener Module
+const cfg    = require('./cfg.js');
+const log    = require('./log.js');
+const ukw    = require('./ukw.js');
+const db     = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
+const socket = require('./socket.js');
+
 const env = process.env.NODE_ENV || 'development'; // Linux Umgebungsvariable für die Laufzeit
                                                    // Umgebung. zu Setzen mit export $NODE_ENV=production
+const FILENAME = __filename.slice(__dirname.length + 1);
 
 /**
  * logging access log
@@ -42,8 +50,7 @@ const accessLogStream = FileStreamRotator.getStream({
 
 app.use(morgan(':date[iso] :remote-addr :remote-user :method :url, :http-version :status :res[content-length] :response-time', {stream: accessLogStream}));
 
-const cfg = require('./cfg.js');
-const log = require('./log.js');
+// TODO: Wuellner 16.02.17: sind die Funktionen noch notwenig?
 // can be used to integrate morgen access log and winston log entries in one file:
 // app.use(require('morgan')('combined', {stream: logger.stream}));
 
@@ -69,8 +76,6 @@ app.use('/', routes);
 app.use('/user', users); //nach Anpassung des Scriptes deutsche Route verwenden
 app.use('/benutzer', users);
 app.use('/verbindungen', verbindungen);
-
-const ukw = require('./ukw.js');
 
 /**
  * catch 404 and forward to error handler
@@ -101,13 +106,12 @@ if (app.get('env') === 'development') {
  */
 app.use(function (err, req, res, next) {
 	res.status(err.status || 500);
-	log.info('cfg bei error: ' + JSON.stringify(cfg));
+	log.info(FILENAME + 'cfg bei error: ' + JSON.stringify(cfg));
 	res.render('error', {
 		message: err.message,
 		error:   {}
 	});
 });
-
 
 /**
  * Get port from environment and store in Express.
@@ -122,30 +126,24 @@ app.set('trust proxy', 'loopback');
 const server = http.createServer(app);
 
 /**
- * Listen on provided port, on all network interfaces.
+ * Verbindung mit Datenbank herstellen UND anschliessend den Webserver starten
+ * In der Produktionumgebung (export NODE_ENV = production) lauft der Server nur
+ * auf localhost.
+ * In der Entwicklungsumgebung (export NODE_ENV = development) läuft der Server auf
+ * allen Interfaces.
  */
-
-server.on('error', onError);
-
-const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
 db.verbindeDatenbank(function (db) {
-
 	// Für Prodoktionsumgebung ist ein vorgeschalteter ProxyServer (z.B. nginx) notwenig,
 	// der die Anfrage an den localhost weiterleitet.
 	if (env === 'production') {
 		server.listen(port, '127.0.0.1', function () {
-			console.log('Server läuft %s in %s mode', server.address().address, app.settings.env);
+			log.info(FILENAME + 'Server läuft %s in %s mode', server.address().address, app.settings.env);
 		});
 	}
 
 	if (env === 'development') {
 		server.listen(port, function () {
-			console.log('Server läuft %s in %s mode', server.address().address, app.settings.env);
-
-			// if (db.error) {
-			// 	throw new Error(db);
-			// }
-
+			log.info(FILENAME + 'Server läuft %s in %s mode', server.address().address, app.settings.env);
 		});
 	}
 
@@ -153,14 +151,23 @@ db.verbindeDatenbank(function (db) {
 
 server.on('listening', onListening);
 
-const socket = require('./socket.js');
+/**
+ * Starte Socketserver auch auf dem WebServer.
+ */
 socket.socket(server);
 
+/**
+ * Starte RFD Erreichbarkeit. Pruefung des RFD WebService
+ */
 if (cfg.intervall !== 0) {
 	// Setze Intervall fuer Pruefung
+	log.info(FILENAME + ' ...starte Pruefung RFD Erreichbarkeit mit Interval: ' + cfg.intervall);
 	const Intervall = setInterval(function () {
 		ukw.pruefeRfdWS()
 	}, cfg.intervall);
+}
+else {
+	log.warn(FILENAME + ' kein Pruefung RFD Erreichbarkeit mit Interval: ' + cfg.intervall)
 }
 
 /**

@@ -18,9 +18,8 @@ const parser  = new xml2js.Parser({explicitRoot: true});// Parserkonfiguration
 const log    = require('./log.js');
 const cfg    = require('./cfg.js');
 const socket = require('./socket.js');
+const db     = require('./datenbank.js');
 const tools  = require('./tools.js');
-
-const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
 
 const FILENAME = __filename.slice(__dirname.length + 1);
 
