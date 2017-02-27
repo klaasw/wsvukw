@@ -213,13 +213,13 @@
 			switch (Zustand) {
 				case 'OK':
 					Funkstelle.attr('fstStatus', '0');
-					$('span.label', Funkstelle).removeClass('label-danger').addClass('label-success').text('OK');
-					$('span.label', standortButton).removeClass('label-danger').addClass('label-success').text('OK');
+					$('span.label', Funkstelle).removeClass('label-danger').addClass('label-success').text(Zustand);
+					$('span.label', standortButton).removeClass('label-danger').addClass('label-success').text(Zustand);
 					break;
 				case 'Error':
 					Funkstelle.attr('fstStatus', '1');
-					$('span.label', Funkstelle).removeClass('label-success').addClass('label-danger').text('Fehler');
-					$('span.label', standortButton).removeClass('label-success').addClass('label-danger').text('Fehler');
+					$('span.label', Funkstelle).removeClass('label-success').addClass('label-danger').text(Zustand);
+					$('span.label', standortButton).removeClass('label-success').addClass('label-danger').text(Zustand);
 
 					//Notify by Störung
 					$.notify({
@@ -361,13 +361,8 @@
 				}
 
 				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '0') {
-					$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass('label-danger').addClass('label-success').text('OK');
-					$('#' + msg.FSTSTATUS.$.id).attr('fstStatus', '0');
-
-					const standortButton = $('#' + msg.FSTSTATUS.$.id).parent().prev();
-					$(standortButton[0]).children().addClass('label-success').removeClass('label-danger').text('OK');
-
 					//console.log(msg.FSTSTATUS.$.id);
+					this.funkstellenZustandSetzen(msg.FSTSTATUS.$.id, 'OK');
 
 					//Bei Kanalaenderung die Kanalnummer setzen
 					if (msg.FSTSTATUS.$.channel > -1) {
@@ -379,17 +374,9 @@
 
 				// -SEN- darf nicht in der ID vorkommen
 				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') == -1) {
-					$('#' + msg.FSTSTATUS.$.id + ' span.label').removeClass('label-success').addClass('label-danger').text('Error');
-					$('#' + msg.FSTSTATUS.$.id).attr('fstStatus', '1');
-					const standortButton = $('#' + msg.FSTSTATUS.$.id).parent().prev();
-					$(standortButton[0]).children().addClass('label-danger').removeClass('label-success').text('Error');
 
-					//Notify by Störung
-					$.notify({
-						message: 'Störung:<br>' + _self.ApFunkstellen[msg.FSTSTATUS.$.id].sname
-					}, {
-						type: 'danger'
-					});
+					this.funkstellenZustandSetzen(msg.FSTSTATUS.$.id, 'Error');
+
 					//Funktionen von "getrennt"
 					//suche SChaltflaeche zu FunkstellenID
 					const button = $('#' + msg.FSTSTATUS.$.id).offsetParent().attr('id');
