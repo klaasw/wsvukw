@@ -204,7 +204,9 @@ $(window).load(function () {
 			$.getJSON('/verbindungen/liesZustand', function (data) {
 				$.each(data, function (key, val) {
 					// Meldung OK
-					if ('status' in val && val.status.state === '0') {
+					if ('status' in val && val.status.state === '0'
+						&& (_self.ApFunkstellen.hasOwnProperty(val._id) || _self.ArbeitsplatzGeraeteID.hasOwnProperty(val._id))
+					) {
 						// Zustand setzen wenn SPAN oder MHAN
 						if (val._id.indexOf('SPAN') > -1 || val._id.indexOf('MHAN')> -1 ) {
 							_self.spanMhanZustandSetzen(val.status.id, 'OK');
@@ -214,7 +216,10 @@ $(window).load(function () {
 						}
 					}
 					// Meldung gestört -SEN- darf nicht in der ID vorkommen
-					if ('status' in val && val.status.state === '1' && val.status.id.indexOf('-SEN-') == -1) {
+					if ('status' in val && val.status.state === '1'
+						&& val.status.id.indexOf('-SEN-') == -1
+						&& (_self.ApFunkstellen.hasOwnProperty(val._id) || _self.ArbeitsplatzGeraeteID.hasOwnProperty(val._id))
+					) {
 						// Zustand setzen wenn SPAN oder MHAN
 						if (val._id.indexOf('SPAN') > -1 || val._id.indexOf('MHAN')> -1 ) {
 							_self.spanMhanZustandSetzen(val.status.id, 'Error');
@@ -710,7 +715,7 @@ $(window).load(function () {
 					//uebergeordnetes Element finden
 					const button = $(element).offsetParent().attr('id');
 
-					const geklickteFstHaupt   = $('#' + button + ' .button_anlage1').attr('id');
+					let geklickteFstHaupt   = $('#' + button + ' .button_anlage1').attr('id');
 					const geklickteFstReserve = $('#' + button + ' .button_anlage2').attr('id');
 
 					const geklickteSPAN = $('#' + button + ' .button_span').attr('id');
@@ -720,6 +725,10 @@ $(window).load(function () {
 					//Status der Funkstellen aus HTML Elementen auslesen
 					const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('geraetStatus');
 					const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('geraetStatus');
+
+					if (geklickteFstHaupt.indexOf('FKGW') > -1) {
+						geklickteFstHaupt = this.ApFunkstellen[geklickteFstHaupt].gwid
+					}
 
 					//nur schalten, wenn Status 0 bzw. ok
 					if (geklickteFstHauptStatus === '0') {
