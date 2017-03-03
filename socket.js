@@ -162,6 +162,10 @@ function leseZustand(socketID) {
 function funktionNachVerbindungsaufbau(socketID, ip) {
 	const zustand = {};
 
+	if (typeof ip != 'string') {
+		return;
+	}
+
 	db.ladeBenutzer(ip, {}, function (benutzer) {
 
 		if (typeof benutzer.user != 'string') {

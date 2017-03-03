@@ -41,7 +41,7 @@ exports.leseRfdTopologie = function (callback) {
 		if (error) {
 			log.error(FILENAME + ' RFD WebService Topologie nicht erreichbar ' + error);
 			// TODO: Leseversuch wiederholen, muss spaetestens dann existieren, wenn ein Client sich connecten will
-			setTimeout(leseRfdTopologie(function () {
+			setTimeout(exports.leseRfdTopologie(function () {
 				log.debug('fertig mit LeseRfdTopologie');
 			}), 1000);
 		}

@@ -785,9 +785,10 @@
 					}
 					else {
 						this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
-
 					}
 				}
+
+				this.ladeBenutzer();
 			}
 			if (SPAN === 'SPAN_MHAN') { //SPAN zum Mithoeren aufschalten - trennen
 				if (this.ApFunkstellen.hasOwnProperty(geklickteFstID)) {
