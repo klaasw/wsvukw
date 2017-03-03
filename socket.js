@@ -192,7 +192,7 @@ function funktionNachVerbindungsaufbau(socketID, ip) {
 
 		// Verbindungsdaten in Datenbank schreiben
 		db.schreibeApConnect(ip, socketID, benutzer.user, cfg.alternativeIPs[0][0], true);
-		leseZustand();
+		//leseZustand(); //TODO: spaeter diesen Funktionsaufruf sowie die Funktion leseZustand() wieder entfernen
 	})
 }
 

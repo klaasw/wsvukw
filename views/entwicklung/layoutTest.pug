@@ -78,25 +78,12 @@ html
 								data-toggle='dropdown'
 								aria-haspopup='true'
 								aria-expanded='false'
-								) Arbeitsplatzgeräte
+								) Geräte&nbsp
+									#agSammelStatus.span.label.label-default ??
 									span.caret
 
 								ul.dropdown-menu#AGListe
-									li.span1
-										a.btn SPAN01
-											span.label.label-default.label-success(id='agspan01') OK
-									li.mhan1
-										a.btn MHAN01
-											span.label.label-default.label-success(id='agspan01') OK
-									li.mhan2
-										a.btn MHAN02
-											span.label.label-default.label-success(id='agspan01') OK
-									li.mhan3
-										a.btn MHAN03
-											span.label.label-default.label-success(id='agspan01') OK
-									li.mhan4
-										a.btn MHAN04
-											span.label.label-default.label-success(id='agspan01') OK
+									+apGeraeteliste(gesamteKonfig.ArbeitsplatzGeraete)
 
 							//- Schleife ueber alle alternativen Server, ID dynamisch zusammensetzen
 							//- wichtig dabei: Variable #{val[0]} in einfachen Anführungzeichen, sonst Interpolation-Fehler

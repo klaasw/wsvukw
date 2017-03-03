@@ -111,9 +111,9 @@ router.get('/ukw', function (req, res) {
 	const clientIP = tools.filterIP(req.ip);
 	log.debug('Benutzer IP: ' + clientIP);
 
-	db.ladeBenutzer(req.ip, res, function (benutzer) {
+	db.ladeBenutzer(clientIP, res, function (benutzer) {
 
-		log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
+		log.debug(FILENAME + ' Funktion: /ukw ladeBenutzer IP: ' + clientIP);
 
 		erstelleKonfigFurAp(benutzer.user, function (konfig, errString) {
 			if (konfig == 'Fehler') {

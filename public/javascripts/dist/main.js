@@ -20,7 +20,8 @@ $(window).load(function () {
 		SPAN:                '', //zb. 1-H-RFD-WHVVKZ-SPAN-01
 		MhanZuordnung:       {}, //"MHAN01": "1-H-RFD-WHVVTA-FKEK-2", "MHAN02": "1-H-RFD-TETTEN-FKEK-2"
 		ApFunkstellen:       {},
-		ArbeitsplatzGeraete: {},
+		ArbeitsplatzGeraete: {}, //'MHAN01':'1-H-RFD-WHVVKZ-MHAN-01'
+		ArbeitsplatzGeraeteID:[], //'1-H-RFD-WHVVKZ-MHAN-01'
 		einzel:              true,
 		IpConfig:            '',
 		socket:              {},
@@ -39,7 +40,6 @@ $(window).load(function () {
 			this.aktuellerUKWserver = location.protocol + '//' + location.hostname + ':' + location.port;
 			this.setDefaultServer();
 			this.ladeKonfig();
-			this.ladeZustand();
 
 			const _self = this;
 
@@ -174,6 +174,7 @@ $(window).load(function () {
 				_self.SPAN                = data.Konfigdaten.ArbeitsplatzGeraete.SPAN01;
 				_self.MhanZuordnung       = data.Konfigdaten.MhanZuordnung;
 				_self.ArbeitsplatzGeraete = data.Konfigdaten.ArbeitsplatzGeraete;
+				_self.ArbeitsplatzGeraeteID = WSV.Utils.objektWerteAlsKey(_self.ArbeitsplatzGeraete);
 				_self.ApID                = data.Arbeitsplatz;
 				_self.IpConfig            = data.Konfigdaten.IpConfig;
 
@@ -189,6 +190,8 @@ $(window).load(function () {
 				console.log('ukwKonfig konnte nicht geladen werden - Kanalzuordnung kann nicht angezeigt werden.');
 				// TODO Fehlerdetail uebergeben: ukwKonfig konnte nicht geladen werden
 				$('#errorModalDUE').modal('show');
+			}).done(function () {
+				_self.ladeZustand();
 			});
 		},
 
@@ -202,19 +205,36 @@ $(window).load(function () {
 				$.each(data, function (key, val) {
 					// Meldung OK
 					if ('status' in val && val.status.state === '0') {
-						_self.funkstellenZustandSetzen(val.status.id, 'OK');
+						// Zustand setzen wenn SPAN oder MHAN
+						if (val._id.indexOf('SPAN') > -1 || val._id.indexOf('MHAN')> -1 ) {
+							_self.spanMhanZustandSetzen(val.status.id, 'OK');
+						}
+						else {
+							_self.funkstellenZustandSetzen(val.status.id, 'OK');
+						}
 					}
 					// Meldung gestört -SEN- darf nicht in der ID vorkommen
 					if ('status' in val && val.status.state === '1' && val.status.id.indexOf('-SEN-') == -1) {
-						_self.funkstellenZustandSetzen(val.status.id, 'Error');
+						// Zustand setzen wenn SPAN oder MHAN
+						if (val._id.indexOf('SPAN') > -1 || val._id.indexOf('MHAN')> -1 ) {
+							_self.spanMhanZustandSetzen(val.status.id, 'Error');
+						}
+						else {
+							_self.funkstellenZustandSetzen(val.status.id, 'Error');
+						}
 					}
 				})
 			})
 		},
 
-		funkstellenZustandSetzen: function (FstID, Zustand) {
-
-			const Funkstelle     = $('#' + FstID);
+		/**
+		 * Setze den Zustand der Funkstellen
+		 * @param  {String} KompID   Komponenten-ID der Funkststelle
+		 * @param  {String} Zustand Zustand OK, Error
+		 * @return {[type]}         [description]
+		 */
+		funkstellenZustandSetzen: function (KompID, Zustand) {
+			const Funkstelle     = $('#' + KompID);
 			const standortButton = Funkstelle.parents('.button_flaeche').find('.button_standort');
 			const _self          = this;
 
@@ -224,23 +244,90 @@ $(window).load(function () {
 
 			switch (Zustand) {
 				case 'OK':
-					Funkstelle.attr('fstStatus', '0');
+					Funkstelle.attr('geraetStatus', '0');
 					$('span.label', Funkstelle).removeClass('label-danger').addClass('label-success').text(Zustand);
 					$('span.label', standortButton).removeClass('label-danger').addClass('label-success').text(Zustand);
 					break;
 				case 'Error':
-					Funkstelle.attr('fstStatus', '1');
+					Funkstelle.attr('geraetStatus', '1');
 					$('span.label', Funkstelle).removeClass('label-success').addClass('label-danger').text(Zustand);
 					$('span.label', standortButton).removeClass('label-success').addClass('label-danger').text(Zustand);
 
 					//Notify by Störung
 					$.notify({
-						message: 'Störung:<br>' + _self.ApFunkstellen[FstID].sname
+						message: 'Störung:<br>'+ (
+							_self.ApFunkstellen[KompID].sname
+							? _self.ApFunkstellen[KompID].sname
+							: _self.ApFunkstellen[KompID].name)
 					}, {
 						type: 'danger'
 					});
+
+					break;
+					//TODO: Umschalten auf Reserveanlage wenn vorhanden und nicht GW-Anlage
+			}
+
+			//Sammelstatus bilden und setzen
+			//switch (WSV.Utils.sammelStatusAendern(alleGeraete)) {
+			//	case '1': // Error
+			//		$(sammelStatus).removeClass('label-success').addClass('label-danger').text('Error');
+			//		break;
+			//	case '0': // OK
+			//		$(sammelStatus).removeClass('label-danger').addClass('label-success').text(Zustand);
+			//		break;
+			//}
+		},
+
+		/**
+		 * Setze den Zustand der SPAN oder MHAN
+		 * @param  {String} KompID  Komponenten-ID der SPAN, MHAN
+		 * @param  {String} Zustand Zustand OK, Error
+		 * @return {[type]}         [description]
+		 */
+		spanMhanZustandSetzen: function (KompID, Zustand) {
+			const geraet          = $('.ag' + KompID);
+			const alleGeraete     = $('span.apGeraet');
+			const sammelStatus    = $('#agSammelStatus');
+			const _self           = this;
+
+			switch (Zustand) {
+				case 'OK':
+					geraet.attr('geraetStatus', '0');
+					$(geraet).removeClass('label-danger').addClass('label-success').text(Zustand);
+					break;
+				case 'Error':
+					geraet.attr('geraetStatus', '1');
+					$(geraet).removeClass('label-success').addClass('label-danger').text(Zustand);
+
+
+					//Notify by Störung
+					$.notify({
+						message: 'Störung:<br>' + KompID
+					}, {
+						type: 'danger'
+					});
+
+					//Error Modal anzeigen
+					WSV.Utils.audioAlarm.play();
+					$('.errorText2', '#errorModalDUEGeraete').text(KompID)
+					$('#errorModalDUEGeraete').modal('show');
+
+					break;
+					//TODO: Modal anzeigen
+			}
+
+			//Sammelstatus bilden und setzen
+			switch (WSV.Utils.sammelStatusAendern(alleGeraete)) {
+				case '1': // Error
+					$(sammelStatus).removeClass('label-success').addClass('label-danger').text('Error');
+					break;
+				case '0': // OK
+					$(sammelStatus).removeClass('label-danger').addClass('label-success').text(Zustand);
 					break;
 			}
+
+
+
 		},
 
 		socketStatusMessage: function (msg) {
@@ -308,7 +395,10 @@ $(window).load(function () {
 			// console.log("ukwMessage received: " + JSON.stringify(msg));
 			// console.log(msgTyp);
 
-			if (typeof msg == 'object' && typeof msg[msgTyp].$ != 'undefined' && _self.ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id)) {
+			if (typeof msg == 'object'
+				&& typeof msg[msgTyp].$ != 'undefined'
+				&& (_self.ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id) || _self.ArbeitsplatzGeraeteID.hasOwnProperty(msg[msgTyp].$.id))
+			) {
 
 				// Empfangen aktiv0
 				if ('RX' in msg && msg.RX.$.state === '1') {
@@ -373,8 +463,13 @@ $(window).load(function () {
 				}
 
 				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '0') {
-					// console.log(msg.FSTSTATUS.$.id);
-					_self.funkstellenZustandSetzen(msg.FSTSTATUS.$.id, 'OK');
+					if (msg.FSTSTATUS.$.id.indexOf('MHAN') > -1 || msg.FSTSTATUS.$.id.indexOf('SPAN') > -1 ) {
+						_self.spanMhanZustandSetzen(msg.FSTSTATUS.$.id, 'OK');
+					}
+					else {
+						// console.log(msg.FSTSTATUS.$.id);
+						_self.funkstellenZustandSetzen(msg.FSTSTATUS.$.id, 'OK');
+					}
 
 					//Bei Kanalaenderung die Kanalnummer setzen
 					if (msg.FSTSTATUS.$.channel > -1) {
@@ -386,27 +481,29 @@ $(window).load(function () {
 
 				// -SEN- darf nicht in der ID vorkommen
 				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') == -1) {
-					//console.log(msg.FSTSTATUS.$.id);
-					_self.funkstellenZustandSetzen(msg.FSTSTATUS.$.id, 'Error');
+					if (msg.FSTSTATUS.$.id.indexOf('MHAN') > -1 || msg.FSTSTATUS.$.id.indexOf('SPAN') > -1 ) {
+						_self.spanMhanZustandSetzen(msg.FSTSTATUS.$.id, 'Error');
+					}
+					else {
+						//console.log(msg.FSTSTATUS.$.id);
+						_self.funkstellenZustandSetzen(msg.FSTSTATUS.$.id, 'Error');
 
-					//Funktionen von "getrennt"
-					//suche SChaltflaeche zu FunkstellenID
-					const button = $('#' + msg.FSTSTATUS.$.id).offsetParent().attr('id');
-					//$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
-					$('#' + button + ' > div').removeClass('panel-primary').css('background-color', '');
+						//Funktionen von "getrennt"
+						//suche SChaltflaeche zu FunkstellenID
+						const button = $('#' + msg.FSTSTATUS.$.id).offsetParent().attr('id');
+						//$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
+						$('#' + button + ' > div').removeClass('panel-primary').css('background-color', '');
 
-					$('#' + button + ' > div > div:nth-child(3)').removeClass('bg-primary');
-					_self.ApFunkstellen[msg.FSTSTATUS.$.id].aufgeschaltet = false;
-					$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.FSTSTATUS.$.id].sname);
+						$('#' + button + ' > div > div:nth-child(3)').removeClass('bg-primary');
+						_self.ApFunkstellen[msg.FSTSTATUS.$.id].aufgeschaltet = false;
+						$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.FSTSTATUS.$.id].sname);
 
-					//geschaltetet Zustände an Server übertragen
-					_self.socket.emit('clientMessageSchaltzustand', {
-						'Zustand':      _self.ApFunkstellen,
-						'Arbeitsplatz': _self.ApID
-					});
-
-					//console.log(msg.FSTSTATUS.$.id);
-
+						//geschaltetet Zustände an Server übertragen
+						_self.socket.emit('clientMessageSchaltzustand', {
+							'Zustand':      _self.ApFunkstellen,
+							'Arbeitsplatz': _self.ApID
+						});
+					}
 				}
 
 				//Schalten fuer SPrechANlagen und MitHoerANlagen
@@ -559,7 +656,7 @@ $(window).load(function () {
 
 				// TODO: Wiederverbindung versuchen, waehrend dieser Zeit kein Fehler zeigen, sondern erst dann?
 				//Zeige Error Modal Fenster
-				// WSV.Utils.audioAlarm.play();
+				WSV.Utils.audioAlarm.play();
 				$('#errorModalDUE').modal('show');
 			});
 		},
@@ -621,8 +718,8 @@ $(window).load(function () {
 					const geklicktespan_mhanApNr = $('#' + button + ' .button_span').data('span');
 
 					//Status der Funkstellen aus HTML Elementen auslesen
-					const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('fstStatus');
-					const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('fstStatus');
+					const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('geraetStatus');
+					const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('geraetStatus');
 
 					//nur schalten, wenn Status 0 bzw. ok
 					if (geklickteFstHauptStatus === '0') {
@@ -659,8 +756,8 @@ $(window).load(function () {
 					console.log(buttonFst);
 
 					//Status der Funkstellen
-					const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('fstStatus');
-					const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('fstStatus');
+					const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('geraetStatus');
+					const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('geraetStatus');
 
 					this.schalteKanalID(geklickteFstHaupt, geklickteMHAN, 'MHAN');
 				}
@@ -1018,7 +1115,8 @@ $(window).load(function () {
 		}
 	}
 
-})(window, document, jQuery);;'use strict';
+})(window, document, jQuery);
+;'use strict';
 
 (function (window, document, $) {
 
@@ -1077,23 +1175,46 @@ $(window).load(function () {
 
 (function (window, document, $) {
 
-    WSV.Utils = {
+	WSV.Utils = {
+		audioAlarm: {},
+		init: function () {
+			this.audioAlarm = new Audio('burst4.wav');
+		},
 
-	    audioAlarm: {},
+		//Pruefe ob Wert in Objekt vorkommt
+		hatWert: function (obj, value) {
+			for (const id in obj) {
+				if (obj[id] == value) {
+					return true;
+				}
+			}
+			return false;
+		},
 
-        init: function () {
-	        this.audioAlarm = new Audio('burst4.wav');
-        },
+		/**
+		 * Werte eines Objektes als Key eines Objektes zurueckgben
+		 * Tausche Key - Value
+		 * @param  {Object} obj Objekt
+		 * @return {Obejkt}     Objekt mit den Werten als KEy
+		 */
+		objektWerteAlsKey: function (obj) {
+			const neuesObjekt = []
+			for (const key in obj) {
+				neuesObjekt[obj[key]] = key
+			}
+			return neuesObjekt
+		},
 
-        //Pruefe ob Wert in Objekt vorkommt
-        hatWert: function (obj, value) {
-            for (const id in obj) {
-                if (obj[id] == value) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
+		sammelStatusAendern: function (elementeListe) {
+			let sammelStatus = '0'
+			$(elementeListe.selector).each( function() {
+				if ($(this).attr('geraetStatus') == 1) {
+					sammelStatus = '1'
+				}
+			})
+
+			return sammelStatus
+		}
+	}
 
 })(window, document, jQuery);

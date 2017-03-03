@@ -58,7 +58,7 @@ block content
 												class='button_anlage' + (index2 + 1)
 												data-buttonElement='anlage' + (index2 + 1)
 												id=val2
-												fstStatus='-1'
+												geraetStatus='-1'
 												)
 													div.radio
 														label.radio-custom(
@@ -188,6 +188,7 @@ block content
 								button.btn.btn-primary(type='button', data-dismiss='modal', onclick='WSV.Display.setzeKanal()') Ändern
 
 
-				// errorModal als mixin ausgelagert nach layout.jade
+				// errorModal als mixin ausgelagert nach mixins.pug
 				+errorModal('DUE','Fehler','Verbindung zum Server abgebrochen. Bitte verwenden Sie folgende alternativen Server:')
 				+errorModal('RFD','RFD-Fehler','Verbindung zum RFD-Dienst abgebrochen. Bitte verwenden Sie folgende alternativen Server:')
+				+errorModal('DUEGeraete','Fehler mit Bediengeräte', 'Folgendes Bediengeräte weist einen Fehler auf: ')

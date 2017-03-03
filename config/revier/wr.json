@@ -14,7 +14,7 @@
   "Button14": [
     "1-H-RFD-KARLHA-FKEK-2"
   ],
-  
+
   "Button15": [
     "1-H-RFD-STUBBE-FKEK-2",
     ""
@@ -37,7 +37,7 @@
     "1-H-RFD-STUBBE-FKEK-1",
     ""
   ],
-  
+
   "Button31": [
     "1-H-RFD-WARVTA-FKMK-1",
     ""
@@ -66,12 +66,12 @@
     "1-H-RFD-DAENHO-FKEK-2",
     ""
   ],
-  
+
   "Button43": [
     "1-H-RFD-DROSEV-FKGW-1",
     "1-H-RFD-DROSEV-FKGW-2",
     "1-H-RFD-WHVVTR-GWST-1",
-    "1-H-RFD-LUBVTR-GWST-1",
+    "1-H-RFD-BRBVTR-GWST-1",
     "1-H-RFD-LUBVTR-GWST-1"
   ],
   "Button44": [
@@ -81,6 +81,3 @@
     "1-H-RFD-DROSEV-FKEK-1"
   ]
 }
-
-
-
