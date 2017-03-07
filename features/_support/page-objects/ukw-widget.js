@@ -42,19 +42,19 @@ widgets.header = {
         switch(color) {
             case "Standard":
                 browser.click(stdTheme);
-                browser.pause(1000);
+                browser.pause(3000);
                 break;
             case "Flach":
                 browser.click(flatTheme);
-                browser.pause(1000);
+                browser.pause(3000);
                 break;
             case "Dunkel / marineblau":
                 browser.click(darklyTheme);
-                browser.pause(1000);
+                browser.pause(3000);
                 break;
             case "Dunkel / hellblau":
                 browser.click(cyborgTheme);
-                browser.pause(1000);
+                browser.pause(3000);
                 break;
         }
     },
