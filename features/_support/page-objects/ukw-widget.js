@@ -34,7 +34,7 @@ widgets.header = {
     },
     clickFarbschema: function(){
         browser.click(btnFarbschema);
-        browser.pause(3000);
+        browser.pause(5000);
     },
     clickArbeitsplatzgeraete: function(){
         browser.click(btnArbeitsplatzgeraete);
@@ -43,11 +43,11 @@ widgets.header = {
         switch(color) {
             case "Standard":
                 browser.click(stdTheme);
-                browser.pause(5000);
+                browser.pause(7000);
                 break;
             case "Flach":
                 browser.click(flatTheme);
-                browser.pause(5000);
+                browser.pause(7000);
                 break;
             case "Dunkel / marineblau":
                 browser.click(darklyTheme);
@@ -55,7 +55,7 @@ widgets.header = {
                 break;
             case "Dunkel / hellblau":
                 browser.click(cyborgTheme);
-                browser.pause(5000);
+                browser.pause(7000);
                 break;
         }
     },

@@ -319,8 +319,6 @@ module.exports = function() {
     this.Then(/^ändert sich die Farbe der Navigationsleiste in "([^"]*)"$/, function (color) {
         var newColor = widgets.content.getHeaderHexColor();
         expect(newColor).toEqual(color);
-        widgets.header.clickFarbschema();
-        widgets.header.selectFarbschema("Standard");
 
     });
 
