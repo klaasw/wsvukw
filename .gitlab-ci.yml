@@ -5,9 +5,9 @@ test_async:
   stage: test
   script:
    - pm2 delete all
-   - tar -xf /home/gitlab-runner/nodeModules.tar
-   - tar -xf /home/gitlab-runner/nodeModulesPublic.tar
-   - tar -xf /home/gitlab-runner/nodeModulesChimp.tar
+   - tar -xf /home/ukwDisplayAdministration/nodeModulesArchiv/nodeModules.tar
+   - tar -xf /home/ukwDisplayAdministration/nodeModulesArchiv/nodeModulesPublic.tar
+   - tar -xf /home/ukwDisplayAdministration/nodeModulesArchiv/nodeModulesChimp.tar
    - cd public
    - ./node_modules/.bin/grunt dev
    - cd ..
