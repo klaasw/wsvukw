@@ -14,6 +14,8 @@ Feature: Indienststellung des Arbeitsplatzes - Display reinigen
     When ich auf den Button "Farbschema" klicke
     And ich das Design "Flach" auswähle
     Then ändert sich die Farbe der Navigationsleiste in "#2c3e50"
+    And ich auf den Button "Farbschema" klicke
+    And ich das Design "Standard" auswähle
 
   @watch
   Scenario: 3.B Farbschema ändern - Variante A: 'Standard' -> 'Marineblau'
@@ -21,6 +23,8 @@ Feature: Indienststellung des Arbeitsplatzes - Display reinigen
     When ich auf den Button "Farbschema" klicke
     And ich das Design "Dunkel / marineblau" auswähle
     Then ändert sich die Farbe der Navigationsleiste in "#ffffff"
+    And ich auf den Button "Farbschema" klicke
+    And ich das Design "Standard" auswähle
 
   @watch
   Scenario: 3.C Farbschema ändern - Variante A: 'Standard' -> 'Hellblau'
@@ -28,3 +32,5 @@ Feature: Indienststellung des Arbeitsplatzes - Display reinigen
     When ich auf den Button "Farbschema" klicke
     And ich das Design "Dunkel / hellblau" auswähle
     Then ändert sich die Farbe der Navigationsleiste in "#888888"
+    And ich auf den Button "Farbschema" klicke
+    And ich das Design "Standard" auswähle
