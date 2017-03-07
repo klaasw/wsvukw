@@ -3,7 +3,7 @@
   "loglevelFile": "debug",
   "port":	"3000",
   "httpIP": "10.161.9.74",
-  "rfdIP":  "10.161.9.42",
+  "rfdIP":  "10.161.9.142",
   "sipIP":  "10.161.9.74",
   "replicaSet": "dueReplicaSet",
   "auth": false,
