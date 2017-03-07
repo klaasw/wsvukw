@@ -62,8 +62,8 @@ router.get('/testen', function (req, res) {
 
 /* GET UKW Dokumentation */
 router.get('/dokumentation', function (req, res) {
-  const dateien = files.readdirSync('dokumentation')
-  const dateiNamen = []
+	const dateien = files.readdirSync('dokumentation')
+	const dateiNamen = []
 	for (const datei of dateien) {
 		const ohneEndung = datei.split('.')
 		dateiNamen.push(ohneEndung[0])
@@ -217,7 +217,7 @@ router.get('/ukwTestWue', function (req, res) {
 router.get('/ukwKonfig', function (req, res) {
 	log.warn(FILENAME + ' Funktion: router get /ukwKonfig von IP: ' + tools.filterIP(req.ip), +'   IP-Parameter: ' + JSON.stringify(req.query));
 
-	let Funkstellen = rfd.getFunkstellen();
+	const Funkstellen = rfd.getFunkstellen();
 	if (Funkstellen.length === 0) {
 		log.error('Topologie nicht eingelesen, wird aber jetzt gebraucht, mit Fehler antworten!');
 		res.status(404)        // HTTP status 404: NotFound
@@ -326,7 +326,7 @@ router.get('/lieskonfig', function (req, res) {
 
 
 rfd.leseRfdTopologie(function () {
-	log.debug("Topologie eingelesen.");
+	log.info(FILENAME + ' leseRfdTopologie: Topologie eingelesen.');
 });
 
 /**
@@ -374,7 +374,15 @@ function erstelleKonfigFurAp(Ap, callback) {
 
 					//Funkstellendetails schreiben
 					if (fstReihe[button][t] != '') {
-						Konfig.FunkstellenDetails[fstReihe[button][t]] = rfd.findeFstNachId(fstReihe[button][t]);
+						// Pruefen auf gwid und ggf. in Konfig. einspeisen
+						const fstDetails = rfd.findeFstNachId(fstReihe[button][t])
+						if (fstDetails.hasOwnProperty('gwId')) {
+							Konfig.FunkstellenDetails[fstReihe[button][t]]  = fstDetails.fstId;
+							Konfig.FunkstellenDetails[fstDetails.gwId.id] = fstDetails.gwId;
+						}
+						else {
+							Konfig.FunkstellenDetails[fstReihe[button][t]] = fstDetails;
+						}
 
 						//Kanalnummern in Array schreiben. Dient zur dynamischen Befüllung im MKA Dialog
 						const kanalNummer = Konfig.FunkstellenDetails[fstReihe[button][t]].channel;

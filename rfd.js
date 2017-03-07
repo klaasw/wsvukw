@@ -126,6 +126,14 @@ exports.leseRfdTopologie = function (callback) {
 								delete tmp.portrtp;
 								Funkstellen[tmp.id] = tmp;
 
+								//Erzeuge Pseudo-Funkstelle mit GW-ID
+								if (!Funkstellen.hasOwnProperty(tmp.gwid)) {
+									Funkstellen[tmp.gwid] = {
+										'id': tmp.gwid,
+										'Funkstellen': {}
+									}
+								}
+								Funkstellen[tmp.gwid].Funkstellen[tmp.id] = tmp
 							}
 						}
 						callback();
@@ -155,7 +163,18 @@ exports.findeFstNachId = function (Id) {
 	}
 	else {
 		if (Funkstellen.hasOwnProperty(Id)) {
-			return Funkstellen[Id];
+			if (Id.indexOf('FKGW') > -1) {
+				console.log(Funkstellen[Id].gwid)
+				let test = {
+					fstId : Funkstellen[Id],
+					gwId  : Funkstellen[Funkstellen[Id].gwid]
+				}
+				console.log(test)
+				return test
+			}
+			else {
+				return Funkstellen[Id];
+			}
 		}
 	}
 	log.error('Funkstellen ID nicht vorhanden: \'' + Id + '\'');
