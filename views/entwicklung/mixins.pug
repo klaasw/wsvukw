@@ -52,4 +52,10 @@ mixin apGeraeteliste(apGeraete)
 			li(class = val)
 				a.btn #{index}
 					span.label.label-default.apGeraet(class = 'ag' + val) ??
-			
+					
+mixin findeFunkstelle(arrayFunkstellen, mhanZuordnung)
+	// mixin um Funkstellen in Array der Funkstellenreihe zu finden
+	// z.B. Button11:[1-H-RFD-WARVTA-FKEK-2, 1-H-RFD-WARVTA-FKEK-1]
+	- for (var i = 0; i < arrayFunkstellen.length; i++)
+			if mhanZuordnung.hasOwnProperty(arrayFunkstellen[i])
+				p #{mhanZuordnung[arrayFunkstellen[i]]}

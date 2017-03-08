@@ -33,11 +33,13 @@ block content
 								data-target='#mithoerenModal',
 								data-funkstelle=val[0],
 								data-lautstaerke='100'
-								) #{(gesamteKonfig.MhanZuordnung[val[0]] ? gesamteKonfig.MhanZuordnung[val[0]] : '--ohne--')}
+								) 
+									+findeFunkstelle(val, gesamteKonfig.MhanZuordnung)
 								div.dropdown.text-center
 									- kompomentenID = val[0] ? val[0] : '---------------------';
 									- geraet = kompomentenID.substr(15,6);
 									- standort = kompomentenID.substr(8,6);
+									- kurzname = gesamteKonfig.FunkstellenDetails[val[0]].sname
 									button.btn.btn-default.button_standort(
 									data-buttonElement='standort'
 									data-aktiv=kompomentenID
@@ -47,7 +49,7 @@ block content
 									aria-expanded='false'
 									id='standortListe'
 									ortStatus='-1'
-									) #{standort}&nbsp
+									) #{kurzname}&nbsp
 										span.label.label-default ??
 									ul.dropdown-menu(
 									aria-labelledby='standortListe'

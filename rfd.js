@@ -130,7 +130,9 @@ exports.leseRfdTopologie = function (callback) {
 								if (!Funkstellen.hasOwnProperty(tmp.gwid)) {
 									Funkstellen[tmp.gwid] = {
 										'id': tmp.gwid,
-										'Funkstellen': {}
+										'Funkstellen': {},
+										'sname': tmp.sname,
+										'channel':tmp.channel
 									}
 								}
 								Funkstellen[tmp.gwid].Funkstellen[tmp.id] = tmp
@@ -164,13 +166,10 @@ exports.findeFstNachId = function (Id) {
 	else {
 		if (Funkstellen.hasOwnProperty(Id)) {
 			if (Id.indexOf('FKGW') > -1) {
-				console.log(Funkstellen[Id].gwid)
-				let test = {
+				return {
 					fstId : Funkstellen[Id],
 					gwId  : Funkstellen[Funkstellen[Id].gwid]
 				}
-				console.log(test)
-				return test
 			}
 			else {
 				return Funkstellen[Id];

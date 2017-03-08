@@ -240,7 +240,10 @@ $(window).load(function () {
 		 */
 		funkstellenZustandSetzen: function (KompID, Zustand) {
 			const Funkstelle     = $('#' + KompID);
+			const alleGeraete    = Funkstelle.parent().children();
 			const standortButton = Funkstelle.parents('.button_flaeche').find('.button_standort');
+			// TODO:Ermittlung des RFD-GW-x Elements aus alleGeraete 
+			const FunkstelleGWID = $('[id^=RFD-GW]').find(alleGeraete);
 			const _self          = this;
 
 			if (!Funkstelle.length || !standortButton.length) {
@@ -251,12 +254,12 @@ $(window).load(function () {
 				case 'OK':
 					Funkstelle.attr('geraetStatus', '0');
 					$('span.label', Funkstelle).removeClass('label-danger').addClass('label-success').text(Zustand);
-					$('span.label', standortButton).removeClass('label-danger').addClass('label-success').text(Zustand);
+					//$('span.label', standortButton).removeClass('label-danger').addClass('label-success').text(Zustand);
 					break;
 				case 'Error':
 					Funkstelle.attr('geraetStatus', '1');
 					$('span.label', Funkstelle).removeClass('label-success').addClass('label-danger').text(Zustand);
-					$('span.label', standortButton).removeClass('label-success').addClass('label-danger').text(Zustand);
+					//$('span.label', standortButton).removeClass('label-success').addClass('label-danger').text(Zustand);
 
 					//Notify by Störung
 					$.notify({
@@ -272,15 +275,25 @@ $(window).load(function () {
 					//TODO: Umschalten auf Reserveanlage wenn vorhanden und nicht GW-Anlage
 			}
 
-			//Sammelstatus bilden und setzen
-			//switch (WSV.Utils.sammelStatusAendern(alleGeraete)) {
-			//	case '1': // Error
-			//		$(sammelStatus).removeClass('label-success').addClass('label-danger').text('Error');
-			//		break;
-			//	case '0': // OK
-			//		$(sammelStatus).removeClass('label-danger').addClass('label-success').text(Zustand);
-			//		break;
-			//}
+			// Sammelstatus bilden und setzen
+			switch (WSV.Utils.sammelStatusAendernFunkstellen(alleGeraete)) {
+				case '2': // Warning
+					$('span.label', standortButton)
+						.removeClass('label-success')
+						.removeClass('label-danger')
+						.addClass('label-warning')
+						.text('Warn');
+					break;
+				case '1': // Error
+					$('span.label', standortButton).removeClass('label-success').addClass('label-danger').text('Error');
+					break;
+				case '0': // OK
+					$('span.label', standortButton)
+						.removeClass('label-danger')
+						.removeClass('label-warning')
+						.addClass('label-success').text(Zustand);
+					break;
+			}
 		},
 
 		/**
@@ -322,7 +335,7 @@ $(window).load(function () {
 			}
 
 			//Sammelstatus bilden und setzen
-			switch (WSV.Utils.sammelStatusAendern(alleGeraete)) {
+			switch (WSV.Utils.sammelStatusAendernSpanMhan(alleGeraete)) {
 				case '1': // Error
 					$(sammelStatus).removeClass('label-success').addClass('label-danger').text('Error');
 					break;
@@ -798,7 +811,9 @@ $(window).load(function () {
 					})
 				}
 				//Gruppenschaltung
-				if (this.ApFunkstellen[geklickteFstID] != undefined) {
+				// TODO: != undefined auskommentiert da Gleichwelle sonst nicht geschaltet wird
+				// TODO: Ueberpruefung im Rahmen Wechsel Einzel/ Gruppe
+				//if (this.ApFunkstellen[geklickteFstID] != undefined) {
 					if (this.ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
 						this.trennen(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
 
@@ -806,7 +821,7 @@ $(window).load(function () {
 					else {
 						this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
 					}
-				}
+				//}
 
 				this.ladeBenutzer();
 			}
@@ -1215,15 +1230,93 @@ $(window).load(function () {
 			return neuesObjekt
 		},
 
-		sammelStatusAendern: function (elementeListe) {
+		/**
+		 * Ermittlung des Sammelstatus fuer die ArbeitsplatzGeraete
+		 * Hier gibt es keine "Gelbmeldung"
+		 * @param  {jQueryObject} elementeListe Alle HTML Elemente der Schaltflaeche Geraete
+		 * @return {String}               Zahlenstring fuer den Summenstatus 0=gruen,
+		 * 1=rot
+		 */
+		sammelStatusAendernSpanMhan: function (elementeListe) {
 			let sammelStatus = '0'
-			$(elementeListe.selector).each( function() {
+			$(elementeListe).each( function() {
 				if ($(this).attr('geraetStatus') == 1) {
 					sammelStatus = '1'
 				}
 			})
-
 			return sammelStatus
+		},
+
+		/**
+		 * Attribut 'geraetStatus' eines HTML Elements pruefen
+		 * @param  {htmlElement} element Einzelnes HTML Element
+		 * @return {Integer}         Integer fuer Zustand 1=Fehler, 0=OK
+		 */
+		pruefeGeraetStatus: function (element) {
+			if (element.attr('geraetStatus') == 1 || element.attr('geraetStatus') == -1) {
+				return 1
+			}
+			else {
+				return 0
+			}
+		},
+
+
+		/**
+		 * Ermittlung des Sammelstatus fuer Funkstellen bei mehrfach
+		 * Zuordnung zu Schaltflaechen bei Redundanzanlagen und Gleichwellen
+		 * Anlagen.
+		 * @param  {jqueryObject} elementeListe Alle HTML Elemente der Schaltflaeche
+		 * @return {String}                     Zahlenstring fuer den Summenstatus 0=gruen,
+		 * 1=rot, 2=gelb
+		 */
+		sammelStatusAendernFunkstellen: function (elementeListe) {
+			let sammelStatus     = '0'
+			let anzahlFkgw       = 0;
+			let anzahlFkgwError  = 0;
+			let sammelStatusFkgw = null;
+			let anzahlGwst       = 0;
+			let anzahlGwstError  = 0;
+			let sammelStatusGwst = null;
+			let anzahlFkek       = 0;
+			let anzahlFkekError  = 0;
+			let sammelStatusFkek = null;
+			// Durch elementeListe laufen und Inhalte pruefen
+			$(elementeListe).each( function() {
+				const test = elementeListe.length
+				if ($(this).attr('id').indexOf('FKGW') > -1 ) {
+					anzahlFkgw      += 1;
+					anzahlFkgwError += WSV.Utils.pruefeGeraetStatus($(this));
+					sammelStatusFkgw = anzahlFkgw - anzahlFkgwError;
+				}
+				if ($(this).attr('id').indexOf('GWST') > -1) {
+					anzahlGwst      += 1;
+					anzahlGwstError += WSV.Utils.pruefeGeraetStatus($(this));
+					sammelStatusGwst = anzahlGwst - anzahlGwstError;
+				}
+				if ($(this).attr('id').indexOf('FKEK') > -1 || $(this).attr('id').indexOf('FKMK') > -1) {
+					anzahlFkek      += 1;
+					anzahlFkekError += WSV.Utils.pruefeGeraetStatus($(this));
+					sammelStatusFkek = anzahlFkek - anzahlFkekError;
+				}
+			})
+
+			//setzen des sammelStatus anhand des Schleifendurchgangs
+			if (sammelStatusFkgw > 0 && sammelStatusFkgw < anzahlFkgw) {
+				sammelStatus = '2'; // Status gelb
+			}
+			if (sammelStatusGwst > 0 && sammelStatusGwst < anzahlGwst) {
+				sammelStatus = '2'; // Status gelb
+			}
+			if (sammelStatusFkek > 0 && sammelStatusFkek < anzahlFkek) {
+				sammelStatus = '2'; // Status gelb
+			}
+			if (sammelStatusFkgw === 0 || sammelStatusGwst === 0 || sammelStatusFkek === 0) {
+				sammelStatus = '1'; // Status rot
+			}
+
+			return sammelStatus;
+
 		}
 	}
 
