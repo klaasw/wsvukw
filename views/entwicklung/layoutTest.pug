@@ -5,6 +5,7 @@ html
 		link(rel='stylesheet', href='/javascripts/fuelux/css/fuelux.min.css')
 		link(rel='stylesheet', href='/stylesheets/bootstrap-slider.css')
 		link(rel='stylesheet', href='/stylesheets/dist/styles.css')
+		link(rel='stylesheet', href='/stylesheets/bootstrap/' + aktuellerBenutzer.theme + '.css' id='themesheet')
 
 	block scripts
 		script(src='/javascripts/jquery.min.js' type='text/javascript')
@@ -36,7 +37,7 @@ html
 							span.icon-bar
 							span.icon-bar
 						a.navbar-brand#logo(
-							href='javascript:WSV.Display.showDisplaySperreModal();') ukwDisplay
+						href='javascript:WSV.Display.showDisplaySperreModal();') ukwDisplay
 					.navbar-collapse.collapse
 						ul.nav.navbar-nav
 
@@ -61,8 +62,8 @@ html
 									span.caret
 
 								ul.dropdown-menu#theme-switcher
-									li.theme1(class=aktuellerBenutzer.theme === 'default' ? 'active' : '')
-										a.switch-theme.btn(data-theme='default') Standard
+									li.theme1(class=aktuellerBenutzer.theme === 'bootstrap-theme' ? 'active' : '')
+										a.switch-theme.btn(data-theme='bootstrap-theme') Standard
 									li.theme2(class=aktuellerBenutzer.theme === 'flatly' ? 'active' : '')
 										a.switch-theme.btn(data-theme='flatly') Flach
 									li.theme3(class=aktuellerBenutzer.theme === 'darkly' ? 'active' : '')

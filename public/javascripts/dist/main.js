@@ -1149,23 +1149,22 @@ $(window).load(function () {
 
 		path:         'stylesheets/bootstrap',
 		list:         {
-			'default': 'bootstrap-theme.css',
-			'darkly':  'darkly.css',
-			'flatly':  'flatly.css',
-			'cyborg':  'cyborg.css',
+			'bootstrap-theme': 'bootstrap-theme.css',
+			'darkly':          'darkly.css',
+			'flatly':          'flatly.css',
+			'cyborg':          'cyborg.css',
 		},
-		themesheet:   '',
-		currentTheme: 'default',
+		currentTheme: 'bootstrap-theme',
 
 		init: function () {
 
-			const _self       = this;
+			const _self = this;
 			this.currentTheme = $('#theme-switcher li.active .switch-theme').data('theme');
-			this.themesheet   = $('<link href="' + this.getThemeUrl() + '" rel="stylesheet" />');
-			this.themesheet.appendTo('head');
 
-			$('#theme-switcher .switch-theme').on('click', function () {
-				_self.switch($(this).data('theme'), true)
+			$('#theme-switcher .switch-theme').on('click', function (ev) {
+				_self.switch($(this).data('theme'), true);
+				ev.preventDefault();
+				return false;
 			});
 		},
 
@@ -1187,12 +1186,19 @@ $(window).load(function () {
 				return;
 			}
 
+			const _self = this;
 			this.currentTheme = theme;
-			this.themesheet.attr('href', this.getThemeUrl());
+
 			$('#theme-switcher .switch-theme').parents('li').removeClass('active');
 			$('#theme-switcher a[data-theme="' + this.currentTheme + '"]').parent().addClass('active');
+
 			if (saveConfig) {
-				WSV.Display.schreibeBenutzer();
+				WSV.Display.schreibeBenutzer(function() {
+					$('#themesheet').attr('href', _self.getThemeUrl());
+				});
+			}
+			else {
+				$('#themesheet').attr('href', _self.getThemeUrl());
 			}
 		}
 	}
