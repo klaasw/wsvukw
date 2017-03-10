@@ -6,23 +6,20 @@
 
 		path:         'stylesheets/bootstrap',
 		list:         {
-			'default': 'bootstrap-theme.css',
-			'darkly':  'darkly.css',
-			'flatly':  'flatly.css',
-			'cyborg':  'cyborg.css',
+			'bootstrap-theme': 'bootstrap-theme.css',
+			'darkly':          'darkly.css',
+			'flatly':          'flatly.css',
+			'cyborg':          'cyborg.css',
 		},
-		themesheet:   '',
-		currentTheme: 'default',
+		currentTheme: 'bootstrap-theme',
 
 		init: function () {
 
-			const _self       = this;
+			const _self = this;
 			this.currentTheme = $('#theme-switcher li.active .switch-theme').data('theme');
-			this.themesheet   = $('<link href="' + this.getThemeUrl() + '" rel="stylesheet" />');
-			this.themesheet.appendTo('head');
 
 			$('#theme-switcher .switch-theme').on('click', function () {
-				_self.switch($(this).data('theme'), true)
+				_self.switch($(this).data('theme'), true);
 			});
 		},
 
@@ -45,7 +42,10 @@
 			}
 
 			this.currentTheme = theme;
-			this.themesheet.attr('href', this.getThemeUrl());
+			$('<link href="' + this.getThemeUrl() + '" id="themesheet-new" rel="stylesheet" />').appendTo('head');
+			$('#themesheet').remove();
+			$('#themesheet-new').attr('id', 'themesheet');
+
 			$('#theme-switcher .switch-theme').parents('li').removeClass('active');
 			$('#theme-switcher a[data-theme="' + this.currentTheme + '"]').parent().addClass('active');
 			if (saveConfig) {
