@@ -1146,8 +1146,10 @@ $(window).load(function () {
 			const _self = this;
 			this.currentTheme = $('#theme-switcher li.active .switch-theme').data('theme');
 
-			$('#theme-switcher .switch-theme').on('click', function () {
+			$('#theme-switcher .switch-theme').on('click', function (ev) {
 				_self.switch($(this).data('theme'), true);
+				ev.preventDefault();
+				return false;
 			});
 		},
 
@@ -1169,15 +1171,19 @@ $(window).load(function () {
 				return;
 			}
 
+			const _self = this;
 			this.currentTheme = theme;
-			$('<link href="' + this.getThemeUrl() + '" id="themesheet-new" rel="stylesheet" />').appendTo('head');
-			$('#themesheet').remove();
-			$('#themesheet-new').attr('id', 'themesheet');
 
 			$('#theme-switcher .switch-theme').parents('li').removeClass('active');
 			$('#theme-switcher a[data-theme="' + this.currentTheme + '"]').parent().addClass('active');
+
 			if (saveConfig) {
-				WSV.Display.schreibeBenutzer();
+				WSV.Display.schreibeBenutzer(function() {
+					$('#themesheet').attr('href', _self.getThemeUrl());
+				});
+			}
+			else {
+				$('#themesheet').attr('href', _self.getThemeUrl());
 			}
 		}
 	}
