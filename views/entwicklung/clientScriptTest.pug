@@ -400,7 +400,7 @@ script.
 				//Schalten fuer SPrechANlagen und MitHoerANlagen
 				if ('geschaltet' in msg && msg.geschaltet.$.state === '1') {
 					// pruefen ob diese Meldung zu diesem Arbeitsplatz gehoert
-					if (WSV.Utils.hatWert(ArbeitsplatzGeraete, msg.geschaltet.$.Ap)) {
+					if (WSV.Tools.hatWert(ArbeitsplatzGeraete, msg.geschaltet.$.Ap)) {
 						//aendern Darstellung fuer MHAN
 						if (msg.geschaltet.$.Ap.indexOf("MHAN") != -1) {
 							//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
@@ -445,7 +445,7 @@ script.
 				//Trennen fuer SPrechANlagen und MitHoerANlagen
 				if ('getrennt' in msg && msg.getrennt.$.state === '1') {
 
-					if (WSV.Utils.hatWert(ArbeitsplatzGeraete, msg.getrennt.$.Ap)) {
+					if (WSV.Tools.hatWert(ArbeitsplatzGeraete, msg.getrennt.$.Ap)) {
 
 						//Aendern Darstellung fuer MHAN
 						if (msg.getrennt.$.Ap.indexOf("MHAN") != -1) {

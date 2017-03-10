@@ -5,22 +5,22 @@
 	WSV.Display = {
 
 		// TODO: Darstellung des Status von SPAN und MHAN in die GUI einbringen
-		ApID:                '', //zb.JA NvD
-		SPAN:                '', //zb. 1-H-RFD-WHVVKZ-SPAN-01
-		MhanZuordnung:       {}, //"MHAN01": "1-H-RFD-WHVVTA-FKEK-2", "MHAN02": "1-H-RFD-TETTEN-FKEK-2"
-		ApFunkstellen:       {},
-		ArbeitsplatzGeraete: {}, //'MHAN01':'1-H-RFD-WHVVKZ-MHAN-01'
-		ArbeitsplatzGeraeteID:[], //'1-H-RFD-WHVVKZ-MHAN-01'
-		einzel:              true,
-		IpConfig:            '',
-		socket:              {},
-		aktuellerUKWserver:  '',
-		aktuellerBenutzer:   {},
-		defaultServer:       '',
-		aktuelleMKA:         {},
-		geschalteteSPAN:     {},
-		countDown:           0,
-		cdInterval:          {},
+		ApID:                  '', //zb.JA NvD
+		SPAN:                  '', //zb. 1-H-RFD-WHVVKZ-SPAN-01
+		MhanZuordnung:         {}, //"MHAN01": "1-H-RFD-WHVVTA-FKEK-2", "MHAN02": "1-H-RFD-TETTEN-FKEK-2"
+		ApFunkstellen:         {},
+		ArbeitsplatzGeraete:   {}, //'MHAN01':'1-H-RFD-WHVVKZ-MHAN-01'
+		ArbeitsplatzGeraeteID: [], //'1-H-RFD-WHVVKZ-MHAN-01'
+		einzel:                true,
+		IpConfig:              '',
+		socket:                {},
+		aktuellerUKWserver:    '',
+		aktuellerBenutzer:     {},
+		defaultServer:         '',
+		aktuelleMKA:           {},
+		geschalteteSPAN:       {},
+		countDown:             0,
+		cdInterval:            {},
 
 		init: function () {
 
@@ -159,13 +159,13 @@
 			$.get('/ukwKonfig', function (data) { //IP-Adress nur als Platzhalter zum Testen
 				// console.log(data);
 
-				_self.ApFunkstellen       = data.Konfigdaten.FunkstellenDetails;
-				_self.SPAN                = data.Konfigdaten.ArbeitsplatzGeraete.SPAN01;
-				_self.MhanZuordnung       = data.Konfigdaten.MhanZuordnung;
-				_self.ArbeitsplatzGeraete = data.Konfigdaten.ArbeitsplatzGeraete;
-				_self.ArbeitsplatzGeraeteID = WSV.Utils.objektWerteAlsKey(_self.ArbeitsplatzGeraete);
-				_self.ApID                = data.Arbeitsplatz;
-				_self.IpConfig            = data.Konfigdaten.IpConfig;
+				_self.ApFunkstellen         = data.Konfigdaten.FunkstellenDetails;
+				_self.SPAN                  = data.Konfigdaten.ArbeitsplatzGeraete.SPAN01;
+				_self.MhanZuordnung         = data.Konfigdaten.MhanZuordnung;
+				_self.ArbeitsplatzGeraete   = data.Konfigdaten.ArbeitsplatzGeraete;
+				_self.ArbeitsplatzGeraeteID = WSV.Tools.objektWerteAlsKey(_self.ArbeitsplatzGeraete);
+				_self.ApID                  = data.Arbeitsplatz;
+				_self.IpConfig              = data.Konfigdaten.IpConfig;
 
 				// console.log(data.Konfigdaten.IpConfig);
 
@@ -197,7 +197,7 @@
 						&& (_self.ApFunkstellen.hasOwnProperty(val._id) || _self.ArbeitsplatzGeraeteID.hasOwnProperty(val._id))
 					) {
 						// Zustand setzen wenn SPAN oder MHAN
-						if (val._id.indexOf('SPAN') > -1 || val._id.indexOf('MHAN')> -1 ) {
+						if (val._id.indexOf('SPAN') > -1 || val._id.indexOf('MHAN') > -1) {
 							_self.spanMhanZustandSetzen(val.status.id, 'OK');
 						}
 						else {
@@ -210,7 +210,7 @@
 						&& (_self.ApFunkstellen.hasOwnProperty(val._id) || _self.ArbeitsplatzGeraeteID.hasOwnProperty(val._id))
 					) {
 						// Zustand setzen wenn SPAN oder MHAN
-						if (val._id.indexOf('SPAN') > -1 || val._id.indexOf('MHAN')> -1 ) {
+						if (val._id.indexOf('SPAN') > -1 || val._id.indexOf('MHAN') > -1) {
 							_self.spanMhanZustandSetzen(val.status.id, 'Error');
 						}
 						else {
@@ -229,10 +229,9 @@
 		 */
 		funkstellenZustandSetzen: function (KompID, Zustand) {
 			const Funkstelle     = $('#' + KompID);
-			const alleGeraete    = Funkstelle.parent().children();
+			const alleGeraete    = Funkstelle.parents('ul').children('li');
 			const standortButton = Funkstelle.parents('.button_flaeche').find('.button_standort');
-			// TODO:Ermittlung des RFD-GW-x Elements aus alleGeraete 
-			const FunkstelleGWID = $('[id^=RFD-GW]').find(alleGeraete);
+			const FunkstelleGWID = alleGeraete.filter('[id^="RFD-GW"]');
 			const _self          = this;
 
 			if (!Funkstelle.length || !standortButton.length) {
@@ -242,30 +241,34 @@
 			switch (Zustand) {
 				case 'OK':
 					Funkstelle.attr('geraetStatus', '0');
-					$('span.label', Funkstelle).removeClass('label-danger').addClass('label-success').text(Zustand);
-					//$('span.label', standortButton).removeClass('label-danger').addClass('label-success').text(Zustand);
+					$('span.label', Funkstelle)
+						.removeClass('label-danger')
+						.addClass('label-success')
+						.text(Zustand);
 					break;
 				case 'Error':
 					Funkstelle.attr('geraetStatus', '1');
-					$('span.label', Funkstelle).removeClass('label-success').addClass('label-danger').text(Zustand);
-					//$('span.label', standortButton).removeClass('label-success').addClass('label-danger').text(Zustand);
+					$('span.label', Funkstelle)
+						.removeClass('label-success')
+						.addClass('label-danger')
+						.text(Zustand);
 
 					//Notify by Störung
 					$.notify({
-						message: 'Störung:<br>'+ (
+						message: 'Störung:<br>' + (
 							_self.ApFunkstellen[KompID].sname
-							? _self.ApFunkstellen[KompID].sname
-							: _self.ApFunkstellen[KompID].name)
+								? _self.ApFunkstellen[KompID].sname
+								: _self.ApFunkstellen[KompID].name)
 					}, {
 						type: 'danger'
 					});
 
 					break;
-					//TODO: Umschalten auf Reserveanlage wenn vorhanden und nicht GW-Anlage
+				//TODO: Umschalten auf Reserveanlage wenn vorhanden und nicht GW-Anlage
 			}
 
 			// Sammelstatus bilden und setzen
-			switch (WSV.Utils.sammelStatusAendernFunkstellen(alleGeraete)) {
+			switch (WSV.Tools.sammelStatusAendernFunkstellen(alleGeraete)) {
 				case '2': // Warning
 					$('span.label', standortButton)
 						.removeClass('label-success')
@@ -292,10 +295,10 @@
 		 * @return {[type]}         [description]
 		 */
 		spanMhanZustandSetzen: function (KompID, Zustand) {
-			const geraet          = $('.ag' + KompID);
-			const alleGeraete     = $('span.apGeraet');
-			const sammelStatus    = $('#agSammelStatus');
-			const _self           = this;
+			const geraet       = $('.ag' + KompID);
+			const alleGeraete  = $('span.apGeraet');
+			const sammelStatus = $('#agSammelStatus');
+			const _self        = this;
 
 			switch (Zustand) {
 				case 'OK':
@@ -315,16 +318,16 @@
 					});
 
 					//Error Modal anzeigen
-					WSV.Utils.audioAlarm.play();
+					WSV.Tools.audioAlarm.play();
 					$('.errorText2', '#errorModalDUEGeraete').text(KompID)
 					$('#errorModalDUEGeraete').modal('show');
 
 					break;
-					//TODO: Modal anzeigen
+				//TODO: Modal anzeigen
 			}
 
 			//Sammelstatus bilden und setzen
-			switch (WSV.Utils.sammelStatusAendernSpanMhan(alleGeraete)) {
+			switch (WSV.Tools.sammelStatusAendernSpanMhan(alleGeraete)) {
 				case '1': // Error
 					$(sammelStatus).removeClass('label-success').addClass('label-danger').text('Error');
 					break;
@@ -332,7 +335,6 @@
 					$(sammelStatus).removeClass('label-danger').addClass('label-success').text(Zustand);
 					break;
 			}
-
 
 
 		},
@@ -470,7 +472,7 @@
 				}
 
 				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '0') {
-					if (msg.FSTSTATUS.$.id.indexOf('MHAN') > -1 || msg.FSTSTATUS.$.id.indexOf('SPAN') > -1 ) {
+					if (msg.FSTSTATUS.$.id.indexOf('MHAN') > -1 || msg.FSTSTATUS.$.id.indexOf('SPAN') > -1) {
 						_self.spanMhanZustandSetzen(msg.FSTSTATUS.$.id, 'OK');
 					}
 					else {
@@ -488,7 +490,7 @@
 
 				// -SEN- darf nicht in der ID vorkommen
 				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') == -1) {
-					if (msg.FSTSTATUS.$.id.indexOf('MHAN') > -1 || msg.FSTSTATUS.$.id.indexOf('SPAN') > -1 ) {
+					if (msg.FSTSTATUS.$.id.indexOf('MHAN') > -1 || msg.FSTSTATUS.$.id.indexOf('SPAN') > -1) {
 						_self.spanMhanZustandSetzen(msg.FSTSTATUS.$.id, 'Error');
 					}
 					else {
@@ -516,7 +518,7 @@
 				//Schalten fuer SPrechANlagen und MitHoerANlagen
 				if ('geschaltet' in msg && msg.geschaltet.$.state === '1') {
 					// pruefen ob diese Meldung zu diesem Arbeitsplatz gehoert
-					if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.geschaltet.$.Ap) && _self.ApFunkstellen[msg.geschaltet.$.id] !== 'frei') {
+					if (WSV.Tools.hatWert(_self.ArbeitsplatzGeraete, msg.geschaltet.$.Ap) && _self.ApFunkstellen[msg.geschaltet.$.id] !== 'frei') {
 
 						//aendern Darstellung fuer MHAN
 						if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1) {
@@ -552,7 +554,7 @@
 				//Trennen fuer SPrechANlagen und MitHoerANlagen
 				if ('getrennt' in msg && msg.getrennt.$.state === '1') {
 
-					if (WSV.Utils.hatWert(_self.ArbeitsplatzGeraete, msg.getrennt.$.Ap)) {
+					if (WSV.Tools.hatWert(_self.ArbeitsplatzGeraete, msg.getrennt.$.Ap)) {
 
 						//Aendern Darstellung fuer MHAN
 						if (msg.getrennt.$.Ap.indexOf('MHAN') != -1) {
@@ -663,7 +665,7 @@
 
 				// TODO: Wiederverbindung versuchen, waehrend dieser Zeit kein Fehler zeigen, sondern erst dann?
 				//Zeige Error Modal Fenster
-				WSV.Utils.audioAlarm.play();
+				WSV.Tools.audioAlarm.play();
 				$('#errorModalDUE').modal('show');
 			});
 		},
@@ -717,7 +719,7 @@
 					//uebergeordnetes Element finden
 					const button = $(element).offsetParent().attr('id');
 
-					let geklickteFstHaupt   = $('#' + button + ' .button_anlage1').attr('id');
+					let geklickteFstHaupt     = $('#' + button + ' .button_anlage1').attr('id');
 					const geklickteFstReserve = $('#' + button + ' .button_anlage2').attr('id');
 
 					const geklickteSPAN = $('#' + button + ' .button_span').attr('id');
@@ -803,13 +805,13 @@
 				// TODO: != undefined auskommentiert da Gleichwelle sonst nicht geschaltet wird
 				// TODO: Ueberpruefung im Rahmen Wechsel Einzel/ Gruppe
 				//if (this.ApFunkstellen[geklickteFstID] != undefined) {
-					if (this.ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
-						this.trennen(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
+				if (this.ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
+					this.trennen(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
 
-					}
-					else {
-						this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
-					}
+				}
+				else {
+					this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
+				}
 				//}
 
 				this.ladeBenutzer();
@@ -908,7 +910,9 @@
 
 			}
 
-			$.notify('Schalte: <br>' + this.ApFunkstellen[FstID].sname);
+			if (typeof this.ApFunkstellen[FstID] != 'undefined') {
+				$.notify('Schalte: <br>' + this.ApFunkstellen[FstID].sname);
+			}
 			//console.log('(notify) schalte: ' + this.ApFunkstellen[FstID].sname);
 		},
 

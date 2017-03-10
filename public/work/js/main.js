@@ -1,11 +1,11 @@
 'use strict';
 
-const WSV = window.WSV || {};
+const WSV = {};
 
 // =========================== JS Init ================================== //
 $(window).load(function () {
 
-	WSV.Utils.init();
+	WSV.Tools.init();
 	WSV.Themes.init();
 	WSV.Display.init();
 });
