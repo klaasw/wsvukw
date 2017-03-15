@@ -274,11 +274,15 @@ exports.sendeWebServiceNachricht = function (ipAddr, Fst, Span_Mhan, aktion, Kan
 					}
 					log.debug(FILENAME + ' Funktion: sendeWebServiceNachricht response: ' + erfolgreich);
 					if (erfolgreich === 'true') {
-						socket.sendeWebSocketNachricht(antwortFuerWebsocket);
-
+						// TODO: Beobachten ob es hier zu Timing Problem beim Schalten oder
+						// Wechsel Gruppenschaltung/ Einzelschaltung kommt, da parallel in DB geschrieben
+						// und Rueckmeldung an Client gesendet wird. Der Client ruft nach erhalt den Zustand
+						// wieder ab.
 						if (aktion == 'schaltenEinfach' || aktion == 'trennenEinfach') {
 							db.schreibeSchaltzustand(ipAddr, Fst, Span_Mhan, aktion, span_mhanApNr, ApID)
 						}
+
+						socket.sendeWebSocketNachricht(antwortFuerWebsocket);
 					}
 					else {
 						log.error('RFD ' + aktion + ' fehlgeschlagen');

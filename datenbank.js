@@ -400,7 +400,7 @@ exports.schreibeSchaltzustand = function (ipAddr, fst, Span_Mhan, aktion, span_m
 
 		if (typeof benutzer._id != 'undefined') {
 
-			if (benutzer.einzel) {
+			if (benutzer.einzel) {  // Einzelschaltung aktiv
 				if (aufgeschaltet) {
 					benutzer.schaltZustandEinzel = {[fst]: Span_Mhan};
 				}
@@ -408,7 +408,7 @@ exports.schreibeSchaltzustand = function (ipAddr, fst, Span_Mhan, aktion, span_m
 					delete benutzer.schaltZustandEinzel;
 				}
 			}
-			else {
+			else {                 // Gruppenschaltung aktiv
 				if (aufgeschaltet) {
 					benutzer.schaltZustandGruppe[fst] = Span_Mhan;
 				}

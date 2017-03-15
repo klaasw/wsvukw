@@ -556,6 +556,8 @@ $(window).load(function () {
 							_self.ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true;
 							this.geschalteteSPAN[msg.geschaltet.$.id]              = msg.geschaltet.$.Ap;
 
+							this.ladeBenutzer(); //Benutzer laden um den Schaltzustand Gruppe/ Einzel zu erhalten
+
 							$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
 							// console.log('geschaltet: ' + msg.geschaltet.$.id);
 						}
@@ -591,6 +593,8 @@ $(window).load(function () {
 							_self.schaltenVisuell(msg.getrennt.$.id, 'span', false);
 							_self.ApFunkstellen[msg.getrennt.$.id].aufgeschaltet = false;
 							delete this.geschalteteSPAN[msg.getrennt.$.id];
+
+							this.ladeBenutzer(); //Benutzer laden um den Schaltzustand Gruppe/ Einzel zu erhalten
 
 							$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
 							console.log('trennen: ' + msg.getrennt.$.id)
@@ -825,7 +829,6 @@ $(window).load(function () {
 				}
 				//}
 
-				this.ladeBenutzer();
 			}
 			if (SPAN === 'SPAN_MHAN') { //SPAN zum Mithoeren aufschalten - trennen
 				if (this.ApFunkstellen.hasOwnProperty(geklickteFstID)) {
