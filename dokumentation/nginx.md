@@ -1,3 +1,4 @@
+## Hilfe zu nginx
 Der Plan ist: mehrere Anwendungen auf einem Server laufen je VTR laufen zu lassen.
 z.B. UKW, FWD und weitere.
 
@@ -21,6 +22,8 @@ Dazu wird nginx wird als Router und ProxyServer vorgeschaltet.
 
 //TODO: server_name Testen und in DOku ergänutzen
 
+## Konigurationsparameter
+
 Dazu werden folgene Parameter in die conf.d/default.conf eingetragen
 location / {
          proxy_pass http://localhost:3000;                 # wo soll hin geroutet werden
@@ -33,10 +36,11 @@ location / {
          proxy_set_header Host $host;                      # Default Parameter aus Konfiguration
          proxy_cache_bypass $http_upgrade;                 # Default Parameter aus Konfiguration
 }
-
+## Berücksichtigung in Web-Anwendung
 Diese Einstellung muss je Web Anwendung erfolgen.
 Port festlegungen auf localhost beachten
 
+### hier in der app.js (zukünfig ukw.js)
 Die Web Anwendung laufen dann nur noch auf localhost. Dies ist im Code bei internen Abfragen zu berücksichtigen.
 server.listen(port, '127.0.0.1');
 
@@ -49,7 +53,7 @@ app.set('trust proxy', 'loopback')
 
 Dadurch wird automatisch in den router-Modulen in den Funktion req.ip nach x-forwarded-for gesucht,
 um die IP-Adresse des Clients zu ermitteln.
-
-Im Modul socket.io muss die Ergänzung manuell gemacht werden.
+### hier in der socket.js
+Im Modul socket.js muss die Ergänzung manuell gemacht werden.
 z.B. mit:
 const ipSocket = (socket.request.connection.remoteAddress === '127.0.0.1') ? socket.request.headers['x-forwarded-for'] : socket.request.connection.remoteAddress

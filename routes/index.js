@@ -69,28 +69,22 @@ router.get('/dokumentation', function (req, res) {
 		dateiNamen.push(ohneEndung[0])
 	}
 
-	let dokPugVorlage = files.readFileSync('views/technik/dokumentation.pug')
+	let dokPugVorlage            = files.readFileSync('views/technik/dokumentationInhalt.pug')
+	const vorherigeDokPugVorlage = dokPugVorlage;
 
-	if (req.query.dokument) {
-		dokPugVorlage = ''+
-		'extends layout\n'+
-		'block content\n'+
-		' include:markdown-it ../../dokumentation/' + req.query.dokument + '.md'
+	dokPugVorlage = 'block content\n';
 
-		files.writeFileSync('views/technik/dokumentation.pug', dokPugVorlage)
-		res.render('technik/dokumentation', {datei: req.query.dokument, dateien: dateiNamen});
-	}
-	else {
-		dokPugVorlage = ''+
-		'extends layout\n'+
-		'block content\n'+
-		' include:markdown-it ../../dokumentation/README.md'
-
-	  console.log(dokPugVorlage)
-		files.writeFileSync('views/technik/dokumentation.pug', dokPugVorlage)
-		res.render('technik/dokumentation', {dateien: dateiNamen});
+	for (const name of dateiNamen) {
+		const ueberschrift = '  h1#' + name + ' ' + name + '\n';
+		const include      = '    include:markdown-it ../../dokumentation/' + name + '.md\n'
+		dokPugVorlage += ueberschrift;
+		dokPugVorlage += include;
 	}
 
+	if (vorherigeDokPugVorlage !== dokPugVorlage) {
+		files.writeFileSync('views/technik/dokumentationInhalt.pug', dokPugVorlage)
+	}
+	res.render('technik/dokumentationNav', {dateien: dateiNamen})
 });
 
 /* GET UKW Status */
@@ -99,7 +93,18 @@ router.get('/status', function (req, res) {
 		IpConfig: cfg
 	}
 	res.render('technik/status', {
-		gesamteKonfig: konfig,
+		//gesamteKonfig: konfig,
+		datei: req.query.dokument});
+
+});
+
+/* GET UKW Status */
+router.get('/tabelle', function (req, res) {
+	const konfig = {
+		IpConfig: cfg
+	}
+	res.render('technik/tabelle', {
+		//gesamteKonfig: konfig,
 		datei: req.query.dokument});
 
 });

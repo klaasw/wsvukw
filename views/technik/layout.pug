@@ -1,34 +1,7 @@
-//- Multiple errorModal moeglich: type ergaenzt die id
-mixin errorModal(type,title,errorMessage)
-    div.modal.fade(id='errorModal#{type}', tabindex='-1', role='dialog', aria-labelledby='errorModalLabel')
-        .modal-dialog(role='document')
-            .modal-content
-                .modal-header
-                    button.close(type='button', data-dismiss='modal', aria-label='Close')
-                        span(aria-hidden='true')
-                    h4#errorModalLabel.modal-title #{title}
-                .modal-body
-                    p.
-                        #{errorMessage}
-                    p
-                        each val, index in gesamteKonfig.IpConfig.alternativeIPs
-                            a(href='http://' + val[1]) #{val[0]}
-                            | &nbsp;
-
-// mixin für die Zustandsanzeige der Server
-mixin serverListe(ip, idName)
-  li
-    a(href='http://' + ip + '/status')
-      button.btn.btn-default(
-      id='button' + idName
-      ) &nbsp#{idName}&nbsp
-        span.label.label-default(id='button' + idName + '_DUE') DUE
-        span.label.label-default(id='button' + idName + '_RFD') RFD
-
 doctype html
 html
     head
-        title UKW Display
+        title UKW Display Admin
         link(rel='stylesheet', href='/stylesheets/bootstrap/bootstrap.css')
         link(rel='stylesheet', href='/stylesheets/bootstrap/dashboard.css')
         link(rel='stylesheet', href='/javascripts/fuelux/css/fuelux.min.css')
@@ -48,12 +21,10 @@ html
             script(src='/javascripts/bootstrap-notify.min.js')
             script(src='/javascripts/bootstrap-slider.js')
 
-
+        include mixins.pug
         block codeTeil1
             script.
                 console.log("Lade Navigationslayout")
-
-
 
         body.fuelux
             .navbar.navbar-default.navbar-fixed-top(role='navigation', style="margin-bottom: 10px;")
@@ -64,16 +35,12 @@ html
                             span.icon-bar
                             span.icon-bar
                             span.icon-bar
-                        a.navbar-brand(href='/dokumentation') ukwDisplay Doku und Status
+                        a.navbar-brand(href='/status') ukwDisplay Admin
                     .navbar-collapse.collapse
                         ul.nav.navbar-nav
-                            li
-                                a(href='/dokumentation/?dokument=readme') Einleitung
-                            li
-                                a(href='/dokumentation/?dokument=datenbank') Datenbank
-                            li
-                                a(href='/dokumentation/?dokument=powershell') Powershell
-                            li
+                            li#dokumentation
+                                a(href='/dokumentation/') Dokumentation
+                            li#status.active
                                 a(href='/status') Status
 
                             //- Schleife ueber alle alternativen Server, ID dynamisch zusammensetzen
@@ -104,10 +71,7 @@ html
             div.container-fluid
                 div.row
                     div.col-md-2.sidebar
-                        ul.nav.nav-sidebar
-                            each val, index in dateien
-                              li
-                                a(href='/dokumentation/?dokument=' + val)= val
+                        block sidebar
                     div.col-md-6.col-md-offset-2.main
                         block content
             block codeTeil2

@@ -1,17 +1,17 @@
-# Powershell Skript
+## Powershell Skript
 Das Powershell Skript user_zu_ip.ps1 überträgt Benutzernamen und IP-Adresse an die im Skript eingetragenen Server.
 Dies sind zur Zeit die UKW-Server. Auf diesen ist eine REST Schnittstelle /user/addWindowsUser eingerichtet.
 
 Das Skript ist in den Windows Gruppenrichtlinien als Logon-Skript eingetragen
 
 
-# Vorbereitung
+### Vorbereitung
 Zum Ausführung auf den Clients müssen installiert sein:
 - Dot Net Framework. Aktuelle Version liegt auf dem Server \\10.160.1.42\ibm\software\dotnet
 - Powershell Version 4. Aktuelle Version liegt auf dem Server \\10.160.1.42\ibm\software\update_powershell
 
 
-## Remote Installation
+### Remote Installation
 Dateien auf Rechner kopieren zB C:\updates
 - TODO: Kopier Skript wurde mal von IBM erstellt. Liegt irgendwo auf Server
 

@@ -1,9 +1,9 @@
-# Hilfe zur Datenbank
+## Hilfe zur Datenbank
 
 Die Mongodatenbank ist mit einer Replicaset Konfiguration als Cluster eingerichtet. Dabei ist ein Server der Primary (Master) und die anderen die Secondaries (Slaves).
 Nur der Primary erlaubt Schreibaktionen. Von den Secondaries kann gelesen werden.
 
-## MongoDB als Service einrichten
+### MongoDB als Service einrichten
 Wenn mongodb direct installiert wird (nicht apt-get), dann
 startet der Service mongod nicht.
 
@@ -12,7 +12,7 @@ Dazu muss über systemctl der Service "enabled" werden.
 systemctl enable mongod.service
 ```
 
-## Ausfälle (Server oder Netzwerk)
+### Ausfälle (Server oder Netzwerk)
 - Fällt ein Secondary weg bleibt der Primary erhalten.
 - Fällt der Primary weg bestimment die beiden Secondaries einen neuen Primary
 - Fallen zwei Instanzen aus kann automatisch kein neuer Primary bestimmt werden. Entsprechend der Dokumentation dient dies der Vermeidung von Dateninkonsistenzen....
@@ -27,7 +27,7 @@ Folgende Schritte sind dann auszuführen:
 
 [Link zur MongoDB Dokumentation](https://docs.mongodb.com/manual/tutorial/reconfigure-replica-set-with-unavailable-members/)
 
-## Ein Server fällt über längere Zeit aus.
+### Ein Server fällt über längere Zeit aus.
 Der Server befindet sich im Status:
 `"stateStr" : "RECOVERING", und
 "lastHeartbeatMessage" : "still syncing, not yet to minValid optime 58035089:3"`
