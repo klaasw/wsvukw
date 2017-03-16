@@ -436,8 +436,14 @@ exports.schreibeZustand = function (Nachricht) {
 	// TODO: Pruefen ob in Wirksystem wirklich notwendig.
 	// Dies wuerde da Umschaltverhalten kompliziert machen.
 	let zustand;
+	let komponentenTyp; // Komponententyp (Funkstelle oder SPAN oder MHAN) ermitteln
 
 	if (Nachricht.hasOwnProperty('FSTSTATUS')) {
+		komponentenTyp = (
+			Nachricht.FSTSTATUS.$.id.indexOf('MHAN') || Nachricht.FSTSTATUS.$.id.indexOf('SPAN'))
+				? 'span_mhan'
+				: 'funkstelle';
+
 		//entfernen da dieser sonst den Kanal im DUE wieder mit -1 ueberschreibt
 		if (Nachricht.FSTSTATUS.$.channel == '-1') {
 			zustand = {
@@ -447,7 +453,8 @@ exports.schreibeZustand = function (Nachricht) {
 					'status.state':        Nachricht.FSTSTATUS.$.state,
 				},
 				$setOnInsert: {
-					'status.id': Nachricht.FSTSTATUS.$.id
+					'komponentenTyp':      komponentenTyp,
+					'status.id':           Nachricht.FSTSTATUS.$.id
 				}
 			}
 		}
@@ -460,7 +467,8 @@ exports.schreibeZustand = function (Nachricht) {
 					'status.channel':      Nachricht.FSTSTATUS.$.channel
 				},
 				$setOnInsert: {
-					'status.id': Nachricht.FSTSTATUS.$.id
+					'komponentenTyp':      komponentenTyp,
+					'status.id':           Nachricht.FSTSTATUS.$.id
 				}
 			}
 		}
@@ -472,6 +480,7 @@ exports.schreibeZustand = function (Nachricht) {
 	}
 
 	if (Nachricht.hasOwnProperty('dienst')) {
+		komponentenTyp = 'server';
 		zustand = {
 			$set: {
 				[Nachricht.dienst]: {
@@ -483,6 +492,9 @@ exports.schreibeZustand = function (Nachricht) {
 					},
 				},
 			},
+			$setOnInsert: {
+				komponentenTyp: komponentenTyp,
+			}
 		};
 
 		if (Nachricht.dienst === 'DUE') {
@@ -498,6 +510,9 @@ exports.schreibeZustand = function (Nachricht) {
 						},
 					},
 				},
+				$setOnInsert: {
+					komponentenTyp: komponentenTyp,
+				}
 			}
 		}
 
@@ -509,89 +524,6 @@ exports.schreibeZustand = function (Nachricht) {
 		//nichts machen
 	}
 };
-
-/**
- * schreibe Zustandsmeldungen von RFD Komponenten und Server(Module) in zustandKomponenten
- * @param {Object} Nachricht - {"FSTSTATUS":{"$":{"id":"1-H-RFD-WEDRAD-FKHK-1","state":"0","connectState":"OK","channel":"-1"}}}
- */
-exports.schreibeZustand = function (Nachricht) {
-	const schreibeLokal = true; // es wird nur geschrieben wenn die aktuelle Instanz und Mongo Primary in einem VTR sind
-	// TODO: Pruefen ob in Wirksystem wirklich notwendig.
-	// Dies wuerde da Umschaltverhalten kompliziert machen.
-	let zustand;
-
-	if (Nachricht.hasOwnProperty('FSTSTATUS')) {
-		//entfernen da dieser sonst den Kanal im DUE wieder mit -1 ueberschreibt
-		if (Nachricht.FSTSTATUS.$.channel == '-1') {
-			zustand = {
-				$set:         {
-					letzteMeldung:         new Date(),
-					'status.connectState': Nachricht.FSTSTATUS.$.connectState,
-					'status.state':        Nachricht.FSTSTATUS.$.state,
-				},
-				$setOnInsert: {
-					'status.id': Nachricht.FSTSTATUS.$.id
-				}
-			}
-		}
-		else {
-			zustand = {
-				$set:         {
-					letzteMeldung:         new Date(),
-					'status.connectState': Nachricht.FSTSTATUS.$.connectState,
-					'status.state':        Nachricht.FSTSTATUS.$.state,
-					'status.channel':      Nachricht.FSTSTATUS.$.channel
-				},
-				$setOnInsert: {
-					'status.id': Nachricht.FSTSTATUS.$.id
-				}
-			}
-		}
-
-		//console.log(Nachricht.FSTSTATUS.$.id)
-		const selector = {'_id': Nachricht.FSTSTATUS.$.id};
-
-		exports.schreibeInDb('zustandKomponenten', selector, zustand, schreibeLokal);
-	}
-
-	if (Nachricht.hasOwnProperty('dienst')) {
-		zustand = {
-			$set: {
-				[Nachricht.dienst]: {
-					letzteMeldung: new Date(),
-					status:        {
-						url:   Nachricht.status.URL,
-						state: Nachricht.status.Status,
-						msg:   Nachricht.status.StatusMsg ? Nachricht.status.StatusMsg : 'keine'
-					},
-				},
-			},
-		}
-
-		if (Nachricht.dienst === 'DUE') {
-			const dueName = Nachricht.dienst + '.' + Nachricht.server;
-			zustand       = {
-				$set: {
-					[dueName]: {
-						letzteMeldung: new Date(),
-						status:        {
-							url:   Nachricht.status.URL,
-							state: Nachricht.status.Status,
-							msg:   Nachricht.status.StatusMsg ? Nachricht.status.StatusMsg : 'keine'
-						},
-					},
-				},
-			}
-		}
-
-		const selector = {'_id': cfg.alternativeIPs[0][0]};
-
-		exports.schreibeInDb('zustandKomponenten', selector, zustand, schreibeLokal);
-	}
-	else {
-		//nichts machen
-	}
-}
 
 const datenbank = {
 

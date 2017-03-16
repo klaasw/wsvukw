@@ -18,12 +18,12 @@ mixin errorModal(type,title,errorMessage)
 // mixin für die Zustandsanzeige der Server
 mixin serverListe(ip, idName)
   li
-    a(href='http://' + ip + '/status')
+    a(href='http://' + ip + '/status/')
       button.btn.btn-default(
-      id='button' + idName
+      class='button' + idName
       ) &nbsp#{idName}&nbsp
-        span.label.label-default(id='button' + idName + '_DUE') DUE
-        span.label.label-default(id='button' + idName + '_RFD') RFD
+        span.label.label-default(class='button' + idName + '_DUE') DUE
+        span.label.label-default(class='button' + idName + '_RFD') RFD
 
 mixin sidebarDoku
   ul.nav.nav-sidebar
@@ -37,3 +37,9 @@ mixin sidebarStatus
       a(href='/status') Übersicht
     li#tabelle
       a(href='/tabelle') Tabellenanzeige
+    li#zustaende
+      a(href='#') Schaltzustände
+    li#benutzer
+      a(href='#') Benutzer
+    li#weiteres
+      a(href='#') weiteres

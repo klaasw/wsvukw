@@ -62,6 +62,13 @@ router.get('/testen', function (req, res) {
 
 /* GET UKW Dokumentation */
 router.get('/dokumentation', function (req, res) {
+	const konfig = {
+		IpConfig:            {
+			aktuellerServer:      cfg.aktuellerServer,
+			alternativeIPs:       cfg.alternativeIPs,
+			displaySperreTimeout: cfg.displaySperreTimeout
+		}
+	};
 	const dateien = files.readdirSync('dokumentation')
 	const dateiNamen = []
 	for (const datei of dateien) {
@@ -84,18 +91,20 @@ router.get('/dokumentation', function (req, res) {
 	if (vorherigeDokPugVorlage !== dokPugVorlage) {
 		files.writeFileSync('views/technik/dokumentationInhalt.pug', dokPugVorlage)
 	}
-	res.render('technik/dokumentationNav', {dateien: dateiNamen})
+	res.render('technik/dokumentationNav', {dateien: dateiNamen, gesamteKonfig: konfig})
 });
 
 /* GET UKW Status */
 router.get('/status', function (req, res) {
 	const konfig = {
-		IpConfig: cfg
-	}
-	res.render('technik/status', {
-		//gesamteKonfig: konfig,
-		datei: req.query.dokument});
+		IpConfig:            {
+			aktuellerServer:      cfg.aktuellerServer,
+			alternativeIPs:       cfg.alternativeIPs,
+			displaySperreTimeout: cfg.displaySperreTimeout
+		}
+	};
 
+	res.render('technik/status', {gesamteKonfig: konfig});
 });
 
 /* GET UKW Status */
