@@ -163,11 +163,11 @@ router.get('/ukwAlt', function (req, res) {
 
 	db.ladeBenutzer(clientIP, res, function (benutzer) {
 
-		log.debug('ukw - Ermittelter Benutzer: ' + benutzer);
+		log.debug('ukw - Ermittelter Benutzer: ' + util.inspect(benutzer.user));
 
 
 		log.debug(FILENAME + ' *** Arbeitsplatz gefunden! IP: ' + tools.filterIP(req.ip));
-		erstelleKonfigFurAp(benutzer, function (konfig, errString) {
+		erstelleKonfigFurAp(benutzer.user, function (konfig, errString) {
 			if (konfig == 'Fehler') {
 				res.render('error', {
 					message: 'keine Konfiguration zu Arbeitsplatz: ' + benutzer.user + ' Fehler: ' + errString,
@@ -229,7 +229,7 @@ router.get('/ukwTestWue', function (req, res) {
  * TODO wenn die Konfiguration noch nicht eingelesen ist in Funkstellen, dann warten bis verfuegbar, nach Timeout mit Fehler antworten, Fehlerhandling clientseitig
  * */
 router.get('/ukwKonfig', function (req, res) {
-	log.warn(FILENAME + ' Funktion: router get /ukwKonfig von IP: ' + tools.filterIP(req.ip), +'   IP-Parameter: ' + JSON.stringify(req.query));
+	log.warn(FILENAME + ' Funktion: router get /ukwKonfig von IP: ' + tools.filterIP(req.ip), +'   IP-Parameter: ' + util.inspect(req.query));
 
 	const Funkstellen = rfd.getFunkstellen();
 	if (Funkstellen.length === 0) {
@@ -249,6 +249,7 @@ router.get('/ukwKonfig', function (req, res) {
 		}
 
 		// /ukwKonfig mit Parameter ?zuordnung=lotse
+		// TODO: Ueberarbeitung im Zuge der Funktion Zuordnung notwendig
 		if (typeof req.query.zuordnung == 'string' && req.query.zuordnung == 'lotse') {
 			db.ladeBenutzer(req.ip, res, function (benutzer) {
 				if (req.query.standard == 'true') {

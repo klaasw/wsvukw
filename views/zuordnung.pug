@@ -1,5 +1,5 @@
 extends layout
-block append testcode
+block append codeTeil1
     script.
 
 
@@ -160,7 +160,7 @@ block content
 
 
 
-block append testcode2
+block append codeTeil2
     script.
         $('#myCombobox').combobox();
 
@@ -197,7 +197,7 @@ block append testcode2
 
         //Variablen zum Arbeitsplatz laden
         function ladeKonfig() {
-            $.get("ukwKonfig?zuordnung=lotse&standard=true", function (data) {
+            $.get("ukwKonfig?zuordnung='lotse'&standard=true", function (data) {
                 //console.log(data)
                 LotsenApStandard = data.LotsenAp
                 LotsenApBenutzer = data.LotsenAp

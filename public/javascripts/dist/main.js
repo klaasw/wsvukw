@@ -286,15 +286,32 @@ $(window).load(function () {
 						.removeClass('label-danger')
 						.addClass('label-warning')
 						.text('Warn');
+					if (FunkstelleGWID) {
+						$('span.label', FunkstelleGWID)
+							.removeClass('label-success')
+							.removeClass('label-danger')
+							.addClass('label-warning')
+							.text('Warn');
+					}
 					break;
 				case '1': // Error
 					$('span.label', standortButton).removeClass('label-success').addClass('label-danger').text('Error');
+					if (FunkstelleGWID) {
+						$('span.label', FunkstelleGWID).removeClass('label-success').addClass('label-danger').text('Error')
+					}
 					break;
 				case '0': // OK
 					$('span.label', standortButton)
 						.removeClass('label-danger')
 						.removeClass('label-warning')
 						.addClass('label-success').text(Zustand);
+					if (FunkstelleGWID) {
+						$('span.label', FunkstelleGWID)
+							.removeClass('label-danger')
+							.removeClass('label-warning')
+							.addClass('label-success')
+							.text(Zustand)
+					}
 					break;
 			}
 		},

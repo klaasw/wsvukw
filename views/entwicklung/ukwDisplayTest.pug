@@ -1,5 +1,6 @@
 extends layoutTest
 include mixins
+include zuordnung
 
 block append codeTeil1
 
@@ -33,7 +34,7 @@ block content
 								data-target='#mithoerenModal',
 								data-funkstelle=val[0],
 								data-lautstaerke='100'
-								) 
+								)
 									+findeFunkstelle(val, gesamteKonfig.MhanZuordnung)
 								div.dropdown.text-center
 									- kompomentenID = val[0] ? val[0] : '---------------------';
@@ -194,3 +195,5 @@ block content
 				+errorModal('DUE','Fehler','Verbindung zum Server abgebrochen. Bitte verwenden Sie folgende alternativen Server:')
 				+errorModal('RFD','RFD-Fehler','Verbindung zum RFD-Dienst abgebrochen. Bitte verwenden Sie folgende alternativen Server:')
 				+errorModal('DUEGeraete','Fehler mit Bediengeräte', 'Folgendes Bediengeräte weist einen Fehler auf: ')
+				// ZuordnungModal als mixin ausgelagert nach zuordnung.pug
+				+zuordnungModal()
