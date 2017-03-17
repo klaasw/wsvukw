@@ -47,9 +47,9 @@ html
 							else
 								li.active#statusWechsel(onclick='WSV.Display.wechselEinzelGruppen()', data-einzel='false')
 									a(href='#') Gruppenschaltung
-
-							li#konf
-								a(href='#', data-toggle='modal', data-target='#zuordnungModal') RL Kanalzuordnung
+							if (aktuellerBenutzer.user.indexOf('lotse') == -1)
+								li#konf
+									a(href='#', data-toggle='modal', data-target='#zuordnungModal') RL Kanalzuordnung
 
 							li.dropdown.btn-group.navbar-btn
 								button.btn.btn-primary.dropdown-toggle(

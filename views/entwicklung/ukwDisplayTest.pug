@@ -8,7 +8,14 @@ block append codeTeil1
 block content
 	div.container-fluid
 		div.content
-			//Scahaltflaechen anzeigen
+			// Schaltflaechen fuer LotsenAp
+			// TODO: fuer LotsenAp nicht erstellen
+			div.row
+				each lotsenAp, index in gesamteKonfig.LotsenAp
+					div.col-md-1.text-center(style="padding-left: 5px;padding-right: 5px;")
+							div.btn.btn-default #{gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname ? gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname : 'sname'}
+									p(style="margin-bottom: 0px;") Kanal
+			//Schaltflaechen fuer Funkstellen nzeigen
 			div.row
 				each val, index in gesamteKonfig.FunkstellenReihe
 

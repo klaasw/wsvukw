@@ -365,7 +365,8 @@ function erstelleKonfigFurAp(Ap, callback) {
 			displaySperreTimeout: cfg.displaySperreTimeout
 		},
 
-		KanalListe: []
+		KanalListe: [],
+		LotsenAp:            {},
 	};
 
 	log.debug(FILENAME + ' uebergebener Arbeitsplatz: ' + Ap);
@@ -424,6 +425,10 @@ function erstelleKonfigFurAp(Ap, callback) {
 					Konfig.ArbeitsplatzGeraete = response2;
 					if (response2.hasOwnProperty('Funkstellen')) {
 						Konfig.FunkstellenReihe = response2.Funkstellen;
+						// Ueberschreibe Konfig.ArbeitsplatzGeraete, da bei Lotsen auch die
+						// Funkstellen in der Konfig enthalten sind
+						delete response2.Funkstellen
+						Konfig.ArbeitsplatzGeraete = response2;
 					}
 
 					//3. MHAN Zuordnung fuer Arbeitsplatz einlesen
@@ -437,8 +442,25 @@ function erstelleKonfigFurAp(Ap, callback) {
 							Konfig.MhanZuordnung = response3;
 							//----------------------------------------------------------------------------------------
 							//Hier die Callback fuer die Res.send einbauen, die die Rueckmeldung aus Konfig benoetigt
+							leseLotsenAp(revieranteil, function(alleLotsenAp){
+								for (const lotsenAp in alleLotsenAp) {
+									//SPAN Details schreiben fuer Sname in GUI
+									if (alleLotsenAp[lotsenAp].SPAN01 != '') {
+										console.log(alleLotsenAp[lotsenAp].SPAN01)
+										const spanDetails = rfd.findeFstNachId(alleLotsenAp[lotsenAp].SPAN01)
+										if (spanDetails == null) {
+											console.log('Error')
+										}
+										else {
+											Konfig.FunkstellenDetails[alleLotsenAp[lotsenAp].SPAN01] = spanDetails;
+										}
+									}
+								}
 
-							callback(Konfig);
+								Konfig.LotsenAp = alleLotsenAp
+								callback(Konfig);
+							})
+
 						}//Else Ende
 					});
 				}//Else Ende
@@ -448,7 +470,7 @@ function erstelleKonfigFurAp(Ap, callback) {
 } //Funktion Ende
 
 /**
- *
+ * TODO: Funktion löschen, da vielleiht nicht mehr benoetigt
  * @param {string} Ap
  * @param {boolean} standard
  * @param {function} callback
@@ -505,5 +527,30 @@ function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
 		} //While Ende
 	});
 } //Funktion Ende
+
+function leseLotsenAp (revier, callback) {
+	//Alle LotsenAP einlesen
+	//ueber alle Lotsendateien //JA_Lotse1.json usw. gehen und Inhalt in die Konfig schreiben
+	const lotsenAp   = {};
+	let i            = 1;
+	let weitereDatei = true;  //solange true bis keine weitere Datei vorliegt
+	while (weitereDatei === true) {
+		try {
+			weitereDatei = files.statSync('config/revier/' + revier + '_lotse' + i + '.json').isFile();
+			const tmp    = JSON.parse(files.readFileSync('config/revier/' + revier + '_lotse' + i + '.json', 'utf8'));
+			log.debug(FILENAME + ' Funktion erstelleKonfigFuerLotsenKanal gelesene Daten: ' + util.inspect(tmp));
+			delete tmp.Funkstellen;
+			lotsenAp[revier + '_lotse' + i] = tmp;
+			//console.log(lotsenAp[revier + '_lotse' + i])
+		}
+		catch (error) {
+			//log.debug(error)
+			log.debug(FILENAME + ' keine weitere Datei ' + 'config/revier/' + revier + '_lotse' + i + '.json');
+			callback(lotsenAp);
+			return;
+		}
+		i++;
+	} //While Ende
+}
 
 module.exports = router;

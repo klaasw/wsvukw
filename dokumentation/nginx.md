@@ -22,6 +22,12 @@ Dazu wird nginx wird als Router und ProxyServer vorgeschaltet.
 
 //TODO: server_name Testen und in DOku ergänutzen
 
+## Routing
+Das Routing zu dem entsprechenden Server muss anhand des DNS erfolgen.
+via / funktioniert nicht, da "Anwendungs-interne" Verlinkungen auf Sktipte, Bilder, CSS usw.
+ohne Anwendungspräfix gebaut werden/ wurden. Z.B. app1/stylesheet/xyz.css ist bisher nicht vorgesehen.
+ 
+
 ## Konigurationsparameter
 
 Dazu werden folgene Parameter in die conf.d/default.conf eingetragen

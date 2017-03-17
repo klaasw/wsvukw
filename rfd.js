@@ -138,6 +138,21 @@ exports.leseRfdTopologie = function (callback) {
 								Funkstellen[tmp.gwid].Funkstellen[tmp.id] = tmp
 							}
 						}
+
+						//SPAN auslesen und in Funkstellen variable schreiben
+						if (result['SPAN']) { //Pruefung ob Wert enthalten ist. In Referenz sind z.B. keine HK Anlagen
+							const Span = result['SPAN'];
+							for (let i = 0; i < Span.length; i++) {
+								//log.debug(FstMK[i]['$'])
+								const tmp         = Span[i]['$'];
+								//log.debug(tmp)
+								//unoetige Variablen entfernen
+								delete tmp.ipaddr;
+								delete tmp.portsip;
+								delete tmp.portrtp;
+								Funkstellen[tmp.id] = tmp;
+							}
+						}
 						callback();
 						//log.debug(Funkstellen)
 						//log.debug(result['FKMK'])
