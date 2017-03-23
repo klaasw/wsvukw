@@ -451,6 +451,9 @@ $(window).load(function () {
 					if (typeof msg.RX.$.atis == 'string') {
 						this.wechselAtisKennung(msg.RX.$.id, msg.RX.$.atis, 1000);
 					}
+					else {
+						this.entferneAtisKennung(msg.RX.$.id);
+					}
 
 					$.notify({
 						message: 'Empfang:<br>' + _self.ApFunkstellen[msg.RX.$.id].sname
@@ -1196,7 +1199,7 @@ $(window).load(function () {
 		},
 
 		entferneAtisKennung: function (FstID) {
-			console.log('entferne ATIS fuddel');
+			clearInterval(this.atisInterval[FstID]);
 			const atis_element = $('#' + FstID).parents('.button_flaeche').find('.atis');
 			atis_element.removeClass('alert-info').html(this.atisDefault);
 		}
