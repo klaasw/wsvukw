@@ -425,17 +425,21 @@
 
 			if (typeof msg == 'object'
 				&& typeof msg[msgTyp].$ != 'undefined'
-				&& (_self.ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id) || _self.ArbeitsplatzGeraeteID.hasOwnProperty(msg[msgTyp].$.id))
-			) {
+				&& (_self.ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id) || _self.ArbeitsplatzGeraeteID.hasOwnProperty(msg[msgTyp].$.id))) {
 
 				// Empfangen aktiv0
 				if ('RX' in msg && msg.RX.$.state === '1') {
 					//suche Schaltflaeche zu FunkstellenID
-					const button = $('#' + msg.RX.$.id).parent().parent().offsetParent().attr('id');
+					const panel = $('#' + msg.RX.$.id).parents('.panel');
 
 					//Kanalflaeche faerben
-					$('#' + button + ' .button_flaeche').addClass('bg-danger');
-					$('#' + button + ' .button_flaeche h2').addClass('text-danger');
+					$('.button_flaeche', panel).addClass('bg-danger');
+					$('.button_flaeche h2', panel).addClass('text-danger');
+
+					// ATIS Kennung Anzeigen wenn vorhanden
+					if (typeof msg.RX.$.atis == 'string') {
+						this.wechselAtisKennung(msg.RX.$.id, msg.RX.$.atis, 1000);
+					}
 
 					$.notify({
 						message: 'Empfang:<br>' + _self.ApFunkstellen[msg.RX.$.id].sname
@@ -447,11 +451,11 @@
 				// Empfangen deaktiv
 				if ('RX' in msg && msg.RX.$.state === '0') {
 					//suche Schaltflaeche zu FunkstellenID
-					const button = $('#' + msg.RX.$.id).parent().parent().offsetParent().attr('id');
+					const panel = $('#' + msg.RX.$.id).parents('.panel');
 
 					//Kanalflaeche entfaerben
-					$('#' + button + ' .button_flaeche').removeClass('bg-danger');
-					$('#' + button + ' .button_flaeche h2').removeClass('text-danger');
+					$('.button_flaeche', panel).removeClass('bg-danger');
+					$('.button_flaeche h2', panel).removeClass('text-danger');
 
 					console.log('RX state 0: ' + msg.RX.$.id)
 				}
@@ -464,11 +468,11 @@
 					}
 					else {
 						//suche Schaltflaeche zu FunkstellenID
-						const button = $('#' + msg.TX.$.id).parent().parent().offsetParent().attr('id');
+						const panel = $('#' + msg.TX.$.id).parents('.panel');
 
 						//Kanalflaeche faerben
-						$('#' + button + ' .button_flaeche').addClass('bg-success');
-						$('#' + button + ' .button_flaeche h2').addClass('text-success');
+						$('.button_flaeche', panel).addClass('bg-success');
+						$('.button_flaeche h2', panel).addClass('text-success');
 
 						console.log('TX state 1 mit SPAN: ' + msg.TX.$.id)
 					}
@@ -481,11 +485,11 @@
 					}
 					else {
 						//suche Schaltflaeche zu FunkstellenID
-						const button = $('#' + msg.TX.$.id).parent().parent().offsetParent().attr('id');
+						const panel = $('#' + msg.TX.$.id).parents('.panel');
 
 						//Kanalflaeche entfaerben
-						$('#' + button + ' .button_flaeche').removeClass('bg-success');
-						$('#' + button + ' .button_flaeche h2').removeClass('text-success');
+						$('.button_flaeche', panel).removeClass('bg-success');
+						$('.button_flaeche h2', panel).removeClass('text-success');
 						console.log('TX state 0 mit SPAN: ' + msg.TX.$.id)
 					}
 				}
@@ -501,8 +505,8 @@
 
 					//Bei Kanalaenderung die Kanalnummer setzen
 					if (msg.FSTSTATUS.$.channel > -1) {
-						const button = $('#' + msg.FSTSTATUS.$.id).parent().parent().offsetParent().attr('id');
-						$('#' + button + ' .button_kanalNr > span').text(msg.FSTSTATUS.$.channel)
+						const panel = $('#' + msg.FSTSTATUS.$.id).parents('.panel');
+						$('.button_kanalNr > span', panel).text(msg.FSTSTATUS.$.channel);
 					}
 
 				}
@@ -519,6 +523,9 @@
 						//Funktionen von "getrennt"
 						//suche SChaltflaeche zu FunkstellenID
 						const button = $('#' + msg.FSTSTATUS.$.id).offsetParent().attr('id');
+						// console.log(button);
+						// const panel = $('#' + msg.FSTSTATUS.$.id).parents('.panel');
+
 						//$('#'+button+' > div > div.panel-heading > span').text( "getrennt" )
 						$('#' + button + ' > div').removeClass('panel-primary').css('background-color', '');
 
@@ -978,8 +985,9 @@
 			$.notify('Lautstaerke: ' + this.ApFunkstellen[FstID].sname + ' ...');
 
 			const button = $('#' + FstID).parent().parent().offsetParent().attr('id');
+
 			//Lautstärke in HTML Attribut setzen
-			$('#' + button + ' button_mhan').attr('data-lautstaerke', level)
+			// $('#' + button + ' button_mhan').attr('data-lautstaerke', level)
 		},
 
 		/**
@@ -1162,7 +1170,8 @@
 		 */
 		wechselAtisKennung: function (FstID, ATIS, timeout) {
 			const atis_element = $('#' + FstID).parents('.button_flaeche').find('.atis');
-			const _self = this;
+			const _self        = this;
+			timeout            = timeout || this.IpConfig.atisKennungTimeout * 1000;
 
 			if (!atis_element.length) {
 				return;
@@ -1170,12 +1179,15 @@
 
 			clearInterval(this.atisInterval[FstID]);
 			atis_element.addClass('alert-info').html(ATIS);
+			this.atisInterval[FstID] = setInterval(function () {
+				_self.entferneAtisKennung(FstID)
+			}, timeout);
+		},
 
-			if (typeof timeout == 'number') {
-				this.atisInterval[FstID] = setInterval(function () {
-					atis_element.removeClass('alert-info').html(_self.atisDefault);
-				}, timeout);
-			}
+		entferneAtisKennung: function (FstID) {
+			console.log('entferne ATIS fuddel');
+			const atis_element = $('#' + FstID).parents('.button_flaeche').find('.atis');
+			atis_element.removeClass('alert-info').html(this.atisDefault);
 		}
 	}
 

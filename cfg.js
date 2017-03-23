@@ -113,6 +113,7 @@ const cfg = {
 	loglevelFile: cfgIPs.loglevelFile || 'info',
 
 	displaySperreTimeout: 10, // Dauer der Displaysperre in Sekunden
+	atisKennungTimeout: 5 // Anzeige der ATIS Kennung in Sekunden
 };
 
 module.exports = cfg;

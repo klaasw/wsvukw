@@ -63,16 +63,18 @@ router.get('/testen', function (req, res) {
 /* GET UKW Dokumentation */
 router.get('/dokumentation', function (req, res) {
 	const konfig = {
-		IpConfig:            {
+		IpConfig: {
 			aktuellerServer:      cfg.aktuellerServer,
 			alternativeIPs:       cfg.alternativeIPs,
-			displaySperreTimeout: cfg.displaySperreTimeout
+			displaySperreTimeout: cfg.displaySperreTimeout,
+			atisKennungTimeout:   cfg.atisKennungTimeout
 		}
 	};
-	const dateien = files.readdirSync('dokumentation')
-	const dateiNamen = []
+
+	const dateien    = files.readdirSync('dokumentation');
+	const dateiNamen = [];
 	for (const datei of dateien) {
-		const ohneEndung = datei.split('.')
+		const ohneEndung = datei.split('.');
 		dateiNamen.push(ohneEndung[0])
 	}
 
@@ -97,10 +99,11 @@ router.get('/dokumentation', function (req, res) {
 /* GET UKW Status */
 router.get('/status', function (req, res) {
 	const konfig = {
-		IpConfig:            {
+		IpConfig: {
 			aktuellerServer:      cfg.aktuellerServer,
 			alternativeIPs:       cfg.alternativeIPs,
-			displaySperreTimeout: cfg.displaySperreTimeout
+			displaySperreTimeout: cfg.displaySperreTimeout,
+			atisKennungTimeout:   cfg.atisKennungTimeout
 		}
 	};
 
@@ -114,7 +117,8 @@ router.get('/tabelle', function (req, res) {
 	}
 	res.render('technik/tabelle', {
 		//gesamteKonfig: konfig,
-		datei: req.query.dokument});
+		datei: req.query.dokument
+	});
 
 });
 
@@ -362,11 +366,12 @@ function erstelleKonfigFurAp(Ap, callback) {
 		IpConfig:            {
 			aktuellerServer:      cfg.aktuellerServer,
 			alternativeIPs:       cfg.alternativeIPs,
-			displaySperreTimeout: cfg.displaySperreTimeout
+			displaySperreTimeout: cfg.displaySperreTimeout,
+			atisKennungTimeout:   cfg.atisKennungTimeout
 		},
 
 		KanalListe: [],
-		LotsenAp:            {},
+		LotsenAp:   {},
 	};
 
 	log.debug(FILENAME + ' uebergebener Arbeitsplatz: ' + Ap);
@@ -393,8 +398,8 @@ function erstelleKonfigFurAp(Ap, callback) {
 						// Pruefen auf gwid und ggf. in Konfig. einspeisen
 						const fstDetails = rfd.findeFstNachId(fstReihe[button][t])
 						if (fstDetails.hasOwnProperty('gwId')) {
-							Konfig.FunkstellenDetails[fstReihe[button][t]]  = fstDetails.fstId;
-							Konfig.FunkstellenDetails[fstDetails.gwId.id] = fstDetails.gwId;
+							Konfig.FunkstellenDetails[fstReihe[button][t]] = fstDetails.fstId;
+							Konfig.FunkstellenDetails[fstDetails.gwId.id]  = fstDetails.gwId;
 						}
 						else {
 							Konfig.FunkstellenDetails[fstReihe[button][t]] = fstDetails;
@@ -442,7 +447,7 @@ function erstelleKonfigFurAp(Ap, callback) {
 							Konfig.MhanZuordnung = response3;
 							//----------------------------------------------------------------------------------------
 							//Hier die Callback fuer die Res.send einbauen, die die Rueckmeldung aus Konfig benoetigt
-							leseLotsenAp(revieranteil, function(alleLotsenAp){
+							leseLotsenAp(revieranteil, function (alleLotsenAp) {
 								for (const lotsenAp in alleLotsenAp) {
 									//SPAN Details schreiben fuer Sname in GUI
 									if (alleLotsenAp[lotsenAp].SPAN01 != '') {
@@ -528,7 +533,7 @@ function erstelleKonfigFuerLotsenKanal(Ap, standard, callback) {
 	});
 } //Funktion Ende
 
-function leseLotsenAp (revier, callback) {
+function leseLotsenAp(revier, callback) {
 	//Alle LotsenAP einlesen
 	//ueber alle Lotsendateien //JA_Lotse1.json usw. gehen und Inhalt in die Konfig schreiben
 	const lotsenAp   = {};
