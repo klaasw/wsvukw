@@ -21,6 +21,7 @@
   }
 
   .button_mhan {
+    display:                    none;
     border-bottom-left-radius:  0;
     border-bottom-right-radius: 0;
     border-top-width:           0;
@@ -51,6 +52,10 @@
 
   .button_kanalNr {
     margin: 5px 0;
+  }
+
+  .atis {
+    padding: 10px 0;
   }
 
   .dropdown {

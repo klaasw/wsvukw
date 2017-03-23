@@ -153,6 +153,35 @@ exports.leseRfdTopologie = function (callback) {
 								Funkstellen[tmp.id] = tmp;
 							}
 						}
+
+/*						if (result['GWST']) {
+							const FstGWST = result['FKGW'];
+							for (let i = 0; i < FstGWST.length; i++) {
+								//log.debug(FstMK[i]['$'])
+								const tmp         = FstGWST[i]['$'];
+								tmp.MKA           = false;
+								tmp.GW            = true;
+								tmp.aufgeschaltet = false; //default Zustand für Varbeitung von Schaltzuständen
+								//log.debug(tmp)
+								//unoetige Variablen entfernen
+								delete tmp.ipaddr;
+								delete tmp.portsip;
+								delete tmp.portrtp;
+								Funkstellen[tmp.id] = tmp;
+
+								//Erzeuge Pseudo-Funkstelle mit GW-ID
+								if (!Funkstellen.hasOwnProperty(tmp.gwid)) {
+									Funkstellen[tmp.gwid] = {
+										'id': tmp.gwid,
+										'Funkstellen': {},
+										'sname': tmp.sname,
+										'channel':tmp.channel
+									}
+								}
+								Funkstellen[tmp.gwid].Funkstellen[tmp.id] = tmp
+							}
+						}*/
+
 						callback();
 						//log.debug(Funkstellen)
 						//log.debug(result['FKMK'])

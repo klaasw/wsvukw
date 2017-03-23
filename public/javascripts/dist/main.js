@@ -1161,6 +1161,22 @@ $(window).load(function () {
 
 			$('#displaySperreModal .modal-dialog h1').text(parseInt(obj.countDown / 1000));
 
+		},
+
+		wechselAtisKennung: function (FstID, ATIS, timeout) {
+			const atis_element = $('#' + FstID).parents('.button_flaeche').find('.atis');
+
+			if (!atis_element.length) {
+				return;
+			}
+
+			atis_element.html(ATIS);
+
+			if (typeof timeout == 'number') {
+				const atisInterval = setInterval(function () {
+					atis_element.html('');
+				}, timeout);
+			}
 		}
 	}
 
