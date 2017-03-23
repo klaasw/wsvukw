@@ -10,7 +10,7 @@ block content
 		div.content
 			// Schaltflaechen fuer LotsenAp
 			// TODO: fuer LotsenAp nicht erstellen
-			div.row
+			div.row.lotsen
 				each lotsenAp, index in gesamteKonfig.LotsenAp
 					div.col-md-1.text-center(style="padding-left: 5px;padding-right: 5px;")
 							div.btn.btn-default #{gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname ? gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname : 'sname'}

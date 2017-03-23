@@ -78,14 +78,14 @@ router.get('/dokumentation', function (req, res) {
 		dateiNamen.push(ohneEndung[0])
 	}
 
-	let dokPugVorlage            = files.readFileSync('views/technik/dokumentationInhalt.pug')
+	let dokPugVorlage            = files.readFileSync('views/technik/dokumentationInhalt.pug');
 	const vorherigeDokPugVorlage = dokPugVorlage;
 
 	dokPugVorlage = 'block content\n';
 
 	for (const name of dateiNamen) {
 		const ueberschrift = '  h1#' + name + ' ' + name + '\n';
-		const include      = '    include:markdown-it ../../dokumentation/' + name + '.md\n'
+		const include      = '    include:markdown-it ../../dokumentation/' + name + '.md\n';
 		dokPugVorlage += ueberschrift;
 		dokPugVorlage += include;
 	}
@@ -114,7 +114,7 @@ router.get('/status', function (req, res) {
 router.get('/tabelle', function (req, res) {
 	const konfig = {
 		IpConfig: cfg
-	}
+	};;
 	res.render('technik/tabelle', {
 		//gesamteKonfig: konfig,
 		datei: req.query.dokument
@@ -396,7 +396,7 @@ function erstelleKonfigFurAp(Ap, callback) {
 					//Funkstellendetails schreiben
 					if (fstReihe[button][t] != '') {
 						// Pruefen auf gwid und ggf. in Konfig. einspeisen
-						const fstDetails = rfd.findeFstNachId(fstReihe[button][t])
+						const fstDetails = rfd.findeFstNachId(fstReihe[button][t]);;
 						if (fstDetails.hasOwnProperty('gwId')) {
 							Konfig.FunkstellenDetails[fstReihe[button][t]] = fstDetails.fstId;
 							Konfig.FunkstellenDetails[fstDetails.gwId.id]  = fstDetails.gwId;
@@ -432,7 +432,7 @@ function erstelleKonfigFurAp(Ap, callback) {
 						Konfig.FunkstellenReihe = response2.Funkstellen;
 						// Ueberschreibe Konfig.ArbeitsplatzGeraete, da bei Lotsen auch die
 						// Funkstellen in der Konfig enthalten sind
-						delete response2.Funkstellen
+						delete response2.Funkstellen;;
 						Konfig.ArbeitsplatzGeraete = response2;
 					}
 
@@ -451,8 +451,8 @@ function erstelleKonfigFurAp(Ap, callback) {
 								for (const lotsenAp in alleLotsenAp) {
 									//SPAN Details schreiben fuer Sname in GUI
 									if (alleLotsenAp[lotsenAp].SPAN01 != '') {
-										console.log(alleLotsenAp[lotsenAp].SPAN01)
-										const spanDetails = rfd.findeFstNachId(alleLotsenAp[lotsenAp].SPAN01)
+										console.log(alleLotsenAp[lotsenAp].SPAN01);
+										const spanDetails = rfd.findeFstNachId(alleLotsenAp[lotsenAp].SPAN01);
 										if (spanDetails == null) {
 											console.log('Error')
 										}
@@ -462,7 +462,7 @@ function erstelleKonfigFurAp(Ap, callback) {
 									}
 								}
 
-								Konfig.LotsenAp = alleLotsenAp
+								Konfig.LotsenAp = alleLotsenAp;
 								callback(Konfig);
 							})
 
