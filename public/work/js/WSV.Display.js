@@ -21,6 +21,8 @@
 		geschalteteSPAN:       {},
 		countDown:             0,
 		cdInterval:            {},
+		atisInterval:          {},
+		atisDefault:           'keine ATIS-Kennung',
 
 		init: function () {
 
@@ -1152,18 +1154,26 @@
 
 		},
 
+		/**
+		 * Wechselt die Anzeige der ATIS-Kennung für eine Funkstelle
+		 * @param {string} FstID - Funkstellen ID
+		 * @param {string} ATIS - ATIS Kennung
+		 * @param {int} timeout - nach wie vielen ms die Anzeige wieder entfernt wird
+		 */
 		wechselAtisKennung: function (FstID, ATIS, timeout) {
 			const atis_element = $('#' + FstID).parents('.button_flaeche').find('.atis');
+			const _self = this;
 
 			if (!atis_element.length) {
 				return;
 			}
 
-			atis_element.html(ATIS);
+			clearInterval(this.atisInterval);
+			atis_element.addClass('alert-info').html(ATIS);
 
 			if (typeof timeout == 'number') {
-				const atisInterval = setInterval(function () {
-					atis_element.html('');
+				this.atisInterval = setInterval(function () {
+					atis_element.removeClass('alert-info').html(_self.atisDefault);
 				}, timeout);
 			}
 		}

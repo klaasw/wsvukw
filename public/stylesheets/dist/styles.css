@@ -7586,6 +7586,7 @@ h4 {
 }
 .panel .atis {
   padding: 10px 0;
+  transition: all .3s ease-out;
 }
 .panel .dropdown .dropdown-menu {
   width: 250px;
