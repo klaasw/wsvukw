@@ -21,7 +21,7 @@
 		geschalteteSPAN:       {},
 		countDown:             0,
 		cdInterval:            {},
-		atisInterval:          {},
+		atisInterval:          [],
 		atisDefault:           'keine ATIS-Kennung',
 
 		init: function () {
@@ -1168,11 +1168,11 @@
 				return;
 			}
 
-			clearInterval(this.atisInterval);
+			clearInterval(this.atisInterval[FstID]);
 			atis_element.addClass('alert-info').html(ATIS);
 
 			if (typeof timeout == 'number') {
-				this.atisInterval = setInterval(function () {
+				this.atisInterval[FstID] = setInterval(function () {
 					atis_element.removeClass('alert-info').html(_self.atisDefault);
 				}, timeout);
 			}
