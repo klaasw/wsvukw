@@ -22,7 +22,10 @@
 		countDown:             0,
 		cdInterval:            {},
 		atisInterval:          [],
-		atisDefault:           'keine ATIS-Kennung',
+		atisDefaultText:       'keine ATIS-Kennung',
+		atisMIDS:              {},
+		alphabet:              [],
+
 
 		init: function () {
 
@@ -31,6 +34,7 @@
 			this.aktuellerUKWserver = location.protocol + '//' + location.hostname + ':' + location.port;
 			this.setDefaultServer();
 			this.ladeKonfig();
+			this.ladeAtisArrays();
 
 			const _self = this;
 
@@ -1180,6 +1184,8 @@
 				return;
 			}
 
+			ATIS = this.filterAtisKennung(ATIS);
+
 			clearInterval(this.atisInterval[FstID]);
 			atis_element.addClass('alert-info').html(ATIS);
 			this.atisInterval[FstID] = setInterval(function () {
@@ -1187,10 +1193,39 @@
 			}, timeout);
 		},
 
+		filterAtisKennung: function (ATIS) {
+			ATIS        = ATIS.substr(1, ATIS.length - 1);
+			const mids  = ATIS.substr(0, 3);
+			const code1 = this.alphabet[parseInt(ATIS.substr(3, 2))];
+			const code2 = ATIS.substr(5, 4);
+
+			let str = '';
+
+			if (this.atisMIDS.hasOwnProperty(mids)) {
+				str = this.atisMIDS[mids][0];
+			}
+
+			str += ' ' + code1 + ' ' + code2;
+
+			return str;
+		},
+
 		entferneAtisKennung: function (FstID) {
 			clearInterval(this.atisInterval[FstID]);
 			const atis_element = $('#' + FstID).parents('.button_flaeche').find('.atis');
-			atis_element.removeClass('alert-info').html(this.atisDefault);
+			atis_element.removeClass('alert-info').html(this.atisDefaultText);
+		},
+
+		ladeAtisArrays: function () {
+			const _self = this;
+
+			$.getJSON('/config/mids.json', function (data) {
+				_self.atisMIDS = data;
+			});
+
+			for (let i = 0; i < 26; i++) {
+				this.alphabet[i + 1] = String.fromCharCode('A'.charCodeAt(0) + i);
+			}
 		}
 	}
 
