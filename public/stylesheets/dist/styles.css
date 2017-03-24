@@ -7446,6 +7446,7 @@ table {
 
 body {
   background-color: #FFFFFF;
+  font-family: 'Open Sans', sans-serif !important;
 }
 
 body, html {
@@ -7562,6 +7563,7 @@ h4 {
   border-right-width: 0;
 }
 .panel .button_mhan {
+  display: none;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   border-top-width: 0;
