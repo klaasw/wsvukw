@@ -7588,6 +7588,9 @@ h4 {
 .panel .panel-footer {
   padding: 0;
 }
+.panel .panel-footer .mhan {
+  padding: 10px 5px;
+}
 .panel .panel-footer .button_mhan,
 .panel .panel-footer .button_span {
   display: inline-block;
