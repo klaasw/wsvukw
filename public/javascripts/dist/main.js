@@ -573,7 +573,7 @@ $(window).load(function () {
 								$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
 							}
 							else { //nur MHAN aufschaltungen
-								_self.schaltenVisuell(msg.geschaltet.$.id, 'mhan', true);
+								// _self.schaltenVisuell(msg.geschaltet.$.id, 'mhan', true);
 							}
 
 							const geraet = msg.geschaltet.$.Ap;
@@ -611,7 +611,7 @@ $(window).load(function () {
 							}
 							else { //nur MHAN Aufschaltungen
 								// $('.button_mhan', button).css('background-color', '#f5f5f5').removeClass('bg-primary');
-								_self.schaltenVisuell(msg.getrennt.$.id, 'mhan', false);
+								// _self.schaltenVisuell(msg.getrennt.$.id, 'mhan', false);
 							}
 							const geraet = msg.getrennt.$.Ap;
 

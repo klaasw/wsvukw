@@ -22,21 +22,7 @@
     border-right-width:      0;
   }
 
-  .button_mhan {
-    //display:                    none;
-    border-bottom-left-radius:  0;
-    border-bottom-right-radius: 0;
-    border-top-width:           0;
-    border-left-width:          0;
-    border-right-width:         0;
-    padding-top:                10px;
-    padding-bottom:             10px
-  }
-
   .button_standort {
-    margin-top:         10px;
-    margin-left:        0;
-    margin-right:       0;
     border-right-width: 1px;
     border-left-width:  1px;
     padding-top:        2px;
@@ -64,5 +50,26 @@
     .dropdown-menu {
       width: 250px;
     }
+  }
+
+  .panel-footer {
+    padding: 0;
+
+    .button_mhan,
+    .button_span {
+      display: inline-block;
+    }
+  }
+}
+
+.panel.panel-primary {
+  .panel-heading {
+    @extend .panel-primary;
+  }
+}
+
+.panel.panel-default {
+  .panel-heading {
+    @extend .panel-default;
   }
 }

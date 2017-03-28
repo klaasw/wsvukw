@@ -6259,41 +6259,41 @@ button.list-group-item-danger.active:focus {
   border-bottom: 1px solid #ddd;
 }
 
-.panel-default {
+.panel-default, .panel.panel-default .panel-heading {
   border-color: #ddd;
 }
-.panel-default > .panel-heading {
+.panel-default > .panel-heading, .panel.panel-default .panel-heading > .panel-heading {
   color: #333333;
   background-color: #f5f5f5;
   border-color: #ddd;
 }
-.panel-default > .panel-heading + .panel-collapse > .panel-body {
+.panel-default > .panel-heading + .panel-collapse > .panel-body, .panel.panel-default .panel-heading > .panel-heading + .panel-collapse > .panel-body {
   border-top-color: #ddd;
 }
-.panel-default > .panel-heading .badge {
+.panel-default > .panel-heading .badge, .panel.panel-default .panel-heading > .panel-heading .badge {
   color: #f5f5f5;
   background-color: #333333;
 }
-.panel-default > .panel-footer + .panel-collapse > .panel-body {
+.panel-default > .panel-footer + .panel-collapse > .panel-body, .panel.panel-default .panel-heading > .panel-footer + .panel-collapse > .panel-body {
   border-bottom-color: #ddd;
 }
 
-.panel-primary {
+.panel-primary, .panel.panel-primary .panel-heading {
   border-color: #337ab7;
 }
-.panel-primary > .panel-heading {
+.panel-primary > .panel-heading, .panel.panel-primary .panel-heading > .panel-heading {
   color: #fff;
   background-color: #337ab7;
   border-color: #337ab7;
 }
-.panel-primary > .panel-heading + .panel-collapse > .panel-body {
+.panel-primary > .panel-heading + .panel-collapse > .panel-body, .panel.panel-primary .panel-heading > .panel-heading + .panel-collapse > .panel-body {
   border-top-color: #337ab7;
 }
-.panel-primary > .panel-heading .badge {
+.panel-primary > .panel-heading .badge, .panel.panel-primary .panel-heading > .panel-heading .badge {
   color: #337ab7;
   background-color: #fff;
 }
-.panel-primary > .panel-footer + .panel-collapse > .panel-body {
+.panel-primary > .panel-footer + .panel-collapse > .panel-body, .panel.panel-primary .panel-heading > .panel-footer + .panel-collapse > .panel-body {
   border-bottom-color: #337ab7;
 }
 
@@ -7562,19 +7562,7 @@ h4 {
   border-left-width: 0;
   border-right-width: 0;
 }
-.panel .button_mhan {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-top-width: 0;
-  border-left-width: 0;
-  border-right-width: 0;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
 .panel .button_standort {
-  margin-top: 10px;
-  margin-left: 0;
-  margin-right: 0;
   border-right-width: 1px;
   border-left-width: 1px;
   padding-top: 2px;
@@ -7596,6 +7584,13 @@ h4 {
 }
 .panel .dropdown .dropdown-menu {
   width: 250px;
+}
+.panel .panel-footer {
+  padding: 0;
+}
+.panel .panel-footer .button_mhan,
+.panel .panel-footer .button_span {
+  display: inline-block;
 }
 
 #displaySperreModal {

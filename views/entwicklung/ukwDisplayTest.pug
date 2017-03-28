@@ -32,89 +32,91 @@ block content
 						class=(val[0] == 'frei' ? 'hidden' : '')
 						)
 							div.button_flaeche(data-buttonElement='flaeche')
-								div.btn.btn-default.button_mhan.btn-block(
-								data-buttonElement='mhan',
-								id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]],
-								class=(val[0] == 'frei' ? 'hidden' : ''),
-								type='button',
-								data-toggle='modal',
-								data-target='#mithoerenModal',
-								data-funkstelle=val[0],
-								data-lautstaerke='100'
-								)
-									+findeFunkstelle(val, gesamteKonfig.MhanZuordnung)
-								div.dropdown.text-center
-									- kompomentenID = val[0] ? val[0] : '---------------------';
-									- geraet = kompomentenID.substr(15,6);
-									- standort = kompomentenID.substr(8,6);
-									- kurzname = gesamteKonfig.FunkstellenDetails[val[0]].sname
-									button.btn.btn-default.button_standort(
-									data-buttonElement='standort'
-									data-aktiv=kompomentenID
-									type='button'
-									data-toggle='dropdown'
-									aria-haspopup='true'
-									aria-expanded='false'
-									id='standortListe'
-									ortStatus='-1'
-									) #{kurzname}&nbsp
-										span.label.label-default ??
-									ul.dropdown-menu(
-									aria-labelledby='standortListe'
-									)
-										each val2, index2 in val
-											if val2.length > 1
-												li(
-												class='button_anlage' + (index2 + 1)
-												data-buttonElement='anlage' + (index2 + 1)
-												id=val2
-												geraetStatus='-1'
-												)
-													div.radio
-														label.radio-custom(
-														data-initialize='radio'
-														)
-															input.sr-only.input-lg(
-															type='radio',
-															name='funkstelle' + index,
-															value='1',
-															checked= index2 == 0
+								div.panel-heading
+									div.dropdown
+										- kompomentenID = val[0] ? val[0] : '---------------------';
+										- geraet = kompomentenID.substr(15,6);
+										- standort = kompomentenID.substr(8,6);
+										- kurzname = gesamteKonfig.FunkstellenDetails[val[0]].sname
+										button.btn.btn-default.button_standort(
+										data-buttonElement='standort'
+										data-aktiv=kompomentenID
+										type='button'
+										data-toggle='dropdown'
+										aria-haspopup='true'
+										aria-expanded='false'
+										id='standortListe'
+										ortStatus='-1'
+										) #{kurzname}&nbsp
+											span.label.label-default ??
+										ul.dropdown-menu(
+										aria-labelledby='standortListe'
+										)
+											each val2, index2 in val
+												if val2.length > 1
+													li(
+													class='button_anlage' + (index2 + 1)
+													data-buttonElement='anlage' + (index2 + 1)
+													id=val2
+													geraetStatus='-1'
+													)
+														div.radio
+															label.radio-custom(
+															data-initialize='radio'
 															)
-															span #{val2}&nbsp
-																span.label.label-default ??
-								if gesamteKonfig.FunkstellenDetails[val[0]].MKA
-									h2.text-right.button_kanalNr(
-									onclick='WSV.Display.schalteKanal(event,this,"SPAN")'
-									id=index,
-									data-buttonElement='kanalNr'
-									)
-										span(
+																input.sr-only.input-lg(
+																type='radio',
+																name='funkstelle' + index,
+																value='1',
+																checked= index2 == 0
+																)
+																span #{val2}&nbsp
+																	span.label.label-default ??
+								div.panel-body
+									if gesamteKonfig.FunkstellenDetails[val[0]].MKA
+										h2.text-right.button_kanalNr(
 										onclick='WSV.Display.schalteKanal(event,this,"SPAN")'
+										id=index,
+										data-buttonElement='kanalNr'
+										)
+											span(
+											onclick='WSV.Display.schalteKanal(event,this,"SPAN")'
+											) #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
+												button.btn.btn-default.btn-lg.dropdown-toggle.button_mkaDropdown(
+												data-buttonElement='mkaDropdown',
+												type='button',
+												data-toggle='modal',
+												data-target='#mkaModal',
+												onclick='WSV.Display.setzeKanalMka(event,this)'
+												)
+												span.caret
+									else
+										h2.text-center.button_kanalNr(
+										onclick='WSV.Display.schalteKanal(event,this,"SPAN")',
+										id=index
+										data-buttonElement='kanalNr'
 										) #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
-											button.btn.btn-default.btn-lg.dropdown-toggle.button_mkaDropdown(
-											data-buttonElement='mkaDropdown',
-											type='button',
-											data-toggle='modal',
-											data-target='#mkaModal',
-											onclick='WSV.Display.setzeKanalMka(event,this)'
-											)
-											span.caret
-								else
-									h2.text-center.button_kanalNr(
-									onclick='WSV.Display.schalteKanal(event,this,"SPAN")',
-									id=index
-									data-buttonElement='kanalNr'
-									) #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
-								div.text-center.atis(
-								data-buttonElement='atis'
-								) keine ATIS-Kennung
-								div.btn.btn-default.button_span.btn-block(
-								data-buttonElement='span'
-								data-span='SPAN01'
-								onclick='WSV.Display.schalteKanal(event,this,"SPAN")'
-								id=gesamteKonfig.ArbeitsplatzGeraete.SPAN01
-								) SPAN
-
+									div.text-center.atis(
+									data-buttonElement='atis'
+									) keine ATIS-Kennung
+								div.panel-footer
+									div.button_mhan(
+										data-buttonElement='mhan',
+										id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]],
+										class=(val[0] == 'frei' ? 'hidden' : ''),
+										type='button',
+										data-toggle='modal',
+										data-target='#mithoerenModal',
+										data-funkstelle=val[0],
+										data-lautstaerke='100'
+										)
+										+findeFunkstelle(val, gesamteKonfig.MhanZuordnung)
+									div.btn.btn-default.button_span(
+									data-buttonElement='span'
+									data-span='SPAN01'
+									onclick='WSV.Display.schalteKanal(event,this,"SPAN")'
+									id=gesamteKonfig.ArbeitsplatzGeraete.SPAN01
+									) SPAN
 
 				// Modalfenster fuer MKA Kanalwahl
 				div#mkaModal.modal(aria-labelledby='mkaModalLabel')
