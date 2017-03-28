@@ -630,7 +630,7 @@ $(window).load(function () {
 							this.ladeBenutzer(); //Benutzer laden um den Schaltzustand Gruppe/ Einzel zu erhalten
 
 							$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
-							console.log('trennen: ' + msg.getrennt.$.id)
+							// console.log('trennen: ' + msg.getrennt.$.id)
 						}
 					}
 					else {
@@ -1211,8 +1211,6 @@ $(window).load(function () {
 			const code2 = ATIS.substr(5, 4);
 
 			let str = '';
-
-			console.log(this.atisMIDS);
 
 			if (this.atisMIDS.hasOwnProperty(mids)) {
 				str = this.atisMIDS[mids][0];
