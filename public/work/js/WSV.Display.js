@@ -1201,11 +1201,16 @@
 
 			let str = '';
 
+			console.log(this.atisMIDS);
+
 			if (this.atisMIDS.hasOwnProperty(mids)) {
 				str = this.atisMIDS[mids][0];
 			}
+			else {
+				str = mids
+			}
 
-			str += ' ' + code1 + ' ' + code2;
+			str += code1 + ' ' + code2;
 
 			return str;
 		},
@@ -1219,7 +1224,7 @@
 		ladeAtisArrays: function () {
 			const _self = this;
 
-			$.getJSON('/config/mids.json', function (data) {
+			$.getJSON('/config/atis_mid2callsign.json', function (data) {
 				_self.atisMIDS = data;
 			});
 
