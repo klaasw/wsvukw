@@ -7444,24 +7444,6 @@ table {
   border-spacing: 0;
 }
 
-body {
-  background-color: #FFFFFF;
-  font-family: 'Open Sans', Helvetica, Arial, sans-serif, sans-serif !important;
-}
-
-body, html {
-  height: 100%;
-  min-height: 100%;
-}
-
-.nav li .dropdown-toggle {
-  margin: 0 10px;
-}
-
-.row {
-  margin-bottom: 15px;
-}
-
 @font-face {
   font-family: 'Open Sans';
   font-style: normal;
@@ -7541,6 +7523,29 @@ h4 {
 
 .text-italic {
   font-style: italic;
+}
+
+body {
+  background-color: #FFFFFF;
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif, sans-serif !important;
+}
+
+body, html {
+  height: 100%;
+  min-height: 100%;
+}
+
+.nav li .dropdown-toggle {
+  margin: 0 10px;
+}
+
+.row {
+  margin-bottom: 15px;
+}
+
+.navbar .btn span,
+.navbar .btn .label {
+  margin-left: 5px;
 }
 
 .panel {

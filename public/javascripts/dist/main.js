@@ -719,39 +719,21 @@ $(window).load(function () {
 		},
 
 		/**
-		 * Pruefe welches Element geklickt wurde
-		 * Vermeide aufschalten/trennen bei MKA Dropdown, MHAN Button und SPAN Button
-		 * @param {object} event
-		 * @param {object} element
-		 * @returns {boolean}
-		 */
-		angeklickt: function (event, element) {
-			const geklicktesElement = event.srcElement;
-
-			if (element == geklicktesElement) {
-				return true;
-			}
-
-			const geklicktesButtonElement = $(geklicktesElement).data('buttonElement');
-
-			return (geklicktesButtonElement == 'atis' || geklicktesButtonElement == 'Flaeche');
-		},
-
-		/**
 		 * setze Variable aktuelleMKA fuer geklickte MKA Funkstellen ID
 		 * @param {object} event
 		 * @param {object} element
 		 */
 		setzeKanalMka: function (event, element) {
-			if (this.angeklickt(event, element)) {
-				//Eltern Element finden
-				const button = $(element).offsetParent().attr('id');
-				//Funkstellen ID finden
-				//this.aktuelleMKA=$('#'+button +'> div > div:nth-child(2) > div:nth-child(2) > span').attr('class')
-				//this.aktuelleMKA=$('#'+button +'> div > div:nth-child(2) > div > span').attr('id')
-				this.aktuelleMKA = $('#' + button + ' .button_anlage1').attr('id');
-				//console.log("Dropdown von:" + this.aktuelleMKA)
-			}
+
+			//Eltern Element finden
+			const button = $(element).offsetParent().attr('id');
+
+			//Funkstellen ID finden
+			//this.aktuelleMKA=$('#'+button +'> div > div:nth-child(2) > div:nth-child(2) > span').attr('class')
+			//this.aktuelleMKA=$('#'+button +'> div > div:nth-child(2) > div > span').attr('id')
+			this.aktuelleMKA = $('#' + button + ' .button_anlage1').attr('id');
+
+			//console.log("Dropdown von:" + this.aktuelleMKA)
 		},
 
 		/**
@@ -762,66 +744,64 @@ $(window).load(function () {
 		 * @param geraet
 		 */
 		schalteKanal: function (event, element, geraet) {
-			if (this.angeklickt(event, element)) {
-				if (geraet === 'SPAN') {
-					//uebergeordnetes Element finden
-					const button = $(element).offsetParent().attr('id');
 
-					let geklickteFstHaupt     = $('#' + button + ' .button_anlage1').attr('id');
-					const geklickteFstReserve = $('#' + button + ' .button_anlage2').attr('id');
+			const _self = this;
 
-					const geklickteSPAN = $('#' + button + ' .button_span').attr('id');
+			if (geraet === 'SPAN') {
+				//uebergeordnetes Element finden
+				const button = $(element).offsetParent().attr('id');
+				const panel = $(element).parents('.button_panel');
 
-					const geklicktespan_mhanApNr = $('#' + button + ' .button_span').data('span');
+				let geklickteFstHaupt     = $('.button_anlage1', panel);
+				const geklickteFstReserve = $('.button_anlage2', panel);
 
-					//Status der Funkstellen aus HTML Elementen auslesen
-					const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('geraetStatus');
-					const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('geraetStatus');
+				//Status der Funkstellen aus HTML Elementen auslesen
+				const geklickteFstHauptStatus   = geklickteFstHaupt.attr('geraetStatus');
+				const geklickteFstReserveStatus = geklickteFstReserve.attr('geraetStatus');
 
-					if (geklickteFstHaupt.indexOf('FKGW') > -1) {
-						geklickteFstHaupt = this.ApFunkstellen[geklickteFstHaupt].gwid
-					}
-
-					//nur schalten, wenn Status 0 bzw. ok
-					if (geklickteFstHauptStatus === '0') {
-						this.schalteKanalID(geklickteFstHaupt, geklickteSPAN, 'SPAN', geklicktespan_mhanApNr)
-					}
-
-					else { //TODO: versuche Reserveanlage zu schalten
-						$.notify({
-							message: 'Hauptanlage gestört'
-						}, {
-							type: 'danger'
-						});
-						//TODO: hier Reserveanlage schalten
-					}
+				if (geklickteFstHaupt.attr('id').indexOf('FKGW') > -1) {
+					geklickteFstHaupt = this.ApFunkstellen[geklickteFstHaupt].gwid;
 				}
-				else if (geraet === 'SPAN_MHAN') { //Schalten aus Modal Mithoeren
-					const mhan          = $('#mithoerenModal .btn-primary').attr('id');
-					const span          = element.id;
-					const span_mhanApNr = $('#mithoerenModal .btn-group-vertical .btn-primary').text();
-					this.schalteKanalID(span, mhan, 'SPAN_MHAN', span_mhanApNr);
-					//console.log();
+
+				//nur schalten, wenn Status 0 bzw. ok
+				if (geklickteFstHauptStatus === '0') {
+					this.schalteKanalID(geklickteFstHaupt.attr('id'), _self.ArbeitsplatzGeraete.SPAN01, 'SPAN', 'SPAN01');
 				}
-				else { //Schalten MHAN
-					//uebergeordnetes Element
-					const buttonMHAN = $('#' + element.id).offsetParent().attr('id');
-					const buttonFst  = element.offsetParent.id;
 
-					const geklickteFstHaupt   = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(1)').attr('id');
-					const geklickteFstReserve = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(2)').attr('id');
-
-					const geklickteMHAN = ($('#' + buttonMHAN + ' div > div').attr('id'));
-
-					console.log(buttonMHAN);
-					console.log(buttonFst);
-
-					//Status der Funkstellen
-					const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('geraetStatus');
-					const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('geraetStatus');
-
-					this.schalteKanalID(geklickteFstHaupt, geklickteMHAN, 'MHAN');
+				else { //TODO: versuche Reserveanlage zu schalten
+					$.notify({
+						message: 'Hauptanlage gestört'
+					}, {
+						type: 'danger'
+					});
+					//TODO: hier Reserveanlage schalten
 				}
+			}
+			else if (geraet === 'SPAN_MHAN') { //Schalten aus Modal Mithoeren
+				const mhan          = $('#mithoerenModal .btn-primary').attr('id');
+				const span          = element.id;
+				const span_mhanApNr = $('#mithoerenModal .btn-group-vertical .btn-primary').text();
+				this.schalteKanalID(span, mhan, 'SPAN_MHAN', span_mhanApNr);
+				//console.log();
+			}
+			else { //Schalten MHAN
+				//uebergeordnetes Element
+				const buttonMHAN = $('#' + element.id).offsetParent().attr('id');
+				const buttonFst  = element.offsetParent.id;
+
+				const geklickteFstHaupt   = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(1)').attr('id');
+				const geklickteFstReserve = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(2)').attr('id');
+
+				const geklickteMHAN = ($('#' + buttonMHAN + ' div > div').attr('id'));
+
+				console.log(buttonMHAN);
+				console.log(buttonFst);
+
+				//Status der Funkstellen
+				const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('geraetStatus');
+				const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('geraetStatus');
+
+				this.schalteKanalID(geklickteFstHaupt, geklickteMHAN, 'MHAN');
 			}
 		},
 
@@ -833,7 +813,7 @@ $(window).load(function () {
 		 * @param geklicktespan_mhanApNr
 		 */
 		schalteKanalID: function (geklickteFstID, geklickteSPANMHAN, SPAN, geklicktespan_mhanApNr) {
-			// console.log('Klick: ' + geklickteFstID);
+			console.log('Klick: ' + geklickteFstID);
 			//$.notify('test:'+ApFunkstellen[geklickteID].kurzname);
 			const _self = this;
 
@@ -903,15 +883,16 @@ $(window).load(function () {
 		schaltenVisuell: function (FstID, SPANMHAN, enabled) {
 
 			// suche Schaltflaeche zu FunkstellenID
-			const button = $('#' + FstID).parents('.button_panel');
+			const panel = $('#' + FstID).parents('.button_panel');
 			SPANMHAN     = SPANMHAN.toLowerCase();
 
 			if (enabled) {
-				button.addClass('panel-primary');
-				$('.button_' + SPANMHAN, button).removeClass('btn-default').addClass('btn-primary');
+				panel.addClass('panel-primary');
+				$('.button_standort', panel).removeClass('btn-default').addClass('btn-primary');
 			}
 			else {
-				$('.button_' + SPANMHAN, button).removeClass('btn-primary').addClass('btn-default');
+				panel.removeClass('panel-primary');
+				$('.button_standort', panel).removeClass('btn-primary').addClass('btn-default');
 			}
 		},
 
