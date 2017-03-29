@@ -30,14 +30,6 @@
     padding-bottom:     2px;
   }
 
-  .button_mkaDropdown {
-    margin-left:    30%;
-    padding-top:    2px;
-    padding-bottom: 2px;
-    height:         32px;
-    margin-top:     -5px;
-  }
-
   .button_kanalNr {
     margin: 30px 0 20px 0;
   }
@@ -72,10 +64,32 @@
   }
 
   .panel-footer {
-    padding: 0;
+    padding:  0;
+    position: relative;
 
     .mhan {
       padding: 10px 5px;
+    }
+
+    .button_mkaDropdown {
+      padding: 20px 40px;
+    }
+
+    .button_mhan {
+      position:                   relative;
+      font-size:                  0.9em;
+      padding:                    0 20px 0 34px;
+      border-top:                 0;
+      border-top-left-radius:     0;
+      border-top-right-radius:    0;
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius:  2px;
+
+      i {
+        position: absolute;
+        top:      12px;
+        left:     12px;
+      }
     }
 
     .button_mhan,

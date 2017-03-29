@@ -725,13 +725,11 @@ $(window).load(function () {
 		 */
 		setzeKanalMka: function (event, element) {
 
-			//Eltern Element finden
-			const button = $(element).offsetParent().attr('id');
+			// uebergeordnetes panel finden
+			const panel = $(element).parents('.button_panel');
 
 			//Funkstellen ID finden
-			//this.aktuelleMKA=$('#'+button +'> div > div:nth-child(2) > div:nth-child(2) > span').attr('class')
-			//this.aktuelleMKA=$('#'+button +'> div > div:nth-child(2) > div > span').attr('id')
-			this.aktuelleMKA = $('#' + button + ' .button_anlage1').attr('id');
+			this.aktuelleMKA = $('.button_anlage1', panel).attr('id');
 
 			//console.log("Dropdown von:" + this.aktuelleMKA)
 		},
@@ -748,8 +746,7 @@ $(window).load(function () {
 			const _self = this;
 
 			if (geraet === 'SPAN') {
-				//uebergeordnetes Element finden
-				const button = $(element).offsetParent().attr('id');
+				// uebergeordnetes panel finden
 				const panel = $(element).parents('.button_panel');
 
 				let geklickteFstHaupt     = $('.button_anlage1', panel);

@@ -1,4 +1,5 @@
 @charset "UTF-8";
+@import url(../../node_modules/font-awesome/css/font-awesome.min.css);
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -7574,13 +7575,6 @@ body, html {
   padding-top: 2px;
   padding-bottom: 2px;
 }
-.panel .button_mkaDropdown {
-  margin-left: 30%;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  height: 32px;
-  margin-top: -5px;
-}
 .panel .button_kanalNr {
   margin: 30px 0 20px 0;
 }
@@ -7607,9 +7601,28 @@ body, html {
 }
 .panel .panel-footer {
   padding: 0;
+  position: relative;
 }
 .panel .panel-footer .mhan {
   padding: 10px 5px;
+}
+.panel .panel-footer .button_mkaDropdown {
+  padding: 20px 40px;
+}
+.panel .panel-footer .button_mhan {
+  position: relative;
+  font-size: 0.9em;
+  padding: 0 20px 0 34px;
+  border-top: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 2px;
+}
+.panel .panel-footer .button_mhan i {
+  position: absolute;
+  top: 12px;
+  left: 12px;
 }
 .panel .panel-footer .button_mhan,
 .panel .panel-footer .button_span {
