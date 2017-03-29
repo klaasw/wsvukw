@@ -56,7 +56,7 @@ $(window).load(function () {
 				const lautstaerke    = parseInt($(event.relatedTarget).attr('data-lautstaerke'));
 
 				//Überschrift anpassen
-				$('#mithoerenModal .modal-title').text('Mithören für Kanal: ' + ApFunkstellen[fuerFunkstelle].channel + ', ' + ApFunkstellen[fuerFunkstelle].sname + ', Komp-ID: ' + fuerFunkstelle);
+				$('#mithoerenModal .modal-title').text('Mithören für Kanal: ' + _self.ApFunkstellen[fuerFunkstelle].channel + ', ' + _self.ApFunkstellen[fuerFunkstelle].sname + ', Komp-ID: ' + fuerFunkstelle);
 
 				//angeklickten MHAN hervorheben
 				$('#mithoerenModal #' + mhanButton).addClass('btn-primary');
@@ -86,7 +86,7 @@ $(window).load(function () {
 
 					$.each(data, function (key, val) {
 						// Aus Verbindungen nur SPAN und ApID ungleich eigener AP verarbeiten
-						if (val.span_mhan.indexOf('SPAN') > -1 && val.ApID !== ApID) {
+						if (val.span_mhan.indexOf('SPAN') > -1 && val.ApID !== _self.ApID) {
 							//Button Eigenschaften verkettten und in in Array schreiben
 							button = buttonOeffnen + val.span_mhan + buttonSchliessen + val.ApID + buttonEnde;
 							buttonsFuerArbeitsplaetze.push(button);
