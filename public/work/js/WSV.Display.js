@@ -557,12 +557,12 @@
 						if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1) {
 							// aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
 							if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1 && msg.geschaltet.$.id.indexOf('SPAN') != -1) {
-								// _self.schaltenVisuell(msg.geschaltet.$.id, 'SPAN', true);
+								//_self.schaltenVisuell(msg.geschaltet.$.id, 'SPAN', true);
 								$('#' + msg.geschaltet.$.id).addClass('btn-primary');
 								$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
 							}
 							else { //nur MHAN aufschaltungen
-								// _self.schaltenVisuell(msg.geschaltet.$.id, 'mhan', true);
+								_self.schaltenVisuell(msg.geschaltet.$.id, 'mhan', true);
 							}
 
 							const geraet = msg.geschaltet.$.Ap;
@@ -600,7 +600,7 @@
 							}
 							else { //nur MHAN Aufschaltungen
 								// $('.button_mhan', button).css('background-color', '#f5f5f5').removeClass('bg-primary');
-								// _self.schaltenVisuell(msg.getrennt.$.id, 'mhan', false);
+								_self.schaltenVisuell(msg.getrennt.$.id, 'mhan', false);
 							}
 							const geraet = msg.getrennt.$.Ap;
 
@@ -870,15 +870,19 @@
 
 			// suche Schaltflaeche zu FunkstellenID
 			const panel = $('#' + FstID).parents('.button_panel');
-			SPANMHAN     = SPANMHAN.toLowerCase();
+			SPANMHAN    = SPANMHAN.toLowerCase();
 
 			if (enabled) {
-				panel.addClass('panel-primary');
-				$('.button_standort', panel).removeClass('btn-default').addClass('btn-primary');
+				if (SPANMHAN == 'span') {
+					panel.addClass('panel-primary');
+				}
+				$('.button_' + SPANMHAN, panel).removeClass('btn-default').addClass('btn-primary');
 			}
 			else {
-				panel.removeClass('panel-primary');
-				$('.button_standort', panel).removeClass('btn-primary').addClass('btn-default');
+				if (SPANMHAN == 'span') {
+					panel.removeClass('panel-primary');
+				}
+				$('.button_' + SPANMHAN, panel).removeClass('btn-primary').addClass('btn-default');
 			}
 		},
 
