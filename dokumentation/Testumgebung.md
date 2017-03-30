@@ -24,10 +24,29 @@ Zur Testumgebung gehören:
 Die Abbildung soll die Zusammenhänge grafisch verdeutlichen.
 
 ### Gitlab-Server
-[Dokumentation zum Gitlab-Server](../GITLAB)
+#### Updating by manually downloading the official packages
+If for some reason you don't use the official repositories, it is possible to download the package and install it manually.
 
-[Gitlab-Server](10.160.1.200)
+1. Visit the Community Edition repository or the Enterprise Edition repository depending on the edition you already have installed.
+2. Find the package version you wish to install and click on it.
+3. Click the 'Download' button in the upper right corner to download the package.
+4. Once the GitLab package is downloaded, install it using the following commands, replacing XXX with the Omnibus GitLab version you downloaded:
 
+```
+# Debian/Ubuntu
+dpkg -i gitlab-ce-XXX.deb
+
+# CentOS/RHEL
+rpm -Uvh gitlab-ce-XXX.rpm
+```
+
+If you are an Enterprise Edition user, replace gitlab-ce with gitlab-ee in the above commands.
+
+#### Links
+* [Gitlab-Server im DUE](10.160.1.200)
+* [Dokumentation zum Gitlab-Server im Internet](http://docs.gitlab.com/omnibus/update/README.html)
+
+### Beschreibung
 Für die Testumgebung ist im Repository eine .gitlab-ci.yml Datei enthalten. Diese enthält im Abschnitt scripts die auszuführenden Kommandos. Diese Kommandos werden auf dem hinterlegten Server mit dem **gitlab-runner** ausgeführt. Die Hinterlegung der "Testserver" mit dem gitlab-runner ist auf dem Gitlab-Server unter Runners eingestellt. Auf diesen Servern muss der gitlab-runner installiert sein und als Service laufen.
 
 ### gitlab-runner
@@ -80,3 +99,5 @@ java -jar selenium-server-standalone-2.53.0.jar -role -hubHost -host IP-ADRESSE
 [chimp.js](https://chimp.readme.io/) ist die zentrale Schnittstelle zur Durchführung von automatisierten Test. Es ist das Bindeglied zwischen den Testmodulen (mocha, cucumber) und Selenium
 
 In der Konfigurationsdatei chimps.js ist der Selenium Hub eingetragen
+
+## GitLab
