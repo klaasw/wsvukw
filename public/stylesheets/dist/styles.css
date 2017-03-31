@@ -7607,12 +7607,21 @@ body, html {
   padding: 10px 5px;
 }
 .panel .panel-footer .button_mkaDropdown {
-  padding: 20px 40px;
+  float: right;
+  padding: 0 20px;
+  max-height: 38px;
+  line-height: 38px;
+  border-top: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 2px;
 }
 .panel .panel-footer .button_mhan {
   position: relative;
   font-size: 0.9em;
   padding: 0 20px 0 34px;
+  height: 38px;
   border-top: 0;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
@@ -7627,6 +7636,9 @@ body, html {
 .panel .panel-footer .button_mhan,
 .panel .panel-footer .button_span {
   display: inline-block;
+}
+.panel.panel-primary .button_mhan {
+  border-left: 0;
 }
 
 #displaySperreModal {

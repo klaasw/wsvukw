@@ -12,7 +12,7 @@ block content
 			// TODO: fuer LotsenAp nicht erstellen
 			div.row.lotsen
 				each lotsenAp, index in gesamteKonfig.LotsenAp
-					div.col-md-1.text-center(style="padding-left: 5px;padding-right: 5px;")
+					div.col-md-1.text-center
 							div.btn.btn-default #{gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname ? gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname : 'sname'}
 									p(style="margin-bottom: 0px;") Kanal
 			//Schaltflaechen fuer Funkstellen nzeigen
@@ -97,13 +97,12 @@ block content
 										+findeFunkstelle(val, gesamteKonfig.MhanZuordnung)
 									if gesamteKonfig.FunkstellenDetails[val[0]].MKA
 										button.btn.btn-default.btn-lg.dropdown-toggle.button_mkaDropdown(
-										data-buttonElement='mkaDropdown',
 										type='button',
 										data-toggle='modal',
 										data-target='#mkaModal',
 										onclick='WSV.Display.setzeKanalMka(event,this)'
 										)
-										span.caret
+											i.fa.fa-plus(aria-hidden="true")
 
 				// Modalfenster fuer MKA Kanalwahl
 				div#mkaModal.modal(aria-labelledby='mkaModalLabel')

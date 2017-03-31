@@ -437,11 +437,11 @@
 					const panel = $('#' + msg.RX.$.id).parents('.panel');
 
 					//Kanalflaeche faerben
-					$('.button_flaeche', panel).addClass('bg-danger');
-					$('.button_flaeche h2', panel).addClass('text-danger');
+					$('.panel-body', panel).addClass('bg-danger');
+					$('.panel-body h2', panel).addClass('text-danger');
 
 					// ATIS Kennung Anzeigen wenn vorhanden
-					if (typeof msg.RX.$.atis == 'string') {
+					if (typeof msg.RX.$.atis == 'string' && msg.RX.$.atis.length > 0) {
 						this.wechselAtisKennung(msg.RX.$.id, msg.RX.$.atis, 1000);
 					}
 					else {
@@ -461,8 +461,8 @@
 					const panel = $('#' + msg.RX.$.id).parents('.panel');
 
 					//Kanalflaeche entfaerben
-					$('.button_flaeche', panel).removeClass('bg-danger');
-					$('.button_flaeche h2', panel).removeClass('text-danger');
+					$('.panel-body', panel).removeClass('bg-danger');
+					$('.panel-body h2', panel).removeClass('text-danger');
 
 					console.log('RX state 0: ' + msg.RX.$.id)
 				}
@@ -478,8 +478,8 @@
 						const panel = $('#' + msg.TX.$.id).parents('.panel');
 
 						//Kanalflaeche faerben
-						$('.button_flaeche', panel).addClass('bg-success');
-						$('.button_flaeche h2', panel).addClass('text-success');
+						$('.panel-body', panel).addClass('bg-success');
+						$('.panel-body h2', panel).addClass('text-success');
 
 						console.log('TX state 1 mit SPAN: ' + msg.TX.$.id)
 					}
@@ -495,8 +495,8 @@
 						const panel = $('#' + msg.TX.$.id).parents('.panel');
 
 						//Kanalflaeche entfaerben
-						$('.button_flaeche', panel).removeClass('bg-success');
-						$('.button_flaeche h2', panel).removeClass('text-success');
+						$('.panel-body', panel).removeClass('bg-success');
+						$('.panel-body h2', panel).removeClass('text-success');
 						console.log('TX state 0 mit SPAN: ' + msg.TX.$.id)
 					}
 				}
