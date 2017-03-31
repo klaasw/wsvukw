@@ -14,6 +14,12 @@ module.exports = function() {
         widgets.header.setSchaltung(arg1);
     });
 
+    this.Given(/^das Design "([^"]*)" ist ausgewählt$/, function (design) {
+        widgets.header.clickFarbschema();
+        widgets.header.selectFarbschema(design);
+        widgets.header.clickFarbschema();
+    });
+
     this.Given(/^ausgewählt ist die defekte Serveranlage "([^"]*)"$/, function (arg1) {
         // Write code here that turns the phrase above into concrete actions
         return 'pending';
@@ -72,8 +78,14 @@ module.exports = function() {
             case "Arbeitsplatzgeräte":
                 widgets.header.clickArbeitsplatzgeraete();
                 break;
+            case "Serveranlagen":
+                widgets.header.clickServeranlagen();
+                break;
+            case "Display sperren":
+                widgets.header.clickUkwDisplay();
+                break;
             default:
-                console.log('no match');
+                console.log('no match for ' + arg1);
         }
     });
 
@@ -194,6 +206,10 @@ module.exports = function() {
         widgets.header.stateArbeitsplatzgerate();
     });
 
+    this.When(/^alle Serveranlagen mit ihrem Status angezeigt werden$/, function () {
+        widgets.header.stateServeranlagen();
+    });
+
     this.Then(/^ist der Status der Schaltfläche "([^"]*)"$/, function (arg1) {
         // Write code here that turns the phrase above into concrete actions
         return 'pending';
@@ -283,7 +299,7 @@ module.exports = function() {
         return 'pending';
     });
 
-    this.Then(/^sind alle Anlagen betriebsbereit$/, function () {
+    this.Then(/^hat der aktuelle Server "([^"]*)" den Status der DUE "([^"]*)" und RDF "([^"]*)"$/, function (arg1, arg2, arg3) {
         // Write code here that turns the phrase above into concrete actions
         return 'pending';
     });
@@ -302,8 +318,11 @@ module.exports = function() {
     });
 
     this.Then(/^kann ich in den nächsten "([^"]*)" Sekunden keine Kommunikation aufschalten$/, function (arg1) {
-        // Write code here that turns the phrase above into concrete actions
-        return 'pending';
+        expect(widgets.header.checkIfDisplayBlocked()).toBe(true);
+        while (widgets.header.checkIfDisplayBlocked()){
+            // wait for unblocked display
+        }
+       expect(widgets.header.checkIfDisplayBlocked()).toBe(false);
     });
 
     this.Then(/^sind nicht alle Arbeitsplatzgeräte betriebsbereit$/, function () {
@@ -319,6 +338,7 @@ module.exports = function() {
     this.Then(/^ändert sich die Farbe der Navigationsleiste in "([^"]*)"$/, function (color) {
         var newColor = widgets.content.getHeaderHexColor();
         expect(newColor).toEqual(color);
+      // browser.close();
 
     });
 

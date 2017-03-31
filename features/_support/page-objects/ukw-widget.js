@@ -6,7 +6,6 @@ var cfg = require('../../../cfg.js');
 
 var aktuelleSchaltung = "#statusWechsel>a";
 var btnFarbschema = "#buttonThemeSwitcher";
-var btnArbeitsplatzgeraete = "#buttonAGswitcher";
 var stdTheme = ".theme1 .switch-theme.btn";
 var flatTheme = ".theme2 .switch-theme.btn";
 var darklyTheme = ".theme3 .switch-theme.btn";
@@ -14,6 +13,9 @@ var cyborgTheme = ".theme4 .switch-theme.btn";
 var header_el = ".navbar-collapse.collapse";
 var btnArbeitsplatzgeraete = "#buttonAG";
 var listArbeitsplatzgeraete = "#AGListe";
+var btnServeranlagen = "#buttonServerWechsel";
+var listServeranlagen = "#serverListe";
+var ukwDisplayLogo = "#logo";
 
 widgets.open = {
     openSite: function(url){
@@ -34,33 +36,48 @@ widgets.header = {
     },
     clickFarbschema: function(){
         browser.click(btnFarbschema);
-        browser.pause(5000);
     },
     clickArbeitsplatzgeraete: function(){
         browser.click(btnArbeitsplatzgeraete);
     },
+    clickServeranlagen: function(){
+        browser.click(btnServeranlagen);
+    },
+    clickUkwDisplay: function(){
+        browser.click(ukwDisplayLogo);
+    },
     selectFarbschema: function(color){
         switch(color) {
             case "Standard":
+                browser.waitForExist(stdTheme);
                 browser.click(stdTheme);
-                browser.pause(20000);
+                //browser.pause(20000);
                 break;
             case "Flach":
+                browser.waitForExist(flatTheme);
+
                 browser.click(flatTheme);
-                browser.pause(20000);
+
                 break;
             case "Dunkel / marineblau":
                 browser.click(darklyTheme);
-                browser.pause(20000);
+                //browser.pause(20000);
                 break;
             case "Dunkel / hellblau":
                 browser.click(cyborgTheme);
-                browser.pause(20000);
+                //browser.pause(20000);
+                //browser.waitForExist(displaySperreModal) -> https://chimp.readme.io/docs/tutorial
                 break;
         }
     },
     stateArbeitsplatzgerate: function(){
         return browser.elements(listArbeitsplatzgeraete+" #agspan01").getText();
+    },
+    stateServeranlagen: function(){
+        var test = browser.elements(listServeranlagen+" #buttonWHV_DUE").getText();
+    },
+    checkIfDisplayBlocked: function(){
+        return browser.isVisible('#displaySperreModal');
     }
 };
 
