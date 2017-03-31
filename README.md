@@ -22,7 +22,7 @@ Dies ist die Benutzer-Oberfläche im DUE für die Nutzung des Revierfunkdienstes
 globale Module (npm install ... -g) sollten sein:
 - pm2 (Prozessmanager)
 - express-generator (erzeugt Ordner Struktur)
-- 
+-
 
 ## Weitere Software
 - resipprocate als SIP-Server zur Aufnahme der Zustandsmeldungen via SIP IM Nachricht
@@ -51,6 +51,7 @@ apt-get install repro
 - recordrouteuri = 10.160.1.70 //wozu ? ist im Test konfiguriert
 
 ### Web Interface:
+- httpbindAddress: leer lassen für alle Netzwerk-Adapter oder eintragen
 - ip:5080
 - user:admin
 - pw:admin
@@ -60,6 +61,8 @@ Die Pakete vom RFD kommen via UDP ebenfalls Port 5060. Dies in Repro konfigurier
 
 
 ## Installieren von OverSIP:
+Nicht mehr nötig. Da Resiprocate nativ ebenfalls Websocket unterstützt
+
 http://oversip.net/documentation/2.0.x/installation/debian_and_ubuntu/
 
 nano /etc/apt/sources.list.d/sources.list
@@ -78,7 +81,7 @@ chown oversip oversip
 ### config anpassen:
 explizit angeben
 - IP Adresse SIP
-- IP Adresse Websocket 
+- IP Adresse Websocket
 
 ### STARTEN
 mkdir /var/run/oversip
@@ -90,3 +93,25 @@ oder config anpassen /etc/oversip
 ### Powershell Skript
 user_zu_ip.ps1 Login Skript zur Übertragung des Benutzernamen und der IP-Adresse an den UKW-Server.
 
+
+### Samba
+Zu Freigabe von Projektverzeichnissen...
+
+```
+apt-get install samba
+```
+
+### CIFS
+Zum Mounten von Netzwerkfreigaben unter Windows. Unter anderem für rechnerübergreifende Backups
+```
+apt-get install cifs-utils
+```
+
+
+### Turnkey Linux spezifisches
+#### Sicherheitsupdates
+Letztes Sicherheitsupdate 30.03.2017
+
+```
+turnkey-install-security-updates
+```

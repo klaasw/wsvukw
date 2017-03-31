@@ -15,6 +15,15 @@ aktuelle Version und lts(long term support) node Januar 2017 (7.4.0, 6.4.9)
 n latest
 n lts
 
+### Installation nginx
+http://nginx.org/en/linux_packages.html
+wget http://nginx.org/keys/nginx_signing.key
+apt-key add nginx_signing.key
+deb http://nginx.org/packages/mainline/debian/ codename nginx
+deb-src http://nginx.org/packages/mainline/debian/ codename nginx
+apt-get update
+apt-get install nginx
+
 ### Zeitserver eintragen
 Zeitserver in /etc/ntp.conf eintragen
 ggf.
@@ -39,6 +48,11 @@ pm2 web startet einen Wep Prozess auf Port 9615 zur Zustandsabfrage
 unter /opt/node-tklcp liegt die Standard Turnkeylinux Welcome Page
 TODO: ggf. modifizieren und Link auf Status, Dokumentation
 
-### Ideeen
+### Ideen
 - pm2-gui Interface für grafische Darstellung
+--> kurz getestet Zugriff auf GUI nicht hinbekommen
+
 - npmbox für Installtion weiterer npm Packet für Offline Server
+```
+npm install npmbox -g
+```
