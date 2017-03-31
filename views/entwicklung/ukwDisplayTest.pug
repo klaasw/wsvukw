@@ -83,6 +83,7 @@ block content
 									data-buttonElement='atis'
 									) keine ATIS-Kennung
 								div.panel-footer
+									+findeFunkstelle(val, gesamteKonfig.MhanZuordnung)
 									div.btn.btn-default.button_mhan(
 										data-buttonElement='mhan',
 										id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]],
@@ -94,7 +95,6 @@ block content
 										data-lautstaerke='100'
 										)
 										i.fa.fa-volume-up(aria-hidden="true")
-									+findeFunkstelle(val, gesamteKonfig.MhanZuordnung)
 									if gesamteKonfig.FunkstellenDetails[val[0]].MKA
 										button.btn.btn-default.btn-lg.dropdown-toggle.button_mkaDropdown(
 										type='button',
