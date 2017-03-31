@@ -1,12 +1,7 @@
 'use strict';
 
 module.exports = {
-	// in current chimp version, selenium installation and use works out of the box, so port and host are obsolte:
-	port: 4444,
-	host: '10.22.30.1',
-
-
-	browser: 'chrome',
+	reportHTML: true,
 
 	//mocha: true,
 	//mochaReporter: "progress",  // https://chimp.readme.io/docs/reporting
