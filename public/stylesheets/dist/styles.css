@@ -7608,36 +7608,32 @@ body, html {
   height: 40px;
   max-height: 40px;
   line-height: 40px;
-}
-.row .panel .panel-footer div,
-.row .panel .panel-footer button {
-  display: inline-block;
+  display: flex;
+  flex-wrap: nowrap;
 }
 .row .panel .panel-footer .mhan {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
   text-align: center;
-  display: block;
-  font-size: 0.9em;
   pointer-events: none;
-  background-color: transparent;
+  font-size: 0.9em;
+  flex: 2;
 }
 .row .panel .panel-footer .button_mkaDropdown {
-  float: right;
-  padding: 0 20px;
+  font-size: 0.9em;
   height: 100%;
+  line-height: 40px;
+  padding: 0;
   border-top: 0;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 2px;
+  flex: 1;
 }
 .row .panel .panel-footer .button_mhan {
+  font-size: 0.9em;
   position: relative;
   vertical-align: top;
-  padding: 0 15px 0 30px;
+  padding: 0 0 0 20px;
   height: 40px;
   line-height: 40px;
   border-top: 0;
@@ -7645,12 +7641,15 @@ body, html {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 2px;
-  font-size: 0.9em;
+  flex: 1;
 }
 .row .panel .panel-footer .button_mhan i {
   position: absolute;
   top: 13px;
-  left: 10px;
+  left: 8px;
+}
+.row .panel .panel-footer .button_placeholder {
+  flex: 1;
 }
 .row .panel.panel-primary .button_mhan {
   border-left: 0;
