@@ -1,129 +1,126 @@
 @charset "UTF-8";
 
-.panel {
+.row {
+  .panel {
 
-  margin:       0 !important;
-  border-width: 2px !important;
+    margin:       0 !important;
+    border-width: 2px !important;
 
-  .title-head {
-    display:                    block;
-    border-bottom-left-radius:  0;
-    border-bottom-right-radius: 0;
-    border-top-width:           0;
-    border-left-width:          0;
-    border-right-width:         0;
-    padding:                    10px 0;
-  }
-
-  .button_span {
-    border-top-left-radius:  0;
-    border-top-right-radius: 0;
-    border-bottom-width:     0;
-    border-left-width:       0;
-    border-right-width:      0;
-  }
-
-  .button_kanalNr {
-    margin: 30px 0 20px 0;
-  }
-
-  .atis {
-    padding:    10px 0;
-    transition: all .3s ease-out;
-  }
-
-  .dropdown {
-    .dropdown-menu {
-      width: 250px;
-    }
-  }
-
-  .panel-heading {
-    padding: 0;
-
-    .button_standort {
-      padding:            0;
-      width:              100%;
-      height:             34px;
-      border-radius:      2px 2px 0 0;
-      border-right-width: 0;
-      border-left-width:  0;
-      border-top-width:   0;
-
-      .label {
-        margin-left: 5px;
-      }
-    }
-  }
-
-  .panel-body {
-    padding: 0;
-  }
-
-  .panel-footer {
-    padding:     0;
-    position:    relative;
-    height:      40px;
-    max-height:  40px;
-    line-height: 40px;
-
-    div,
-    button {
-      display: inline-block;
-    }
-
-    .mhan {
-      position:         absolute;
-      top:              0;
-      left:             0;
-      width:            100%;
-      text-align:       center;
-      display:          block;
-      font-size:        0.9em;
-      pointer-events:   none;
-      background-color: transparent;
-    }
-
-    .button_mkaDropdown {
-      float:                      right;
-      padding:                    0 20px;
-      height:                     100%;
-      border-top:                 0;
-      border-top-left-radius:     0;
-      border-top-right-radius:    0;
+    .title-head {
+      display:                    block;
       border-bottom-left-radius:  0;
-      border-bottom-right-radius: 2px;
+      border-bottom-right-radius: 0;
+      border-top-width:           0;
+      border-left-width:          0;
+      border-right-width:         0;
+      padding:                    10px 0;
     }
 
-    .button_mhan {
-      position:                   relative;
-      vertical-align:             top;
-      padding:                    0 20px;
-      height:                     100%;
-      border-top:                 0;
-      border-top-left-radius:     0;
-      border-top-right-radius:    0;
-      border-bottom-right-radius: 0;
-      border-bottom-left-radius:  2px;
+    .button_span {
+      border-top-left-radius:  0;
+      border-top-right-radius: 0;
+      border-bottom-width:     0;
+      border-left-width:       0;
+      border-right-width:      0;
+    }
 
-      i {
-        position: absolute;
-        top:      12px;
-        left:     13px;
+    .button_kanalNr {
+      margin: 30px 0 20px 0;
+    }
+
+    .atis {
+      padding:    10px 0;
+      transition: all .3s ease-out;
+    }
+
+    .dropdown {
+      .dropdown-menu {
+        width: 250px;
+      }
+    }
+
+    .panel-heading {
+      padding: 0;
+
+      .button_standort {
+        padding:            0;
+        width:              100%;
+        height:             34px;
+        border-radius:      2px 2px 0 0;
+        border-right-width: 0;
+        border-left-width:  0;
+        border-top-width:   0;
+
+        .label {
+          margin-left: 5px;
+        }
+      }
+    }
+
+    .panel-body {
+      padding: 0;
+    }
+
+    .panel-footer {
+      padding:     0;
+      position:    relative;
+      height:      40px;
+      max-height:  40px;
+      line-height: 40px;
+
+      div,
+      button {
+        display: inline-block;
+      }
+
+      .mhan {
+        position:         absolute;
+        top:              0;
+        left:             0;
+        width:            100%;
+        text-align:       center;
+        display:          block;
+        font-size:        0.9em;
+        pointer-events:   none;
+        background-color: transparent;
+      }
+
+      .button_mkaDropdown {
+        float:                      right;
+        padding:                    0 20px;
+        height:                     100%;
+        border-top:                 0;
+        border-top-left-radius:     0;
+        border-top-right-radius:    0;
+        border-bottom-left-radius:  0;
+        border-bottom-right-radius: 2px;
+      }
+
+      .button_mhan {
+        position:                   relative;
+        vertical-align:             top;
+        padding:                    0 15px 0 30px;
+        height:                     40px;
+        line-height:                40px;
+        border-top:                 0;
+        border-top-left-radius:     0;
+        border-top-right-radius:    0;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius:  2px;
+        font-size:                  0.9em;
+
+        i {
+          position: absolute;
+          top:      13px;
+          left:     10px;
+        }
+      }
+    }
+
+    &.panel-primary {
+      .button_mhan {
+        border-left: 0;
       }
     }
   }
-
-  &.panel-primary {
-    .button_mhan {
-      border-left: 0;
-    }
-  }
 }
-
-.panel.panel-primary {
-}
-
-.panel.panel-default {
-}
-

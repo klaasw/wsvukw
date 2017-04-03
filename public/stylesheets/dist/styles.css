@@ -7549,11 +7549,11 @@ body, html {
   margin-left: 5px;
 }
 
-.panel {
+.row .panel {
   margin: 0 !important;
   border-width: 2px !important;
 }
-.panel .title-head {
+.row .panel .title-head {
   display: block;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
@@ -7562,27 +7562,27 @@ body, html {
   border-right-width: 0;
   padding: 10px 0;
 }
-.panel .button_span {
+.row .panel .button_span {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   border-bottom-width: 0;
   border-left-width: 0;
   border-right-width: 0;
 }
-.panel .button_kanalNr {
+.row .panel .button_kanalNr {
   margin: 30px 0 20px 0;
 }
-.panel .atis {
+.row .panel .atis {
   padding: 10px 0;
   transition: all .3s ease-out;
 }
-.panel .dropdown .dropdown-menu {
+.row .panel .dropdown .dropdown-menu {
   width: 250px;
 }
-.panel .panel-heading {
+.row .panel .panel-heading {
   padding: 0;
 }
-.panel .panel-heading .button_standort {
+.row .panel .panel-heading .button_standort {
   padding: 0;
   width: 100%;
   height: 34px;
@@ -7591,24 +7591,24 @@ body, html {
   border-left-width: 0;
   border-top-width: 0;
 }
-.panel .panel-heading .button_standort .label {
+.row .panel .panel-heading .button_standort .label {
   margin-left: 5px;
 }
-.panel .panel-body {
+.row .panel .panel-body {
   padding: 0;
 }
-.panel .panel-footer {
+.row .panel .panel-footer {
   padding: 0;
   position: relative;
   height: 40px;
   max-height: 40px;
   line-height: 40px;
 }
-.panel .panel-footer div,
-.panel .panel-footer button {
+.row .panel .panel-footer div,
+.row .panel .panel-footer button {
   display: inline-block;
 }
-.panel .panel-footer .mhan {
+.row .panel .panel-footer .mhan {
   position: absolute;
   top: 0;
   left: 0;
@@ -7619,7 +7619,7 @@ body, html {
   pointer-events: none;
   background-color: transparent;
 }
-.panel .panel-footer .button_mkaDropdown {
+.row .panel .panel-footer .button_mkaDropdown {
   float: right;
   padding: 0 20px;
   height: 100%;
@@ -7629,23 +7629,25 @@ body, html {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 2px;
 }
-.panel .panel-footer .button_mhan {
+.row .panel .panel-footer .button_mhan {
   position: relative;
   vertical-align: top;
-  padding: 0 20px;
-  height: 100%;
+  padding: 0 15px 0 30px;
+  height: 40px;
+  line-height: 40px;
   border-top: 0;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 2px;
+  font-size: 0.9em;
 }
-.panel .panel-footer .button_mhan i {
+.row .panel .panel-footer .button_mhan i {
   position: absolute;
-  top: 12px;
-  left: 13px;
+  top: 13px;
+  left: 10px;
 }
-.panel.panel-primary .button_mhan {
+.row .panel.panel-primary .button_mhan {
   border-left: 0;
 }
 

@@ -97,7 +97,7 @@
 			//Event zum schliessen an mithoerenModal binden
 			$('#mithoerenModal').on('hidden.bs.modal', function (event) {
 				$('#mithoerenModal [buttonElement="mhanButtonModal"]').removeClass('btn-primary');
-				$('#sliderModal').slider('destroy')
+				$('#sliderModal').slider('destroy');
 			});
 
 
