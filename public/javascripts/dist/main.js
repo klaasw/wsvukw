@@ -11,6 +11,8 @@ $(window).load(function () {
 });
 // eof JS Init;'use strict';
 
+/* global WSV , io*/
+
 (function (window, document, $) {
 
 	WSV.Display = {
@@ -95,8 +97,8 @@ $(window).load(function () {
 					$('#mithoerenModal [buttonElement="ap_mithoeren"]').html(buttonsFuerArbeitsplaetze);
 					//"SPAN_MHAN" zur Kennung der Schaltvorgangs
 					$('#mithoerenModal [buttonElement="spanApButtonModal"]').attr('onclick', 'schalteKanal(event, this, "SPAN_MHAN")');
-					$.getJSON('verbindungen/liesVerbindungen?geraet=' + mhanButton, function (data) {
-						$.each(data, function (key, val) {
+					$.getJSON('verbindungen/liesVerbindungen?geraet=' + mhanButton, function (dataV) {
+						$.each(dataV, function (key, val) {
 							if (val.funkstelle.indexOf('SPAN') > -1 && val.zustand.aufgeschaltet === true) {
 								$('#' + val.funkstelle).addClass('btn-primary');
 							}
@@ -223,7 +225,7 @@ $(window).load(function () {
 					}
 					// Meldung gestört -SEN- darf nicht in der ID vorkommen
 					if ('status' in val && val.status.state === '1'
-						&& val.status.id.indexOf('-SEN-') == -1
+						&& val.status.id.indexOf('-SEN-') === -1
 						&& (_self.ApFunkstellen.hasOwnProperty(val._id) || _self.ArbeitsplatzGeraeteID.hasOwnProperty(val._id))
 					) {
 						// Zustand setzen wenn SPAN oder MHAN
@@ -392,7 +394,7 @@ $(window).load(function () {
 				let vergleichVtrIp = vergleich[1].split('.');
 				vergleichVtrIp     = vergleichVtrIp[2];
 
-				if (vergleichVtrIp == urlVtrIp) {
+				if (vergleichVtrIp === urlVtrIp) {
 					ort = vergleich[0];
 				}
 			}
@@ -400,7 +402,7 @@ $(window).load(function () {
 			const button      = $('.button' + ort + '_' + dienst);
 			const buttonAktiv = $('.buttonAktiv' + ort + '_' + dienst);
 
-			if (status == 'OK') {
+			if (status === 'OK') {
 				button.removeClass('label-danger');
 				button.addClass('label-success');
 				buttonAktiv.removeClass('label-danger');
@@ -409,7 +411,7 @@ $(window).load(function () {
 				button.closest('button').removeAttr('disabled');
 				button.closest('li').removeClass('disabled');
 			}
-			else if (status == 'Error') {
+			else if (status === 'Error') {
 				button.removeClass('label-success');
 				button.addClass('label-danger');
 				button.closest('button').attr('disabled', 'disabled');
@@ -480,7 +482,7 @@ $(window).load(function () {
 				//Senden aktiv
 				if ('TX' in msg && msg.TX.$.state === '1') {
 					//Pruefen ob SPAN ID in TX Objekt
-					if (msg.TX.$.id.indexOf('SPAN') != -1) {
+					if (msg.TX.$.id.indexOf('SPAN') !== -1) {
 						//erstmal nichts machen. ggf in SPAN Element etwas anzeigen
 						console.log('TX state 1 ohne SPAN: ' + msg.TX.$.id);
 					}
@@ -497,7 +499,7 @@ $(window).load(function () {
 				}
 				//Senden deaktiv
 				if ('TX' in msg && msg.TX.$.state === '0') {
-					if (msg.TX.$.id.indexOf('SPAN') != -1) {
+					if (msg.TX.$.id.indexOf('SPAN') !== -1) {
 						//erstmal nichts machen. ggf in SPAN Element etwas anzeigen
 						console.log('TX state 0 ohne SPAN: ' + msg.TX.$.id);
 					}
@@ -530,7 +532,7 @@ $(window).load(function () {
 				}
 
 				// -SEN- darf nicht in der ID vorkommen
-				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') == -1) {
+				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') === -1) {
 					if (msg.FSTSTATUS.$.id.indexOf('MHAN') > -1 || msg.FSTSTATUS.$.id.indexOf('SPAN') > -1) {
 						_self.spanMhanZustandSetzen(msg.FSTSTATUS.$.id, 'Error');
 					}
@@ -565,9 +567,9 @@ $(window).load(function () {
 					if (WSV.Tools.hatWert(_self.ArbeitsplatzGeraete, msg.geschaltet.$.Ap) && _self.ApFunkstellen[msg.geschaltet.$.id] !== 'frei') {
 
 						//aendern Darstellung fuer MHAN
-						if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1) {
+						if (msg.geschaltet.$.Ap.indexOf('MHAN') !== -1) {
 							// aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
-							if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1 && msg.geschaltet.$.id.indexOf('SPAN') != -1) {
+							if (msg.geschaltet.$.Ap.indexOf('MHAN') !== -1 && msg.geschaltet.$.id.indexOf('SPAN') !== -1) {
 								//_self.schaltenVisuell(msg.geschaltet.$.id, 'SPAN', true);
 								$('#' + msg.geschaltet.$.id).addClass('btn-primary');
 								$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
@@ -583,7 +585,7 @@ $(window).load(function () {
 							};
 						}
 						//aendern Darstellung fuer SPAN
-						if (msg.geschaltet.$.Ap.indexOf('SPAN') != -1) {
+						if (msg.geschaltet.$.Ap.indexOf('SPAN') !== -1) {
 
 							_self.schaltenVisuell(msg.geschaltet.$.id, 'span', true);
 							_self.ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true;
@@ -603,9 +605,9 @@ $(window).load(function () {
 					if (WSV.Tools.hatWert(_self.ArbeitsplatzGeraete, msg.getrennt.$.Ap)) {
 
 						//Aendern Darstellung fuer MHAN
-						if (msg.getrennt.$.Ap.indexOf('MHAN') != -1) {
+						if (msg.getrennt.$.Ap.indexOf('MHAN') !== -1) {
 							//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
-							if (msg.getrennt.$.Ap.indexOf('MHAN') != -1 && msg.getrennt.$.id.indexOf('SPAN') != -1) {
+							if (msg.getrennt.$.Ap.indexOf('MHAN') !== -1 && msg.getrennt.$.id.indexOf('SPAN') !== -1) {
 								$('#' + msg.getrennt.$.id).removeClass('btn-primary');
 								$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
 							}
@@ -621,7 +623,7 @@ $(window).load(function () {
 
 						}
 						//Aendern Darstellung fuer SPAN
-						if (msg.getrennt.$.Ap.indexOf('SPAN') != -1) {
+						if (msg.getrennt.$.Ap.indexOf('SPAN') !== -1) {
 
 							_self.schaltenVisuell(msg.getrennt.$.id, 'span', false);
 							_self.ApFunkstellen[msg.getrennt.$.id].aufgeschaltet = false;
@@ -819,7 +821,7 @@ $(window).load(function () {
 
 				if (this.einzel === true) {
 					$.each(this.ApFunkstellen, function (key, value) {
-						if (value.aufgeschaltet === true && key != geklickteFstID) {
+						if (value.aufgeschaltet === true && key !== geklickteFstID) {
 							//console.log(key, value.aufgeschaltet)
 							_self.trennen(key, geklickteSPANMHAN, geklicktespan_mhanApNr);
 						}
@@ -861,7 +863,7 @@ $(window).load(function () {
 
 			//MHAN schalten
 			if (SPAN === 'MHAN') {
-				if (this.ApFunkstellen[geklickteFstID].mhan_aufgeschaltet[geklickteSPANMHAN] == true) {
+				if (this.ApFunkstellen[geklickteFstID].mhan_aufgeschaltet[geklickteSPANMHAN] === true) {
 					this.trennen(geklickteFstID, geklickteSPANMHAN);
 				}
 				else {
@@ -884,13 +886,13 @@ $(window).load(function () {
 			SPANMHAN    = SPANMHAN.toLowerCase();
 
 			if (enabled) {
-				if (SPANMHAN == 'span') {
+				if (SPANMHAN === 'span') {
 					panel.addClass('panel-primary');
 				}
 				$('.button_' + SPANMHAN, panel).removeClass('btn-default').addClass('btn-primary');
 			}
 			else {
-				if (SPANMHAN == 'span') {
+				if (SPANMHAN === 'span') {
 					panel.removeClass('panel-primary');
 				}
 				$('.button_' + SPANMHAN, panel).removeClass('btn-primary').addClass('btn-default');
@@ -934,9 +936,6 @@ $(window).load(function () {
 					'aktion':        'schaltenEinfach',
 					'span_mhanApNr': SPAN_MAHN_ApNr
 				});
-			}
-			else {
-
 			}
 
 			if (typeof this.ApFunkstellen[FstID] !== 'undefined') {
@@ -1033,7 +1032,7 @@ $(window).load(function () {
 		zustandWiederherstellen: function (AufschalteZustand) {
 
 			if (typeof AufschalteZustand !== 'object') {
-				return false;
+				return;
 			}
 
 			//Backup, da die Funktionen schalten und trennen mit Rueckmeldung schon in ApFunkstellen schreiben
@@ -1069,7 +1068,7 @@ $(window).load(function () {
 			let neuerKanal = '';
 
 			//Kanal wurde über Spinbox geändert
-			if (element != undefined) {
+			if (element !== undefined) {
 				neuerKanal = element.innerText;
 			}
 			//Kanal wurde über direkt auswahl geändet
@@ -1110,7 +1109,7 @@ $(window).load(function () {
 			benutzer.theme  = WSV.Themes.currentTheme;
 			benutzer.einzel = this.einzel;
 
-			if (this.geschalteteSPAN.length == 1) {
+			if (this.geschalteteSPAN.length === 1) {
 				benutzer.schaltZustandEinzel = JSON.stringify(this.geschalteteSPAN);
 			}
 			else if (this.geschalteteSPAN.length > 1) {
@@ -1228,6 +1227,8 @@ $(window).load(function () {
 }(window, document, jQuery));
 ;'use strict';
 
+/* global WSV */
+
 (function (window, document, $) {
 
 	WSV.Themes = {
@@ -1267,7 +1268,7 @@ $(window).load(function () {
 		 * @param {boolean} saveConfig - legt fest ob die Konfig gespeichert werden soll
 		 */
 		switch: function (theme, saveConfig) {
-			if (typeof theme == 'undefined' || theme == this.currentTheme) {
+			if (typeof theme === 'undefined' || theme === this.currentTheme) {
 				return;
 			}
 
@@ -1290,6 +1291,8 @@ $(window).load(function () {
 
 })(window, document, jQuery);;'use strict';
 
+/* global WSV */
+
 (function (window, document, $) {
 
 	WSV.Tools = {
@@ -1303,7 +1306,7 @@ $(window).load(function () {
 		hatWert: function (obj, value) {
 			for (const id in obj) {
 				//noinspection JSUnfilteredForInLoop
-				if (obj[id] == value) {
+				if (obj[id] === value) {
 					return true;
 				}
 			}
@@ -1333,7 +1336,7 @@ $(window).load(function () {
 		sammelStatusAendernSpanMhan: function (elementeListe) {
 			let sammelStatus = '0';
 			$(elementeListe).each(function () {
-				if ($(this).attr('geraetStatus') == 1) {
+				if ($(this).attr('geraetStatus') === 1) {
 					sammelStatus = '1';
 				}
 			});
@@ -1346,7 +1349,7 @@ $(window).load(function () {
 		 * @return {Number} Integer fuer Zustand 1=Fehler, 0=OK
 		 */
 		pruefeGeraetStatus: function (element) {
-			if (element.attr('geraetStatus') == 1 || element.attr('geraetStatus') == -1) {
+			if (element.attr('geraetStatus') === 1 || element.attr('geraetStatus') === -1) {
 				return 1;
 			}
 			

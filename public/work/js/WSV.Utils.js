@@ -1,5 +1,7 @@
 'use strict';
 
+/* global WSV */
+
 (function (window, document, $) {
 
 	WSV.Tools = {
@@ -13,7 +15,7 @@
 		hatWert: function (obj, value) {
 			for (const id in obj) {
 				//noinspection JSUnfilteredForInLoop
-				if (obj[id] == value) {
+				if (obj[id] === value) {
 					return true;
 				}
 			}
@@ -43,7 +45,7 @@
 		sammelStatusAendernSpanMhan: function (elementeListe) {
 			let sammelStatus = '0';
 			$(elementeListe).each(function () {
-				if ($(this).attr('geraetStatus') == 1) {
+				if ($(this).attr('geraetStatus') === 1) {
 					sammelStatus = '1';
 				}
 			});
@@ -56,7 +58,7 @@
 		 * @return {Number} Integer fuer Zustand 1=Fehler, 0=OK
 		 */
 		pruefeGeraetStatus: function (element) {
-			if (element.attr('geraetStatus') == 1 || element.attr('geraetStatus') == -1) {
+			if (element.attr('geraetStatus') === 1 || element.attr('geraetStatus') === -1) {
 				return 1;
 			}
 			
