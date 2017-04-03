@@ -72,7 +72,7 @@ $(window).load(function () {
 				$('#sliderModal').on('change', function (ev) {
 
 					//$('#' + geklickteID).prev().text(ev.value.newValue)
-					_self.setzeLautstaerke(fuerFunkstelle, mhanButton, ev.value.newValue)
+					_self.setzeLautstaerke(fuerFunkstelle, mhanButton, ev.value.newValue);
 				}); //Slide Event zu
 
 				//Arbeitsplaetze bzw SPAN zum Mithoeren laden
@@ -98,9 +98,9 @@ $(window).load(function () {
 					$.getJSON('verbindungen/liesVerbindungen?geraet=' + mhanButton, function (data) {
 						$.each(data, function (key, val) {
 							if (val.funkstelle.indexOf('SPAN') > -1 && val.zustand.aufgeschaltet === true) {
-								$('#' + val.funkstelle).addClass('btn-primary')
+								$('#' + val.funkstelle).addClass('btn-primary');
 							}
-						})
+						});
 					});
 				});
 			});
@@ -155,7 +155,7 @@ $(window).load(function () {
 				                 '<span data-notify="title">{1}</span> ' +
 				                 '<span data-notify="message">{2}</span>' +
 				                 '<div class="progress" data-notify="progressbar">' +
-				                 '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+				                 '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0;"></div>' +
 				                 '</div>' +
 				                 '<a href="{3}" target="{4}" data-notify="url"></a>' +
 				                 '</div>'
@@ -234,8 +234,8 @@ $(window).load(function () {
 							_self.funkstellenZustandSetzen(val.status.id, 'Error');
 						}
 					}
-				})
-			})
+				});
+			});
 		},
 
 		/**
@@ -303,7 +303,7 @@ $(window).load(function () {
 				case '1': // Error
 					$('span.label', standortButton).removeClass('label-success').addClass('label-danger').text('Error');
 					if (FunkstelleGWID) {
-						$('span.label', FunkstelleGWID).removeClass('label-success').addClass('label-danger').text('Error')
+						$('span.label', FunkstelleGWID).removeClass('label-success').addClass('label-danger').text('Error');
 					}
 					break;
 				case '0': // OK
@@ -316,7 +316,7 @@ $(window).load(function () {
 							.removeClass('label-danger')
 							.removeClass('label-warning')
 							.addClass('label-success')
-							.text(Zustand)
+							.text(Zustand);
 					}
 					break;
 			}
@@ -353,7 +353,7 @@ $(window).load(function () {
 
 					//Error Modal anzeigen
 					WSV.Tools.audioAlarm.play();
-					$('.errorText2', '#errorModalDUEGeraete').text(KompID)
+					$('.errorText2', '#errorModalDUEGeraete').text(KompID);
 					$('#errorModalDUEGeraete').modal('show');
 
 					break;
@@ -393,7 +393,7 @@ $(window).load(function () {
 				vergleichVtrIp     = vergleichVtrIp[2];
 
 				if (vergleichVtrIp == urlVtrIp) {
-					ort = vergleich[0]
+					ort = vergleich[0];
 				}
 			}
 
@@ -407,7 +407,7 @@ $(window).load(function () {
 				buttonAktiv.addClass('label-success');
 
 				button.closest('button').removeAttr('disabled');
-				button.closest('li').removeClass('disabled')
+				button.closest('li').removeClass('disabled');
 			}
 			else if (status == 'Error') {
 				button.removeClass('label-success');
@@ -438,8 +438,8 @@ $(window).load(function () {
 			// console.log("ukwMessage received: " + JSON.stringify(msg));
 			// console.log(msgTyp);
 
-			if (typeof msg == 'object'
-				&& typeof msg[msgTyp].$ != 'undefined'
+			if (typeof msg === 'object'
+				&& typeof msg[msgTyp].$ !== 'undefined'
 				&& (_self.ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id) || _self.ArbeitsplatzGeraeteID.hasOwnProperty(msg[msgTyp].$.id))) {
 
 				// Empfangen aktiv0
@@ -452,7 +452,7 @@ $(window).load(function () {
 					$('.panel-body h2', panel).addClass('text-danger');
 
 					// ATIS Kennung Anzeigen wenn vorhanden
-					if (typeof msg.RX.$.atis == 'string' && msg.RX.$.atis.length > 0) {
+					if (typeof msg.RX.$.atis === 'string' && msg.RX.$.atis.length > 0) {
 						this.wechselAtisKennung(msg.RX.$.id, msg.RX.$.atis, 1000);
 					}
 					else {
@@ -464,7 +464,7 @@ $(window).load(function () {
 					}, {
 						type: 'danger'
 					});
-					console.log('RX state 1: ' + msg.RX.$.id)
+					console.log('RX state 1: ' + msg.RX.$.id);
 				}
 				// Empfangen deaktiv
 				if ('RX' in msg && msg.RX.$.state === '0') {
@@ -475,14 +475,14 @@ $(window).load(function () {
 					$('.panel-body', panel).removeClass('bg-danger');
 					$('.panel-body h2', panel).removeClass('text-danger');
 
-					console.log('RX state 0: ' + msg.RX.$.id)
+					console.log('RX state 0: ' + msg.RX.$.id);
 				}
 				//Senden aktiv
 				if ('TX' in msg && msg.TX.$.state === '1') {
 					//Pruefen ob SPAN ID in TX Objekt
 					if (msg.TX.$.id.indexOf('SPAN') != -1) {
 						//erstmal nichts machen. ggf in SPAN Element etwas anzeigen
-						console.log('TX state 1 ohne SPAN: ' + msg.TX.$.id)
+						console.log('TX state 1 ohne SPAN: ' + msg.TX.$.id);
 					}
 					else {
 						//suche Schaltflaeche zu FunkstellenID
@@ -492,14 +492,14 @@ $(window).load(function () {
 						$('.panel-body', panel).addClass('bg-success');
 						$('.panel-body h2', panel).addClass('text-success');
 
-						console.log('TX state 1 mit SPAN: ' + msg.TX.$.id)
+						console.log('TX state 1 mit SPAN: ' + msg.TX.$.id);
 					}
 				}
 				//Senden deaktiv
 				if ('TX' in msg && msg.TX.$.state === '0') {
 					if (msg.TX.$.id.indexOf('SPAN') != -1) {
 						//erstmal nichts machen. ggf in SPAN Element etwas anzeigen
-						console.log('TX state 0 ohne SPAN: ' + msg.TX.$.id)
+						console.log('TX state 0 ohne SPAN: ' + msg.TX.$.id);
 					}
 					else {
 						//suche Schaltflaeche zu FunkstellenID
@@ -508,7 +508,7 @@ $(window).load(function () {
 						//Kanalflaeche entfaerben
 						$('.panel-body', panel).removeClass('bg-success');
 						$('.panel-body h2', panel).removeClass('text-success');
-						console.log('TX state 0 mit SPAN: ' + msg.TX.$.id)
+						console.log('TX state 0 mit SPAN: ' + msg.TX.$.id);
 					}
 				}
 
@@ -655,7 +655,7 @@ $(window).load(function () {
 						message: 'Störung:<br>' + JSON.stringify(msg)
 					}, {
 						type: 'danger'
-					})
+					});
 				}
 
 				//else {
@@ -821,21 +821,21 @@ $(window).load(function () {
 					$.each(this.ApFunkstellen, function (key, value) {
 						if (value.aufgeschaltet === true && key != geklickteFstID) {
 							//console.log(key, value.aufgeschaltet)
-							_self.trennen(key, geklickteSPANMHAN, geklicktespan_mhanApNr)
+							_self.trennen(key, geklickteSPANMHAN, geklicktespan_mhanApNr);
 						}
 						//trenne aufgeschaltet
-					})
+					});
 				}
 				//Gruppenschaltung
 				// TODO: != undefined auskommentiert da Gleichwelle sonst nicht geschaltet wird
 				// TODO: Ueberpruefung im Rahmen Wechsel Einzel/ Gruppe
 				//if (this.ApFunkstellen[geklickteFstID] != undefined) {
 				if (this.ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
-					this.trennen(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
+					this.trennen(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
 
 				}
 				else {
-					this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
+					this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
 				}
 				//}
 
@@ -855,17 +855,17 @@ $(window).load(function () {
 					this.ApFunkstellen[geklickteFstID]               = {};
 					this.ApFunkstellen[geklickteFstID].aufgeschaltet = true;
 					this.ApFunkstellen[geklickteFstID].sname         = 'Fremd Span';
-					this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
+					this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
 				}
 			}
 
 			//MHAN schalten
 			if (SPAN === 'MHAN') {
 				if (this.ApFunkstellen[geklickteFstID].mhan_aufgeschaltet[geklickteSPANMHAN] == true) {
-					this.trennen(geklickteFstID, geklickteSPANMHAN)
+					this.trennen(geklickteFstID, geklickteSPANMHAN);
 				}
 				else {
-					this.schalten(geklickteFstID, geklickteSPANMHAN)
+					this.schalten(geklickteFstID, geklickteSPANMHAN);
 				}
 
 			}
@@ -873,9 +873,9 @@ $(window).load(function () {
 
 		/**
 		 * Schaltzustand visuell darstellen
-		 * @param {string} FstID
-		 * @param {string} SPAN oder MHAN
-		 * @param {boolean} enabled
+		 * @param {string} FstID - Funkstellen ID
+		 * @param {string} SPANMHAN - SPAN oder MHAN
+		 * @param {boolean} enabled - schalten (true) oder trennen (false)
 		 */
 		schaltenVisuell: function (FstID, SPANMHAN, enabled) {
 
@@ -939,7 +939,7 @@ $(window).load(function () {
 
 			}
 
-			if (typeof this.ApFunkstellen[FstID] != 'undefined') {
+			if (typeof this.ApFunkstellen[FstID] !== 'undefined') {
 				$.notify('Schalte: <br>' + this.ApFunkstellen[FstID].sname);
 			}
 			//console.log('(notify) schalte: ' + this.ApFunkstellen[FstID].sname);
@@ -1032,7 +1032,7 @@ $(window).load(function () {
 		 */
 		zustandWiederherstellen: function (AufschalteZustand) {
 
-			if (typeof AufschalteZustand != 'object') {
+			if (typeof AufschalteZustand !== 'object') {
 				return false;
 			}
 
@@ -1070,11 +1070,11 @@ $(window).load(function () {
 
 			//Kanal wurde über Spinbox geändert
 			if (element != undefined) {
-				neuerKanal = element.innerText
+				neuerKanal = element.innerText;
 			}
 			//Kanal wurde über direkt auswahl geändet
 			else {
-				neuerKanal = $('.spinbox-input').val()
+				neuerKanal = $('.spinbox-input').val();
 			}
 			//console.log('clientMessage', {'FstID': this.aktuelleMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'})
 			this.socket.emit('clientMessage', {'FstID': this.aktuelleMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'});
@@ -1087,13 +1087,13 @@ $(window).load(function () {
 		ladeBenutzer: function () {
 			const _self = this;
 			$.get('/benutzer/zeigeWindowsBenutzer/selectip', function (data) {
-				if (typeof data._id != 'undefined') {
+				if (typeof data._id !== 'undefined') {
 					_self.aktuellerBenutzer = data;
 
-					if (typeof data.theme == 'undefined') {
+					if (typeof data.theme === 'undefined') {
 						data.theme = 'default';
 					}
-					if (typeof data.einzel == 'undefined') {
+					if (typeof data.einzel === 'undefined') {
 						data.einzel = _self.einzel;
 					}
 				}
@@ -1106,7 +1106,7 @@ $(window).load(function () {
 		 */
 		schreibeBenutzer: function (callback) {
 
-			const benutzer  = jQuery.extend(true, {}, this.aktuellerBenutzer);
+			const benutzer  = $.extend(true, {}, this.aktuellerBenutzer);
 			benutzer.theme  = WSV.Themes.currentTheme;
 			benutzer.einzel = this.einzel;
 
@@ -1117,10 +1117,10 @@ $(window).load(function () {
 				benutzer.schaltZustandGruppe = JSON.stringify(this.geschalteteSPAN);
 			}
 
-			if (typeof benutzer.schaltZustandEinzel == 'object' && Object.keys(benutzer.schaltZustandEinzel).length) {
+			if (typeof benutzer.schaltZustandEinzel === 'object' && Object.keys(benutzer.schaltZustandEinzel).length) {
 				benutzer.schaltZustandEinzel = JSON.stringify(benutzer.schaltZustandEinzel);
 			}
-			if (typeof benutzer.schaltZustandGruppe == 'object' && Object.keys(benutzer.schaltZustandGruppe).length) {
+			if (typeof benutzer.schaltZustandGruppe === 'object' && Object.keys(benutzer.schaltZustandGruppe).length) {
 				benutzer.schaltZustandGruppe = JSON.stringify(benutzer.schaltZustandGruppe);
 			}
 
@@ -1129,7 +1129,7 @@ $(window).load(function () {
 				type:    'POST',
 				data:    benutzer,
 				success: function (result) {
-					if (typeof callback == 'function') {
+					if (typeof callback === 'function') {
 						callback();
 					}
 					console.log(result);
@@ -1147,7 +1147,7 @@ $(window).load(function () {
 			const _self     = this;
 			this.countDown  = parseInt(this.IpConfig.displaySperreTimeout * 1000);
 			this.cdInterval = setInterval(function () {
-				_self.displaySperreCountdown(_self)
+				_self.displaySperreCountdown(_self);
 			}, 1000);
 		},
 
@@ -1182,7 +1182,7 @@ $(window).load(function () {
 			clearInterval(this.atisInterval[FstID]);
 			atis_element.addClass('alert-info').html(ATIS);
 			this.atisInterval[FstID] = setInterval(function () {
-				_self.entferneAtisKennung(FstID)
+				_self.entferneAtisKennung(FstID);
 			}, timeout);
 		},
 
@@ -1198,7 +1198,7 @@ $(window).load(function () {
 				str = this.atisMIDS[mids][0];
 			}
 			else {
-				str = mids
+				str = mids;
 			}
 
 			str += code1 + ' ' + code2;
@@ -1223,9 +1223,9 @@ $(window).load(function () {
 				this.alphabet[i + 1] = String.fromCharCode('A'.charCodeAt(0) + i);
 			}
 		}
-	}
+	};
 
-})(window, document, jQuery);
+}(window, document, jQuery));
 ;'use strict';
 
 (function (window, document, $) {
@@ -1286,7 +1286,8 @@ $(window).load(function () {
 				$('#themesheet').attr('href', _self.getThemeUrl());
 			}
 		}
-	}
+	};
+
 })(window, document, jQuery);;'use strict';
 
 (function (window, document, $) {
@@ -1318,9 +1319,9 @@ $(window).load(function () {
 		objektWerteAlsKey: function (obj) {
 			const neuesObjekt = [];
 			for (const key in obj) {
-				neuesObjekt[obj[key]] = key
+				neuesObjekt[obj[key]] = key;
 			}
-			return neuesObjekt
+			return neuesObjekt;
 		},
 
 		/**
@@ -1333,10 +1334,10 @@ $(window).load(function () {
 			let sammelStatus = '0';
 			$(elementeListe).each(function () {
 				if ($(this).attr('geraetStatus') == 1) {
-					sammelStatus = '1'
+					sammelStatus = '1';
 				}
 			});
-			return sammelStatus
+			return sammelStatus;
 		},
 
 		/**
@@ -1346,11 +1347,11 @@ $(window).load(function () {
 		 */
 		pruefeGeraetStatus: function (element) {
 			if (element.attr('geraetStatus') == 1 || element.attr('geraetStatus') == -1) {
-				return 1
+				return 1;
 			}
-			else {
-				return 0
-			}
+			
+			return 0;
+			
 		},
 
 		/**
@@ -1411,6 +1412,6 @@ $(window).load(function () {
 			return sammelStatus;
 
 		}
-	}
+	};
 
-})(window, document, jQuery);
+}(window, document, jQuery));

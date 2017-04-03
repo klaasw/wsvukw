@@ -58,5 +58,6 @@
 				$('#themesheet').attr('href', _self.getThemeUrl());
 			}
 		}
-	}
+	};
+
 })(window, document, jQuery);

@@ -29,9 +29,9 @@
 		objektWerteAlsKey: function (obj) {
 			const neuesObjekt = [];
 			for (const key in obj) {
-				neuesObjekt[obj[key]] = key
+				neuesObjekt[obj[key]] = key;
 			}
-			return neuesObjekt
+			return neuesObjekt;
 		},
 
 		/**
@@ -44,10 +44,10 @@
 			let sammelStatus = '0';
 			$(elementeListe).each(function () {
 				if ($(this).attr('geraetStatus') == 1) {
-					sammelStatus = '1'
+					sammelStatus = '1';
 				}
 			});
-			return sammelStatus
+			return sammelStatus;
 		},
 
 		/**
@@ -57,11 +57,11 @@
 		 */
 		pruefeGeraetStatus: function (element) {
 			if (element.attr('geraetStatus') == 1 || element.attr('geraetStatus') == -1) {
-				return 1
+				return 1;
 			}
-			else {
-				return 0
-			}
+			
+			return 0;
+			
 		},
 
 		/**
@@ -122,6 +122,6 @@
 			return sammelStatus;
 
 		}
-	}
+	};
 
-})(window, document, jQuery);
+}(window, document, jQuery));
