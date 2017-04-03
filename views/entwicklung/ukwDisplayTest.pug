@@ -9,12 +9,18 @@ block content
 	div.container-fluid
 		div.content
 			// Schaltflaechen fuer LotsenAp
-			// TODO: fuer LotsenAp nicht erstellen
+			// TODO: fuer LotsenAp nicht erstellen, doch fuer Nautiker Ap siehe Warnemuende
 			div.row.lotsen
 				each lotsenAp, index in gesamteKonfig.LotsenAp
-					div.col-md-1.text-center(style="padding-left: 5px;padding-right: 5px;")
-							div.btn.btn-default #{gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname ? gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname : 'sname'}
-									p(style="margin-bottom: 0px;") Kanal
+					div.col-md-1.text-center(
+						style="padding-left: 5px;padding-right: 5px;",
+						id=lotsenAp.SPAN01,
+					)
+						div.btn.btn-default(
+							id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[lotsenAp.SPAN01]],
+							onclick='WSV.Display.schalteKanal(event,this,"SPAN_MHAN")'
+						) #{gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname ? gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname : 'sname'}
+							
 			//Schaltflaechen fuer Funkstellen nzeigen
 			div.row
 				each val, index in gesamteKonfig.FunkstellenReihe

@@ -558,8 +558,8 @@
 							// aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
 							if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1 && msg.geschaltet.$.id.indexOf('SPAN') != -1) {
 								// _self.schaltenVisuell(msg.geschaltet.$.id, 'SPAN', true);
-								$('#' + msg.geschaltet.$.id).addClass('btn-primary');
-								$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
+								$('#' + msg.geschaltet.$.id + ' > .btn').addClass('btn-primary');
+								$.notify('Aufgeschaltet Mithören: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
 							}
 							else { //nur MHAN aufschaltungen
 								_self.schaltenVisuell(msg.geschaltet.$.id, 'mhan', true);
@@ -595,8 +595,8 @@
 						if (msg.getrennt.$.Ap.indexOf('MHAN') != -1) {
 							//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
 							if (msg.getrennt.$.Ap.indexOf('MHAN') != -1 && msg.getrennt.$.id.indexOf('SPAN') != -1) {
-								$('#' + msg.getrennt.$.id).removeClass('btn-primary');
-								$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
+								$('#' + msg.getrennt.$.id + ' > .btn').removeClass('btn-primary');
+								$.notify('Getrennt Mithören: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
 							}
 							else { //nur MHAN Aufschaltungen
 								// $('.button_mhan', button).css('background-color', '#f5f5f5').removeClass('bg-primary');
@@ -785,10 +785,11 @@
 						//TODO: hier Reserveanlage schalten
 					}
 				}
-				else if (geraet === 'SPAN_MHAN') { //Schalten aus Modal Mithoeren
-					const mhan          = $('#mithoerenModal .btn-primary').attr('id');
-					const span          = element.id;
-					const span_mhanApNr = $('#mithoerenModal .btn-group-vertical .btn-primary').text();
+				else if (geraet === 'SPAN_MHAN') { // Schalten fuer SPAN zu MHAN aus row Lotsen
+					const spanElement   = $(element).offsetParent();
+					const span          = spanElement[0].id;
+					const mhan          = element.id;
+					const span_mhanApNr = this.MhanZuordnung[span]; // z.B. MHAN05
 					this.schalteKanalID(span, mhan, 'SPAN_MHAN', span_mhanApNr);
 					//console.log();
 				}
@@ -915,6 +916,7 @@
 
 			for (const funkstelle in mhan) {
 				this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle], false);
+				this.ApFunkstellen[funkstelle].aufgeschaltet = true;
 			}
 
 			// this.schreibeBenutzer();
