@@ -12,7 +12,7 @@ block content
 			// TODO: fuer LotsenAp nicht erstellen
 			div.row.lotsen
 				each lotsenAp, index in gesamteKonfig.LotsenAp
-					div.col-md-1.text-center
+					div.button_lotse
 							div.btn.btn-default #{gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname ? gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname : 'sname'}
 									p(style="margin-bottom: 0px;") Kanal
 			//Schaltflaechen fuer Funkstellen nzeigen
@@ -81,7 +81,7 @@ block content
 									) #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
 									div.text-center.atis(
 									data-buttonElement='atis'
-									) keine ATIS-Kennung
+									)
 								div.panel-footer
 									+findeFunkstelle(val, gesamteKonfig.MhanZuordnung)
 									div.btn.btn-default.button_mhan(
