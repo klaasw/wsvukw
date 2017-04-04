@@ -789,7 +789,7 @@
 					const spanElement   = $(element).offsetParent();
 					const span          = spanElement[0].id;
 					const mhan          = element.id;
-					const span_mhanApNr = this.MhanZuordnung[span]; // z.B. MHAN05
+					const span_mhanApNr = this.MhanZuordnung[span].Lautsprecher; // z.B. MHAN05
 					this.schalteKanalID(span, mhan, 'SPAN_MHAN', span_mhanApNr);
 					//console.log();
 				}
@@ -915,8 +915,11 @@
 			const _self = this;
 
 			for (const funkstelle in mhan) {
-				this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle], false);
-				this.ApFunkstellen[funkstelle].aufgeschaltet = true;
+				// Schalten wenn festAufgeschaltet sein soll
+				if (mhan[funkstelle].festAufgeschaltet === true) {
+					this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle].Lautsprecher], mhan[funkstelle].Lautsprecher, false);
+					this.ApFunkstellen[funkstelle].aufgeschaltet = true;
+				}
 			}
 
 			// this.schreibeBenutzer();

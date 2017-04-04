@@ -1,14 +1,34 @@
 {
-  "fest":{
-    "1-H-RFD-WHVVTA-FKEK-2": "MHAN01",
-    "1-H-RFD-WHVVTA-FKEK-3": "MHAN02",
-    "1-H-RFD-WHVVTA-FKMK-1": "MHAN03",
-    "1-H-RFD-BHVVTA-FKEK-1": "MHAN04"
-  },
-  "optional":{
-    "1-H-RFD-WHVVKZ-SPAN-06": "MHAN01",
-    "1-H-RFD-WHVVKZ-SPAN-05": "MHAN01",
-    "1-H-RFD-WHVVKZ-SPAN-07": "MHAN01",
-    "1-H-RFD-WHVVKZ-SPAN-08": "MHAN01"
-  }
+    "1-H-RFD-WHVVTA-FKEK-2": {
+        "Lautsprecher": "MHAN01",
+        "festAufgeschaltet": true
+    },
+    "1-H-RFD-WHVVTA-FKEK-3": {
+        "Lautsprecher": "MHAN02",
+        "festAufgeschaltet": true
+    },
+    "1-H-RFD-WHVVTA-FKMK-1": {
+        "Lautsprecher": "MHAN03",
+        "festAufgeschaltet": true
+    },
+    "1-H-RFD-BHVVTA-FKEK-1": {
+        "Lautsprecher": "MHAN04",
+        "festAufgeschaltet": true
+    },
+    "1-H-RFD-WHVVKZ-SPAN-06": {
+        "Lautsprecher": "MHAN01",
+        "festAufgeschaltet": false
+    },
+    "1-H-RFD-WHVVKZ-SPAN-05": {
+        "Lautsprecher": "MHAN01",
+        "festAufgeschaltet": false
+    },
+    "1-H-RFD-WHVVKZ-SPAN-07": {
+        "Lautsprecher": "MHAN01",
+        "festAufgeschaltet": false
+    },
+    "1-H-RFD-WHVVKZ-SPAN-08": {
+        "Lautsprecher": "MHAN01",
+        "festAufgeschaltet": false
+    }
 }

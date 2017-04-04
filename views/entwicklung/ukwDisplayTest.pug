@@ -17,7 +17,7 @@ block content
 						id=lotsenAp.SPAN01,
 					)
 						div.btn.btn-default(
-							id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[lotsenAp.SPAN01]],
+							id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[lotsenAp.SPAN01].Lautsprecher],
 							onclick='WSV.Display.schalteKanal(event,this,"SPAN_MHAN")'
 						) #{gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname ? gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname : 'sname'}
 							
@@ -40,7 +40,7 @@ block content
 							div.button_flaeche(data-buttonElement='flaeche')
 								div.btn.btn-default.button_mhan.btn-block(
 								data-buttonElement='mhan',
-								id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]],
+								id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0].Lautsprecher]],
 								class=(val[0] == 'frei' ? 'hidden' : ''),
 								type='button',
 								data-toggle='modal',
