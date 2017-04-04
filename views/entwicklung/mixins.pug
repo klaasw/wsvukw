@@ -58,4 +58,4 @@ mixin findeFunkstelle(arrayFunkstellen, mhanZuordnung)
 	// z.B. Button11:[1-H-RFD-WARVTA-FKEK-2, 1-H-RFD-WARVTA-FKEK-1]
 	- for (var i = 0; i < arrayFunkstellen.length; i++)
 			if mhanZuordnung.hasOwnProperty(arrayFunkstellen[i])
-				div.mhan #{mhanZuordnung[arrayFunkstellen[i]].Lautsprecher}
+				div.mhan(id=mhanZuordnung[arrayFunkstellen[i]].Lautsprecher)
