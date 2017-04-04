@@ -87,7 +87,7 @@ block content
 									)
 								div.panel-footer
 									div.btn.btn-default.button_mhan(
-										id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]],
+										id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0].Lautsprecher]],
 										class=(val[0] == 'frei' ? 'hidden' : ''),
 										type='button',
 										data-toggle='modal',
@@ -97,8 +97,6 @@ block content
 										)
 										span.lautstaerke 100
 										i.fa.fa-volume-up(aria-hidden="true")
-
-									+findeFunkstelle(val, gesamteKonfig.MhanZuordnung)
 
 									if gesamteKonfig.FunkstellenDetails[val[0]].MKA
 										button.btn.btn-default.btn-lg.dropdown-toggle.button_mkaDropdown(
