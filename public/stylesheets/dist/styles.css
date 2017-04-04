@@ -1,4 +1,5 @@
 @charset "UTF-8";
+@import url(../../vendor/font-awesome/css/font-awesome.min.css);
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -7444,24 +7445,6 @@ table {
   border-spacing: 0;
 }
 
-body {
-  background-color: #FFFFFF;
-  font-family: 'Open Sans', Helvetica, Arial, sans-serif, sans-serif !important;
-}
-
-body, html {
-  height: 100%;
-  min-height: 100%;
-}
-
-.nav li .dropdown-toggle {
-  margin: 0 10px;
-}
-
-.row {
-  margin-bottom: 15px;
-}
-
 @font-face {
   font-family: 'Open Sans';
   font-style: normal;
@@ -7543,10 +7526,38 @@ h4 {
   font-style: italic;
 }
 
-.panel {
-  margin: 0 !important;
+body {
+  background-color: #FFFFFF;
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif, sans-serif !important;
 }
-.panel .title-head {
+
+body, html {
+  height: 100%;
+  min-height: 100%;
+}
+
+.nav li .dropdown-toggle {
+  margin: 0 10px;
+}
+
+.row {
+  margin-bottom: 15px;
+}
+
+.navbar .btn span,
+.navbar .btn .label {
+  margin-left: 5px;
+}
+
+.row.lotsen .button_lotse {
+  display: inline-block;
+  padding: 0 20px;
+}
+.row .panel {
+  margin: 0 !important;
+  border-width: 2px !important;
+}
+.row .panel .title-head {
   display: block;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
@@ -7555,47 +7566,93 @@ h4 {
   border-right-width: 0;
   padding: 10px 0;
 }
-.panel .button_span {
+.row .panel .button_span {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   border-bottom-width: 0;
   border-left-width: 0;
   border-right-width: 0;
 }
-.panel .button_mhan {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-top-width: 0;
-  border-left-width: 0;
-  border-right-width: 0;
-  padding-top: 10px;
-  padding-bottom: 10px;
+.row .panel .button_kanalNr {
+  cursor: pointer;
+  margin: 30px 0 20px 0;
 }
-.panel .button_standort {
-  margin-top: 10px;
-  margin-left: 0;
-  margin-right: 0;
-  border-right-width: 1px;
-  border-left-width: 1px;
-  padding-top: 2px;
-  padding-bottom: 2px;
-}
-.panel .button_mkaDropdown {
-  margin-left: 30%;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  height: 32px;
-  margin-top: -5px;
-}
-.panel .button_kanalNr {
-  margin: 5px 0;
-}
-.panel .atis {
+.row .panel .atis {
   padding: 10px 0;
   transition: all .3s ease-out;
 }
-.panel .dropdown .dropdown-menu {
+.row .panel .dropdown .dropdown-menu {
   width: 250px;
+}
+.row .panel .panel-heading {
+  padding: 0;
+}
+.row .panel .panel-heading .button_standort {
+  padding: 0;
+  width: 100%;
+  height: 34px;
+  border-radius: 2px 2px 0 0;
+  border-right-width: 0;
+  border-left-width: 0;
+  border-top-width: 0;
+}
+.row .panel .panel-heading .button_standort .label {
+  margin-left: 5px;
+}
+.row .panel .panel-body {
+  padding: 0;
+}
+.row .panel .panel-footer {
+  padding: 0;
+  position: relative;
+  height: 40px;
+  max-height: 40px;
+  line-height: 40px;
+  display: flex;
+  flex-wrap: nowrap;
+}
+.row .panel .panel-footer .mhan {
+  text-align: center;
+  pointer-events: none;
+  font-size: 0.9em;
+  flex: 2;
+}
+.row .panel .panel-footer .button_mkaDropdown {
+  font-size: 0.9em;
+  height: 100%;
+  line-height: 40px;
+  padding: 0;
+  border-top: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 2px;
+  flex: 1;
+}
+.row .panel .panel-footer .button_mhan {
+  font-size: 0.9em;
+  position: relative;
+  vertical-align: top;
+  padding: 0 0 0 20px;
+  height: 40px;
+  line-height: 40px;
+  border-top: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 2px;
+  flex: 1;
+}
+.row .panel .panel-footer .button_mhan i {
+  position: absolute;
+  top: 13px;
+  left: 8px;
+}
+.row .panel .panel-footer .button_placeholder {
+  flex: 1;
+}
+.row .panel.panel-primary .button_mhan {
+  border-left: 0;
 }
 
 #displaySperreModal {

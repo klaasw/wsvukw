@@ -1,5 +1,7 @@
 'use strict';
 
+/* global WSV , io*/
+
 (function (window, document, $) {
 
 	WSV.Display = {
@@ -45,7 +47,7 @@
 				const lautstaerke    = parseInt($(event.relatedTarget).attr('data-lautstaerke'));
 
 				//Überschrift anpassen
-				$('#mithoerenModal .modal-title').text('Mithören für Kanal: ' + ApFunkstellen[fuerFunkstelle].channel + ', ' + ApFunkstellen[fuerFunkstelle].sname + ', Komp-ID: ' + fuerFunkstelle);
+				$('#mithoerenModal .modal-title').text('Mithören für Kanal: ' + _self.ApFunkstellen[fuerFunkstelle].channel + ', ' + _self.ApFunkstellen[fuerFunkstelle].sname + ', Komp-ID: ' + fuerFunkstelle);
 
 				//angeklickten MHAN hervorheben
 				$('#mithoerenModal #' + mhanButton).addClass('btn-primary');
@@ -61,7 +63,7 @@
 				$('#sliderModal').on('change', function (ev) {
 
 					//$('#' + geklickteID).prev().text(ev.value.newValue)
-					_self.setzeLautstaerke(fuerFunkstelle, mhanButton, ev.value.newValue)
+					_self.setzeLautstaerke(fuerFunkstelle, mhanButton, ev.value.newValue);
 				}); //Slide Event zu
 
 				//Arbeitsplaetze bzw SPAN zum Mithoeren laden
@@ -75,7 +77,7 @@
 
 					$.each(data, function (key, val) {
 						// Aus Verbindungen nur SPAN und ApID ungleich eigener AP verarbeiten
-						if (val.span_mhan.indexOf('SPAN') > -1 && val.ApID !== ApID) {
+						if (val.span_mhan.indexOf('SPAN') > -1 && val.ApID !== _self.ApID) {
 							//Button Eigenschaften verkettten und in in Array schreiben
 							button = buttonOeffnen + val.span_mhan + buttonSchliessen + val.ApID + buttonEnde;
 							buttonsFuerArbeitsplaetze.push(button);
@@ -84,12 +86,12 @@
 					$('#mithoerenModal [buttonElement="ap_mithoeren"]').html(buttonsFuerArbeitsplaetze);
 					//"SPAN_MHAN" zur Kennung der Schaltvorgangs
 					$('#mithoerenModal [buttonElement="spanApButtonModal"]').attr('onclick', 'schalteKanal(event, this, "SPAN_MHAN")');
-					$.getJSON('verbindungen/liesVerbindungen?geraet=' + mhanButton, function (data) {
-						$.each(data, function (key, val) {
+					$.getJSON('verbindungen/liesVerbindungen?geraet=' + mhanButton, function (dataV) {
+						$.each(dataV, function (key, val) {
 							if (val.funkstelle.indexOf('SPAN') > -1 && val.zustand.aufgeschaltet === true) {
-								$('#' + val.funkstelle).addClass('btn-primary')
+								$('#' + val.funkstelle).addClass('btn-primary');
 							}
-						})
+						});
 					});
 				});
 			});
@@ -97,7 +99,7 @@
 			//Event zum schliessen an mithoerenModal binden
 			$('#mithoerenModal').on('hidden.bs.modal', function (event) {
 				$('#mithoerenModal [buttonElement="mhanButtonModal"]').removeClass('btn-primary');
-				$('#sliderModal').slider('destroy')
+				$('#sliderModal').slider('destroy');
 			});
 
 
@@ -144,7 +146,7 @@
 				                 '<span data-notify="title">{1}</span> ' +
 				                 '<span data-notify="message">{2}</span>' +
 				                 '<div class="progress" data-notify="progressbar">' +
-				                 '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+				                 '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0;"></div>' +
 				                 '</div>' +
 				                 '<a href="{3}" target="{4}" data-notify="url"></a>' +
 				                 '</div>'
@@ -212,7 +214,7 @@
 					}
 					// Meldung gestört -SEN- darf nicht in der ID vorkommen
 					if ('status' in val && val.status.state === '1'
-						&& val.status.id.indexOf('-SEN-') == -1
+						&& val.status.id.indexOf('-SEN-') === -1
 						&& (_self.ApFunkstellen.hasOwnProperty(val._id) || _self.ArbeitsplatzGeraeteID.hasOwnProperty(val._id))
 					) {
 						// Zustand setzen wenn SPAN oder MHAN
@@ -223,8 +225,8 @@
 							_self.funkstellenZustandSetzen(val.status.id, 'Error');
 						}
 					}
-				})
-			})
+				});
+			});
 		},
 
 		/**
@@ -292,7 +294,7 @@
 				case '1': // Error
 					$('span.label', standortButton).removeClass('label-success').addClass('label-danger').text('Error');
 					if (FunkstelleGWID) {
-						$('span.label', FunkstelleGWID).removeClass('label-success').addClass('label-danger').text('Error')
+						$('span.label', FunkstelleGWID).removeClass('label-success').addClass('label-danger').text('Error');
 					}
 					break;
 				case '0': // OK
@@ -305,7 +307,7 @@
 							.removeClass('label-danger')
 							.removeClass('label-warning')
 							.addClass('label-success')
-							.text(Zustand)
+							.text(Zustand);
 					}
 					break;
 			}
@@ -342,7 +344,7 @@
 
 					//Error Modal anzeigen
 					WSV.Tools.audioAlarm.play();
-					$('.errorText2', '#errorModalDUEGeraete').text(KompID)
+					$('.errorText2', '#errorModalDUEGeraete').text(KompID);
 					$('#errorModalDUEGeraete').modal('show');
 
 					break;
@@ -381,24 +383,24 @@
 				let vergleichVtrIp = vergleich[1].split('.');
 				vergleichVtrIp     = vergleichVtrIp[2];
 
-				if (vergleichVtrIp == urlVtrIp) {
-					ort = vergleich[0]
+				if (vergleichVtrIp === urlVtrIp) {
+					ort = vergleich[0];
 				}
 			}
 
 			const button      = $('.button' + ort + '_' + dienst);
 			const buttonAktiv = $('.buttonAktiv' + ort + '_' + dienst);
 
-			if (status == 'OK') {
+			if (status === 'OK') {
 				button.removeClass('label-danger');
 				button.addClass('label-success');
 				buttonAktiv.removeClass('label-danger');
 				buttonAktiv.addClass('label-success');
 
 				button.closest('button').removeAttr('disabled');
-				button.closest('li').removeClass('disabled')
+				button.closest('li').removeClass('disabled');
 			}
-			else if (status == 'Error') {
+			else if (status === 'Error') {
 				button.removeClass('label-success');
 				button.addClass('label-danger');
 				button.closest('button').attr('disabled', 'disabled');
@@ -427,8 +429,8 @@
 			// console.log("ukwMessage received: " + JSON.stringify(msg));
 			// console.log(msgTyp);
 
-			if (typeof msg == 'object'
-				&& typeof msg[msgTyp].$ != 'undefined'
+			if (typeof msg === 'object'
+				&& typeof msg[msgTyp].$ !== 'undefined'
 				&& (_self.ApFunkstellen.hasOwnProperty(msg[msgTyp].$.id) || _self.ArbeitsplatzGeraeteID.hasOwnProperty(msg[msgTyp].$.id))) {
 
 				// Empfangen aktiv0
@@ -437,11 +439,11 @@
 					const panel = $('#' + msg.RX.$.id).parents('.panel');
 
 					//Kanalflaeche faerben
-					$('.button_flaeche', panel).addClass('bg-danger');
-					$('.button_flaeche h2', panel).addClass('text-danger');
+					$('.panel-body', panel).addClass('bg-danger');
+					$('.panel-body h2', panel).addClass('text-danger');
 
 					// ATIS Kennung Anzeigen wenn vorhanden
-					if (typeof msg.RX.$.atis == 'string') {
+					if (typeof msg.RX.$.atis === 'string' && msg.RX.$.atis.length > 0) {
 						this.wechselAtisKennung(msg.RX.$.id, msg.RX.$.atis, 1000);
 					}
 					else {
@@ -453,7 +455,7 @@
 					}, {
 						type: 'danger'
 					});
-					console.log('RX state 1: ' + msg.RX.$.id)
+					console.log('RX state 1: ' + msg.RX.$.id);
 				}
 				// Empfangen deaktiv
 				if ('RX' in msg && msg.RX.$.state === '0') {
@@ -461,43 +463,43 @@
 					const panel = $('#' + msg.RX.$.id).parents('.panel');
 
 					//Kanalflaeche entfaerben
-					$('.button_flaeche', panel).removeClass('bg-danger');
-					$('.button_flaeche h2', panel).removeClass('text-danger');
+					$('.panel-body', panel).removeClass('bg-danger');
+					$('.panel-body h2', panel).removeClass('text-danger');
 
-					console.log('RX state 0: ' + msg.RX.$.id)
+					console.log('RX state 0: ' + msg.RX.$.id);
 				}
 				//Senden aktiv
 				if ('TX' in msg && msg.TX.$.state === '1') {
 					//Pruefen ob SPAN ID in TX Objekt
-					if (msg.TX.$.id.indexOf('SPAN') != -1) {
+					if (msg.TX.$.id.indexOf('SPAN') !== -1) {
 						//erstmal nichts machen. ggf in SPAN Element etwas anzeigen
-						console.log('TX state 1 ohne SPAN: ' + msg.TX.$.id)
+						console.log('TX state 1 ohne SPAN: ' + msg.TX.$.id);
 					}
 					else {
 						//suche Schaltflaeche zu FunkstellenID
 						const panel = $('#' + msg.TX.$.id).parents('.panel');
 
 						//Kanalflaeche faerben
-						$('.button_flaeche', panel).addClass('bg-success');
-						$('.button_flaeche h2', panel).addClass('text-success');
+						$('.panel-body', panel).addClass('bg-success');
+						$('.panel-body h2', panel).addClass('text-success');
 
-						console.log('TX state 1 mit SPAN: ' + msg.TX.$.id)
+						console.log('TX state 1 mit SPAN: ' + msg.TX.$.id);
 					}
 				}
 				//Senden deaktiv
 				if ('TX' in msg && msg.TX.$.state === '0') {
-					if (msg.TX.$.id.indexOf('SPAN') != -1) {
+					if (msg.TX.$.id.indexOf('SPAN') !== -1) {
 						//erstmal nichts machen. ggf in SPAN Element etwas anzeigen
-						console.log('TX state 0 ohne SPAN: ' + msg.TX.$.id)
+						console.log('TX state 0 ohne SPAN: ' + msg.TX.$.id);
 					}
 					else {
 						//suche Schaltflaeche zu FunkstellenID
 						const panel = $('#' + msg.TX.$.id).parents('.panel');
 
 						//Kanalflaeche entfaerben
-						$('.button_flaeche', panel).removeClass('bg-success');
-						$('.button_flaeche h2', panel).removeClass('text-success');
-						console.log('TX state 0 mit SPAN: ' + msg.TX.$.id)
+						$('.panel-body', panel).removeClass('bg-success');
+						$('.panel-body h2', panel).removeClass('text-success');
+						console.log('TX state 0 mit SPAN: ' + msg.TX.$.id);
 					}
 				}
 
@@ -519,7 +521,7 @@
 				}
 
 				// -SEN- darf nicht in der ID vorkommen
-				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') == -1) {
+				if ('FSTSTATUS' in msg && msg.FSTSTATUS.$.state === '1' && msg.FSTSTATUS.$.id.indexOf('-SEN-') === -1) {
 					if (msg.FSTSTATUS.$.id.indexOf('MHAN') > -1 || msg.FSTSTATUS.$.id.indexOf('SPAN') > -1) {
 						_self.spanMhanZustandSetzen(msg.FSTSTATUS.$.id, 'Error');
 					}
@@ -554,12 +556,12 @@
 					if (WSV.Tools.hatWert(_self.ArbeitsplatzGeraete, msg.geschaltet.$.Ap) && _self.ApFunkstellen[msg.geschaltet.$.id] !== 'frei') {
 
 						//aendern Darstellung fuer MHAN
-						if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1) {
+						if (msg.geschaltet.$.Ap.indexOf('MHAN') !== -1) {
 							// aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
-							if (msg.geschaltet.$.Ap.indexOf('MHAN') != -1 && msg.geschaltet.$.id.indexOf('SPAN') != -1) {
-								// _self.schaltenVisuell(msg.geschaltet.$.id, 'SPAN', true);
-								$('#' + msg.geschaltet.$.id + ' > .btn').addClass('btn-primary');
-								$.notify('Aufgeschaltet Mithören: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
+							if (msg.geschaltet.$.Ap.indexOf('MHAN') !== -1 && msg.geschaltet.$.id.indexOf('SPAN') !== -1) {
+								//_self.schaltenVisuell(msg.geschaltet.$.id, 'SPAN', true);
+								$('#' + msg.geschaltet.$.id).addClass('btn-primary');
+								$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
 							}
 							else { //nur MHAN aufschaltungen
 								_self.schaltenVisuell(msg.geschaltet.$.id, 'mhan', true);
@@ -572,7 +574,7 @@
 							};
 						}
 						//aendern Darstellung fuer SPAN
-						if (msg.geschaltet.$.Ap.indexOf('SPAN') != -1) {
+						if (msg.geschaltet.$.Ap.indexOf('SPAN') !== -1) {
 
 							_self.schaltenVisuell(msg.geschaltet.$.id, 'span', true);
 							_self.ApFunkstellen[msg.geschaltet.$.id].aufgeschaltet = true;
@@ -592,11 +594,11 @@
 					if (WSV.Tools.hatWert(_self.ArbeitsplatzGeraete, msg.getrennt.$.Ap)) {
 
 						//Aendern Darstellung fuer MHAN
-						if (msg.getrennt.$.Ap.indexOf('MHAN') != -1) {
+						if (msg.getrennt.$.Ap.indexOf('MHAN') !== -1) {
 							//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
-							if (msg.getrennt.$.Ap.indexOf('MHAN') != -1 && msg.getrennt.$.id.indexOf('SPAN') != -1) {
-								$('#' + msg.getrennt.$.id + ' > .btn').removeClass('btn-primary');
-								$.notify('Getrennt Mithören: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
+							if (msg.getrennt.$.Ap.indexOf('MHAN') !== -1 && msg.getrennt.$.id.indexOf('SPAN') !== -1) {
+								$('#' + msg.getrennt.$.id).removeClass('btn-primary');
+								$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
 							}
 							else { //nur MHAN Aufschaltungen
 								// $('.button_mhan', button).css('background-color', '#f5f5f5').removeClass('bg-primary');
@@ -610,7 +612,7 @@
 
 						}
 						//Aendern Darstellung fuer SPAN
-						if (msg.getrennt.$.Ap.indexOf('SPAN') != -1) {
+						if (msg.getrennt.$.Ap.indexOf('SPAN') !== -1) {
 
 							_self.schaltenVisuell(msg.getrennt.$.id, 'span', false);
 							_self.ApFunkstellen[msg.getrennt.$.id].aufgeschaltet = false;
@@ -619,7 +621,7 @@
 							this.ladeBenutzer(); //Benutzer laden um den Schaltzustand Gruppe/ Einzel zu erhalten
 
 							$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
-							console.log('trennen: ' + msg.getrennt.$.id)
+							// console.log('trennen: ' + msg.getrennt.$.id)
 						}
 					}
 					else {
@@ -644,7 +646,7 @@
 						message: 'Störung:<br>' + JSON.stringify(msg)
 					}, {
 						type: 'danger'
-					})
+					});
 				}
 
 				//else {
@@ -708,39 +710,19 @@
 		},
 
 		/**
-		 * Pruefe welches Element geklickt wurde
-		 * Vermeide aufschalten/trennen bei MKA Dropdown, MHAN Button und SPAN Button
-		 * @param {object} event
-		 * @param {object} element
-		 * @returns {boolean}
-		 */
-		angeklickt: function (event, element) {
-			const geklicktesElement = event.srcElement;
-
-			if (element == geklicktesElement) {
-				return true;
-			}
-
-			const geklicktesButtonElement = $(geklicktesElement).data('buttonElement');
-
-			return (geklicktesButtonElement == 'atis' || geklicktesButtonElement == 'Flaeche');
-		},
-
-		/**
 		 * setze Variable aktuelleMKA fuer geklickte MKA Funkstellen ID
 		 * @param {object} event
 		 * @param {object} element
 		 */
 		setzeKanalMka: function (event, element) {
-			if (this.angeklickt(event, element)) {
-				//Eltern Element finden
-				const button = $(element).offsetParent().attr('id');
-				//Funkstellen ID finden
-				//this.aktuelleMKA=$('#'+button +'> div > div:nth-child(2) > div:nth-child(2) > span').attr('class')
-				//this.aktuelleMKA=$('#'+button +'> div > div:nth-child(2) > div > span').attr('id')
-				this.aktuelleMKA = $('#' + button + ' .button_anlage1').attr('id');
-				//console.log("Dropdown von:" + this.aktuelleMKA)
-			}
+
+			// uebergeordnetes panel finden
+			const panel = $(element).parents('.button_panel');
+
+			//Funkstellen ID finden
+			this.aktuelleMKA = $('.button_anlage1', panel).attr('id');
+
+			//console.log("Dropdown von:" + this.aktuelleMKA)
 		},
 
 		/**
@@ -751,67 +733,64 @@
 		 * @param geraet
 		 */
 		schalteKanal: function (event, element, geraet) {
-			if (this.angeklickt(event, element)) {
-				if (geraet === 'SPAN') {
-					//uebergeordnetes Element finden
-					const button = $(element).offsetParent().attr('id');
 
-					let geklickteFstHaupt     = $('#' + button + ' .button_anlage1').attr('id');
-					const geklickteFstReserve = $('#' + button + ' .button_anlage2').attr('id');
+			const _self = this;
 
-					const geklickteSPAN = $('#' + button + ' .button_span').attr('id');
+			if (geraet === 'SPAN') {
+				// uebergeordnetes panel finden
+				const panel = $(element).parents('.button_panel');
 
-					const geklicktespan_mhanApNr = $('#' + button + ' .button_span').data('span');
+				let geklickteFstHaupt     = $('.button_anlage1', panel);
+				const geklickteFstReserve = $('.button_anlage2', panel);
 
-					//Status der Funkstellen aus HTML Elementen auslesen
-					const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('geraetStatus');
-					const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('geraetStatus');
+				//Status der Funkstellen aus HTML Elementen auslesen
+				const geklickteFstHauptStatus   = geklickteFstHaupt.attr('geraetStatus');
+				const geklickteFstReserveStatus = geklickteFstReserve.attr('geraetStatus');
 
-					if (geklickteFstHaupt.indexOf('FKGW') > -1) {
-						geklickteFstHaupt = this.ApFunkstellen[geklickteFstHaupt].gwid
-					}
-
-					//nur schalten, wenn Status 0 bzw. ok
-					if (geklickteFstHauptStatus === '0') {
-						this.schalteKanalID(geklickteFstHaupt, geklickteSPAN, 'SPAN', geklicktespan_mhanApNr)
-					}
-
-					else { //TODO: versuche Reserveanlage zu schalten
-						$.notify({
-							message: 'Hauptanlage gestört'
-						}, {
-							type: 'danger'
-						});
-						//TODO: hier Reserveanlage schalten
-					}
+				if (geklickteFstHaupt.attr('id').indexOf('FKGW') > -1) {
+					geklickteFstHaupt = this.ApFunkstellen[geklickteFstHaupt].gwid;
 				}
-				else if (geraet === 'SPAN_MHAN') { // Schalten fuer SPAN zu MHAN aus row Lotsen
-					const spanElement   = $(element).offsetParent();
-					const span          = spanElement[0].id;
-					const mhan          = element.id;
-					const span_mhanApNr = this.MhanZuordnung[span].Lautsprecher; // z.B. MHAN05
-					this.schalteKanalID(span, mhan, 'SPAN_MHAN', span_mhanApNr);
-					//console.log();
+
+				//nur schalten, wenn Status 0 bzw. ok
+				if (geklickteFstHauptStatus === '0') {
+					this.schalteKanalID(geklickteFstHaupt.attr('id'), _self.ArbeitsplatzGeraete.SPAN01, 'SPAN', 'SPAN01');
 				}
-				else { //Schalten MHAN
-					//uebergeordnetes Element
-					const buttonMHAN = $('#' + element.id).offsetParent().attr('id');
-					const buttonFst  = element.offsetParent.id;
 
-					const geklickteFstHaupt   = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(1)').attr('id');
-					const geklickteFstReserve = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(2)').attr('id');
-
-					const geklickteMHAN = ($('#' + buttonMHAN + ' div > div').attr('id'));
-
-					console.log(buttonMHAN);
-					console.log(buttonFst);
-
-					//Status der Funkstellen
-					const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('geraetStatus');
-					const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('geraetStatus');
-
-					this.schalteKanalID(geklickteFstHaupt, geklickteMHAN, 'MHAN');
+				else { //TODO: versuche Reserveanlage zu schalten
+					$.notify({
+						message: 'Hauptanlage gestört'
+					}, {
+						type: 'danger'
+					});
+					//TODO: hier Reserveanlage schalten
 				}
+			}
+			else if (geraet === 'SPAN_MHAN') { //Schalten aus Modal Mithoeren
+				const spanElement   = $(element).offsetParent();
+				const span          = spanElement[0].id;
+				const mhan          = element.id;
+				const span_mhanApNr = this.MhanZuordnung[span].Lautsprecher; // z.B. MHAN05
+				this.schalteKanalID(span, mhan, 'SPAN_MHAN', span_mhanApNr);
+				//console.log();
+			}
+			else { //Schalten MHAN
+				//uebergeordnetes Element
+				const buttonMHAN = $('#' + element.id).offsetParent().attr('id');
+				const buttonFst  = element.offsetParent.id;
+
+				const geklickteFstHaupt   = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(1)').attr('id');
+				const geklickteFstReserve = $('#' + buttonFst + ' > div div:nth-child(2) > div > div:nth-child(2)').attr('id');
+
+				const geklickteMHAN = ($('#' + buttonMHAN + ' div > div').attr('id'));
+
+				console.log(buttonMHAN);
+				console.log(buttonFst);
+
+				//Status der Funkstellen
+				const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('geraetStatus');
+				const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('geraetStatus');
+
+				this.schalteKanalID(geklickteFstHaupt, geklickteMHAN, 'MHAN');
 			}
 		},
 
@@ -823,7 +802,7 @@
 		 * @param geklicktespan_mhanApNr
 		 */
 		schalteKanalID: function (geklickteFstID, geklickteSPANMHAN, SPAN, geklicktespan_mhanApNr) {
-			// console.log('Klick: ' + geklickteFstID);
+			console.log('Klick: ' + geklickteFstID);
 			//$.notify('test:'+ApFunkstellen[geklickteID].kurzname);
 			const _self = this;
 
@@ -832,23 +811,23 @@
 
 				if (this.einzel === true) {
 					$.each(this.ApFunkstellen, function (key, value) {
-						if (value.aufgeschaltet === true && key != geklickteFstID) {
+						if (value.aufgeschaltet === true && key !== geklickteFstID) {
 							//console.log(key, value.aufgeschaltet)
-							_self.trennen(key, geklickteSPANMHAN, geklicktespan_mhanApNr)
+							_self.trennen(key, geklickteSPANMHAN, geklicktespan_mhanApNr);
 						}
 						//trenne aufgeschaltet
-					})
+					});
 				}
 				//Gruppenschaltung
 				// TODO: != undefined auskommentiert da Gleichwelle sonst nicht geschaltet wird
 				// TODO: Ueberpruefung im Rahmen Wechsel Einzel/ Gruppe
 				//if (this.ApFunkstellen[geklickteFstID] != undefined) {
 				if (this.ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
-					this.trennen(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
+					this.trennen(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
 
 				}
 				else {
-					this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
+					this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
 				}
 				//}
 
@@ -868,17 +847,17 @@
 					this.ApFunkstellen[geklickteFstID]               = {};
 					this.ApFunkstellen[geklickteFstID].aufgeschaltet = true;
 					this.ApFunkstellen[geklickteFstID].sname         = 'Fremd Span';
-					this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr)
+					this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
 				}
 			}
 
 			//MHAN schalten
 			if (SPAN === 'MHAN') {
-				if (this.ApFunkstellen[geklickteFstID].mhan_aufgeschaltet[geklickteSPANMHAN] == true) {
-					this.trennen(geklickteFstID, geklickteSPANMHAN)
+				if (this.ApFunkstellen[geklickteFstID].mhan_aufgeschaltet[geklickteSPANMHAN] === true) {
+					this.trennen(geklickteFstID, geklickteSPANMHAN);
 				}
 				else {
-					this.schalten(geklickteFstID, geklickteSPANMHAN)
+					this.schalten(geklickteFstID, geklickteSPANMHAN);
 				}
 
 			}
@@ -886,22 +865,27 @@
 
 		/**
 		 * Schaltzustand visuell darstellen
-		 * @param {string} FstID
-		 * @param {string} SPAN oder MHAN
-		 * @param {boolean} enabled
+		 * @param {string} FstID - Funkstellen ID
+		 * @param {string} SPANMHAN - SPAN oder MHAN
+		 * @param {boolean} enabled - schalten (true) oder trennen (false)
 		 */
 		schaltenVisuell: function (FstID, SPANMHAN, enabled) {
 
 			// suche Schaltflaeche zu FunkstellenID
-			const button = $('#' + FstID).parents('.button_panel');
-			SPANMHAN     = SPANMHAN.toLowerCase();
+			const panel = $('#' + FstID).parents('.button_panel');
+			SPANMHAN    = SPANMHAN.toLowerCase();
 
 			if (enabled) {
-				button.addClass('panel-primary');
-				$('.button_' + SPANMHAN, button).removeClass('btn-default').addClass('btn-primary');
+				if (SPANMHAN === 'span') {
+					panel.addClass('panel-primary');
+				}
+				$('.button_' + SPANMHAN, panel).removeClass('btn-default').addClass('btn-primary');
 			}
 			else {
-				$('.button_' + SPANMHAN, button).removeClass('btn-primary').addClass('btn-default');
+				if (SPANMHAN === 'span') {
+					panel.removeClass('panel-primary');
+				}
+				$('.button_' + SPANMHAN, panel).removeClass('btn-primary').addClass('btn-default');
 			}
 		},
 
@@ -952,11 +936,8 @@
 					'span_mhanApNr': SPAN_MAHN_ApNr
 				});
 			}
-			else {
 
-			}
-
-			if (typeof this.ApFunkstellen[FstID] != 'undefined') {
+			if (typeof this.ApFunkstellen[FstID] !== 'undefined') {
 				$.notify('Schalte: <br>' + this.ApFunkstellen[FstID].sname);
 			}
 			//console.log('(notify) schalte: ' + this.ApFunkstellen[FstID].sname);
@@ -1049,8 +1030,8 @@
 		 */
 		zustandWiederherstellen: function (AufschalteZustand) {
 
-			if (typeof AufschalteZustand != 'object') {
-				return false;
+			if (typeof AufschalteZustand !== 'object') {
+				return;
 			}
 
 			//Backup, da die Funktionen schalten und trennen mit Rueckmeldung schon in ApFunkstellen schreiben
@@ -1086,12 +1067,12 @@
 			let neuerKanal = '';
 
 			//Kanal wurde über Spinbox geändert
-			if (element != undefined) {
-				neuerKanal = element.innerText
+			if (element !== undefined) {
+				neuerKanal = element.innerText;
 			}
 			//Kanal wurde über direkt auswahl geändet
 			else {
-				neuerKanal = $('.spinbox-input').val()
+				neuerKanal = $('.spinbox-input').val();
 			}
 			//console.log('clientMessage', {'FstID': this.aktuelleMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'})
 			this.socket.emit('clientMessage', {'FstID': this.aktuelleMKA, 'Kanal': neuerKanal, 'aktion': 'setzeKanal'});
@@ -1104,13 +1085,13 @@
 		ladeBenutzer: function () {
 			const _self = this;
 			$.get('/benutzer/zeigeWindowsBenutzer/selectip', function (data) {
-				if (typeof data._id != 'undefined') {
+				if (typeof data._id !== 'undefined') {
 					_self.aktuellerBenutzer = data;
 
-					if (typeof data.theme == 'undefined') {
+					if (typeof data.theme === 'undefined') {
 						data.theme = 'default';
 					}
-					if (typeof data.einzel == 'undefined') {
+					if (typeof data.einzel === 'undefined') {
 						data.einzel = _self.einzel;
 					}
 				}
@@ -1123,21 +1104,21 @@
 		 */
 		schreibeBenutzer: function (callback) {
 
-			const benutzer  = jQuery.extend(true, {}, this.aktuellerBenutzer);
+			const benutzer  = $.extend(true, {}, this.aktuellerBenutzer);
 			benutzer.theme  = WSV.Themes.currentTheme;
 			benutzer.einzel = this.einzel;
 
-			if (this.geschalteteSPAN.length == 1) {
+			if (this.geschalteteSPAN.length === 1) {
 				benutzer.schaltZustandEinzel = JSON.stringify(this.geschalteteSPAN);
 			}
 			else if (this.geschalteteSPAN.length > 1) {
 				benutzer.schaltZustandGruppe = JSON.stringify(this.geschalteteSPAN);
 			}
 
-			if (typeof benutzer.schaltZustandEinzel == 'object' && Object.keys(benutzer.schaltZustandEinzel).length) {
+			if (typeof benutzer.schaltZustandEinzel === 'object' && Object.keys(benutzer.schaltZustandEinzel).length) {
 				benutzer.schaltZustandEinzel = JSON.stringify(benutzer.schaltZustandEinzel);
 			}
-			if (typeof benutzer.schaltZustandGruppe == 'object' && Object.keys(benutzer.schaltZustandGruppe).length) {
+			if (typeof benutzer.schaltZustandGruppe === 'object' && Object.keys(benutzer.schaltZustandGruppe).length) {
 				benutzer.schaltZustandGruppe = JSON.stringify(benutzer.schaltZustandGruppe);
 			}
 
@@ -1146,7 +1127,7 @@
 				type:    'POST',
 				data:    benutzer,
 				success: function (result) {
-					if (typeof callback == 'function') {
+					if (typeof callback === 'function') {
 						callback();
 					}
 					console.log(result);
@@ -1164,7 +1145,7 @@
 			const _self     = this;
 			this.countDown  = parseInt(this.IpConfig.displaySperreTimeout * 1000);
 			this.cdInterval = setInterval(function () {
-				_self.displaySperreCountdown(_self)
+				_self.displaySperreCountdown(_self);
 			}, 1000);
 		},
 
@@ -1199,7 +1180,7 @@
 			clearInterval(this.atisInterval[FstID]);
 			atis_element.addClass('alert-info').html(ATIS);
 			this.atisInterval[FstID] = setInterval(function () {
-				_self.entferneAtisKennung(FstID)
+				_self.entferneAtisKennung(FstID);
 			}, timeout);
 		},
 
@@ -1211,13 +1192,11 @@
 
 			let str = '';
 
-			console.log(this.atisMIDS);
-
 			if (this.atisMIDS.hasOwnProperty(mids)) {
 				str = this.atisMIDS[mids][0];
 			}
 			else {
-				str = mids
+				str = mids;
 			}
 
 			str += code1 + ' ' + code2;
@@ -1242,6 +1221,6 @@
 				this.alphabet[i + 1] = String.fromCharCode('A'.charCodeAt(0) + i);
 			}
 		}
-	}
+	};
 
 })(window, document, jQuery);

@@ -8,7 +8,7 @@
 @import "mixins";
 
 // ============ external stuff =================== //
-//@import "ext/fontawesome";
+@import "../../vendor/font-awesome/css/font-awesome.min.css";
 @import "../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap-sprockets";
 @import "../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 
@@ -16,8 +16,9 @@
 @import "reset";
 
 // ============ layout general =================== //
-@import "layout";
 @import "typo";
+@import "layout";
+@import "nav";
 @import "panels";
 
 // ============ helper + utils =================== //

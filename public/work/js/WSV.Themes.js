@@ -1,5 +1,7 @@
 'use strict';
 
+/* global WSV */
+
 (function (window, document, $) {
 
 	WSV.Themes = {
@@ -39,7 +41,7 @@
 		 * @param {boolean} saveConfig - legt fest ob die Konfig gespeichert werden soll
 		 */
 		switch: function (theme, saveConfig) {
-			if (typeof theme == 'undefined' || theme == this.currentTheme) {
+			if (typeof theme === 'undefined' || theme === this.currentTheme) {
 				return;
 			}
 
@@ -58,5 +60,6 @@
 				$('#themesheet').attr('href', _self.getThemeUrl());
 			}
 		}
-	}
+	};
+
 })(window, document, jQuery);

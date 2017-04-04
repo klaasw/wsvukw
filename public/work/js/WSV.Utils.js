@@ -1,5 +1,7 @@
 'use strict';
 
+/* global WSV */
+
 (function (window, document, $) {
 
 	WSV.Tools = {
@@ -13,7 +15,7 @@
 		hatWert: function (obj, value) {
 			for (const id in obj) {
 				//noinspection JSUnfilteredForInLoop
-				if (obj[id] == value) {
+				if (obj[id] === value) {
 					return true;
 				}
 			}
@@ -29,9 +31,9 @@
 		objektWerteAlsKey: function (obj) {
 			const neuesObjekt = [];
 			for (const key in obj) {
-				neuesObjekt[obj[key]] = key
+				neuesObjekt[obj[key]] = key;
 			}
-			return neuesObjekt
+			return neuesObjekt;
 		},
 
 		/**
@@ -43,11 +45,11 @@
 		sammelStatusAendernSpanMhan: function (elementeListe) {
 			let sammelStatus = '0';
 			$(elementeListe).each(function () {
-				if ($(this).attr('geraetStatus') == 1) {
-					sammelStatus = '1'
+				if ($(this).attr('geraetStatus') === 1) {
+					sammelStatus = '1';
 				}
 			});
-			return sammelStatus
+			return sammelStatus;
 		},
 
 		/**
@@ -56,12 +58,12 @@
 		 * @return {Number} Integer fuer Zustand 1=Fehler, 0=OK
 		 */
 		pruefeGeraetStatus: function (element) {
-			if (element.attr('geraetStatus') == 1 || element.attr('geraetStatus') == -1) {
-				return 1
+			if (element.attr('geraetStatus') === 1 || element.attr('geraetStatus') === -1) {
+				return 1;
 			}
-			else {
-				return 0
-			}
+			
+			return 0;
+			
 		},
 
 		/**
@@ -122,6 +124,6 @@
 			return sammelStatus;
 
 		}
-	}
+	};
 
-})(window, document, jQuery);
+}(window, document, jQuery));
