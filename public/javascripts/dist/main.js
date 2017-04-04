@@ -926,10 +926,15 @@ $(window).load(function () {
 			const _self = this;
 
 			for (const funkstelle in mhan) {
-				// Schalten wenn festAufgeschaltet sein soll
-				if (mhan[funkstelle].festAufgeschaltet === true) {
-					this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle].Lautsprecher], mhan[funkstelle].Lautsprecher, false);
-					this.ApFunkstellen[funkstelle].aufgeschaltet = true;
+				// Schalten wenn festAufgeschaltet sein soll, Aufruf aus mhanZuordnung
+				if (mhan[funkstelle].hasOwnProperty('festAufgeschaltet')){
+					if (mhan[funkstelle].festAufgeschaltet === true) {
+						this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle].Lautsprecher], mhan[funkstelle].Lautsprecher, false);
+						//this.ApFunkstellen[funkstelle].aufgeschaltet = true;
+					}
+				}
+				else {
+					this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle], false);
 				}
 			}
 
