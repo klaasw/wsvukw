@@ -777,9 +777,10 @@ $(window).load(function () {
 				}
 			}
 			else if (geraet === 'SPAN_MHAN') { //Schalten aus Modal Mithoeren
-				const mhan          = $('#mithoerenModal .btn-primary').attr('id');
-				const span          = element.id;
-				const span_mhanApNr = $('#mithoerenModal .btn-group-vertical .btn-primary').text();
+				const spanElement   = $(element).offsetParent();
+				const span          = spanElement[0].id;
+				const mhan          = element.id;
+				const span_mhanApNr = this.MhanZuordnung[span].Lautsprecher; // z.B. MHAN05
 				this.schalteKanalID(span, mhan, 'SPAN_MHAN', span_mhanApNr);
 				//console.log();
 			}
@@ -909,7 +910,16 @@ $(window).load(function () {
 			const _self = this;
 
 			for (const funkstelle in mhan) {
-				this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle], false);
+				// Schalten wenn festAufgeschaltet sein soll, Aufruf aus mhanZuordnung
+				if (mhan[funkstelle].hasOwnProperty('festAufgeschaltet')){
+					if (mhan[funkstelle].festAufgeschaltet === true) {
+						this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle].Lautsprecher], mhan[funkstelle].Lautsprecher, false);
+						//this.ApFunkstellen[funkstelle].aufgeschaltet = true;
+					}
+				}
+				else {
+					this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle], false);
+				}
 			}
 
 			// this.schreibeBenutzer();
@@ -1224,7 +1234,7 @@ $(window).load(function () {
 		}
 	};
 
-}(window, document, jQuery));
+})(window, document, jQuery);
 ;'use strict';
 
 /* global WSV */
