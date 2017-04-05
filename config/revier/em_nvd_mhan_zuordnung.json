@@ -1,6 +1,18 @@
 {
-  "1-H-RFD-BORKLT-FKHK-1": "MHAN01",
-  "1-H-RFD-BORKLT-FKEK-3": "MHAN02",
-  "1-H-RFD-EMSVTA-FKMK-1": "MHAN03",
-  "1-H-RFD-EMSVTA-FKEK-5": "MHAN04"
+    "1-H-RFD-BORKLT-FKHK-1": {
+        "Lautsprecher": "MHAN01",
+        "festAufgeschaltet": true
+    },
+    "1-H-RFD-BORKLT-FKEK-3": {
+        "Lautsprecher": "MHAN02",
+        "festAufgeschaltet": true
+    },
+    "1-H-RFD-EMSVTA-FKMK-1": {
+        "Lautsprecher": "MHAN03",
+        "festAufgeschaltet": true
+    },
+    "1-H-RFD-EMSVTA-FKEK-5": {
+        "Lautsprecher": "MHAN04",
+        "festAufgeschaltet": true
+    }
 }

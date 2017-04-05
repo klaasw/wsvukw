@@ -1,1 +1,18 @@
-{"MHAN01":"1-H-RFD-BRBVTA-FKEK-1","MHAN02":"1-H-RFD-BRBVTA-FKEK-2","MHAN03":"1-H-RFD-BRBVTA-FKMK-1","MHAN04":"1-H-RFD-RHINPL-FKEK-1"}
+{
+    "1-H-RFD-BRBVTA-FKEK-1": {
+        "Lautsprecher": "MHAN01",
+        "festAufgeschaltet": true
+    },
+    "1-H-RFD-BRBVTA-FKEK-2": {
+        "Lautsprecher": "MHAN02",
+        "festAufgeschaltet": true
+    },
+    "1-H-RFD-BRBVTA-FKMK-1": {
+        "Lautsprecher": "MHAN03",
+        "festAufgeschaltet": true
+    },
+    "1-H-RFD-RHINPL-FKEK-1": {
+        "Lautsprecher": "MHAN04",
+        "festAufgeschaltet": true
+    }
+}
