@@ -13,11 +13,19 @@ block content
 			div.row.lotsen
 				each lotsenAp, index in gesamteKonfig.LotsenAp
 					div.button_lotse(id=lotsenAp.SPAN01)
-						div.btn.btn-default(
-							id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[lotsenAp.SPAN01].Lautsprecher],
-							onclick='WSV.Display.schalteKanal(event,this,"SPAN_MHAN")'
-						) #{gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname ? gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname : 'sname'}
-
+						// Wenn Lautsprecher Zuordnung vorhanden, Else Button deaktiviert
+						if gesamteKonfig.MhanZuordnung[lotsenAp.SPAN01]
+							div.btn.btn-default(
+								id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[lotsenAp.SPAN01].Lautsprecher],
+								onclick='WSV.Display.schalteKanal(event,this,"SPAN_MHAN")'
+								) #{gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname ? gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname : 'sname'}
+						else
+							div.btn.btn-default(
+								disabled='disabled'
+								) #{gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname ? gesamteKonfig.FunkstellenDetails[lotsenAp.SPAN01].sname : 'sname'}
+								br
+								|	keine MHAN Zuordnung
+								
 			//Schaltflaechen fuer Funkstellen anzeigen
 			div.row
 				each val, index in gesamteKonfig.FunkstellenReihe

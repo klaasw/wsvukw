@@ -571,8 +571,8 @@ $(window).load(function () {
 							// aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
 							if (msg.geschaltet.$.Ap.indexOf('MHAN') !== -1 && msg.geschaltet.$.id.indexOf('SPAN') !== -1) {
 								//_self.schaltenVisuell(msg.geschaltet.$.id, 'SPAN', true);
-								$('#' + msg.geschaltet.$.id).addClass('btn-primary');
-								$.notify('Aufgeschaltet: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
+								$('#' + msg.geschaltet.$.id + ' > .btn').addClass('btn-primary');
+								$.notify('Aufgeschaltet Mithören: <br>' + _self.ApFunkstellen[msg.geschaltet.$.id].sname);
 							}
 							else { //nur MHAN aufschaltungen
 								_self.schaltenVisuell(msg.geschaltet.$.id, 'mhan', true);
@@ -608,8 +608,8 @@ $(window).load(function () {
 						if (msg.getrennt.$.Ap.indexOf('MHAN') !== -1) {
 							//aendern der Darstellung fuer SPAN auf MHAN schalten. Mithoeren von Lotsen
 							if (msg.getrennt.$.Ap.indexOf('MHAN') !== -1 && msg.getrennt.$.id.indexOf('SPAN') !== -1) {
-								$('#' + msg.getrennt.$.id).removeClass('btn-primary');
-								$.notify('Getrennt: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
+								$('#' + msg.getrennt.$.id + ' > .btn').removeClass('btn-primary');
+								$.notify('Getrennt Mithören: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
 							}
 							else { //nur MHAN Aufschaltungen
 								// $('.button_mhan', button).css('background-color', '#f5f5f5').removeClass('bg-primary');
@@ -777,7 +777,7 @@ $(window).load(function () {
 				}
 			}
 			else if (geraet === 'SPAN_MHAN') { //Schalten aus Modal Mithoeren
-				const spanElement   = $(element).offsetParent();
+				const spanElement   = $(element).parent('.button_lotse');
 				const span          = spanElement[0].id;
 				const mhan          = element.id;
 				const span_mhanApNr = this.MhanZuordnung[span].Lautsprecher; // z.B. MHAN05
@@ -844,22 +844,38 @@ $(window).load(function () {
 
 			}
 			if (SPAN === 'SPAN_MHAN') { //SPAN zum Mithoeren aufschalten - trennen
-				if (this.ApFunkstellen.hasOwnProperty(geklickteFstID)) {
-					if (this.ApFunkstellen[geklickteFstID].aufgeschaltet === true) {
-						this.trennen(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
-						this.ApFunkstellen[geklickteFstID].aufgeschaltet = false;
+				const geklickteFstIdVorhanden     = this.ApFunkstellen.hasOwnProperty(geklickteFstID);
+				const mhan_aufgeschaltetVorhanden = this.ApFunkstellen[geklickteFstID].hasOwnProperty('mhan_aufgeschaltet');
+				let mhan_aufgeschaltetIdVorhanden = false;
+				let mhan_aufgeschaltet            = false;
+
+				// Pruefen ob bereits aufgeschaltet
+				if (mhan_aufgeschaltetVorhanden) {
+					if (this.ApFunkstellen[geklickteFstID].mhan_aufgeschaltet.hasOwnProperty(geklickteSPANMHAN)) {
+						mhan_aufgeschaltetIdVorhanden = true;
 					}
-					else {
-						this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
-						this.ApFunkstellen[geklickteFstID].aufgeschaltet = true;
+				}
+
+				if (mhan_aufgeschaltetIdVorhanden) {
+					if (this.ApFunkstellen[geklickteFstID].mhan_aufgeschaltet[geklickteSPANMHAN] === true) {
+						mhan_aufgeschaltet = true
 					}
+				}
+
+				if (mhan_aufgeschaltet === true) {
+					this.trennen(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
 				}
 				else {
-					this.ApFunkstellen[geklickteFstID]               = {};
-					this.ApFunkstellen[geklickteFstID].aufgeschaltet = true;
-					this.ApFunkstellen[geklickteFstID].sname         = 'Fremd Span';
 					this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
 				}
+
+				// TODO: Pruefen MHAN abwaehlen ob noch benoetigt?
+				//else {
+				//	this.ApFunkstellen[geklickteFstID]               = {};
+				//	this.ApFunkstellen[geklickteFstID].aufgeschaltet = true;
+				//	this.ApFunkstellen[geklickteFstID].sname         = 'Fremd Span';
+				//	this.schalten(geklickteFstID, geklickteSPANMHAN, geklicktespan_mhanApNr);
+				//}
 			}
 
 			//MHAN schalten
@@ -1020,6 +1036,11 @@ $(window).load(function () {
 				this.schreibeBenutzer(function () {
 					_self.zustandWiederherstellen(_self.aktuellerBenutzer.schaltZustandGruppe); // lade Gruppenzustand
 				});
+
+				if (_self.ArbeitsplatzGeraete.hasOwnProperty('MonitorLautsprecher')){
+					_self.schalteMonitorLautsprecher();
+				}
+
 			}
 			else { // Wechsel zu Einzelschaltung
 				_self.einzel = true;
@@ -1231,7 +1252,23 @@ $(window).load(function () {
 			for (let i = 0; i < 26; i++) {
 				this.alphabet[i + 1] = String.fromCharCode('A'.charCodeAt(0) + i);
 			}
-		}
+		},
+
+		schalteMonitorLautsprecher: function () {
+			const _self = this;
+			const span  = _self.ArbeitsplatzGeraete.SPAN01
+			for (const mhan in _self.ArbeitsplatzGeraete.MonitorLautsprecher) {
+				this.schalteKanalID(span, _self.ArbeitsplatzGeraete.MonitorLautsprecher[mhan], 'SPAN_MHAN', 'MonitorLautsprecher');
+			}
+		},
+
+		trenneMonitorLautsprecher: function () {
+			const _self = this;
+			const span  = _self.ArbeitsplatzGeraete.SPAN01
+			for (const mhan in _self.ArbeitsplatzGeraete.MonitorLautsprecher) {
+				this.schalteKanalID(span, _self.ArbeitsplatzGeraete.MonitorLautsprecher[mhan], 'MHAN', 'MonitorLautsprecher');
+			}
+		},
 	};
 
 })(window, document, jQuery);
