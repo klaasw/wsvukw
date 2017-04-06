@@ -248,6 +248,7 @@
 
 			switch (Zustand) {
 				case 'OK':
+					console.log(Funkstelle);
 					Funkstelle.attr('geraetStatus', '0');
 					$('span.label', Funkstelle)
 						.removeClass('label-danger')
@@ -276,38 +277,41 @@
 			}
 
 			// Sammelstatus bilden und setzen
-			switch (WSV.Tools.sammelStatusAendernFunkstellen(alleGeraete)) {
+			const sammelStatus = WSV.Tools.sammelStatusAendernFunkstellen(alleGeraete);
+
+			switch (sammelStatus) {
 				case '2': // Warning
-					$('span.label', standortButton)
-						.removeClass('label-success')
-						.removeClass('label-danger')
-						.addClass('label-warning')
-						.text('Warn');
+					$(standortButton)
+						.removeClass('btn-success')
+						.removeClass('btn-danger')
+						.addClass('btn-warning');
 					if (FunkstelleGWID) {
 						$('span.label', FunkstelleGWID)
 							.removeClass('label-success')
 							.removeClass('label-danger')
-							.addClass('label-warning')
-							.text('Warn');
+							.addClass('label-warning');
 					}
 					break;
 				case '1': // Error
-					$('span.label', standortButton).removeClass('label-success').addClass('label-danger').text('Error');
+					$( standortButton)
+						.removeClass('btn-success')
+						.addClass('btn-danger');
 					if (FunkstelleGWID) {
-						$('span.label', FunkstelleGWID).removeClass('label-success').addClass('label-danger').text('Error');
+						$('span.label', FunkstelleGWID)
+							.removeClass('label-success')
+							.addClass('label-danger');
 					}
 					break;
 				case '0': // OK
-					$('span.label', standortButton)
-						.removeClass('label-danger')
-						.removeClass('label-warning')
-						.addClass('label-success').text(Zustand);
+					$(standortButton)
+						.removeClass('btn-danger')
+						.removeClass('btn-warning')
+						.addClass('btn-success');
 					if (FunkstelleGWID) {
 						$('span.label', FunkstelleGWID)
 							.removeClass('label-danger')
 							.removeClass('label-warning')
-							.addClass('label-success')
-							.text(Zustand);
+							.addClass('label-success');
 					}
 					break;
 			}
@@ -912,6 +916,7 @@
 		lautsprecherAufschalten: function (mhan) {
 
 			const _self = this;
+			console.log(mhan);
 
 			for (const funkstelle in mhan) {
 				//console.log(mhan[funkstelle]);
