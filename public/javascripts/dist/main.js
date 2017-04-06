@@ -259,7 +259,6 @@ $(window).load(function () {
 
 			switch (Zustand) {
 				case 'OK':
-					console.log(Funkstelle);
 					Funkstelle.attr('geraetStatus', '0');
 					$('span.label', Funkstelle)
 						.removeClass('label-danger')
@@ -291,16 +290,16 @@ $(window).load(function () {
 			const sammelStatus = WSV.Tools.sammelStatusAendernFunkstellen(alleGeraete);
 
 			switch (sammelStatus) {
-				case '2': // Warning
+				case '0': // OK
 					$(standortButton)
-						.removeClass('btn-success')
 						.removeClass('btn-danger')
-						.addClass('btn-warning');
+						.removeClass('btn-warning')
+						.addClass('btn-success');
 					if (FunkstelleGWID) {
 						$('span.label', FunkstelleGWID)
-							.removeClass('label-success')
 							.removeClass('label-danger')
-							.addClass('label-warning');
+							.removeClass('label-warning')
+							.addClass('label-success');
 					}
 					break;
 				case '1': // Error
@@ -313,16 +312,16 @@ $(window).load(function () {
 							.addClass('label-danger');
 					}
 					break;
-				case '0': // OK
+				case '2': // Warning
 					$(standortButton)
+						.removeClass('btn-success')
 						.removeClass('btn-danger')
-						.removeClass('btn-warning')
-						.addClass('btn-success');
+						.addClass('btn-warning');
 					if (FunkstelleGWID) {
 						$('span.label', FunkstelleGWID)
+							.removeClass('label-success')
 							.removeClass('label-danger')
-							.removeClass('label-warning')
-							.addClass('label-success');
+							.addClass('label-warning');
 					}
 					break;
 			}
@@ -927,10 +926,10 @@ $(window).load(function () {
 		lautsprecherAufschalten: function (mhan) {
 
 			const _self = this;
-			console.log(mhan);
+			//console.log(mhan);
 
 			for (const funkstelle in mhan) {
-				//console.log(mhan[funkstelle]);
+				console.log(mhan[funkstelle]);
 
 				if (mhan.hasOwnProperty(funkstelle) || mhan[funkstelle] != null) {
 					continue;
