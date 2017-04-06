@@ -933,6 +933,11 @@ $(window).load(function () {
 						//this.ApFunkstellen[funkstelle].aufgeschaltet = true;
 					}
 				}
+				else if (mhan[funkstelle] === 'MonitorLautsprecher') {
+					for (let i = 0; i < _self.ArbeitsplatzGeraete.MonitorLautsprecher.length; i++) {
+						this.schalten(funkstelle, _self.ArbeitsplatzGeraete.MonitorLautsprecher[i], mhan[funkstelle], false)
+					}
+				}
 				else {
 					this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle], false);
 				}
@@ -965,7 +970,9 @@ $(window).load(function () {
 			}
 
 			if (typeof this.ApFunkstellen[FstID] !== 'undefined') {
-				$.notify('Schalte: <br>' + this.ApFunkstellen[FstID].sname);
+				$.notify('Schalte: <br>'
+					+ this.ApFunkstellen[FstID].sname
+					+ this.ApFunkstellen[FstID].channel);
 			}
 			//console.log('(notify) schalte: ' + this.ApFunkstellen[FstID].sname);
 		},
@@ -989,8 +996,11 @@ $(window).load(function () {
 				'span_mhanApNr': SPAN_MAHN_ApNr
 			});
 
-			$.notify('Trenne: <br>' + this.ApFunkstellen[FstID].sname);
-			//console.log('(notify) trenne: ' + this.ApFunkstellen[FstID].sname);
+			if (typeof this.ApFunkstellen[FstID] !== 'undefined') {
+				$.notify('Trenne: <br>'
+					+ this.ApFunkstellen[FstID].sname
+					+ this.ApFunkstellen[FstID].channel);
+			}
 		},
 
 		/**
@@ -1053,6 +1063,10 @@ $(window).load(function () {
 				this.schreibeBenutzer(function () {
 					_self.zustandWiederherstellen(_self.aktuellerBenutzer.schaltZustandEinzel); //lade Einzelzustand
 				});
+
+				if (_self.ArbeitsplatzGeraete.hasOwnProperty('MonitorLautsprecher')){
+					_self.trenneMonitorLautsprecher();
+				}
 			}
 		},
 
@@ -1258,7 +1272,7 @@ $(window).load(function () {
 			const _self = this;
 			const span  = _self.ArbeitsplatzGeraete.SPAN01
 			for (const mhan in _self.ArbeitsplatzGeraete.MonitorLautsprecher) {
-				this.schalteKanalID(span, _self.ArbeitsplatzGeraete.MonitorLautsprecher[mhan], 'SPAN_MHAN', 'MonitorLautsprecher');
+				this.schalten(span, _self.ArbeitsplatzGeraete.MonitorLautsprecher[mhan], 'MonitorLautsprecher');
 			}
 		},
 
@@ -1266,7 +1280,7 @@ $(window).load(function () {
 			const _self = this;
 			const span  = _self.ArbeitsplatzGeraete.SPAN01
 			for (const mhan in _self.ArbeitsplatzGeraete.MonitorLautsprecher) {
-				this.schalteKanalID(span, _self.ArbeitsplatzGeraete.MonitorLautsprecher[mhan], 'MHAN', 'MonitorLautsprecher');
+				this.trennen(span, _self.ArbeitsplatzGeraete.MonitorLautsprecher[mhan], 'MonitorLautsprecher');
 			}
 		},
 	};
