@@ -343,9 +343,9 @@
 					});
 
 					//Error Modal anzeigen
-					WSV.Tools.audioAlarm.play();
-					$('.errorText2', '#errorModalDUEGeraete').text(KompID);
-					$('#errorModalDUEGeraete').modal('show');
+					//WSV.Tools.audioAlarm.play();
+					//$('.errorText2', '#errorModalDUEGeraete').text(KompID);
+					//$('#errorModalDUEGeraete').modal('show');
 
 					break;
 				//TODO: Modal anzeigen
@@ -704,8 +704,8 @@
 
 				// TODO: Wiederverbindung versuchen, waehrend dieser Zeit kein Fehler zeigen, sondern erst dann?
 				//Zeige Error Modal Fenster
-				WSV.Tools.audioAlarm.play();
-				$('#errorModalDUE').modal('show');
+				//WSV.Tools.audioAlarm.play();
+				//$('#errorModalDUE').modal('show');
 			});
 		},
 
@@ -911,10 +911,15 @@
 		 */
 		lautsprecherAufschalten: function (mhan) {
 
-			//console.log(mhan);
 			const _self = this;
 
 			for (const funkstelle in mhan) {
+				//console.log(mhan[funkstelle]);
+
+				if (mhan.hasOwnProperty(funkstelle) || mhan[funkstelle] != null) {
+					continue;
+				}
+
 				// Schalten wenn festAufgeschaltet sein soll, Aufruf aus mhanZuordnung
 				if (mhan[funkstelle].hasOwnProperty('festAufgeschaltet')){
 					if (mhan[funkstelle].festAufgeschaltet === true) {
