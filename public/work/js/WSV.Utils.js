@@ -45,7 +45,7 @@
 		sammelStatusAendernSpanMhan: function (elementeListe) {
 			let sammelStatus = '0';
 			$(elementeListe).each(function () {
-				if ($(this).attr('geraetStatus') === 1) {
+				if ($(this).attr('geraetStatus') === '1') {
 					sammelStatus = '1';
 				}
 			});
@@ -61,9 +61,9 @@
 			if (element.attr('geraetStatus') === 1 || element.attr('geraetStatus') === -1) {
 				return 1;
 			}
-			
+
 			return 0;
-			
+
 		},
 
 		/**
