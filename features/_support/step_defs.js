@@ -5,19 +5,26 @@
 'use strict';
 
 module.exports = function() {
+    var cfg = require('../../cfg.js');
+    var devices;
+    var funkPanel;
 
     this.Given(/^ist der Arbeitsplatz "([^"]*)" NvD$/, function (url) {
         widgets.open.openSite(url);
     });
 
-    this.Given(/^ "([^"]*)" ist aktiviert$/, function () {
-        widgets.header.setSchaltung(arg1);
+    this.Given(/^"([^"]*)" ist aktiviert$/, function (mode) {
+        widgets.header.setMode(mode);
+    });
+
+    this.Given(/^alle Schaltflächen sind deaktiviert$/, function () {
+        widgets.content.setAllPanelInactive();
     });
 
     this.Given(/^das Design "([^"]*)" ist ausgewählt$/, function (design) {
-        widgets.header.clickFarbschema();
-        widgets.header.selectFarbschema(design);
-        widgets.header.clickFarbschema();
+        widgets.header.clickColor();
+        widgets.header.selectColor(design);
+        widgets.header.clickColor();
     });
 
     this.Given(/^ausgewählt ist die defekte Serveranlage "([^"]*)"$/, function (arg1) {
@@ -35,10 +42,17 @@ module.exports = function() {
         return 'pending';
     });
 
+    this.Given(/^die Standardschaltfläche Zeile "([^"]*)", Spalte "([^"]*)" ist aktiviert$/, function (row,column) {
+        widgets.content.clickOnPanel(row,column);
+    });
 
-    this.When(/^ich auf die Standardschaltfläche klicke$/, function () {
-        //widgets.content.clickOnSchaltfläche(11);
-        return 'pending';
+
+    this.When(/^ich auf die Standardschaltfläche Zeile "([^"]*)", Spalte "([^"]*)" klicke$/, function (row,column) {
+        widgets.content.clickOnPanel(row,column);
+    });
+
+    this.When(/^ich auf die Funkstellen der Standardschaltfläche Zeile "([^"]*)", Spalte "([^"]*)" klicke$/, function (row,column) {
+       funkPanel = widgets.content.clickOnFunkPanel(row,column);
     });
 
     this.When(/^einen Kanal auswähle$/, function () {
@@ -46,7 +60,7 @@ module.exports = function() {
         return 'pending';
     });
 
-    this.When(/^eine Mehrkanalschaltfläche anklicke$/, function () {
+    this.When(/^ich eine Mehrkanalschaltfläche anklicke$/, function () {
         // Write code here that turns the phrase above into concrete actions
         return 'pending';
     });
@@ -56,9 +70,29 @@ module.exports = function() {
         return 'pending';
     });
 
-    this.When(/^ein Teilnehmer mit ATIS Kennung eine Nachricht sendet$/, function () {
-        // Write code here that turns the phrase above into concrete actions
-        return 'pending';
+    this.When(/^ein Teilnehmer eine SIPNachricht "([^"]*)" mit Status "([^"]*)" an die Funkstelle "([^"]*)" sendet$/, function (nachrichtentyp, state, id){
+            var message = "<" + nachrichtentyp + " id='" + id + "' state='" + state + "'/>";
+            var ip = cfg.cfgIPs.httpIP;
+            var port = cfg.port;
+            var url = "http://" + ip + ":" + port + "/mockmessage?messageText=" + message;
+            console.log(message);
+        console.log(ip);
+        console.log(port);
+        console.log(url);
+            request(url);
+    });
+
+    this.When(/^ein Teilnehmer eine SIPNachricht "([^"]*)" mit Status "([^"]*)" an die Funkstelle "([^"]*)" mit Kanal "([^"]*)" sendet$/, function (nachrichtentyp, state, id, channel) {
+        var message = "<" + nachrichtentyp + " id='" + id + "' state='" + state + "' channel='" + channel + "'/>";
+        console.log("\t\tmessage: " + message);
+        request("http://10.22.30.1:3000/mockmessage?messageText=" + message, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                var response = JSON.parse(body);
+                console.log(" REST response: " + JSON.stringify(response));
+            } else {
+                console.log("Fehler. " + JSON.stringify(error));
+            }
+        });
     });
 
     this.When(/^eine Kommunikation über eine Gleichwellenanlage stattfindet$/, function () {
@@ -73,13 +107,13 @@ module.exports = function() {
     this.When(/^ich auf den Button "([^"]*)" klicke$/, function (arg1) {
         switch(arg1) {
             case "Farbschema":
-                widgets.header.clickFarbschema();
+                widgets.header.clickColor();
                 break;
             case "Arbeitsplatzgeräte":
-                widgets.header.clickArbeitsplatzgeraete();
+                widgets.header.clickDevices();
                 break;
             case "Serveranlagen":
-                widgets.header.clickServeranlagen();
+                widgets.header.clickServer();
                 break;
             case "Display sperren":
                 widgets.header.clickUkwDisplay();
@@ -89,10 +123,6 @@ module.exports = function() {
         }
     });
 
-    this.When(/^ich von Einzelschaltung zu Gruppenschaltung und zurück wechsle$/, function () {
-        // Write code here that turns the phrase above into concrete actions
-        return 'pending';
-    });
 
     this.When(/^eine Standardschaltfläche aktiviere$/, function () {
         // Write code here that turns the phrase above into concrete actions
@@ -100,7 +130,7 @@ module.exports = function() {
     });
 
     this.When(/^ich das Design "([^"]*)" auswähle$/, function (arg1) {
-        widgets.header.selectFarbschema(arg1);
+        widgets.header.selectColor(arg1);
     });
 
     this.When(/^ein Gerät den Status "([^"]*)" anzeigt$/, function (arg1) {
@@ -202,12 +232,18 @@ module.exports = function() {
         return 'pending';
     });
 
+    this.When(/^die inaktive Funkstelle "([^"]*)" auswähle$/, function (station_id) {
+        widgets.content.setFunkstation(station_id);
+    });
+
+
+
     this.When(/^eine Liste mit allen Arbeitsplatzgeräten mit Status wird angezeigt$/, function () {
-        widgets.header.stateArbeitsplatzgerate();
+        devices = widgets.header.getStateDevices();
     });
 
     this.When(/^alle Serveranlagen mit ihrem Status angezeigt werden$/, function () {
-        widgets.header.stateServeranlagen();
+        widgets.header.stateServer();
     });
 
     this.Then(/^ist der Status der Schaltfläche "([^"]*)"$/, function (arg1) {
@@ -250,9 +286,12 @@ module.exports = function() {
         return 'pending';
     });
 
-    this.Then(/^sind alle Funkstellen betriebsbereit$/, function () {
-        // Write code here that turns the phrase above into concrete actions
-        return 'pending';
+    this.Then(/^werden alle Funkstellen mit Status "([^"]*)" angezeigt$/, function (state) {
+        for (const element of funkPanel.value) {
+            var message = browser.elementIdText(element.ELEMENT).value;
+            expect(message).toContain(state);
+        }
+        widgets.content.setAllPanelInactive();
     });
 
     this.Then(/^ist diese Funkstelle nicht betriebsbereit$/, function () {
@@ -260,9 +299,8 @@ module.exports = function() {
         return 'pending';
     });
 
-    this.Then(/^ist die Schaltfläche "([^"]*)" aktiviert$/, function (arg1) {
-        // Write code here that turns the phrase above into concrete actions
-        return 'pending';
+    this.Then(/^ist die Schaltfläche Zeile "([^"]*)", Spalte "([^"]*)" aktiviert$/, function (row,column) {
+        expect(widgets.content.isPanelActive(row,column)).toEqual(true);
     });
 
     this.Then(/^wird die ATIS Kennung in der Schaltfläche angezeigt$/, function () {
@@ -305,11 +343,11 @@ module.exports = function() {
     });
 
     this.Then(/^zeigen alle Geräte den Status "([^"]*)", d.h. sie sind betriebsbereit$/, function (state) {
-        var app_state = widgets.header.stateArbeitsplatzgerate();
-        for (var i in app_state){
-            expect(app_state[i]).toEqual("OK");
-            i++
-        };
+        var devices = widgets.header.getStateDevices();
+        for (const element of devices.value) {
+            var message = browser.elementIdText(element.ELEMENT).value;
+            expect(message).toContain("OK");
+        }
     });
 
     this.Then(/^dann sind nicht alle Server betriebsbereit$/, function () {

@@ -1,3 +1,4 @@
+var request = require("request");
 var myStepDefinitionsWrapper = function () {
     var cfg = require('../../cfg.js');
     // var request  = require('co-request.js');
@@ -45,6 +46,7 @@ var myStepDefinitionsWrapper = function () {
         var ip = cfg.cfgIPs.httpIP;
         var port = cfg.port;
         var url = "http://" + ip + ":" + port + "/mockmessage?messageText=" + message;
+        console.log("message: " + message +" ## ip "+ ip + "## port: "+port+" ### url: "+url);
         //console.log("\t\tURL : " + JSON.stringify(url));
         request(url);
     });

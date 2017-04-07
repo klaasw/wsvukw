@@ -5,7 +5,7 @@
 var cfg = require('../../../cfg.js');
 
 var aktuelleSchaltung = "#statusWechsel>a";
-var btnFarbschema = "#buttonThemeSwitcher";
+var btnColor = "#buttonThemeSwitcher";
 var stdTheme = ".theme1 .switch-theme.btn";
 var flatTheme = ".theme2 .switch-theme.btn";
 var darklyTheme = ".theme3 .switch-theme.btn";
@@ -27,26 +27,27 @@ widgets.open = {
 };
 
 widgets.header = {
-    clickDisplaysperre: function(){},
-
-    setSchaltung: function(mode){
-        if(mode =! browser.element(aktuelleSchaltung).getText()){
+    getMode: function(){
+        return browser.element(aktuelleSchaltung).getText();
+    },
+    setMode: function(mode){
+        if(mode != browser.element(aktuelleSchaltung).getText()){
             browser.click(aktuelleSchaltung);
         }
     },
-    clickFarbschema: function(){
-        browser.click(btnFarbschema);
+    clickColor: function(){
+        browser.click(btnColor);
     },
-    clickArbeitsplatzgeraete: function(){
+    clickDevices: function(){
         browser.click(btnArbeitsplatzgeraete);
     },
-    clickServeranlagen: function(){
+    clickServer: function(){
         browser.click(btnServeranlagen);
     },
     clickUkwDisplay: function(){
         browser.click(ukwDisplayLogo);
     },
-    selectFarbschema: function(color){
+    selectColor: function(color){
         switch(color) {
             case "Standard":
                 browser.waitForExist(stdTheme);
@@ -55,9 +56,7 @@ widgets.header = {
                 break;
             case "Flach":
                 browser.waitForExist(flatTheme);
-
                 browser.click(flatTheme);
-
                 break;
             case "Dunkel / marineblau":
                 browser.click(darklyTheme);
@@ -70,10 +69,10 @@ widgets.header = {
                 break;
         }
     },
-    stateArbeitsplatzgerate: function(){
-        return browser.elements(listArbeitsplatzgeraete+" #agspan01").getText();
+    getStateDevices: function(){
+        return browser.elements(listArbeitsplatzgeraete+">li");
     },
-    stateServeranlagen: function(){
+    stateServer: function(){
         var test = browser.elements(listServeranlagen+" #buttonWHV_DUE").getText();
     },
     checkIfDisplayBlocked: function(){
@@ -82,12 +81,37 @@ widgets.header = {
 };
 
 widgets.content = {
-    clickOnSchaltfläche: function(sf_number){
-        var sf = ".content #Button" + sf_number + "panel";
+    clickOnPanel: function(row,column){
+        var sf = ".content #Button" + row + column + "panel";
         browser.click(sf);
+    },
+    clickOnFunkPanel: function(row,column){
+        var fp = ".content #Button" + row + column + "panel #standortListe";
+        browser.click(fp);
+        return browser.elements(fp+"first-child");
+            //"ul[aria-labelledby='standortListe']+>li");
     },
     getHeaderHexColor: function(){
         var color = browser.element(header_el).getCssProperty('color');
         return color["parsed"].hex;
+    },
+    isPanelActive: function(row,column){
+        var activeSF = ".content #Button" + row + column + "panel>div>div>div.btn-primary";
+        if(browser.isVisible(activeSF)){
+            return true;
+        }
+        return false;
+    },
+    setAllPanelInactive: function(){
+        var elements = browser.elements('.panel-primary');
+        for (const element of elements.value) {
+            const text = browser.elementIdClick(element.ELEMENT).value;
+        }
+    },
+    setFunkstation: function(id_){
+        var id = "ul [aria-labelledby='standortListe']";
+        //console.log(id);
+    console.log(browser.element(id).selectByValue(id_));
+        browser.click(id);
     }
 };
