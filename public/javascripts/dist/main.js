@@ -287,38 +287,41 @@ $(window).load(function () {
 			}
 
 			// Sammelstatus bilden und setzen
-			switch (WSV.Tools.sammelStatusAendernFunkstellen(alleGeraete)) {
-				case '2': // Warning
-					$('span.label', standortButton)
-						.removeClass('label-success')
-						.removeClass('label-danger')
-						.addClass('label-warning')
-						.text('Warn');
-					if (FunkstelleGWID) {
-						$('span.label', FunkstelleGWID)
-							.removeClass('label-success')
-							.removeClass('label-danger')
-							.addClass('label-warning')
-							.text('Warn');
-					}
-					break;
-				case '1': // Error
-					$('span.label', standortButton).removeClass('label-success').addClass('label-danger').text('Error');
-					if (FunkstelleGWID) {
-						$('span.label', FunkstelleGWID).removeClass('label-success').addClass('label-danger').text('Error');
-					}
-					break;
+			const sammelStatus = WSV.Tools.sammelStatusAendernFunkstellen(alleGeraete);
+
+			switch (sammelStatus) {
 				case '0': // OK
-					$('span.label', standortButton)
-						.removeClass('label-danger')
-						.removeClass('label-warning')
-						.addClass('label-success').text(Zustand);
+					$(standortButton)
+						.removeClass('btn-danger')
+						.removeClass('btn-warning')
+						.addClass('btn-success');
 					if (FunkstelleGWID) {
 						$('span.label', FunkstelleGWID)
 							.removeClass('label-danger')
 							.removeClass('label-warning')
-							.addClass('label-success')
-							.text(Zustand);
+							.addClass('label-success');
+					}
+					break;
+				case '1': // Error
+					$( standortButton)
+						.removeClass('btn-success')
+						.addClass('btn-danger');
+					if (FunkstelleGWID) {
+						$('span.label', FunkstelleGWID)
+							.removeClass('label-success')
+							.addClass('label-danger');
+					}
+					break;
+				case '2': // Warning
+					$(standortButton)
+						.removeClass('btn-success')
+						.removeClass('btn-danger')
+						.addClass('btn-warning');
+					if (FunkstelleGWID) {
+						$('span.label', FunkstelleGWID)
+							.removeClass('label-success')
+							.removeClass('label-danger')
+							.addClass('label-warning');
 					}
 					break;
 			}
@@ -354,9 +357,9 @@ $(window).load(function () {
 					});
 
 					//Error Modal anzeigen
-					WSV.Tools.audioAlarm.play();
-					$('.errorText2', '#errorModalDUEGeraete').text(KompID);
-					$('#errorModalDUEGeraete').modal('show');
+					//WSV.Tools.audioAlarm.play();
+					//$('.errorText2', '#errorModalDUEGeraete').text(KompID);
+					//$('#errorModalDUEGeraete').modal('show');
 
 					break;
 				//TODO: Modal anzeigen
@@ -715,8 +718,8 @@ $(window).load(function () {
 
 				// TODO: Wiederverbindung versuchen, waehrend dieser Zeit kein Fehler zeigen, sondern erst dann?
 				//Zeige Error Modal Fenster
-				WSV.Tools.audioAlarm.play();
-				$('#errorModalDUE').modal('show');
+				//WSV.Tools.audioAlarm.play();
+				//$('#errorModalDUE').modal('show');
 			});
 		},
 
@@ -922,10 +925,16 @@ $(window).load(function () {
 		 */
 		lautsprecherAufschalten: function (mhan) {
 
-			//console.log(mhan);
 			const _self = this;
+			//console.log(mhan);
 
 			for (const funkstelle in mhan) {
+				console.log(mhan[funkstelle]);
+
+				if (mhan.hasOwnProperty(funkstelle) || mhan[funkstelle] != null) {
+					continue;
+				}
+
 				// Schalten wenn festAufgeschaltet sein soll, Aufruf aus mhanZuordnung
 				if (mhan[funkstelle].hasOwnProperty('festAufgeschaltet')){
 					if (mhan[funkstelle].festAufgeschaltet === true) {
