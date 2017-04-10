@@ -292,7 +292,7 @@
 					}
 					break;
 				case '1': // Error
-					$( standortButton)
+					$(standortButton)
 						.removeClass('btn-success')
 						.addClass('btn-danger');
 					if (FunkstelleGWID) {
@@ -805,7 +805,7 @@
 		 * @param geklicktespan_mhanApNr
 		 */
 		schalteKanalID: function (geklickteFstID, geklickteSPANMHAN, SPAN, geklicktespan_mhanApNr) {
-			console.log('Klick: ' + geklickteFstID);
+			//console.log('Klick: ' + geklickteFstID);
 			//$.notify('test:'+ApFunkstellen[geklickteID].kurzname);
 			const _self = this;
 
@@ -926,7 +926,7 @@
 				}
 
 				// Schalten wenn festAufgeschaltet sein soll, Aufruf aus mhanZuordnung
-				if (mhan[funkstelle].hasOwnProperty('festAufgeschaltet')){
+				if (mhan[funkstelle].hasOwnProperty('festAufgeschaltet')) {
 					if (mhan[funkstelle].festAufgeschaltet === true) {
 						this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle].Lautsprecher], mhan[funkstelle].Lautsprecher, false);
 						//this.ApFunkstellen[funkstelle].aufgeschaltet = true;
@@ -955,8 +955,14 @@
 		schalten: function (FstID, SPAN_MAHN, SPAN_MAHN_ApNr, inDbSpeichern) {
 
 			SPAN_MAHN_ApNr = SPAN_MAHN_ApNr || 'SPAN01';
-			inDbSpeichern  = inDbSpeichern || true;
 			const _self    = this;
+
+			if (typeof inDbSpeichern === 'undefined') {
+				inDbSpeichern = true;
+			}
+
+			console.log('schalten: ' + FstID + ' speichern: ' + inDbSpeichern);
+			//console.trace();
 
 			if (inDbSpeichern) {
 				this.socket.emit('clientMessage', {
@@ -1046,7 +1052,7 @@
 					_self.zustandWiederherstellen(_self.aktuellerBenutzer.schaltZustandGruppe); // lade Gruppenzustand
 				});
 
-				if (_self.ArbeitsplatzGeraete.hasOwnProperty('MonitorLautsprecher')){
+				if (_self.ArbeitsplatzGeraete.hasOwnProperty('MonitorLautsprecher')) {
 					_self.schalteMonitorLautsprecher();
 				}
 
@@ -1063,7 +1069,7 @@
 					_self.zustandWiederherstellen(_self.aktuellerBenutzer.schaltZustandEinzel); //lade Einzelzustand
 				});
 
-				if (_self.ArbeitsplatzGeraete.hasOwnProperty('MonitorLautsprecher')){
+				if (_self.ArbeitsplatzGeraete.hasOwnProperty('MonitorLautsprecher')) {
 					_self.trenneMonitorLautsprecher();
 				}
 			}
