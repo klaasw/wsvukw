@@ -929,9 +929,10 @@ $(window).load(function () {
 			//console.log(mhan);
 
 			for (const funkstelle in mhan) {
-				console.log(mhan[funkstelle]);
+				//console.log(funkstelle);
+				//console.log(mhan[funkstelle]);
 
-				if (mhan.hasOwnProperty(funkstelle) || mhan[funkstelle] != null) {
+				if (!mhan.hasOwnProperty(funkstelle) || mhan[funkstelle] === null) {
 					continue;
 				}
 
