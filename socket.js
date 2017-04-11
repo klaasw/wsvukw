@@ -29,7 +29,7 @@ exports.socket = function (server) {
 		const remoteAddress = (tools.filterIP(socket.conn.remoteAddress) === '127.0.0.1') ? socket.request.headers['x-forwarded-for'] : tools.filterIP(socket.conn.remoteAddress);
 
 		log.debug(FILENAME + ' Funktion connect: Benutzer hat Websocket-Verbindung mit ID ' + socket.id + ' hergestellt. IP: ' + remoteAddress);
-		log.debug('SOCKETHEADER' + socket.request.headers['x-forwarded-for']);
+		log.debug('SOCKETHEADER ' + socket.request.headers['x-forwarded-for']);
 		// TODO: Pruefung Berechtigung !
 
 		funktionNachVerbindungsaufbau(socket.id, remoteAddress); //letzten Schaltzustandübertragen

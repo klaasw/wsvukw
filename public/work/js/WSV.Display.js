@@ -927,18 +927,21 @@
 
 				// Schalten wenn festAufgeschaltet sein soll, Aufruf aus mhanZuordnung
 				if (mhan[funkstelle].hasOwnProperty('festAufgeschaltet')) {
+					// console.log('festAufgeschaltet: ' + funkstelle);
 					if (mhan[funkstelle].festAufgeschaltet === true) {
 						this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle].Lautsprecher], mhan[funkstelle].Lautsprecher, false);
 						//this.ApFunkstellen[funkstelle].aufgeschaltet = true;
 					}
 				}
 				else if (mhan[funkstelle] === 'MonitorLautsprecher') {
+					// console.log('MonitorLautsprecher: ' + funkstelle);
 					for (let i = 0; i < _self.ArbeitsplatzGeraete.MonitorLautsprecher.length; i++) {
-						this.schalten(funkstelle, _self.ArbeitsplatzGeraete.MonitorLautsprecher[i], mhan[funkstelle], false)
+						this.schalten(funkstelle, _self.ArbeitsplatzGeraete.MonitorLautsprecher[i], mhan[funkstelle], false);
 					}
 				}
 				else {
-					this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle], false);
+					// console.log('span schalten: ' + funkstelle);
+					this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle]], mhan[funkstelle], true);
 				}
 			}
 
