@@ -104,6 +104,14 @@ widgets.content = {
     clickOnPanel: function(row,column){
         browser.click(selectPanel(row,column));
     },
+    //klickt auf alle Schaltflächen der Datatable, bestimmt durch Zeile und Spalte in Desktop-View
+    clickOnPanels: function(datatable){
+        var data = datatable.rows();
+            for (var i in data) {
+                browser.click(selectPanel(data[i][0],data[i][1]));
+            }
+
+    },
     //klickt auf Funkstation einer Schaltfläche, bestimmt durch Zeile und Spalte in Desktop-View
     clickOnFunkPanel: function(row,column){
         var fp = selectPanel(row,column) +" #standortListe";
