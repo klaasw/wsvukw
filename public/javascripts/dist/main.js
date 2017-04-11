@@ -972,8 +972,8 @@ $(window).load(function () {
 				inDbSpeichern = true;
 			}
 
-			console.log('schalten: ' + FstID + ' speichern: ' + inDbSpeichern);
-			console.trace();
+			// console.log('schalten: ' + FstID + ' speichern: ' + inDbSpeichern);
+			// console.trace();
 
 			if (inDbSpeichern) {
 				this.socket.emit('clientMessage', {
