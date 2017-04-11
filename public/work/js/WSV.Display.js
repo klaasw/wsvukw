@@ -962,7 +962,7 @@
 			}
 
 			console.log('schalten: ' + FstID + ' speichern: ' + inDbSpeichern);
-			//console.trace();
+			console.trace();
 
 			if (inDbSpeichern) {
 				this.socket.emit('clientMessage', {
@@ -973,13 +973,15 @@
 					'span_mhanApNr': SPAN_MAHN_ApNr
 				});
 			}
+			else {
+				this.schaltenVisuell(FstID, 'mhan', true);
+			}
 
 			if (typeof this.ApFunkstellen[FstID] !== 'undefined') {
 				$.notify('Schalte: <br>'
 					+ this.ApFunkstellen[FstID].sname
 					+ this.ApFunkstellen[FstID].channel);
 			}
-			//console.log('(notify) schalte: ' + this.ApFunkstellen[FstID].sname);
 		},
 
 		/**
