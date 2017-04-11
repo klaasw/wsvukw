@@ -53,9 +53,17 @@ $(window).load(function () {
 
 			//Eventlistener an #mithoerenModal binden. Dies dient der Steuerung von dynmischen Inhalten basierend auf der geklickten Kanalschaltfläche
 			$('#mithoerenModal').on('shown.bs.modal', function (event) {
+
 				const mhanButton     = $(event.relatedTarget).attr('id');
 				const fuerFunkstelle = $(event.relatedTarget).data('funkstelle');
 				const lautstaerke    = parseInt($(event.relatedTarget).attr('data-lautstaerke'));
+
+				if ($('.fa-plus', event.relatedTarget).length) {
+					$('#mithoerenModal .panel_kanal').show();
+				}
+				else {
+					$('#mithoerenModal .panel_kanal').hide();
+				}
 
 				//Überschrift anpassen
 				$('#mithoerenModal .modal-title').text('Mithören für Kanal: ' + _self.ApFunkstellen[fuerFunkstelle].channel + ', ' + _self.ApFunkstellen[fuerFunkstelle].sname + ', Komp-ID: ' + fuerFunkstelle);
