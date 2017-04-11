@@ -7641,14 +7641,11 @@ body, html {
   position: relative;
   height: 40px;
   line-height: 40px;
-  display: flex;
-  flex-wrap: nowrap;
 }
 .row .panel .panel-footer .mhan {
   text-align: center;
   pointer-events: none;
   font-size: 0.9em;
-  flex: 2;
 }
 .row .panel .panel-footer .button_mkaDropdown {
   font-size: 0.9em;
@@ -7660,13 +7657,13 @@ body, html {
   border-top-right-radius: 0;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 2px;
-  flex: 1;
 }
 .row .panel .panel-footer .button_mhan {
   font-size: 0.9em;
   position: relative;
   vertical-align: top;
   padding: 0 0 0 20px;
+  width: 50%;
   height: 100%;
   line-height: 40px;
   border-left-width: 0;
@@ -7676,7 +7673,11 @@ body, html {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 2px;
-  flex: 1;
+}
+@media (max-width: 1200px) {
+  .row .panel .panel-footer .button_mhan {
+    width: 100%;
+  }
 }
 .row .panel .panel-footer .button_mhan .fa-volume-up {
   position: absolute;
@@ -7687,9 +7688,6 @@ body, html {
   position: absolute;
   top: 13px;
   left: 36px;
-}
-.row .panel .panel-footer .button_placeholder {
-  flex: 1;
 }
 @media (max-width: 1200px) {
   .row .panel .panel-footer {

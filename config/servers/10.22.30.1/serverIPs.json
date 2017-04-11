@@ -1,5 +1,5 @@
 {
-  "loglevelConsole": "error",
+  "loglevelConsole": "debug",
   "loglevelFile": "debug",
 
   "httpIP": "10.22.30.1",
