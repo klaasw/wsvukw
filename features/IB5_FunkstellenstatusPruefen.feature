@@ -3,7 +3,7 @@ Feature: Indienststellung des Arbeitsplatzes - Funkstellenstatus prüfen
   Als UKW Display Nutzer möchte ich den Status der Funkstellen prüfen,
   um die Verfügbarkeit der Anlagen zu erfahren.
   #ready
-  @watch
+  #@watch
   Scenario: 10 Alle Funkstellen betriebsbereit
     Given ist der Arbeitsplatz "UKWDisplay/" NvD
     And "Gruppenschaltung" ist aktiviert
