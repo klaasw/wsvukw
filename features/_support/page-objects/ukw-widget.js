@@ -105,13 +105,17 @@ widgets.content = {
     setAllPanelInactive: function(){
         var elements = browser.elements('.panel-primary');
         for (const element of elements.value) {
-            const text = browser.elementIdClick(element.ELEMENT).value;
+            browser.elementIdClick(element.ELEMENT).value;
         }
     },
     setFunkstation: function(id_){
-        var id = "ul [aria-labelledby='standortListe']";
-        //console.log(id);
-    console.log(browser.element(id).selectByValue(id_));
+        var id = "li[id='"+ id_+"'] div.radio";
+        var test = browser.elements(id);
         browser.click(id);
+    },
+    getActiveFunkstation: function(row,column){
+        browser.click(".content #Button" + row + column + "panel #standortListe");
+        var id = "#Button"+row+column+"panel div.radio.checked";
+        return browser.getText(id);
     }
 };

@@ -236,8 +236,6 @@ module.exports = function() {
         widgets.content.setFunkstation(station_id);
     });
 
-
-
     this.When(/^eine Liste mit allen Arbeitsplatzgeräten mit Status wird angezeigt$/, function () {
         devices = widgets.header.getStateDevices();
     });
@@ -284,6 +282,11 @@ module.exports = function() {
     this.Then(/^dann wird die Kanalnummer nicht geändert$/, function () {
         // Write code here that turns the phrase above into concrete actions
         return 'pending';
+    });
+
+    this.Then(/^wird die Schaltfläche Zeile "([^"]*)", Spalte "([^"]*)" auf die Funkstelle "([^"]*)" umgeschaltet$/, function (row, column,station_id) {
+        var activeStation = widgets.content.getActiveFunkstation(row,column);
+        expect(activeStation).toContain(station_id);
     });
 
     this.Then(/^werden alle Funkstellen mit Status "([^"]*)" angezeigt$/, function (state) {
