@@ -117,7 +117,7 @@ widgets.content = {
     },
     //prüft ob Schaltfläche aufgeschaltet ist
     isPanelActive: function(row,column){
-        var activeSF = selectPanel(row,column) + ">div>div>div.btn-primary";
+        var activeSF = selectPanel(row,column) + ".panel-primary";
         if(browser.isVisible(activeSF)){
             return true;
         }
@@ -125,7 +125,7 @@ widgets.content = {
     },
     //deaktiviert alle aufgeschalteten Schaltflächen
     setAllPanelInactive: function(){
-        var elements = browser.elements('.panel-primary');
+        var elements = browser.elements(".panel-primary");
         for (const element of elements.value) {
             browser.elementIdClick(element.ELEMENT).value;
         }
