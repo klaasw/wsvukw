@@ -7678,10 +7678,15 @@ body, html {
   border-bottom-left-radius: 2px;
   flex: 1;
 }
-.row .panel .panel-footer .button_mhan i {
+.row .panel .panel-footer .button_mhan .fa-volume-up {
   position: absolute;
   top: 13px;
-  left: 8px;
+  left: 10px;
+}
+.row .panel .panel-footer .button_mhan .fa-plus {
+  position: absolute;
+  top: 13px;
+  left: 36px;
 }
 .row .panel .panel-footer .button_placeholder {
   flex: 1;
