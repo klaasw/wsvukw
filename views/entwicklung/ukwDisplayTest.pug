@@ -99,45 +99,11 @@ block content
 										)
 										span.lautstaerke 100
 										i.fa.fa-volume-up.hidden(aria-hidden="true")
-										i.fa.fa-plus(aria-hidden="true")
 
-									if gesamteKonfig.FunkstellenDetails[val[0]].MKA
-										button.btn.btn-default.btn-lg.dropdown-toggle.button_mkaDropdown(
-										type='button',
-										data-toggle='modal',
-										data-target='#mkaModal',
-										onclick='WSV.Display.setzeKanalMka(event,this)'
-										)
+										if gesamteKonfig.FunkstellenDetails[val[0]].MKA
 											i.fa.fa-plus(aria-hidden="true")
 
-		// Modalfenster fuer MKA Kanalwahl
-		div#mkaModal.modal(aria-labelledby='mkaModalLabel')
-			div.modal-dialog
-				div.modal-content
-					div.modal-header
-						button.close(type='button', data-dismiss='modal', aria-label='Close')
-							span(aria-hidden='true')
-						h4#mkaModalLabel.modal-title Kanalauswahl für Mehrkanal-Anlage
-					div.modal-body
-						p
-							+mkaButtonListe(gesamteKonfig.KanalListe)
-
-						#mySpinbox.spinbox(data-initialize='spinbox')
-							input.form-control.input-mini.spinbox-input(type='text', style="height: 75px;font-size:25px")
-							div.spinbox-buttons.btn-group.btn-group-vertical(style="width:60px")
-								button.btn.btn-default.spinbox-up.btn-lg(type='button', style=" width: 63px; height: 36px;")
-									span.glyphicon.glyphicon-chevron-up
-									span.sr-only Increase
-								button.btn.btn-default.spinbox-down.btn-lg(type='button', style=" width: 63px; height: 36px;")
-									span.glyphicon.glyphicon-chevron-down
-									span.sr-only Decrease
-
-
-					div.modal-footer
-						button.btn.btn-default(type='button', data-dismiss='modal') Abbrechen
-						button.btn.btn-primary(type='button', data-dismiss='modal', onclick='WSV.Display.setzeKanal()') Ändern
-
-		// Modalfenster fuer Mithoeren und Zuordnung
+		// Modalfenster fuer Mithoeren, Zuordnung und Kanalauswahl
 		div#mithoerenModal.modal(aria-labelledby='mithoerenModalLabel')
 			div.modal-dialog
 				div.modal-content
@@ -167,6 +133,20 @@ block content
 									button.btn.btn-default JA_Lotse1
 									button.btn.btn-default JA_Lotse2
 									button.btn.btn-default JA_Lotse3
+
+						div.panel.panel-default.panel_kanal
+							p
+								+mkaButtonListe(gesamteKonfig.KanalListe)
+
+							#mySpinbox.spinbox(data-initialize='spinbox')
+								input.form-control.input-mini.spinbox-input(type='text', style="height: 75px;font-size:25px")
+								div.spinbox-buttons.btn-group.btn-group-vertical(style="width:60px")
+									button.btn.btn-default.spinbox-up.btn-lg(type='button', style=" width: 63px; height: 36px;")
+										span.glyphicon.glyphicon-chevron-up
+										span.sr-only Increase
+									button.btn.btn-default.spinbox-down.btn-lg(type='button', style=" width: 63px; height: 36px;")
+										span.glyphicon.glyphicon-chevron-down
+										span.sr-only Decrease
 
 					div.modal-footer
 						button.btn.btn-default(type='button', data-dismiss='modal') Abbrechen
