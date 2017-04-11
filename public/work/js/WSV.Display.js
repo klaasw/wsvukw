@@ -897,14 +897,20 @@
 			if (enabled) {
 				if (SPANMHAN === 'span') {
 					panel.addClass('panel-primary');
+
 				}
-				$('.button_' + SPANMHAN, panel).removeClass('btn-default').addClass('btn-primary');
+				else {
+					$('.button_mhan .fa-volume-up', panel).removeClass('hidden')
+				}
+
 			}
 			else {
 				if (SPANMHAN === 'span') {
 					panel.removeClass('panel-primary');
 				}
-				$('.button_' + SPANMHAN, panel).removeClass('btn-primary').addClass('btn-default');
+				else {
+					$('.button_mhan .fa-volume-up', panel).addClass('hidden')
+				}
 			}
 		},
 
