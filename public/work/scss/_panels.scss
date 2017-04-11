@@ -97,14 +97,11 @@
       position:    relative;
       height:      40px;
       line-height: 40px;
-      display:     flex;
-      flex-wrap:   nowrap;
 
       .mhan {
         text-align:     center;
         pointer-events: none;
         font-size:      0.9em;
-        flex:           2;
       }
 
       .button_mkaDropdown {
@@ -117,7 +114,6 @@
         border-top-right-radius:    0;
         border-bottom-left-radius:  0;
         border-bottom-right-radius: 2px;
-        flex:                       1;
       }
 
       .button_mhan {
@@ -125,6 +121,7 @@
         position:                   relative;
         vertical-align:             top;
         padding:                    0 0 0 20px;
+        width:                      50%;
         height:                     100%;
         line-height:                40px;
         border-left-width:          0;
@@ -134,17 +131,22 @@
         border-top-right-radius:    0;
         border-bottom-right-radius: 0;
         border-bottom-left-radius:  2px;
-        flex:                       1;
+
+        @media (max-width: $breakpoint_lg) {
+          width: 100%;
+        }
 
         .fa-volume-up {
           position: absolute;
           top:      13px;
           left:     10px;
         }
-      }
 
-      .button_placeholder {
-        flex: 1;
+        .fa-plus {
+          position: absolute;
+          top:      13px;
+          left:     36px;
+        }
       }
 
       @media (max-width: $breakpoint_lg) {
