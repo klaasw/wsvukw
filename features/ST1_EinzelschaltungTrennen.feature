@@ -2,20 +2,23 @@ Feature: Schalten/Trennen von Sprechwegen - Fester Sprechweg Einzelschaltung
 
   Als NvD/Na schalte ich einen festen Sprechweg bei Einzelschaltung auf,
   mit dem Ziel über diesen Sprechweg mit einem Teilnehmer eines Kanals zu kommunizieren.
-  #@watch
-  Scenario: 13 Fester Sprechweg für Einzelschaltung aufschalten
-    Given ist der Arbeitsplatz "UKWDisplay/" NvD
-    When ich auf die Standardschaltfläche klicke
-    And ich eine inaktive Standardschaltfläche anklicke
-    Then ist der Status der Schaltfläche "aktiv"
-  #@watch
+
+  #ready
+  @watch
   Scenario: 32 Fester Sprechweg für Einzelschaltung trennen
     Given ist der Arbeitsplatz "UKWDisplay/" NvD
-    And Einzelschaltung und Standardschaltfläche ist aktiv
-    When ich eine aktive Standardschaltfläche anklicke
-    Then ist der Status der Schaltfläche "inaktiv"
+    And "Einzelschaltung" ist aktiviert
+    And alle Schaltflächen sind deaktiviert
+    When ich auf die Standardschaltflächen klicke
+    | Zeile |Spalte|
+    | 1 | 1 |
+    | 3 | 4 |
+    | 1 | 1 |
+    Then ist die Schaltfläche Zeile "3", Spalte "4" nicht aufgeschaltet
+
+  #todo Mehrkanal nocht nicht implementiert
   #@watch
-  Scenario: 15 Aufschalten einer Einzelschaltung bei einer Mehrkanalanlage
+  Scenario: 15 Aufschalten/Trennen einer Einzelschaltung bei einer Mehrkanalanlage
     Given ist der Arbeitsplatz "UKWDisplay/" NvD
     When ich auf die Standardschaltfläche klicke
     And ich eine Mehrkanalschaltfläche anklicke

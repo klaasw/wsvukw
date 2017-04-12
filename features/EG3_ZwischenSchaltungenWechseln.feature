@@ -5,7 +5,7 @@ Feature: Einzel- und Gruppenschaltung - Zwischen Schaltungen wechseln
   werden die zuletzt in diesem Modus aktiven Schaltzustände wiederhergestellt.
 
   #ready
-  @watch
+  #@watch
   Scenario: 27A Wechsel von Gruppenschaltung zu Einzelschaltung
     Given ist der Arbeitsplatz "UKWDisplay/" NvD
     And "Gruppenschaltung" ist aktiviert
@@ -18,7 +18,7 @@ Feature: Einzel- und Gruppenschaltung - Zwischen Schaltungen wechseln
     And ist die Schaltfläche Zeile "1", Spalte "3" aktiviert
 
   #ready
-  @watch
+  #@watch
   Scenario: 27B Wechsel von Einzelschaltung zu Gruppenschaltung
     Given ist der Arbeitsplatz "UKWDisplay/" NvD
     And "Einzelschaltung" ist aktiviert

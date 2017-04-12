@@ -51,6 +51,10 @@ module.exports = function() {
         widgets.content.clickOnPanel(row,column);
     });
 
+    this.When(/^ich auf die Standardschaltflächen klicke$/, function (datatable) {
+        widgets.content.clickOnPanels(datatable);
+    });
+
     this.When(/^ich auf die Funkstellen der Standardschaltfläche Zeile "([^"]*)", Spalte "([^"]*)" klicke$/, function (row,column) {
        funkPanel = widgets.content.clickOnFunkPanel(row,column);
     });
@@ -304,6 +308,10 @@ module.exports = function() {
 
     this.Then(/^ist die Schaltfläche Zeile "([^"]*)", Spalte "([^"]*)" aktiviert$/, function (row,column) {
         expect(widgets.content.isPanelActive(row,column)).toEqual(true);
+    });
+
+    this.Then(/^ist die Schaltfläche Zeile "([^"]*)", Spalte "([^"]*)" nicht aufgeschaltet$/, function (row,column) {
+        expect(widgets.content.isPanelActive(row,column)).toEqual(false);
     });
 
     this.Then(/^wird die ATIS Kennung in der Schaltfläche angezeigt$/, function () {
