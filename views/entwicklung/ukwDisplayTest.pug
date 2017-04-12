@@ -85,9 +85,10 @@ block content
 																)
 																span #{val2}&nbsp
 																	span.label.label-default ??
-								div.panel-body
+								div.panel-body(
+								onclick='WSV.Display.schalteKanal(event,this,"SPAN")',
+								)
 									h2.text-center.button_kanalNr(
-									onclick='WSV.Display.schalteKanal(event,this,"SPAN")',
 									id=index
 									) #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
 									div.text-center.atis(
