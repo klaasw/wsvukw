@@ -1049,9 +1049,6 @@
 
 			$.notify('Lautstaerke: ' + this.ApFunkstellen[FstID].sname + ' ' + level);
 
-			// Lautstärke im Button anzeigen
-			$('.lautstaerke', mhanButton).text(level);
-
 			// Lautstärke in HTML Attribut setzen
 			mhanButton.data('lautstaerke', level);
 		},
