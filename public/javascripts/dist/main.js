@@ -101,10 +101,8 @@ $(window).load(function () {
 						}
 					});
 
-					$('#mithoerenModal [buttonElement="ap_mithoeren"]').html(buttonsFuerArbeitsplaetze);
-
 					//"SPAN_MHAN" zur Kennung der Schaltvorgangs
-					$('#mithoerenModal [buttonElement="spanApButtonModal"]').attr('onclick', 'schalteKanal(event, this, "SPAN_MHAN")');
+					// $('#mithoerenModal [buttonElement="spanApButtonModal"]').attr('onclick', 'schalteKanal(event, this, "SPAN_MHAN")');
 
 					// $.getJSON('verbindungen/liesVerbindungen?geraet=' + mhanButton, function (dataV) {
 					// 	$.each(dataV, function (key, val) {
@@ -116,16 +114,9 @@ $(window).load(function () {
 				});
 			});
 
-			//Event zum schliessen an mithoerenModal binden
+			// Event zum schliessen an Modal binden
 			$('#mithoerenModal').on('hidden.bs.modal', function (event) {
-				$('#mithoerenModal [buttonElement="mhanButtonModal"]').removeClass('btn-primary');
 				$('#sliderModal').slider('destroy');
-			});
-
-
-			//Initialisierung Slider für Lautstärke im Modal #mithoerenModal
-			$('#sliderModal').slider({
-				tooltip: 'always'
 			});
 
 			//Optionen fuer Notify festlegen

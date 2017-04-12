@@ -103,16 +103,9 @@
 				});
 			});
 
-			//Event zum schliessen an mithoerenModal binden
+			// Event zum schliessen an Modal binden
 			$('#mithoerenModal').on('hidden.bs.modal', function (event) {
-				$('#mithoerenModal [buttonElement="mhanButtonModal"]').removeClass('btn-primary');
 				$('#sliderModal').slider('destroy');
-			});
-
-
-			//Initialisierung Slider für Lautstärke im Modal #mithoerenModal
-			$('#sliderModal').slider({
-				tooltip: 'always'
 			});
 
 			//Optionen fuer Notify festlegen
