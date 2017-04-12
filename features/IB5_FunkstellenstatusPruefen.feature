@@ -1,4 +1,4 @@
-Feature: Indienststellung des Arbeitsplatzes - Funkstellenstatus prüfen
+Feature: IB5 Indienststellung des Arbeitsplatzes - Funkstellenstatus prüfen
 
   Als UKW Display Nutzer möchte ich den Status der Funkstellen prüfen,
   um die Verfügbarkeit der Anlagen zu erfahren.

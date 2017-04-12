@@ -1,14 +1,27 @@
-Feature: Schalten/Trennen von Sprechwegen - Fester Sprechweg Gruppenschaltung
+Feature: ST2 Schalten/Trennen von Sprechwegen - Fester Sprechweg Gruppenschaltung
 
 Als NvD/Na schalte ich einen festen Sprechweg bei Gruppenschaltung auf,
 mit dem Ziel über diesen Sprechweg mit Teilnehmern mehrerer Kanäle zu kommunizieren.
-  #@watch
-  Scenario: 14 Feste Sprechwege für Gruppenschaltung aufschalten
+  #ready
+  @watch
+  Scenario: 14 für Gruppenschaltung aufschalten und trennen
     Given ist der Arbeitsplatz "UKWDisplay/" NvD
-    When ich Gruppenschaltung aktiviere
-    And eine Standardschaltflächen aufschalte
-    And eine weitere Standardschaltflächen aufschalte
-    Then ist der Status aller Schaltflächen "aktiv"
+    And "Gruppenschaltung" ist aktiviert
+    And alle Schaltflächen sind deaktiviert
+    When ich auf die Standardschaltflächen klicke
+      | Zeile |Spalte|
+      | 1 | 1 |
+      | 3 | 4 |
+      | 1 | 4 |
+    And ich auf die Standardschaltflächen klicke
+      | Zeile |Spalte|
+      | 1 | 1 |
+      | 3 | 4 |
+      | 1 | 4 |
+
+    Then ist keine Schaltfläche aktiv
+
+  #todo
   #@watch
   Scenario: 16  Aufschalten einer Gruppenschaltung bei einer Mehrkanalanlage
     Given ist der Arbeitsplatz "UKWDisplay/" NvD

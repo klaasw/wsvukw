@@ -1,4 +1,4 @@
-Feature: Kanalzuordnung - Arbeitsplatz einsehen
+Feature: KA1 Kanalzuordnung - Arbeitsplatz einsehen
 
   Als NvD möchte ich die Kanäle eines spezifischen Arbeitsplatzes einsehen,
   um Informationen über dort verfügbare Schaltungen zu erhalten.

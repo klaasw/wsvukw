@@ -1,4 +1,4 @@
-Feature: Indienststellung des Arbeitsplatzes - DUE/ RFD-Status prüfen
+Feature: IB4 Indienststellung des Arbeitsplatzes - DUE/ RFD-Status prüfen
 
   Als UKW Display Nutzer möchte ich den Status der DUE- und RFD-Anlagen prüfen,
   um die Verfügbarkeit der Serveranlagen zu erfahren.

@@ -1,4 +1,4 @@
-Feature: Indienststellung des Arbeitsplatzes - Funktionalität SPAN-/ MHAN-Status prüfen
+Feature: IB3 Indienststellung des Arbeitsplatzes - Funktionalität SPAN-/ MHAN-Status prüfen
 
   Als UKW Display Nutzer möchte ich den Status der SPAN und MHAN prüfen, um die Funktion der Arbeitsplatz-Geräte sicherzustellen.
   #ready

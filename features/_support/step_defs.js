@@ -79,21 +79,19 @@ module.exports = function() {
             var ip = cfg.cfgIPs.httpIP;
             var port = cfg.port;
             var url = "http://" + ip + ":" + port + "/mockmessage?messageText=" + message;
-            console.log(message);
-        console.log(ip);
-        console.log(port);
-        console.log(url);
             request(url);
     });
 
-    this.When(/^ein Teilnehmer eine SIPNachricht "([^"]*)" mit Status "([^"]*)" an die Funkstelle "([^"]*)" mit Kanal "([^"]*)" sendet$/, function (nachrichtentyp, state, id, channel) {
-        var message = "<" + nachrichtentyp + " id='" + id + "' state='" + state + "' channel='" + channel + "'/>";
+    this.When(/^ein Teilnehmer eine SIPNachricht "([^"]*)" mit Atis-Kennung "([^"]*)" an die Funkstelle "([^"]*)" mit Kanal "([^"]*)" sendet$/, function (nachrichtentyp, atis, id, channel) {
+        var message = "<'" + nachrichtentyp + "' 'id'='" + id + "' 'state'='0' 'atis'='" + atis + "' 'channel'='" + channel + "'/>";
         console.log("\t\tmessage: " + message);
+        console.log("http://10.22.30.1:3000/mockmessage?messageText=" + message);
         request("http://10.22.30.1:3000/mockmessage?messageText=" + message, function (error, response, body) {
             if (!error && response.statusCode == 200) {
                 var response = JSON.parse(body);
                 console.log(" REST response: " + JSON.stringify(response));
             } else {
+
                 console.log("Fehler. " + JSON.stringify(error));
             }
         });
@@ -248,6 +246,7 @@ module.exports = function() {
         widgets.header.stateServer();
     });
 
+
     this.Then(/^ist der Status der Schaltfläche "([^"]*)"$/, function (arg1) {
         // Write code here that turns the phrase above into concrete actions
         return 'pending';
@@ -286,6 +285,10 @@ module.exports = function() {
     this.Then(/^dann wird die Kanalnummer nicht geändert$/, function () {
         // Write code here that turns the phrase above into concrete actions
         return 'pending';
+    });
+
+    this.Then(/^ist keine Schaltfläche aktiv$/, function () {
+        expect(widgets.content.getAllActivePanel()).toBe(0);
     });
 
     this.Then(/^wird die Schaltfläche Zeile "([^"]*)", Spalte "([^"]*)" auf die Funkstelle "([^"]*)" umgeschaltet$/, function (row, column,station_id) {
