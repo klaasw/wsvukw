@@ -37,20 +37,24 @@ block content
 						</div>
 						<div class="row">
 
+					- kompomentenID = val[0] ? val[0] : '---------------------';
+					- geraet = kompomentenID.substr(15,6);
+					- standort = kompomentenID.substr(8,6);
+					- kurzname = gesamteKonfig.FunkstellenDetails[val[0]].sname
+
+					if gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]]
+						- mhan_lautsprecher=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]].Lautsprecher
+
 					div.col-md-2
 						div.panel.button_panel.panel-default(
 						id=index + 'panel'
+						data-aktiv=kompomentenID
 						class=(val[0] == 'frei' ? 'hidden' : '')
 						)
 							div.button_flaeche
 								div.panel-heading
 									div.dropdown
-										- kompomentenID = val[0] ? val[0] : '---------------------';
-										- geraet = kompomentenID.substr(15,6);
-										- standort = kompomentenID.substr(8,6);
-										- kurzname = gesamteKonfig.FunkstellenDetails[val[0]].sname
-										button.btn.btn-default.button_standort.button_span(
-										data-aktiv=kompomentenID
+										button.btn.button_standort(
 										type='button'
 										data-toggle='dropdown'
 										aria-haspopup='true'
@@ -63,33 +67,24 @@ block content
 										)
 											each val2, index2 in val
 												if val2.length > 1
-													li(
-													class='button_anlage' + (index2 + 1)
+													div.funkstelle.list-group-item(
+													class=' button_anlage' + (index2 + 1)
 													id=val2
 													geraetStatus='-1'
 													)
-														div.radio
-															label.radio-custom(
-															data-initialize='radio'
-															)
-																input.sr-only.input-lg(
-																type='radio',
-																name='funkstelle' + index,
-																value='1',
-																checked= index2 == 0
-																)
-																span #{val2}&nbsp
-																	span.label.label-default ??
-								div.panel-body
+														span #{val2}&nbsp
+															span.label.label-default ??
+								div.panel-body(
+								onclick='WSV.Display.schalteKanal(event,this,"SPAN")',
+								)
 									h2.text-center.button_kanalNr(
-									onclick='WSV.Display.schalteKanal(event,this,"SPAN")',
 									id=index
 									) #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
 									div.text-center.atis(
 									)
 								div.panel-footer
-									div.btn.btn-default.button_mhan(
-										id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0].Lautsprecher]],
+									div.btn.btn-default.button_span(
+										id=mhan_lautsprecher,
 										class=(val[0] == 'frei' ? 'hidden' : ''),
 										type='button',
 										data-toggle='modal',
@@ -97,49 +92,12 @@ block content
 										data-funkstelle=val[0],
 										data-lautstaerke='100'
 										)
-										span.lautstaerke 100
 										i.fa.fa-volume-up.hidden(aria-hidden="true")
-										i.fa.fa-plus(aria-hidden="true")
 
-									if gesamteKonfig.FunkstellenDetails[val[0]].MKA
-										button.btn.btn-default.btn-lg.dropdown-toggle.button_mkaDropdown(
-										type='button',
-										data-toggle='modal',
-										data-target='#mkaModal',
-										onclick='WSV.Display.setzeKanalMka(event,this)'
-										)
+										if gesamteKonfig.FunkstellenDetails[val[0]].MKA
 											i.fa.fa-plus(aria-hidden="true")
-									else
-										div.button_placeholder
 
-		// Modalfenster fuer MKA Kanalwahl
-		div#mkaModal.modal(aria-labelledby='mkaModalLabel')
-			div.modal-dialog
-				div.modal-content
-					div.modal-header
-						button.close(type='button', data-dismiss='modal', aria-label='Close')
-							span(aria-hidden='true')
-						h4#mkaModalLabel.modal-title Kanalauswahl für Mehrkanal-Anlage
-					div.modal-body
-						p
-							+mkaButtonListe(gesamteKonfig.KanalListe)
-
-						#mySpinbox.spinbox(data-initialize='spinbox')
-							input.form-control.input-mini.spinbox-input(type='text', style="height: 75px;font-size:25px")
-							div.spinbox-buttons.btn-group.btn-group-vertical(style="width:60px")
-								button.btn.btn-default.spinbox-up.btn-lg(type='button', style=" width: 63px; height: 36px;")
-									span.glyphicon.glyphicon-chevron-up
-									span.sr-only Increase
-								button.btn.btn-default.spinbox-down.btn-lg(type='button', style=" width: 63px; height: 36px;")
-									span.glyphicon.glyphicon-chevron-down
-									span.sr-only Decrease
-
-
-					div.modal-footer
-						button.btn.btn-default(type='button', data-dismiss='modal') Abbrechen
-						button.btn.btn-primary(type='button', data-dismiss='modal', onclick='WSV.Display.setzeKanal()') Ändern
-
-		// Modalfenster fuer Mithoeren und Zuordnung
+		// Modalfenster fuer Mithoeren, Zuordnung und Kanalauswahl
 		div#mithoerenModal.modal(aria-labelledby='mithoerenModalLabel')
 			div.modal-dialog
 				div.modal-content
@@ -159,16 +117,20 @@ block content
 								data-slider-step='10'
 								data-slider-value=''
 								)
-						div.panel.panel-default
-							div.panel-heading Auf diesen Kanal aufgeschaltete Arbeitsplätze. Wähle zum Mithören...
-							div.panel-content
-								div.btn.btn-group.button_ap_mithoeren(
-								data-buttonElement = 'ap_mithoeren'
-								)
-									button.btn.btn-default JA_NA
-									button.btn.btn-default JA_Lotse1
-									button.btn.btn-default JA_Lotse2
-									button.btn.btn-default JA_Lotse3
+
+						div.panel.panel-default.panel_kanal
+							p
+								+mkaButtonListe(gesamteKonfig.KanalListe)
+
+							#mySpinbox.spinbox(data-initialize='spinbox')
+								input.form-control.input-mini.spinbox-input(type='text', style="height: 75px;font-size:25px")
+								div.spinbox-buttons.btn-group.btn-group-vertical(style="width:60px")
+									button.btn.btn-default.spinbox-up.btn-lg(type='button', style=" width: 63px; height: 36px;")
+										span.glyphicon.glyphicon-chevron-up
+										span.sr-only Increase
+									button.btn.btn-default.spinbox-down.btn-lg(type='button', style=" width: 63px; height: 36px;")
+										span.glyphicon.glyphicon-chevron-down
+										span.sr-only Decrease
 
 					div.modal-footer
 						button.btn.btn-default(type='button', data-dismiss='modal') Abbrechen

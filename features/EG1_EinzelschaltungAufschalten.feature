@@ -12,7 +12,7 @@ Feature: Einzel- und Gruppenschaltung - Sprechweg Einzelschaltung aufschalten
     Then ist die Schaltfläche Zeile "1", Spalte "1" aktiviert
 
   #ready
-  #@watch
+  @watch
   Scenario: 22B Einzelschaltung fester Sprechweg wechseln
     Given ist der Arbeitsplatz "UKWDisplay/" NvD
     And "Einzelschaltung" ist aktiviert
@@ -34,7 +34,7 @@ Feature: Einzel- und Gruppenschaltung - Sprechweg Einzelschaltung aufschalten
   #@watch
   Scenario: 23A ATIS Kennung wird angezeigt
     Given ist der Arbeitsplatz "UKWDisplay/" NvD
-    When ein Teilnehmer eine SIPNachricht "TX" mit Status "0" an die Funkstelle "1-H-RFD-WARVTA-FKEK-3" mit Kanal "73" sendet
+    When ein Teilnehmer eine SIPNachricht "TX" mit Atis-Kennung "9211034779" an die Funkstelle "1-H-RFD-WARVTA-FKEK-3" mit Kanal "73" sendet
     Then wird die ATIS Kennung in der Schaltfläche angezeigt
 
   # Mock fehlerhaft todo

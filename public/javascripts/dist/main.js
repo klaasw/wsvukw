@@ -53,15 +53,22 @@ $(window).load(function () {
 
 			//Eventlistener an #mithoerenModal binden. Dies dient der Steuerung von dynmischen Inhalten basierend auf der geklickten Kanalschaltfläche
 			$('#mithoerenModal').on('shown.bs.modal', function (event) {
-				const mhanButton     = $(event.relatedTarget).attr('id');
-				const fuerFunkstelle = $(event.relatedTarget).data('funkstelle');
-				const lautstaerke    = parseInt($(event.relatedTarget).attr('data-lautstaerke'));
+
+				const mhanButton     = $(event.relatedTarget);
+				const panel          = mhanButton.parents('.button_panel');
+				const funkstelle = panel.data('aktiv');
+				const lautstaerke    = parseInt(mhanButton.data('lautstaerke'));
+
+				// Kanal-Auswahl nur bei MKA zeigen
+				if ($('.fa-plus', event.relatedTarget).length) {
+					$('#mithoerenModal .panel_kanal').show();
+				}
+				else {
+					$('#mithoerenModal .panel_kanal').hide();
+				}
 
 				//Überschrift anpassen
-				$('#mithoerenModal .modal-title').text('Mithören für Kanal: ' + _self.ApFunkstellen[fuerFunkstelle].channel + ', ' + _self.ApFunkstellen[fuerFunkstelle].sname + ', Komp-ID: ' + fuerFunkstelle);
-
-				//angeklickten MHAN hervorheben
-				$('#mithoerenModal #' + mhanButton).addClass('btn-primary');
+				$('#mithoerenModal .modal-title').text('Mithören für Kanal: ' + _self.ApFunkstellen[funkstelle].channel + ', ' + _self.ApFunkstellen[funkstelle].sname + ', Komp-ID: ' + funkstelle);
 
 				//Initialisierung Slider für Lautstärke im Modal #mithoerenModal
 				$('#sliderModal').slider({
@@ -72,13 +79,12 @@ $(window).load(function () {
 				$('#sliderModal').slider('setValue', lautstaerke);
 
 				$('#sliderModal').on('change', function (ev) {
-
 					//$('#' + geklickteID).prev().text(ev.value.newValue)
-					_self.setzeLautstaerke(fuerFunkstelle, mhanButton, ev.value.newValue);
+					_self.setzeLautstaerke(funkstelle, mhanButton, ev.value.newValue);
 				}); //Slide Event zu
 
 				//Arbeitsplaetze bzw SPAN zum Mithoeren laden
-				$.getJSON('verbindungen/liesVerbindungen?funkstelle=' + fuerFunkstelle + '&aktiveVerbindungen=true', function (data) {
+				$.getJSON('verbindungen/liesVerbindungen?funkstelle=' + funkstelle + '&aktiveVerbindungen=true', function (data) {
 
 					const buttonsFuerArbeitsplaetze = [];
 					const buttonOeffnen             = '<button class="btn btn-default" buttonElement="spanApButtonModal" id="';
@@ -94,29 +100,23 @@ $(window).load(function () {
 							buttonsFuerArbeitsplaetze.push(button);
 						}
 					});
-					$('#mithoerenModal [buttonElement="ap_mithoeren"]').html(buttonsFuerArbeitsplaetze);
+
 					//"SPAN_MHAN" zur Kennung der Schaltvorgangs
-					$('#mithoerenModal [buttonElement="spanApButtonModal"]').attr('onclick', 'schalteKanal(event, this, "SPAN_MHAN")');
-					$.getJSON('verbindungen/liesVerbindungen?geraet=' + mhanButton, function (dataV) {
-						$.each(dataV, function (key, val) {
-							if (val.funkstelle.indexOf('SPAN') > -1 && val.zustand.aufgeschaltet === true) {
-								$('#' + val.funkstelle).addClass('btn-primary');
-							}
-						});
-					});
+					// $('#mithoerenModal [buttonElement="spanApButtonModal"]').attr('onclick', 'schalteKanal(event, this, "SPAN_MHAN")');
+
+					// $.getJSON('verbindungen/liesVerbindungen?geraet=' + mhanButton, function (dataV) {
+					// 	$.each(dataV, function (key, val) {
+					// 		if (val.funkstelle.indexOf('SPAN') > -1 && val.zustand.aufgeschaltet === true) {
+					// 			$('#' + val.funkstelle).addClass('btn-primary');
+					// 		}
+					// 	});
+					// });
 				});
 			});
 
-			//Event zum schliessen an mithoerenModal binden
+			// Event zum schliessen an Modal binden
 			$('#mithoerenModal').on('hidden.bs.modal', function (event) {
-				$('#mithoerenModal [buttonElement="mhanButtonModal"]').removeClass('btn-primary');
 				$('#sliderModal').slider('destroy');
-			});
-
-
-			//Initialisierung Slider für Lautstärke im Modal #mithoerenModal
-			$('#sliderModal').slider({
-				tooltip: 'always'
 			});
 
 			//Optionen fuer Notify festlegen
@@ -292,13 +292,11 @@ $(window).load(function () {
 			switch (sammelStatus) {
 				case '0': // OK
 					$(standortButton)
-						.removeClass('btn-danger')
-						.removeClass('btn-warning')
+						.removeClass('btn-danger btn-warning')
 						.addClass('btn-success');
 					if (FunkstelleGWID) {
 						$('span.label', FunkstelleGWID)
-							.removeClass('label-danger')
-							.removeClass('label-warning')
+							.removeClass('btn-danger btn-warning')
 							.addClass('label-success');
 					}
 					break;
@@ -314,17 +312,31 @@ $(window).load(function () {
 					break;
 				case '2': // Warning
 					$(standortButton)
-						.removeClass('btn-success')
-						.removeClass('btn-danger')
+						.removeClass('btn-success btn-danger')
 						.addClass('btn-warning');
 					if (FunkstelleGWID) {
 						$('span.label', FunkstelleGWID)
-							.removeClass('label-success')
-							.removeClass('label-danger')
+							.removeClass('label-success label-danger')
 							.addClass('label-warning');
 					}
 					break;
 			}
+		},
+
+		/**
+		 * Funkstellen-ID wechseln
+		 * @param element
+		 */
+		setzeFunkstelle(element) {
+
+			if (!$(element).length) {
+				return;
+			}
+
+			const button_anlage = $(element).parents('li');
+			const panel = $(element).parents('.button_panel');
+
+			panel.data('aktiv', button_anlage.attr('id'));
 		},
 
 		/**
@@ -615,7 +627,6 @@ $(window).load(function () {
 								$.notify('Getrennt Mithören: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
 							}
 							else { //nur MHAN Aufschaltungen
-								// $('.button_mhan', button).css('background-color', '#f5f5f5').removeClass('bg-primary');
 								_self.schaltenVisuell(msg.getrennt.$.id, 'mhan', false);
 							}
 							const geraet = msg.getrennt.$.Ap;
@@ -908,19 +919,21 @@ $(window).load(function () {
 			if (enabled) {
 				if (SPANMHAN === 'span') {
 					panel.addClass('panel-primary');
+					$('.button_span', panel).removeClass('btn-default').addClass('btn-primary');
 
 				}
 				else {
-					$('.button_mhan .fa-volume-up', panel).removeClass('hidden')
+					$('.button_span .fa-volume-up', panel).removeClass('hidden');
 				}
 
 			}
 			else {
 				if (SPANMHAN === 'span') {
 					panel.removeClass('panel-primary');
+					$('.button_span', panel).addClass('btn-default').removeClass('btn-primary');
 				}
 				else {
-					$('.button_mhan .fa-volume-up', panel).addClass('hidden')
+					$('.button_span .fa-volume-up', panel).addClass('hidden');
 				}
 			}
 		},
@@ -1033,23 +1046,22 @@ $(window).load(function () {
 		/**
 		 * Lautstärke setzen via RFD Socket
 		 * @param {string} FstID
-		 * @param {string} SPAN_MAHN
+		 * @param {object} mhanButton
 		 * @param {string} level
 		 */
-		setzeLautstaerke: function (FstID, SPAN_MAHN, level) {
+		setzeLautstaerke: function (FstID, mhanButton, level) {
 
 			this.socket.emit('clientMessage', {
 				'FstID':  FstID,
-				'SPAN':   SPAN_MAHN,
+				'SPAN':   mhanButton.attr('id'),
 				'aktion': 'SetzeAudioPegel',
 				'Kanal':  level
 			});
-			$.notify('Lautstaerke: ' + this.ApFunkstellen[FstID].sname + ' ...');
 
-			const button = $('#' + FstID).parent().parent().offsetParent().attr('id');
+			$.notify('Lautstaerke: ' + this.ApFunkstellen[FstID].sname + ' ' + level);
 
-			//Lautstärke in HTML Attribut setzen
-			// $('#' + button + ' button_mhan').attr('data-lautstaerke', level)
+			// Lautstärke in HTML Attribut setzen
+			mhanButton.data('lautstaerke', level);
 		},
 
 		/**
@@ -1058,7 +1070,6 @@ $(window).load(function () {
 		wechselEinzelGruppen: function () {
 
 			const _self = this;
-
 
 			$('#statusWechsel').toggleClass('active');
 
@@ -1297,7 +1308,7 @@ $(window).load(function () {
 
 		schalteMonitorLautsprecher: function () {
 			const _self = this;
-			const span  = _self.ArbeitsplatzGeraete.SPAN01
+			const span  = _self.ArbeitsplatzGeraete.SPAN01;
 			for (const mhan in _self.ArbeitsplatzGeraete.MonitorLautsprecher) {
 				this.schalten(span, _self.ArbeitsplatzGeraete.MonitorLautsprecher[mhan], 'MonitorLautsprecher');
 			}
@@ -1305,7 +1316,7 @@ $(window).load(function () {
 
 		trenneMonitorLautsprecher: function () {
 			const _self = this;
-			const span  = _self.ArbeitsplatzGeraete.SPAN01
+			const span  = _self.ArbeitsplatzGeraete.SPAN01;
 			for (const mhan in _self.ArbeitsplatzGeraete.MonitorLautsprecher) {
 				this.trennen(span, _self.ArbeitsplatzGeraete.MonitorLautsprecher[mhan], 'MonitorLautsprecher');
 			}

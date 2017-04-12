@@ -1,4 +1,4 @@
-Feature: Indienststellung des Arbeitsplatzes - Funkstellenstatus prüfen
+Feature: IB5 Indienststellung des Arbeitsplatzes - Funkstellenstatus prüfen
 
   Als UKW Display Nutzer möchte ich den Status der Funkstellen prüfen,
   um die Verfügbarkeit der Anlagen zu erfahren.
@@ -23,7 +23,7 @@ Feature: Indienststellung des Arbeitsplatzes - Funkstellenstatus prüfen
     And die Schaltfläche Zeile "1", Spalte "3" hat die bestehende Funkstelle "1-H-RFD-DASORT-FKEK-3" aufgeschaltet
 
   #ready
-  @watch
+  #@watch
   Scenario: 12A Wechsel der Funkstelle bei Gruppenschaltung
     Given ist der Arbeitsplatz "UKWDisplay/" NvD
     And "Gruppenschaltung" ist aktiviert
@@ -33,7 +33,7 @@ Feature: Indienststellung des Arbeitsplatzes - Funkstellenstatus prüfen
     Then wird die Schaltfläche Zeile "1", Spalte "3" auf die Funkstelle "1-H-RFD-DASORT-FKEK-3" umgeschaltet
 
   #ready
-  @watch
+  #@watch
   Scenario: 12B Wechsel der Funkstelle bei Einzelschaltung
     Given ist der Arbeitsplatz "UKWDisplay/" NvD
     And "Einzelschaltung" ist aktiviert

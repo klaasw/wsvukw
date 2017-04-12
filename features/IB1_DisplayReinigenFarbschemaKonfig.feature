@@ -1,4 +1,4 @@
-Feature: Indienststellung des Arbeitsplatzes - Display reinigen
+Feature: IB1 Indienststellung des Arbeitsplatzes - Display reinigen
 
   Als UKW-Display Nutzer möchte ich das Display reinigen können und das Farbschema ändern, mit dem Ziel eine problemlose Verwendung der Anwendung garantieren zu können.
   #ready
