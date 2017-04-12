@@ -1,0 +1,169 @@
+extends layout.pug
+block content
+  div.container-fluid
+    div.content
+      div.row
+        div.col-md-12
+          h1 Verbindungen
+          p Achtung diese Verbindungen wurden vom ukwDisplay BüMVt erzeugt. 
+          | Weitere Schaltvorgänge z.B. vom 
+          strong UKW Client der Schnoor
+          | oder via 
+          strong SOAP UI
+          |werden hier nicht auf geführt!
+          p
+      div.row
+        table#verbindungen.display(
+          style='width: 100%'
+        )
+      div.row
+        table#test.table-striped.table-bordered.display.hover(
+          style='width: 100%'
+        )
+
+
+
+
+
+block sidebar
+  +sidebarStatus
+
+
+block append codeTeil1
+
+
+block append codeTeil2
+  script.
+    $('.nav-sidebar li').removeClass('active');
+    $('#zustaende').addClass('active')
+
+    var aktuellerUKWserver = location.protocol + '//' + location.hostname + ':'+ location.port;
+    var socket = io(aktuellerUKWserver);
+
+    var dataSet = []
+
+    var dataSetObj = {}
+      
+    var table = $('#verbindungen').DataTable({
+      dom: "<'row'<'col-sm-2'l><'col-sm-6'B><'col-sm-4'f>>" +
+           "<'row'<'col-sm-12'tr>>" +
+           "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+      data : dataSet,
+      columns : [
+        { data: 'apId',           title : 'Arbeitsplatz'},
+        { data: 'span_mhan',      title : 'SPAN o MHAN'},
+        { data: 'funkstelle' ,    title : 'Funkstelle'},
+        { data: 'aufgeschaltet',  title : 'aufgeschaltet'},
+        { data: 'letzterWechsel', title : 'letzter Wechsel'}
+      ],
+      rowCallback : function (row, data, index) {
+        if (data.aufgeschaltet === false){
+          $(row).addClass('danger')
+        }
+        if (data.aufgeschaltet === true){
+          $(row).addClass('success')
+        }
+      },
+      lengthMenu : [20, 10, 50],
+      order : [[0, 'asc'], [1, 'asc']],
+      buttons : [{
+        text   : 'aufgeschaltet',
+        action : function ( e, dt, node, config ) {
+          filterAufgeschaltet(node[0])
+        }
+      },
+      {
+        text   : 'trenne ausgewählte Verbindungen',
+        action : function ( e, dt, node, config ) {
+          trenneVerbindung()
+        }
+      }],
+      language : {
+          "sEmptyTable":     "Keine Daten in der Tabelle vorhanden",
+          "sInfo":           "_START_ bis _END_ von _TOTAL_ Einträgen",
+          "sInfoEmpty":      "0 bis 0 von 0 Einträgen",
+          "sInfoFiltered":   "(gefiltert von _MAX_ Einträgen)",
+          "sInfoPostFix":    "",
+          "sInfoThousands":    ".",
+          "sLengthMenu":     "_MENU_ Einträge anzeigen",
+          "sLoadingRecords":   "Wird geladen...",
+          "sProcessing":     "Bitte warten...",
+          "sSearch":         "Suchen",
+          "sZeroRecords":    "Keine Einträge vorhanden.",
+          "oPaginate": {
+            "sFirst":      "Erste",
+            "sPrevious":   "Zurück",
+            "sNext":       "Nächste",
+            "sLast":       "Letzte"
+          },
+          "oAria": {
+            "sSortAscending":  ": aktivieren, um Spalte aufsteigend zu sortieren",
+            "sSortDescending": ": aktivieren, um Spalte absteigend zu sortieren"
+            }
+      },
+      select : {
+        style : 'multi'
+      }
+      
+      
+    });
+    
+    $('#verbindungen').addClass('table table-striped table-bordered table-hover')
+    
+    function filterAufgeschaltet(element) {
+      if (element.checked){
+        table.search('').draw();
+        element.checked = false;
+        $(element).removeClass('btn-primary')
+      }
+      else {
+        table.search( 'true' ).draw();
+        element.checked = true;
+        $(element).addClass('btn-primary')
+      }
+    }
+    
+    function trenneVerbindung() {
+      var gewaehlteVerbindungen = table.rows( { selected: true } );
+      console.trace(gewaehlteVerbindungen)
+    }
+
+    function erneuereTabelle(){
+        //dataSet[0].kanal = i++;
+        table.clear().draw('full-hold');
+        table.rows.add(dataSet); // Add new data
+        table.columns.adjust().draw('full-hold');
+        table.buttons().container()
+            .appendTo( '#verbindungen_wrapper .col-sm-6:eq(0)' );
+    }
+
+    $.getJSON('verbindungen/liesVerbindungen?revier=alle', function (data) {
+      $.each(data, function (key, val) {
+
+        item = {
+            apId           : val.ApID,
+            funkstelle     : val.funkstelle,
+            span_mhan      : val.span_mhan,
+            aufgeschaltet  : val.zustand.aufgeschaltet,
+            letzterWechsel : new Date(val.zustand.letzterWechsel).toLocaleString()
+        }
+        dataSet.push(item);
+      })
+
+      erneuereTabelle()
+    })
+    
+    $.getJSON('javascripts/dataTables.german.lang', function (data) {
+      table.language = data;
+      erneuereTabelle()
+    })
+
+
+    //Socket Ereignis Verarbeitung
+    socket.on('ukwMessage', function (msg) {
+      if ('geschaltet' in msg) {
+      
+      }
+      if ('getrennt' in msg) {
+      }
+    })

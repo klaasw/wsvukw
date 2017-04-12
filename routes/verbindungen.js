@@ -23,6 +23,10 @@ router.get('/liesVerbindungen', function (req, res) {
 	if (req.query.revier) {
 		const regex = new RegExp(req.query.revier);
 		selector = {ApID: {$regex: regex}};
+
+		if (req.query.revier === 'alle') {
+			selector = {};
+		}
 	}
 
 	if (req.query.arbeitsplatz) {

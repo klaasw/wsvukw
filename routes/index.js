@@ -110,7 +110,7 @@ router.get('/status', function (req, res) {
 	res.render('technik/status', {gesamteKonfig: konfig});
 });
 
-/* GET UKW Status */
+/* GET UKW Zustand der Geraete */
 router.get('/tabelle', function (req, res) {
 	const konfig = {
 		IpConfig: cfg
@@ -119,6 +119,15 @@ router.get('/tabelle', function (req, res) {
 		//gesamteKonfig: konfig,
 		datei: req.query.dokument
 	});
+
+});
+
+/* GET UKW Verbindungen der Geraete */
+router.get('/verbindungen', function (req, res) {
+	const konfig = {
+		IpConfig: cfg
+	};;
+	res.render('technik/verbindungen', {});
 
 });
 
