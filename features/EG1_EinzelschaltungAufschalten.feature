@@ -1,4 +1,4 @@
-Feature: Einzel- und Gruppenschaltung - Sprechweg Einzelschaltung aufschalten
+Feature: EG1 Einzel- und Gruppenschaltung - Sprechweg Einzelschaltung aufschalten
 
   Als NvD/Na schalte ich einen Einzelkanal
   zum Senden auf, um darüber zu kommunizieren.

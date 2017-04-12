@@ -1,4 +1,4 @@
-Feature: Einzel- und Gruppenschaltung - Sprechweg Gruppenschaltung aufschalten
+Feature: EG2 Einzel- und Gruppenschaltung - Sprechweg Gruppenschaltung aufschalten
 
   Als NvD/Na schalte ich eine Gruppenschaltung auf,
   um über mehrere Kanäle hinweg zu kommunizieren.

@@ -1,4 +1,4 @@
-Feature: Kanalwechsel Mehrkanalanlage - Kanäle für Mehrkanalanlage auswählen
+Feature: KW1 Kanalwechsel Mehrkanalanlage - Kanäle für Mehrkanalanlage auswählen
 
   Als NvD/Na möchte ich die Kanäle für die Mehrkanalanlage auswählen,
   um eine Kommunikation über verschiedene Kanäle zu führen.

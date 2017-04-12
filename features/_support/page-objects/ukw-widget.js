@@ -138,6 +138,11 @@ widgets.content = {
             browser.elementIdClick(element.ELEMENT).value;
         }
     },
+    //gibt die Anzahl aufgeschalteter Schaltflächen zurück
+    getAllActivePanel: function(){
+        var elements = browser.elements(".panel-primary");
+        return (elements.value).length;
+    },
     //wählt eine Funkstation einer Schaltfläche aus
     setFunkstation: function(id){
         var id = "li[id='"+ id+"'] div.radio";

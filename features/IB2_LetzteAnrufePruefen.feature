@@ -1,4 +1,4 @@
-Feature: Indienststellung des Arbeitsplatzes - Letzte Anrufe prüfen
+Feature: IB2 ndienststellung des Arbeitsplatzes - Letzte Anrufe prüfen
 
   Als UKW Display Nutzer möchte ich die letzten Anrufe einsehen, um über vergangene Kommunikationen informiert zu sein.
   #@watch

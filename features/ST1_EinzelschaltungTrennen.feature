@@ -1,10 +1,10 @@
-Feature: Schalten/Trennen von Sprechwegen - Fester Sprechweg Einzelschaltung
+Feature: ST1 Schalten/Trennen von Sprechwegen - Fester Sprechweg Einzelschaltung
 
   Als NvD/Na schalte ich einen festen Sprechweg bei Einzelschaltung auf,
   mit dem Ziel über diesen Sprechweg mit einem Teilnehmer eines Kanals zu kommunizieren.
 
   #ready
-  @watch
+  #@watch
   Scenario: 32 Fester Sprechweg für Einzelschaltung trennen
     Given ist der Arbeitsplatz "UKWDisplay/" NvD
     And "Einzelschaltung" ist aktiviert

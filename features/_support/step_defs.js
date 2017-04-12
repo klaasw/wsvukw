@@ -248,6 +248,7 @@ module.exports = function() {
         widgets.header.stateServer();
     });
 
+
     this.Then(/^ist der Status der Schaltfläche "([^"]*)"$/, function (arg1) {
         // Write code here that turns the phrase above into concrete actions
         return 'pending';
@@ -286,6 +287,10 @@ module.exports = function() {
     this.Then(/^dann wird die Kanalnummer nicht geändert$/, function () {
         // Write code here that turns the phrase above into concrete actions
         return 'pending';
+    });
+
+    this.Then(/^ist keine Schaltfläche aktiv$/, function () {
+        expect(widgets.content.getAllActivePanel()).toBe(0);
     });
 
     this.Then(/^wird die Schaltfläche Zeile "([^"]*)", Spalte "([^"]*)" auf die Funkstelle "([^"]*)" umgeschaltet$/, function (row, column,station_id) {

@@ -1,4 +1,4 @@
-Feature: Kanalwechsel Mehrkanalanlage - Standardeinstellung wiederherstellen
+Feature: KW2 Kanalwechsel Mehrkanalanlage - Standardeinstellung wiederherstellen
 
   Als NvD/Na möchte ich die Standardeinstellungen der Mehrkanalanlage meines Arbeitsplatzes wieder herstellen,
   um definierte Arbeitsbedingungen bspw. bei Schichtwechsel gewährleisten zu können.
