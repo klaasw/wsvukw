@@ -292,13 +292,11 @@ $(window).load(function () {
 			switch (sammelStatus) {
 				case '0': // OK
 					$(standortButton)
-						.removeClass('btn-danger')
-						.removeClass('btn-warning')
+						.removeClass('btn-danger btn-warning')
 						.addClass('btn-success');
 					if (FunkstelleGWID) {
 						$('span.label', FunkstelleGWID)
-							.removeClass('label-danger')
-							.removeClass('label-warning')
+							.removeClass('btn-danger btn-warning')
 							.addClass('label-success');
 					}
 					break;
@@ -314,13 +312,11 @@ $(window).load(function () {
 					break;
 				case '2': // Warning
 					$(standortButton)
-						.removeClass('btn-success')
-						.removeClass('btn-danger')
+						.removeClass('btn-success btn-danger')
 						.addClass('btn-warning');
 					if (FunkstelleGWID) {
 						$('span.label', FunkstelleGWID)
-							.removeClass('label-success')
-							.removeClass('label-danger')
+							.removeClass('label-success label-danger')
 							.addClass('label-warning');
 					}
 					break;
@@ -631,7 +627,6 @@ $(window).load(function () {
 								$.notify('Getrennt Mithören: <br>' + _self.ApFunkstellen[msg.getrennt.$.id].sname);
 							}
 							else { //nur MHAN Aufschaltungen
-								// $('.button_mhan', button).css('background-color', '#f5f5f5').removeClass('bg-primary');
 								_self.schaltenVisuell(msg.getrennt.$.id, 'mhan', false);
 							}
 							const geraet = msg.getrennt.$.Ap;
@@ -924,19 +919,21 @@ $(window).load(function () {
 			if (enabled) {
 				if (SPANMHAN === 'span') {
 					panel.addClass('panel-primary');
+					$('.button_span', panel).removeClass('btn-default').addClass('btn-primary');
 
 				}
 				else {
-					$('.button_mhan .fa-volume-up', panel).removeClass('hidden')
+					$('.button_span .fa-volume-up', panel).removeClass('hidden');
 				}
 
 			}
 			else {
 				if (SPANMHAN === 'span') {
 					panel.removeClass('panel-primary');
+					$('.button_span', panel).addClass('btn-default').removeClass('btn-primary');
 				}
 				else {
-					$('.button_mhan .fa-volume-up', panel).addClass('hidden')
+					$('.button_span .fa-volume-up', panel).addClass('hidden');
 				}
 			}
 		},
