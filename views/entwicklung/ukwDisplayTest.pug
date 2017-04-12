@@ -67,24 +67,13 @@ block content
 										)
 											each val2, index2 in val
 												if val2.length > 1
-													li(
-													class='button_anlage' + (index2 + 1)
+													div.funkstelle.list-group-item(
+													class=' button_anlage' + (index2 + 1)
 													id=val2
 													geraetStatus='-1'
 													)
-														div.radio
-															label.radio-custom(
-															data-initialize='radio'
-															)
-																input.sr-only.input-lg(
-																type='radio',
-																name='funkstelle' + index,
-																value='1',
-																onclick='WSV.Display.setzeFunkstelle(this)',
-																checked= index2 == 0
-																)
-																span #{val2}&nbsp
-																	span.label.label-default ??
+														span #{val2}&nbsp
+															span.label.label-default ??
 								div.panel-body(
 								onclick='WSV.Display.schalteKanal(event,this,"SPAN")',
 								)

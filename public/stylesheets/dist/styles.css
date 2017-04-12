@@ -7608,7 +7608,8 @@ body, html {
   transition: all .3s ease-out;
 }
 .row .panel .dropdown .dropdown-menu {
-  width: 250px;
+  margin: 0;
+  padding: 0;
 }
 .row .panel .panel-heading {
   padding: 0;
