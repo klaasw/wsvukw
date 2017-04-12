@@ -90,10 +90,8 @@
 						}
 					});
 
-					$('#mithoerenModal [buttonElement="ap_mithoeren"]').html(buttonsFuerArbeitsplaetze);
-
 					//"SPAN_MHAN" zur Kennung der Schaltvorgangs
-					$('#mithoerenModal [buttonElement="spanApButtonModal"]').attr('onclick', 'schalteKanal(event, this, "SPAN_MHAN")');
+					// $('#mithoerenModal [buttonElement="spanApButtonModal"]').attr('onclick', 'schalteKanal(event, this, "SPAN_MHAN")');
 
 					// $.getJSON('verbindungen/liesVerbindungen?geraet=' + mhanButton, function (dataV) {
 					// 	$.each(dataV, function (key, val) {
