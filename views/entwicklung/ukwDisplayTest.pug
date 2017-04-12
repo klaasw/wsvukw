@@ -37,20 +37,24 @@ block content
 						</div>
 						<div class="row">
 
+					- kompomentenID = val[0] ? val[0] : '---------------------';
+					- geraet = kompomentenID.substr(15,6);
+					- standort = kompomentenID.substr(8,6);
+					- kurzname = gesamteKonfig.FunkstellenDetails[val[0]].sname
+
+					if gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]]
+						- mhan_lautsprecher=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0]]].Lautsprecher
+
 					div.col-md-2
 						div.panel.button_panel.panel-default(
 						id=index + 'panel'
+						data-aktiv=kompomentenID
 						class=(val[0] == 'frei' ? 'hidden' : '')
 						)
 							div.button_flaeche
 								div.panel-heading
 									div.dropdown
-										- kompomentenID = val[0] ? val[0] : '---------------------';
-										- geraet = kompomentenID.substr(15,6);
-										- standort = kompomentenID.substr(8,6);
-										- kurzname = gesamteKonfig.FunkstellenDetails[val[0]].sname
-										button.btn.btn-default.button_standort.button_span(
-										data-aktiv=kompomentenID
+										button.btn.button_standort(
 										type='button'
 										data-toggle='dropdown'
 										aria-haspopup='true'
@@ -76,20 +80,22 @@ block content
 																type='radio',
 																name='funkstelle' + index,
 																value='1',
+																onclick='WSV.Display.setzeFunkstelle(this)',
 																checked= index2 == 0
 																)
 																span #{val2}&nbsp
 																	span.label.label-default ??
-								div.panel-body
+								div.panel-body(
+								onclick='WSV.Display.schalteKanal(event,this,"SPAN")',
+								)
 									h2.text-center.button_kanalNr(
-									onclick='WSV.Display.schalteKanal(event,this,"SPAN")',
 									id=index
 									) #{gesamteKonfig.FunkstellenDetails[val[0]].channel}
 									div.text-center.atis(
 									)
 								div.panel-footer
-									div.btn.btn-default.button_mhan(
-										id=gesamteKonfig.ArbeitsplatzGeraete[gesamteKonfig.MhanZuordnung[val[0].Lautsprecher]],
+									div.btn.btn-default.button_span(
+										id=mhan_lautsprecher,
 										class=(val[0] == 'frei' ? 'hidden' : ''),
 										type='button',
 										data-toggle='modal',
@@ -97,7 +103,6 @@ block content
 										data-funkstelle=val[0],
 										data-lautstaerke='100'
 										)
-										span.lautstaerke 100
 										i.fa.fa-volume-up.hidden(aria-hidden="true")
 
 										if gesamteKonfig.FunkstellenDetails[val[0]].MKA
@@ -123,16 +128,6 @@ block content
 								data-slider-step='10'
 								data-slider-value=''
 								)
-						div.panel.panel-default
-							div.panel-heading Auf diesen Kanal aufgeschaltete Arbeitsplätze. Wähle zum Mithören...
-							div.panel-content
-								div.btn.btn-group.button_ap_mithoeren(
-								data-buttonElement = 'ap_mithoeren'
-								)
-									button.btn.btn-default JA_NA
-									button.btn.btn-default JA_Lotse1
-									button.btn.btn-default JA_Lotse2
-									button.btn.btn-default JA_Lotse3
 
 						div.panel.panel-default.panel_kanal
 							p

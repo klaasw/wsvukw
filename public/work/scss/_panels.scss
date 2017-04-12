@@ -38,14 +38,6 @@
       padding:                    10px 0;
     }
 
-    .button_span {
-      border-top-left-radius:  0;
-      border-top-right-radius: 0;
-      border-bottom-width:     0;
-      border-left-width:       0;
-      border-right-width:      0;
-    }
-
     .button_kanalNr {
     }
 
@@ -68,17 +60,15 @@
       padding: 0;
 
       .button_standort {
-        padding:       0;
-        width:         100%;
-        height:        34px;
-        border-radius: 2px 2px 0 0;
-        //border-right-width: 0;
-        //border-left-width:  0;
-        //border-top-width:   0;
-
-        //&.label-success {
-        //
-        //}
+        padding:                 0;
+        width:                   100%;
+        height:                  34px;
+        border-radius:           2px 2px 0 0;
+        border-top-left-radius:  0;
+        border-top-right-radius: 0;
+        border-bottom-width:     0;
+        border-left-width:       0;
+        border-right-width:      0;
       }
     }
 
@@ -116,25 +106,19 @@
         border-bottom-right-radius: 2px;
       }
 
-      .button_mhan {
+      .button_span {
         font-size:                  0.9em;
         position:                   relative;
         vertical-align:             top;
         padding:                    0 0 0 20px;
-        width:                      50%;
+        width:                      100%;
         height:                     100%;
         line-height:                40px;
-        border-left-width:          0;
-        border-top-width:           0;
-        border-bottom-width:        0;
+        border-width:               0;
         border-top-left-radius:     0;
         border-top-right-radius:    0;
         border-bottom-right-radius: 0;
         border-bottom-left-radius:  2px;
-
-        @media (max-width: $breakpoint_lg) {
-          width: 100%;
-        }
 
         .fa-volume-up {
           position: absolute;
