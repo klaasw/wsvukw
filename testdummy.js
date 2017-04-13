@@ -6,7 +6,6 @@ const NodeWebSocket = require('jssip-node-websocket');
 
 db.verbindeDatenbank(function (db) {
 
-
 	// Register callbacks to desired call events
 	const eventHandlers = {
 		succeeded(e) {
@@ -21,19 +20,20 @@ db.verbindeDatenbank(function (db) {
 		eventHandlers
 	};
 
-	//let socket = new JsSIP.WebSocketInterface('ws://10.162.1.65:10080');
-	const socket =  new NodeWebSocket('ws://10.162.1.65:10888');
+	let socket = new NodeWebSocket('ws://127.0.0.1:10080');
 
 	let ua = new JsSIP.UA(
 		{
-			sockets:      [socket],
-			uri:          'sip:rfd@10.162.1.65:5060',
-			password:     'rfd'
+			sockets:  [socket],
+			uri:      'rfd@127.0.0.1:5060',
+			password: 'rfd',
+			register: true
 		});
 
 	ua.start();
 
-	ua.sendMessage('sip:rfd@10.22.30.101:5060', '<"TX" "id"="1-H-RFD-WARVTA-FKEK-3" "state"="0" "atis"="9211034779" "channel"="73"/>', options);
-	// ua.call('sip:rfd@10.22.30.101:5060', options);
+	ua.on('connected', function () {
+		ua.sendMessage('sip:rfd@127.0.0.1:5060', '<"TX" "id"="1-H-RFD-WARVTA-FKEK-3" "state"="0" "atis"="9211034779" "channel"="73"/>', options);
+	});
 
 });
