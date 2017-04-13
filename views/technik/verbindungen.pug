@@ -7,10 +7,10 @@ block content
           h1 Verbindungen
           p Achtung diese Verbindungen wurden vom ukwDisplay BüMVt erzeugt. 
           | Weitere Schaltvorgänge z.B. vom 
-          strong UKW Client der Schnoor
+          strong UKW Client der Schnoor 
           | oder via 
-          strong SOAP UI
-          |werden hier nicht auf geführt!
+          strong SOAP UI 
+          | werden hier nicht auf geführt!
           p
       div.row
         table#verbindungen.display(
@@ -51,6 +51,7 @@ block append codeTeil2
       data : dataSet,
       columns : [
         { data: 'apId',           title : 'Arbeitsplatz'},
+        { data: 'span_mhanApNr',  title : 'Nr'},
         { data: 'span_mhan',      title : 'SPAN o MHAN'},
         { data: 'funkstelle' ,    title : 'Funkstelle'},
         { data: 'aufgeschaltet',  title : 'aufgeschaltet'},
@@ -124,46 +125,63 @@ block append codeTeil2
     }
     
     function trenneVerbindung() {
-      var gewaehlteVerbindungen = table.rows( { selected: true } );
-      console.trace(gewaehlteVerbindungen)
+      var gewaehlteVerbindungen = table.rows( { selected: true } ).data();
+      
+      for (let i = 0; i < gewaehlteVerbindungen.length; i++) {
+        socket.emit('clientMessage', {
+          'FstID':         gewaehlteVerbindungen[i].funkstelle,
+          'ApID':          gewaehlteVerbindungen[i].apId,
+          'SPAN':          gewaehlteVerbindungen[i].span_mhan,
+          'aktion':        'trennenEinfach',
+          'span_mhanApNr': gewaehlteVerbindungen[i].span_mhanApNr
+        });
+      }
     }
 
     function erneuereTabelle(){
-        //dataSet[0].kanal = i++;
-        table.clear().draw('full-hold');
-        table.rows.add(dataSet); // Add new data
-        table.columns.adjust().draw('full-hold');
-        table.buttons().container()
-            .appendTo( '#verbindungen_wrapper .col-sm-6:eq(0)' );
+        table
+          .clear()
+          .rows.add(dataSet) // Add new data
+          .draw();
     }
 
-    $.getJSON('verbindungen/liesVerbindungen?revier=alle', function (data) {
-      $.each(data, function (key, val) {
+    function ladeVerbindungen() {
+      dataSet = [];
+      $.getJSON('verbindungen/liesVerbindungen?revier=alle', function (data) {
+        $.each(data, function (key, val) {
 
-        item = {
+          item = {
             apId           : val.ApID,
             funkstelle     : val.funkstelle,
             span_mhan      : val.span_mhan,
             aufgeschaltet  : val.zustand.aufgeschaltet,
-            letzterWechsel : new Date(val.zustand.letzterWechsel).toLocaleString()
-        }
-        dataSet.push(item);
+            span_mhanApNr  : val.span_mhanApNr,
+            letzterWechsel : new Date(val.zustand.letzterWechsel).toLocaleString(),
+            
+          }
+          dataSet.push(item);
+        })
+
+        erneuereTabelle()
       })
-
-      erneuereTabelle()
-    })
+    }
     
-    $.getJSON('javascripts/dataTables.german.lang', function (data) {
-      table.language = data;
-      erneuereTabelle()
-    })
-
+    //$.getJSON('javascripts/dataTables.german.lang', function (data) {
+    //  table.language = data;
+    //  erneuereTabelle()
+    //})
 
     //Socket Ereignis Verarbeitung
     socket.on('ukwMessage', function (msg) {
       if ('geschaltet' in msg) {
-      
+        setTimeout(function() {ladeVerbindungen()}, 100)
+        //ladeVerbindungen()
+        
       }
       if ('getrennt' in msg) {
+        setTimeout(function() {ladeVerbindungen()}, 100)
+        //ladeVerbindungen()
       }
     })
+    
+    ladeVerbindungen();

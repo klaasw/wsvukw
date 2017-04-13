@@ -948,14 +948,16 @@
 				if (mhan[funkstelle].hasOwnProperty('festAufgeschaltet')) {
 					// console.log('festAufgeschaltet: ' + funkstelle);
 					if (mhan[funkstelle].festAufgeschaltet === true) {
-						this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle].Lautsprecher], mhan[funkstelle].Lautsprecher, false);
+						// Zur Sicherung der Verbindungen auch in Datenbank speichern
+						this.schalten(funkstelle, _self.ArbeitsplatzGeraete[mhan[funkstelle].Lautsprecher], mhan[funkstelle].Lautsprecher, true);
 						//this.ApFunkstellen[funkstelle].aufgeschaltet = true;
 					}
 				}
 				else if (mhan[funkstelle] === 'MonitorLautsprecher') {
 					// console.log('MonitorLautsprecher: ' + funkstelle);
 					for (let i = 0; i < _self.ArbeitsplatzGeraete.MonitorLautsprecher.length; i++) {
-						this.schalten(funkstelle, _self.ArbeitsplatzGeraete.MonitorLautsprecher[i], mhan[funkstelle], false);
+						// Zur Sicherung der Verbindungen auch in Datenbank speichern
+						this.schalten(funkstelle, _self.ArbeitsplatzGeraete.MonitorLautsprecher[i], mhan[funkstelle], true);
 					}
 				}
 				else {
