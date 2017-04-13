@@ -8,7 +8,7 @@ const log    = require('./log.js'); // Modul fuer verbessertes Logging
 const socket = require('./socket.js');
 
 const db = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
-
+const probe   = require('pmx').probe(); //Modul zum Monitoren von Leistungsdaten
 const request = require('request'); //Modul zu Abfrage von WebServices
 const xml2js  = require('xml2js'); // zum Konvertieren von XML zu JS
 const parser  = new xml2js.Parser({
@@ -16,6 +16,11 @@ const parser  = new xml2js.Parser({
 }); // Parserkonfiguration
 
 const FILENAME = __filename.slice(__dirname.length + 1);
+
+const meterRfdLatenz = probe.histogram({
+	name        : 'RFD WebServices Latenz',
+	measurement : 'mean'
+});
 
 const Funkstellen = {};
 
@@ -38,6 +43,7 @@ exports.leseRfdTopologie = function (callback) {
 	};
 
 	request(parameterRfdWebService, function (error, response, body) {
+		const meterRfdLatenzBeginn = process.hrtime();
 		if (error) {
 			log.error(FILENAME + ' RFD WebService Topologie nicht erreichbar ' + error);
 			// TODO: Leseversuch wiederholen, muss spaetestens dann existieren, wenn ein Client sich connecten will
@@ -49,6 +55,8 @@ exports.leseRfdTopologie = function (callback) {
 		//log.debug(body)
 		//Response paarsen
 		else { //Ausfuehren wenn RFD erreichbar
+			const meterRfdLatenzEnde = process.hrtime(meterRfdLatenzBeginn);
+			meterRfdLatenz.update(meterRfdLatenzEnde[1]/1000000)
 			parser.parseString(body, function (err, result) {
 				if (result !== undefined) {
 					log.info(FILENAME + ' LeseTopologie webservice response: ' + JSON.stringify(result).substring(1, 100) + '...');
@@ -237,6 +245,7 @@ exports.findeFstNachId = function (Id) {
  * @param {string} ApID
  */
 exports.sendeWebServiceNachricht = function (ipAddr, Fst, Span_Mhan, aktion, Kanal, span_mhanApNr, ApID) {
+	const meterRfdLatenzBeginn = process.hrtime();
 	const parameterRfdWebService = {
 		url:     cfg.urlRFDWebservice,
 		method:  'POST',
@@ -302,6 +311,8 @@ exports.sendeWebServiceNachricht = function (ipAddr, Fst, Span_Mhan, aktion, Kan
 
 		}
 		else {
+			const meterRfdLatenzEnde = process.hrtime(meterRfdLatenzBeginn);
+			meterRfdLatenz.update(meterRfdLatenzEnde[1]/1000000)
 			log.debug(FILENAME + ' parsing response');
 			parser.parseString(body, function (err, result) {
 				//log.debug(FILENAME + ' result  ' + JSON.stringify(result));

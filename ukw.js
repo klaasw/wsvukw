@@ -14,6 +14,7 @@ const JsSIP   = require('jssip'); //Javascript SIP Uaser Agent
 const request = require('request'); //Modul zu Abfrage von WebServices
 const xml2js  = require('xml2js'); // zum Konvertieren von XML zu JS
 const parser  = new xml2js.Parser({explicitRoot: true});// Parserkonfiguration
+const probe   = require('pmx').probe(); //Modul zum Monitoren von Leistungsdaten
 
 const log    = require('./log.js');
 const cfg    = require('./cfg.js');
@@ -22,6 +23,11 @@ const db     = require('./datenbank.js');
 const tools  = require('./tools.js');
 
 const FILENAME = __filename.slice(__dirname.length + 1);
+
+const meterSip = probe.meter({
+	name      : 'SIP Messages/sek',
+	samples   : 1  // This is per second. To get per min set this value to 60
+});
 
 /* TODO:
  *  - Ungueltige Nutzer abfangen
@@ -178,6 +184,7 @@ ua.on('disconnected', function (e) {
 });
 
 ua.on('newMessage', function (e) {
+	meterSip.mark();
 	log.info(FILENAME + ' Funktion: newSipMessage Richtung: ' + e.message.direction + ' Inhalt: ' + e.message.request.body);
 	//log.debug('SIP Body: '+e.message.request.body)
 	//Sende WebSocket Nachricht beim Senden und Empfangen. Richtung noch einbauen
