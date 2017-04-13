@@ -2,7 +2,7 @@
 
 const db            = require('./datenbank.js');
 const JsSIP         = require('jssip');
-// const NodeWebSocket = require('jssip-node-websocket');
+const NodeWebSocket = require('jssip-node-websocket');
 
 db.verbindeDatenbank(function (db) {
 
@@ -21,12 +21,13 @@ db.verbindeDatenbank(function (db) {
 		eventHandlers
 	};
 
-	let socket = new JsSIP.WebSocketInterface('ws://10.22.30.101:8088');
+	//let socket = new JsSIP.WebSocketInterface('ws://10.162.1.65:10080');
+	const socket =  new NodeWebSocket('ws://10.162.1.65:10888');
 
 	let ua = new JsSIP.UA(
 		{
 			sockets:      [socket],
-			uri:          'sip:rfd@10.22.30.101:5060',
+			uri:          'sip:rfd@10.162.1.65:5060',
 			password:     'rfd'
 		});
 
