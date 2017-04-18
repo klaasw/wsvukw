@@ -3,7 +3,7 @@
 const db      = require('./datenbank.js'); // Module zur Verbindung zur Datenbank
 const cfg     = require('./cfg.js');
 const log     = require('./log.js');
-const rfd     = require('./rfd.js');
+const rfd     = require('./rfdWebService.js');
 const tools   = require('./tools.js');
 const util    = require('util');
 const request = require('request'); //Modul zu Abfrage von WebServices

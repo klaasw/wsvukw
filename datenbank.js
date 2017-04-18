@@ -2,12 +2,12 @@
 /**
  * Modul zur Herstellung der Verbindung zur Mongo Datenbank
  *
- * @Author: Klaas Wuellner && Felix Stolle
+ * @author: Klaas Wuellner (WSV) && Felix Stolle (init)
  *
  * Anpassung 14.12.16: Timeouts auskommentiert, nur in pruefeLokaleVerbindung/
  * VTR lokale DB auskommentiert -> bei Ausfall nodeJS muesste auch Mongo primary
  * wechseln.
- * @Author: Klaas Wuellner
+ *
  *
  */
 

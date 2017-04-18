@@ -8,13 +8,13 @@ const tools   = require('../tools.js');
 
 const cfg = require('../cfg.js');
 const log = require('../log.js'); // Modul fuer verbessertes Logging
-const rfd = require('../rfd.js');
+const rfd = require('../rfdWebService.js');
 
 const db = require('../datenbank.js');
 
 const FILENAME = __filename.slice(__dirname.length + 1);
 
-const ukw = require('../ukw.js');
+const rfdSIP = require('../rfdSIP.js');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -309,7 +309,7 @@ router.get('/mockmessage', function (req, res) {
 	//log.debug(FILENAME + ' mockmessage von IP: ' + tools.filterIP(req.ip) + ", message: "+ require('util').inspect( req) );
 	const msgText = req.query.messageText;
 	log.debug(FILENAME + ' mockmessage messageText: ' + msgText);
-	ukw.sendeSipNachricht(msgText, function (result, error) {
+	rfdSIP.sendeSipNachricht(msgText, function (result, error) {
 		if (result == 'OK') {
 			res.send('Abgesendet: ' + error.replace('<', '').replace('/>', ''));
 		}

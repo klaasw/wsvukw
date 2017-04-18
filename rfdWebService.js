@@ -364,3 +364,49 @@ exports.sendeWebServiceNachricht = function (ipAddr, Fst, Span_Mhan, aktion, Kan
 		}// ELse ende
 	}); // Request ende
 };
+
+/**
+ * Funktion zur Erreichbarkeit des RFD WebServices
+ * Das Ergebnis wird einmal als
+ * - statusMessage an Clients (Browser) und
+ * - serverMessage an Clients (andere DUE Server)
+ * versendet. @link socket.js:starteDueServerUberwachung
+ */
+function pruefeRfdWS () {
+	// Pruefung lokaler VTR
+	request(cfg.urlRFDWebservice, {timeout: 2000}, function (error, response, body) {
+
+		if (!error && response.statusCode == 200) {
+			log.debug(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + response.statusCode + ' OK');
+			// An Clients
+			socket.sendeWebsocketNachrichtStatus({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
+			// An Server
+			socket.sendeWebsocketNachrichtServer({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}});
+			db.schreibeZustand({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'OK'}})
+			return true;
+		}
+		else {
+			log.error(FILENAME + ' Funktion: pruefeRfdWS URL: ' + cfg.urlRFDWebservice + ' ' + error);
+			// An Clients
+			socket.sendeWebsocketNachrichtStatus({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'Error'}});
+			// An Server
+			socket.sendeWebsocketNachrichtServer({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'Error'}});
+			db.schreibeZustand({dienst: 'RFD', status: {URL: cfg.urlRFDWebservice, Status: 'Error', StatusMsg: error}})
+			return false;
+		}
+	})
+};
+
+/**
+ * Starte RFD Erreichbarkeit. Pruefung des RFD WebService
+ */
+if (cfg.intervall !== 0) {
+	// Setze Intervall fuer Pruefung
+	log.info(FILENAME + ' ...starte Pruefung RFD Erreichbarkeit mit Interval: ' + cfg.intervall);
+	const Intervall = setInterval(function () {
+		pruefeRfdWS()
+	}, cfg.intervall);
+}
+else {
+	log.warn(FILENAME + ' kein Pruefung RFD Erreichbarkeit mit Interval: ' + cfg.intervall)
+}
