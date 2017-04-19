@@ -248,14 +248,14 @@
 
 			switch (Zustand) {
 				case 'OK':
-					Funkstelle.data('geraetStatus', '0');
+					Funkstelle.data('geraetstatus', '0');
 					$('span.label', Funkstelle)
 						.removeClass('label-danger')
 						.addClass('label-success')
 						.text(Zustand);
 					break;
 				case 'Error':
-					Funkstelle.data('geraetStatus', '1');
+					Funkstelle.data('geraetstatus', '1');
 					$('span.label', Funkstelle)
 						.removeClass('label-success')
 						.addClass('label-danger')
@@ -347,11 +347,11 @@
 
 			switch (Zustand) {
 				case 'OK':
-					geraet.data('geraetStatus', '0');
+					geraet.data('geraetstatus', '0');
 					$(geraet).removeClass('label-danger').addClass('label-success').text(Zustand);
 					break;
 				case 'Error':
-					geraet.data('geraetStatus', '1');
+					geraet.data('geraetstatus', '1');
 					$(geraet).removeClass('label-success').addClass('label-danger').text(Zustand);
 
 
@@ -763,8 +763,8 @@
 				const geklickteFstReserve = $('.button_anlage2', panel);
 
 				//Status der Funkstellen aus HTML Elementen auslesen
-				const geklickteFstHauptStatus   = geklickteFstHaupt.data('geraetStatus');
-				const geklickteFstReserveStatus = geklickteFstReserve.data('geraetStatus');
+				const geklickteFstHauptStatus   = geklickteFstHaupt.data('geraetstatus');
+				const geklickteFstReserveStatus = geklickteFstReserve.data('geraetstatus');
 
 				if (geklickteFstHaupt.attr('id').indexOf('FKGW') > -1) {
 					geklickteFstHaupt = this.ApFunkstellen[geklickteFstHaupt].gwid;
@@ -806,8 +806,8 @@
 				console.log(buttonFst);
 
 				//Status der Funkstellen
-				const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).data('geraetStatus');
-				const geklickteFstReserveStatus = $('#' + geklickteFstReserve).data('geraetStatus');
+				const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).data('geraetstatus');
+				const geklickteFstReserveStatus = $('#' + geklickteFstReserve).data('geraetstatus');
 
 				this.schalteKanalID(geklickteFstHaupt, geklickteMHAN, 'MHAN');
 			}

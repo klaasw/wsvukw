@@ -259,14 +259,14 @@ $(window).load(function () {
 
 			switch (Zustand) {
 				case 'OK':
-					Funkstelle.data('geraetStatus', '0');
+					Funkstelle.data('geraetstatus', '0');
 					$('span.label', Funkstelle)
 						.removeClass('label-danger')
 						.addClass('label-success')
 						.text(Zustand);
 					break;
 				case 'Error':
-					Funkstelle.data('geraetStatus', '1');
+					Funkstelle.data('geraetstatus', '1');
 					$('span.label', Funkstelle)
 						.removeClass('label-success')
 						.addClass('label-danger')
@@ -358,11 +358,11 @@ $(window).load(function () {
 
 			switch (Zustand) {
 				case 'OK':
-					geraet.data('geraetStatus', '0');
+					geraet.data('geraetstatus', '0');
 					$(geraet).removeClass('label-danger').addClass('label-success').text(Zustand);
 					break;
 				case 'Error':
-					geraet.data('geraetStatus', '1');
+					geraet.data('geraetstatus', '1');
 					$(geraet).removeClass('label-success').addClass('label-danger').text(Zustand);
 
 
@@ -774,8 +774,8 @@ $(window).load(function () {
 				const geklickteFstReserve = $('.button_anlage2', panel);
 
 				//Status der Funkstellen aus HTML Elementen auslesen
-				const geklickteFstHauptStatus   = geklickteFstHaupt.data('geraetStatus');
-				const geklickteFstReserveStatus = geklickteFstReserve.data('geraetStatus');
+				const geklickteFstHauptStatus   = geklickteFstHaupt.data('geraetstatus');
+				const geklickteFstReserveStatus = geklickteFstReserve.data('geraetstatus');
 
 				if (geklickteFstHaupt.attr('id').indexOf('FKGW') > -1) {
 					geklickteFstHaupt = this.ApFunkstellen[geklickteFstHaupt].gwid;
@@ -817,8 +817,8 @@ $(window).load(function () {
 				console.log(buttonFst);
 
 				//Status der Funkstellen
-				const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).data('geraetStatus');
-				const geklickteFstReserveStatus = $('#' + geklickteFstReserve).data('geraetStatus');
+				const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).data('geraetstatus');
+				const geklickteFstReserveStatus = $('#' + geklickteFstReserve).data('geraetstatus');
 
 				this.schalteKanalID(geklickteFstHaupt, geklickteMHAN, 'MHAN');
 			}
@@ -1442,7 +1442,7 @@ $(window).load(function () {
 		sammelStatusAendernSpanMhan: function (elementeListe) {
 			let sammelStatus = '0';
 			$(elementeListe).each(function () {
-				if ($(this).data('geraetStatus') === '1') {
+				if ($(this).data('geraetstatus') === '1') {
 					sammelStatus = '1';
 				}
 			});
@@ -1450,12 +1450,12 @@ $(window).load(function () {
 		},
 
 		/**
-		 * Attribut 'geraetStatus' eines HTML Elements pruefen
+		 * Attribut 'geraetstatus' eines HTML Elements pruefen
 		 * @param  {Object} element Einzelnes HTML Element
 		 * @return {Number} Integer fuer Zustand 1=Fehler, 0=OK
 		 */
-		pruefeGeraetStatus: function (element) {
-			if (element.data('geraetStatus') === '1' || element.data('geraetStatus') === '-1') {
+		pruefegeraetstatus: function (element) {
+			if (element.data('geraetstatus') === '1' || element.data('geraetstatus') === '-1') {
 				return 1;
 			}
 
@@ -1489,17 +1489,17 @@ $(window).load(function () {
 
 				if ($(this).attr('id').indexOf('FKGW') > -1) {
 					anzahlFkgw += 1;
-					anzahlFkgwError += _self.pruefeGeraetStatus($(this));
+					anzahlFkgwError += _self.pruefegeraetstatus($(this));
 					sammelStatusFkgw = anzahlFkgw - anzahlFkgwError;
 				}
 				if ($(this).attr('id').indexOf('GWST') > -1) {
 					anzahlGwst += 1;
-					anzahlGwstError += _self.pruefeGeraetStatus($(this));
+					anzahlGwstError += _self.pruefegeraetstatus($(this));
 					sammelStatusGwst = anzahlGwst - anzahlGwstError;
 				}
 				if ($(this).attr('id').indexOf('FKEK') > -1 || $(this).attr('id').indexOf('FKMK') > -1) {
 					anzahlFkek += 1;
-					anzahlFkekError += _self.pruefeGeraetStatus($(this));
+					anzahlFkekError += _self.pruefegeraetstatus($(this));
 					sammelStatusFkek = anzahlFkek - anzahlFkekError;
 				}
 			});
