@@ -21,19 +21,27 @@ db.verbindeDatenbank(function (db) {
 	};
 
 	let socket = new NodeWebSocket('ws://127.0.0.1:10080');
+	//let socket = new JsSIP.WebSocketInterface('ws://127.0.0.1:10080');
 
 	let ua = new JsSIP.UA(
 		{
 			sockets:  [socket],
-			uri:      'rfd@127.0.0.1:5060',
-			password: 'rfd',
-			register: true
+			uri:      'sip:rfd@127.0.0.1:5060',
+			password: 'rfd'
 		});
-
-	ua.start();
 
 	ua.on('connected', function () {
 		ua.sendMessage('sip:rfd@127.0.0.1:5060', '<"TX" "id"="1-H-RFD-WARVTA-FKEK-3" "state"="0" "atis"="9211034779" "channel"="73"/>', options);
 	});
+
+	ua.on('registered', function (e) {
+		console.log('Funktion: registered auf SIP-Server');
+	});
+
+	ua.on('registrationFailed', function (e) {
+		console.log('Registration failed auf SIP-Server' + JSON.stringify(e));
+	});
+
+	ua.start();
 
 });
