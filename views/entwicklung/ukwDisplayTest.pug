@@ -67,10 +67,10 @@ block content
 										)
 											each val2, index2 in val
 												if val2.length > 1
-													div.funkstelle.list-group-item(
+													li.funkstelle.list-group-item(
 													class=' button_anlage' + (index2 + 1)
 													id=val2
-													geraetStatus='-1'
+													data-geraetStatus='-1'
 													)
 														span #{val2}&nbsp
 															span.label.label-default ??

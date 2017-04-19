@@ -45,7 +45,7 @@
 		sammelStatusAendernSpanMhan: function (elementeListe) {
 			let sammelStatus = '0';
 			$(elementeListe).each(function () {
-				if ($(this).attr('geraetStatus') === '1') {
+				if ($(this).data('geraetStatus') === '1') {
 					sammelStatus = '1';
 				}
 			});
@@ -58,7 +58,7 @@
 		 * @return {Number} Integer fuer Zustand 1=Fehler, 0=OK
 		 */
 		pruefeGeraetStatus: function (element) {
-			if (element.attr('geraetStatus') === 1 || element.attr('geraetStatus') === -1) {
+			if (element.data('geraetStatus') === '1' || element.data('geraetStatus') === '-1') {
 				return 1;
 			}
 

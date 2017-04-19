@@ -248,14 +248,14 @@
 
 			switch (Zustand) {
 				case 'OK':
-					Funkstelle.attr('geraetStatus', '0');
+					Funkstelle.data('geraetStatus', '0');
 					$('span.label', Funkstelle)
 						.removeClass('label-danger')
 						.addClass('label-success')
 						.text(Zustand);
 					break;
 				case 'Error':
-					Funkstelle.attr('geraetStatus', '1');
+					Funkstelle.data('geraetStatus', '1');
 					$('span.label', Funkstelle)
 						.removeClass('label-success')
 						.addClass('label-danger')
@@ -277,6 +277,11 @@
 
 			// Sammelstatus bilden und setzen
 			const sammelStatus = WSV.Tools.sammelStatusAendernFunkstellen(alleGeraete);
+
+			if (KompID == '1-H-RFD-DASORT-FKEK-2') {
+				console.log(alleGeraete);
+				console.log(sammelStatus);
+			}
 
 			switch (sammelStatus) {
 				case '0': // OK
@@ -342,11 +347,11 @@
 
 			switch (Zustand) {
 				case 'OK':
-					geraet.attr('geraetStatus', '0');
+					geraet.data('geraetStatus', '0');
 					$(geraet).removeClass('label-danger').addClass('label-success').text(Zustand);
 					break;
 				case 'Error':
-					geraet.attr('geraetStatus', '1');
+					geraet.data('geraetStatus', '1');
 					$(geraet).removeClass('label-success').addClass('label-danger').text(Zustand);
 
 
@@ -758,8 +763,8 @@
 				const geklickteFstReserve = $('.button_anlage2', panel);
 
 				//Status der Funkstellen aus HTML Elementen auslesen
-				const geklickteFstHauptStatus   = geklickteFstHaupt.attr('geraetStatus');
-				const geklickteFstReserveStatus = geklickteFstReserve.attr('geraetStatus');
+				const geklickteFstHauptStatus   = geklickteFstHaupt.data('geraetStatus');
+				const geklickteFstReserveStatus = geklickteFstReserve.data('geraetStatus');
 
 				if (geklickteFstHaupt.attr('id').indexOf('FKGW') > -1) {
 					geklickteFstHaupt = this.ApFunkstellen[geklickteFstHaupt].gwid;
@@ -801,8 +806,8 @@
 				console.log(buttonFst);
 
 				//Status der Funkstellen
-				const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).attr('geraetStatus');
-				const geklickteFstReserveStatus = $('#' + geklickteFstReserve).attr('geraetStatus');
+				const geklickteFstHauptStatus   = $('#' + geklickteFstHaupt).data('geraetStatus');
+				const geklickteFstReserveStatus = $('#' + geklickteFstReserve).data('geraetStatus');
 
 				this.schalteKanalID(geklickteFstHaupt, geklickteMHAN, 'MHAN');
 			}
