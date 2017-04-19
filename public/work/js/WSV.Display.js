@@ -322,10 +322,12 @@
 				return;
 			}
 
-			const button_anlage = $(element).parents('li');
+			const button_anlage = $(element).parents('.funkstelle');
 			const panel = $(element).parents('.button_panel');
 
 			panel.data('aktiv', button_anlage.attr('id'));
+			panel.find('li').removeClass('btn-primary').data('active', '');
+			button_anlage.addClass('btn-primary').data('aktiv', 'true');
 		},
 
 		/**

@@ -289,11 +289,6 @@ $(window).load(function () {
 			// Sammelstatus bilden und setzen
 			const sammelStatus = WSV.Tools.sammelStatusAendernFunkstellen(alleGeraete);
 
-			if (KompID == '1-H-RFD-DASORT-FKEK-2') {
-				console.log(alleGeraete);
-				console.log(sammelStatus);
-			}
-
 			switch (sammelStatus) {
 				case '0': // OK
 					$(standortButton)
@@ -338,10 +333,12 @@ $(window).load(function () {
 				return;
 			}
 
-			const button_anlage = $(element).parents('li');
+			const button_anlage = $(element).parents('.funkstelle');
 			const panel = $(element).parents('.button_panel');
 
 			panel.data('aktiv', button_anlage.attr('id'));
+			panel.find('li').removeClass('btn-primary').data('active', '');
+			button_anlage.addClass('btn-primary').data('aktiv', 'true');
 		},
 
 		/**

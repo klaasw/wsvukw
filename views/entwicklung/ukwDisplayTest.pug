@@ -68,9 +68,10 @@ block content
 											each val2, index2 in val
 												if val2.length > 1
 													li.funkstelle.list-group-item(
-													class=' button_anlage' + (index2 + 1)
+													class= ((index2 == 0) ? 'btn-primary' : '') + ' button_anlage' + (index2 + 1)
 													id=val2
 													data-geraetStatus='-1'
+													data-active= (index2 == 0) ? 'true' : ''
 													)
 														span #{val2}&nbsp
 															span.label.label-default ??
