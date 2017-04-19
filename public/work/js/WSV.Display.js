@@ -278,11 +278,6 @@
 			// Sammelstatus bilden und setzen
 			const sammelStatus = WSV.Tools.sammelStatusAendernFunkstellen(alleGeraete);
 
-			if (KompID == '1-H-RFD-DASORT-FKEK-2') {
-				console.log(alleGeraete);
-				console.log(sammelStatus);
-			}
-
 			switch (sammelStatus) {
 				case '0': // OK
 					$(standortButton)
