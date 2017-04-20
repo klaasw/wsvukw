@@ -1,7 +1,7 @@
 'use strict';
 /**
  *  Modul zur Herstellung der Verbindung zum Revierfunkdienst
- * @Author: Bernhard Rischke on 15.12.2016.
+ * @author: Klaas Wuellner (WSV), Bernhard Rischke (]init[) on 15.12.2016.
  */
 const cfg    = require('./cfg.js');
 const log    = require('./log.js'); // Modul fuer verbessertes Logging
@@ -46,10 +46,10 @@ exports.leseRfdTopologie = function (callback) {
 		const meterRfdLatenzBeginn = process.hrtime();
 		if (error) {
 			log.error(FILENAME + ' RFD WebService Topologie nicht erreichbar ' + error);
-			// TODO: Leseversuch wiederholen, muss spaetestens dann existieren, wenn ein Client sich connecten will
-			setTimeout(exports.leseRfdTopologie(function () {
-				log.debug('fertig mit LeseRfdTopologie');
-			}), 1000);
+			// Leseversuch wiederholen, muss spaetestens dann existieren, wenn ein Client sich connecten will
+			setTimeout(function () {
+				exports.leseRfdTopologie()
+			}, 1000);
 		}
 		//log.debug(response)
 		//log.debug(body)

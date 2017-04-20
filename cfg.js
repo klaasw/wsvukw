@@ -81,9 +81,9 @@ const cfg = {
 
 	'jsSipConfiguration_DUE':     {
 		'sockets':  [jsSIPsocketDUE],
-		'uri':      'rfd@' + cfgIPs.sipIP + ':5060',
+		'uri':      'due@' + cfgIPs.sipIP + ':5060',
 		// TODO fuer unterschiedliche Passwoerter dev/stage/prod: noch in serverIPs auslagern
-		'password': 'rfd',
+		'password': 'due',
 		register:   true
 	},
 	'jsSipConfiguration_mockRFD': {
